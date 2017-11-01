@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="环境及版本 window 10 hexo 3.4.0  安装 git 和 Node.js 安装 Node.js 安装 Git for windows 修改 npm 镜像源为淘宝镜像源。  临时方式 1npm --registry https://registry.npm.taobao.org install 包名  持久方式 1npm config set registry https://reg">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2017-11-01T08:39:25.654Z">
+<meta property="og:updated_time" content="2017-11-01T08:52:19.215Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Github+Hexo:个人博客">
 <meta name="twitter:description" content="环境及版本 window 10 hexo 3.4.0  安装 git 和 Node.js 安装 Node.js 安装 Git for windows 修改 npm 镜像源为淘宝镜像源。  临时方式 1npm --registry https://registry.npm.taobao.org install 包名  持久方式 1npm config set registry https://reg">
@@ -123,8 +123,8 @@
 <p>否则后面使用<code>hexo deploy</code>时会报出<code>ERROR Deployer not found: git</code>的错误。<br><code>npm install hexo-deployer-git</code></p>
 <ul>
 <li>会把<code>hexo-deployer-git</code>包安装到<code>node_modules</code>目录中</li>
-<li>不会修改package.json</li>
-<li>之后运行npm install命令时，不会自动安装<code>hexo-deployer-git</code><br><code>npm install --save</code></li>
+<li>不会修改<code>package.json</code></li>
+<li>之后运行<code>npm install</code>命令时，不会自动安装<code>hexo-deployer-git</code>。<br><code>npm install --save</code></li>
 <li>会把<code>hexo-deployer-git</code>包安装到<code>node_modules</code>目录中</li>
 <li>会在<code>package.json</code>的<code>dependencies</code>属性下添加<code>hexo-deployer-git</code></li>
 <li>之后运行<code>npm install</code>命令时，会自动安装<code>hexo-deployer-git</code>到<code>node_modules</code>目录中</li>
@@ -137,8 +137,10 @@
 </li>
 </ol>
 <h3 id="新建一个-post-并生成静态文件"><a href="#新建一个-post-并生成静态文件" class="headerlink" title="新建一个 post 并生成静态文件"></a>新建一个 post 并生成静态文件</h3><ol>
-<li><p>进入<code>blog_on_hexo</code>，注意如果不进入该目录：<br>进入<code>blog_on_hexo</code>后：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">$ hexo</div><div class="line">Usage: hexo &lt;command&gt;</div><div class="line">\</div><div class="line">Commands:</div><div class="line">  clean     Remove generated files and cache.</div><div class="line">  config    Get or set configurations.</div><div class="line">  deploy    Deploy your website.</div><div class="line">  generate  Generate static files.</div><div class="line">  help      Get help on a command.</div><div class="line">  init      Create a new Hexo folder.</div><div class="line">  list      List the information of the site</div><div class="line">  migrate   Migrate your site from other system to Hexo.</div><div class="line">  new       Create a new post.</div><div class="line">  publish   Moves a draft post from _drafts to _posts folder.</div><div class="line">  render    Render files with renderer plugins.</div><div class="line">  server    Start the server.</div><div class="line">  version   Display version information.</div><div class="line">\</div><div class="line">Global Options:</div><div class="line">  --config  Specify config file instead of using _config.yml</div><div class="line">  --cwd     Specify the CWD</div><div class="line">  --debug   Display all verbose messages in the terminal</div><div class="line">  --draft   Display draft posts</div><div class="line">  --safe    Disable all plugins and scripts</div><div class="line">  --silent  Hide output on console</div><div class="line">\</div><div class="line">For more help, you can use &apos;hexo help [command]&apos; for the detailed information</div><div class="line">or you can check the docs: http://hexo.io/docs/</div></pre></td></tr></table></figure>
+<li><p>进入<code>blog_on_hexo</code>，注意如果不进入该目录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">$ hexo</div><div class="line">Usage: hexo &lt;command&gt;</div><div class="line"></div><div class="line">Commands:</div><div class="line">help     Get help on a command.</div><div class="line">init     Create a new Hexo folder.</div><div class="line">version  Display version information.</div><div class="line"></div><div class="line">Global Options:</div><div class="line">--config  Specify config file instead of using \_config.yml</div><div class="line">--cwd     Specify the CWD</div><div class="line">--debug   Display all verbose messages in the terminal</div><div class="line">--draft   Display draft posts</div><div class="line">--safe    Disable all plugins and scripts</div><div class="line">--silent  Hide output on console</div><div class="line"></div><div class="line">For more help, you can use &apos;hexo help [command]&apos; for the detailed information</div><div class="line">or you can check the docs: http://hexo.io/docs/</div></pre></td></tr></table></figure>
+<p>进入<code>blog_on_hexo</code>后：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">$ hexo</div><div class="line">Usage: hexo &lt;command&gt;</div><div class="line"></div><div class="line">Commands:</div><div class="line">  clean     Remove generated files and cache.</div><div class="line">  config    Get or set configurations.</div><div class="line">  deploy    Deploy your website.</div><div class="line">  generate  Generate static files.</div><div class="line">  help      Get help on a command.</div><div class="line">  init      Create a new Hexo folder.</div><div class="line">  list      List the information of the site</div><div class="line">  migrate   Migrate your site from other system to Hexo.</div><div class="line">  new       Create a new post.</div><div class="line">  publish   Moves a draft post from \_drafts to \_posts folder.</div><div class="line">  render    Render files with renderer plugins.</div><div class="line">  server    Start the server.</div><div class="line">  version   Display version information.</div><div class="line"></div><div class="line">Global Options:</div><div class="line">  --config  Specify config file instead of using \_config.yml</div><div class="line">  --cwd     Specify the CWD</div><div class="line">  --debug   Display all verbose messages in the terminal</div><div class="line">  --draft   Display draft posts</div><div class="line">  --safe    Disable all plugins and scripts</div><div class="line">  --silent  Hide output on console</div><div class="line"></div><div class="line">For more help, you can use &apos;hexo help [command]&apos; for the detailed information</div><div class="line">or you can check the docs: http://hexo.io/docs/</div></pre></td></tr></table></figure>
 <p>两者对应的命令是不一样的。</p>
 </li>
 <li><p>新建一个 post 。 </p>
@@ -163,13 +165,13 @@
 <p>to<br>   <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"># Deployment</div><div class="line">## Docs: https://hexo.io/docs/deployment.html</div><div class="line">deploy:</div><div class="line">  type: git</div><div class="line">  repo: https://github.com/RobertLexis/RobertLexis.github.io.git</div><div class="line">  branch: master</div></pre></td></tr></table></figure></p>
 <ol>
 <li><code>hexo deploy</code> 按照要求输入用户名和密码。</li>
-<li>访问<code>https://RobertLexis.github.io</code>就可以看到自己的博客。</li>
+<li>访问<code>https://RobertLexis.github.io</code>就可以看到自己的博客了。</li>
 </ol>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/11/01/Github-Hexo-个人博客/" data-id="cj9gsjt9z0000okex8jy138gn" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/11/01/Github-Hexo-个人博客/" data-id="cj9gt0iug0000h0ex73oe3e7e" class="article-share-link">Share</a>
       
       
     </footer>
