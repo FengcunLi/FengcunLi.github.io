@@ -10,6 +10,8 @@
 
     <!--Description-->
     
+        <meta name="description" content="修改 hexo 中引用（blockquote）的样式在 clean blog 中使用引用&amp;gt;时，渲染后引用会字体变大文本居中，十分不美观。因此需要修改样式。找到文件\themes\clean-blog\source\css\article.styl，在其中搜索关键字blockquote:chan">
+    
 
     <!--Author-->
     
@@ -18,7 +20,7 @@
 
     <!--Open Graph Title-->
     
-        <meta property="og:title" content="This is WHY."/>
+        <meta property="og:title" content="hexo 使用随笔"/>
     
 
     <!--Open Graph Description-->
@@ -29,7 +31,7 @@
 
     <!--Type page-->
     
-        <meta property="og:type" content="website" />
+        <meta property="og:type" content="article" />
     
 
     <!--Page Cover-->
@@ -40,7 +42,7 @@
 
     <!-- Title -->
     
-    <title>This is WHY.</title>
+    <title>hexo 使用随笔 - This is WHY.</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
@@ -143,111 +145,60 @@
 
     <!-- Main Content -->
     <!-- Page Header -->
-<!-- Set your background image for this header in the theme's configuration: index_cover -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
 <header class="intro-header" style="background-image: url('http://www.codeblocq.com/assets/projects/hexo-theme-clean-blog/img/home-bg.jpg')">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <div class="site-heading">
-                    <h1>This is WHY.</h1>
-                    <hr class="small">
-                    <span class="subheading">Dawn is coming.</span>
+                <div class="post-heading">
+                    <h1>hexo 使用随笔</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2017-11-03
+                        
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 </header>
 
-<!-- Main Content -->
-<div class="container">
-    <div class="row">
-        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-            
-                <div class="post-preview">
-    <a href="/2017/11/03/hexo-使用随笔/">
-        <h2 class="post-title">
-            hexo 使用随笔
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2017-11-03
-    </p>
-</div>
-<hr>
-            
-                <div class="post-preview">
-    <a href="/2017/11/02/Install-XGBoost/">
-        <h2 class="post-title">
-            Install XGBoost
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2017-11-02
-    </p>
-</div>
-<hr>
-            
-                <div class="post-preview">
-    <a href="/2017/11/02/在Dell-PowerEdge-R430上打造一个科学计算环境/">
-        <h2 class="post-title">
-            “在Dell PowerEdge R430上打造一个科学计算环境
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2017-11-02
-    </p>
-</div>
-<hr>
-            
-                <div class="post-preview">
-    <a href="/2017/11/02/sublime-plugins/">
-        <h2 class="post-title">
-            sublime plugins
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2017-11-02
-    </p>
-</div>
-<hr>
-            
-                <div class="post-preview">
-    <a href="/2017/11/01/Github-Hexo-个人博客/">
-        <h2 class="post-title">
-            Github+Hexo:个人博客
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2017-11-01
-    </p>
-</div>
-<hr>
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+
+            <!-- Gallery -->
             
 
-            <ul class="pager">
-    
-    
-</ul>
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <h3 id="修改-hexo-中引用（blockquote）的样式"><a href="#修改-hexo-中引用（blockquote）的样式" class="headerlink" title="修改 hexo 中引用（blockquote）的样式"></a>修改 hexo 中引用（blockquote）的样式</h3><p>在 clean blog 中使用引用<code>&gt;</code>时，渲染后引用会字体变大文本居中，十分不美观。因此需要修改样式。<br>找到文件<code>\themes\clean-blog\source\css\article.styl</code>，在其中搜索关键字<code>blockquote</code>:<br>change<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">blockquote</div><div class="line">  font-style italic</div><div class="line">  font-family font-serif</div><div class="line">  font-size 1.2em</div><div class="line">  padding 0 30px 15px</div><div class="line">  text-align center</div><div class="line">  footer....</div></pre></td></tr></table></figure></p>
+<p>to<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">blockquote</div><div class="line">  font-style italic</div><div class="line">  font-family font-serif</div><div class="line">  font-size 0.95em</div><div class="line">  padding 0 30px 15px</div><div class="line">  text-align left</div><div class="line">  footer....</div></pre></td></tr></table></figure></p>
+<p>效果就是：<br><img src="/2017/11/03/hexo-使用随笔/before_fixing.png" alt="before_fixing"><br>to<br><img src="/2017/11/03/hexo-使用随笔/after_fixing.png" alt="after_fixing"></p>
+
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
         </div>
     </div>
-</div>
-
-
+</article>
 
     <!-- Footer -->
     <hr />
