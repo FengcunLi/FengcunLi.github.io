@@ -10,6 +10,8 @@
 
     <!--Description-->
     
+        <meta name="description" content="微信网页开发，微信JS-SDK使用，数据模型及数据库的建立微信网页开发和网站开发并无二致，在这里我将使用 flask 和 MySQL 建立一个站点，站点结构主要遵循了《Flask Web Development》中的 Large Application Structure（大型应用结构）的建议，也融">
+    
 
     <!--Author-->
     
@@ -18,7 +20,7 @@
 
     <!--Open Graph Title-->
     
-        <meta property="og:title" content="This is WHY."/>
+        <meta property="og:title" content="微信公众号开发-2"/>
     
 
     <!--Open Graph Description-->
@@ -29,7 +31,7 @@
 
     <!--Type page-->
     
-        <meta property="og:type" content="website" />
+        <meta property="og:type" content="article" />
     
 
     <!--Page Cover-->
@@ -40,7 +42,7 @@
 
     <!-- Title -->
     
-    <title>归档 - This is WHY.</title>
+    <title>微信公众号开发-2 - This is WHY.</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
@@ -142,168 +144,62 @@
 </nav>
 
     <!-- Main Content -->
-    
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
 
-<!-- Page Header -->
-<!-- Set your background image for this header in the theme's configuration: index_cover -->
 <header class="intro-header" style="background-image: url('http://www.codeblocq.com/assets/projects/hexo-theme-clean-blog/img/home-bg.jpg')">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <div class="site-heading">
-                    <h1>归档</h1>
+                <div class="post-heading">
+                    <h1>微信公众号开发-2</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2017-11-07
+                        
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 </header>
 
-<!-- Main Content -->
-<div class="container">
-    <div class="row">
-        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+
+            <!-- Gallery -->
             
-                <div class="post-preview">
-    <a href="/2017/11/13/Ubuntu-2-1080Ti-深度学习环境配置/">
-        <h1 class="post-title archive">
-            Ubuntu + 2*1080Ti 深度学习环境配置
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2017-11-13
-    </p>
-</div>
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <h4 id="微信网页开发，微信JS-SDK使用，数据模型及数据库的建立"><a href="#微信网页开发，微信JS-SDK使用，数据模型及数据库的建立" class="headerlink" title="微信网页开发，微信JS-SDK使用，数据模型及数据库的建立"></a>微信网页开发，微信JS-SDK使用，数据模型及数据库的建立</h4><p>微信网页开发和网站开发并无二致，在这里我将使用 flask 和 MySQL 建立一个站点，站点结构主要遵循了《Flask Web Development》中的 Large Application Structure（大型应用结构）的建议，也融合了董伟明老师的《Python Web 开发实战》中的一些思想。<br>站点结构如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">wx</div><div class="line">├── access_token_server.py</div><div class="line">├── config.py</div><div class="line">├── manage.py</div><div class="line">├── menu.py</div><div class="line">├── requirements.txt</div><div class="line">└── xg</div><div class="line">    ├── basic.py</div><div class="line">    ├── ext.py</div><div class="line">    ├── __init__.py</div><div class="line">    ├── main</div><div class="line">    │   ├── errors.py</div><div class="line">    │   ├── forms.py</div><div class="line">    │   ├── __init__.py</div><div class="line">    │   ├── receive.py</div><div class="line">    │   ├── reply.py</div><div class="line">    │   ├── views.py</div><div class="line">    ├── models.py</div><div class="line">    ├── sign.py</div><div class="line">    ├── static</div><div class="line">    │   ├── css</div><div class="line">    │   ├── fonts</div><div class="line">    │   ├── ico</div><div class="line">    │   │   └── favicon.ico</div><div class="line">    │   └── js</div><div class="line">    └── templates</div></pre></td></tr></table></figure></p>
+<ol>
+<li>上面在自定义菜单中的菜单项Index，我们将其指向了 <a href="http://www.bigsmallfly.top/register" target="_blank" rel="external">http://www.bigsmallfly.top/register</a> ，但是</li>
+</ol>
+
+
+                
+            </div>
+
+            <!-- Comments -->
             
-                <div class="post-preview">
-    <a href="/2017/11/07/微信公众号开发-2/">
-        <h1 class="post-title archive">
-            微信公众号开发-2
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2017-11-07
-    </p>
-</div>
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
             
-                <div class="post-preview">
-    <a href="/2017/11/07/微信公众号开发-1/">
-        <h1 class="post-title archive">
-            微信公众号开发 1
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2017-11-07
-    </p>
-</div>
-            
-                <div class="post-preview">
-    <a href="/2017/11/05/Python-threads-communication-and-stopping/">
-        <h1 class="post-title archive">
-            Python threads: communication and stopping
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2017-11-05
-    </p>
-</div>
-            
-                <div class="post-preview">
-    <a href="/2017/11/04/翻译-Learning-from-Imbalanced-Classes/">
-        <h1 class="post-title archive">
-            翻译 Learning from Imbalanced Classes
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2017-11-04
-    </p>
-</div>
-            
-                <div class="post-preview">
-    <a href="/2017/11/03/Python-os-system-与-os-popen-的不同/">
-        <h1 class="post-title archive">
-            Python os.system 与 os.popen 的不同
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2017-11-03
-    </p>
-</div>
-            
-                <div class="post-preview">
-    <a href="/2017/11/03/hexo-使用随笔/">
-        <h1 class="post-title archive">
-            hexo 使用随笔
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2017-11-03
-    </p>
-</div>
-            
-                <div class="post-preview">
-    <a href="/2017/11/02/Install-XGBoost/">
-        <h1 class="post-title archive">
-            Install XGBoost
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2017-11-02
-    </p>
-</div>
-            
-                <div class="post-preview">
-    <a href="/2017/11/02/在Dell-PowerEdge-R430上打造一个科学计算环境/">
-        <h1 class="post-title archive">
-            “在Dell PowerEdge R430上打造一个科学计算环境
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2017-11-02
-    </p>
-</div>
-            
-                <div class="post-preview">
-    <a href="/2017/11/02/sublime-plugins/">
-        <h1 class="post-title archive">
-            sublime plugins
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2017-11-02
-    </p>
-</div>
-            
-            <div class="archive-before-pagination"></div>
-            <ul class="pager">
-    
-    
-        <li class="next"><a href="/archives/page/2/">上一页  &rarr;</a></li>
-    
-</ul>
         </div>
     </div>
-</div>
-
+</article>
 
     <!-- Footer -->
     <hr />
