@@ -10,7 +10,7 @@
   
   <title>
     
-      This is WHY.
+      About | This is WHY.
     
   </title>
   <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -111,88 +111,71 @@
   </div>
 </header>
 
-    <div id="article-banner">
-  <h2>Archives</h2>
-  <p class="post-date">文章归档</p>
-</div>
-<main class="app-body" id="archives">
-  
-  
-  
-    <section class="time-section">
-  <h1 class="section-year">
-    2017
-  </h1>
-  <div class="section-list">
-    
-    
-      <div class="section-list-item">
-        <a href="/2017/11/13/Ubuntu-2-1080Ti-深度学习环境配置/" class="archive-title">Ubuntu + 2*1080Ti 深度学习环境配置</a>
-        <p class="archive-date">11-13</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/2017/11/07/微信公众号开发-2/" class="archive-title">微信公众号开发-2</a>
-        <p class="archive-date">11-07</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/2017/11/07/微信公众号开发-1/" class="archive-title">微信公众号开发 1</a>
-        <p class="archive-date">11-07</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/2017/11/05/Python-threads-communication-and-stopping/" class="archive-title">Python threads: communication and stopping</a>
-        <p class="archive-date">11-05</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/2017/11/04/翻译-Learning-from-Imbalanced-Classes/" class="archive-title">翻译 Learning from Imbalanced Classes</a>
-        <p class="archive-date">11-04</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/2017/11/03/Python-os-system-与-os-popen-的不同/" class="archive-title">Python os.system 与 os.popen 的不同</a>
-        <p class="archive-date">11-03</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/2017/11/03/hexo-使用随笔/" class="archive-title">hexo 使用随笔</a>
-        <p class="archive-date">11-03</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/2017/11/02/Install-XGBoost/" class="archive-title">Install XGBoost</a>
-        <p class="archive-date">11-02</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/2017/11/02/在Dell-PowerEdge-R430上打造一个科学计算环境/" class="archive-title">“在Dell PowerEdge R430上打造一个科学计算环境</a>
-        <p class="archive-date">11-02</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/2017/11/02/sublime-plugins/" class="archive-title">sublime plugins</a>
-        <p class="archive-date">11-02</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/2017/11/01/Github-Hexo-个人博客/" class="archive-title">Github+Hexo:个人博客</a>
-        <p class="archive-date">11-01</p>
-      </div>
-    
+    <div id="about-banner" style="background-image: url(http://file.muyutech.com/about.jpg)"></div>
+<div class="author">
+  <div class="head">
+    <img src="https://avatars3.githubusercontent.com/u/16443628?v=3&s=460" />
   </div>
-</section>
-  
-</main>
+  <h3>Robert Lexis</h3>
+  <p class="discription">The end is always near.</p>
+  <section class="share-icons">
+    
+      <a class="icon-weibo" href="http://weibo.com/yanm1ng" target="_blank">
+        <span class="fa-stack fa-lg">
+          <i class="fa fa-circle fa-stack-2x"></i>
+          <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+        </span>
+      </a>
+    
+    
+      <a class="icon-twitter" href="https://twitter.com/yanm1ng" target="_blank">
+        <span class="fa-stack fa-lg">
+          <i class="fa fa-circle fa-stack-2x"></i>
+          <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+        </span>
+      </a>
+    
+    
+      <a class="icon-github" href="https://github.com/yanm1ng" target="_blank">
+        <span class="fa-stack fa-lg">
+          <i class="fa fa-circle fa-stack-2x"></i>
+          <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+        </span>
+      </a>
+    
+    
+      <a class="icon-zhihu" href="https://www.zhihu.com/people/yummy1121" target="_blank">
+        <span class="fa-stack fa-lg">
+          <i class="fa fa-circle fa-stack-2x"></i>
+          <i class="fa fa-stack-1x fa-inverse">知</i>
+        </span>
+      </a>
+    
+    
+        <a class="icon-douban" href="https://www.douban.com/people/yanm1ng" target="_blank">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-stack-1x fa-inverse">豆</i>
+            </span>
+        </a>
+    
+  </section>
+</div>
 
 <script>
   (function () {
-    var url = 'http://yoursite.com/archives/page/2/index.html';
-    $('#article-banner').geopattern(url);
-    $('.header').removeClass('fixed-header');
+    $('.header').removeClass('fixed-header')
+    var windowH = $(window).height();
+    var author = $('.author')
+    var bodyH = author.offset().top + author[0].offsetHeight + 71;
+    if (bodyH < windowH) {
+      author.css({
+        'margin-bottom': windowH - bodyH
+      })
+    }
   })();
 </script>
+
     <div class="scroll-top">
   <span class="arrow-icon"></span>
 </div>
