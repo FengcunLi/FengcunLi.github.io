@@ -11,34 +11,10 @@
     <!--Description-->
     
         <meta name="description" content="注册，配置，接入，自定义菜单
-
-
-参数
-描述
-
-
-
-
-signature
-随机字符串
-
-
-timestamp
-时间戳
-
-
-nonce
-随机数
-
-
-echostr
-随机字符串
-
-
-
-
 到微信公众平台 注册一个订阅号，服务号需要进行审核，出于测设开发的目的申请的是一个订阅号。
-到微信公众平台技术文档的开">
+到微信公众平台技术文档的开始开发选项卡中申请一个接口测试号。
+对测试号进行配置，可以获得测试号信息
+12appID: wxe4182c5b4321e939appsecret: 3">
     
 
     <!--Author-->
@@ -208,33 +184,7 @@ echostr
 
             <!-- Post Main Content -->
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <h4 id="注册，配置，接入，自定义菜单"><a href="#注册，配置，接入，自定义菜单" class="headerlink" title="注册，配置，接入，自定义菜单"></a>注册，配置，接入，自定义菜单</h4><table>
-<thead>
-<tr>
-<th>参数</th>
-<th style="text-align:right">描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>signature</td>
-<td style="text-align:right">随机字符串</td>
-</tr>
-<tr>
-<td>timestamp</td>
-<td style="text-align:right">时间戳</td>
-</tr>
-<tr>
-<td>nonce</td>
-<td style="text-align:right">随机数</td>
-</tr>
-<tr>
-<td>echostr</td>
-<td style="text-align:right">随机字符串</td>
-</tr>
-</tbody>
-</table>
-<ol>
+                <h4 id="注册，配置，接入，自定义菜单"><a href="#注册，配置，接入，自定义菜单" class="headerlink" title="注册，配置，接入，自定义菜单"></a>注册，配置，接入，自定义菜单</h4><ol>
 <li>到<a href="https://mp.weixin.qq.com/" target="_blank" rel="external">微信公众平台</a> 注册一个订阅号，服务号需要进行审核，出于测设开发的目的申请的是一个订阅号。</li>
 <li>到<a href="https://mp.weixin.qq.com/wiki?t=resource/res_main&amp;id=mp1445241432" target="_blank" rel="external">微信公众平台技术文档</a>的开始开发选项卡中申请一个接口测试号。</li>
 <li><p>对测试号进行配置，可以获得测试号信息</p>
@@ -249,20 +199,17 @@ echostr
 </ol>
 </li>
 <li><p>接入指南，参考开始开发选项卡中的接入指南。<br>开发者提交信息后，微信服务器将发送 GET 请求到填写的服务器地址 URL 上，GET 请求携带参数如下表所示：</p>
-</li>
+<p> | 参数      | 描述       |<br> | ——— | ———: |<br> | signature | 随机字符串 |<br> | timestamp | 时间戳     |<br> | nonce     | 随机数     |<br> | echostr   | 随机字符串 |</p>
+<p>开发者通过检验 signature 对请求进行校验。若确认此次 GET 请求来自微信服务器，请原样返回 echostr    参数内容，则接入生效，成为开发者成功，否则接入失败。加密/校验流程如下：</p>
+<ol>
+<li>将token、timestamp、nonce三个参数进行字典序排序</li>
+<li>将三个参数字符串拼接成一个字符串进行sha1加密</li>
+<li>开发者获得加密后的字符串可与signature对比，标识该请求来源于微信</li>
 </ol>
-<pre><code>开发者通过检验 signature 对请求进行校验。若确认此次 GET 请求来自微信服务器，请原样返回 echostr    参数内容，则接入生效，成为开发者成功，否则接入失败。加密/校验流程如下：
-1. 将token、timestamp、nonce三个参数进行字典序排序
-2. 将三个参数字符串拼接成一个字符串进行sha1加密
-3. 开发者获得加密后的字符串可与signature对比，标识该请求来源于微信
-
-wx/xg/main/views.py
+<p>wx/xg/main/views.py</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@main.route("/", methods=["GET", "POST"])</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">handle</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">if</span> request.method == <span class="string">"GET"</span>:</div><div class="line">        <span class="keyword">try</span>:</div><div class="line">            args = request.args</div><div class="line">            <span class="keyword">if</span> <span class="keyword">not</span> args:</div><div class="line">                <span class="keyword">return</span> <span class="string">"hello, this is handle view"</span></div><div class="line">            token = <span class="string">"helloworld"</span></div><div class="line">            signature = args[<span class="string">"signature"</span>]</div><div class="line">            timestamp = args[<span class="string">"timestamp"</span>]</div><div class="line">            nonce = args[<span class="string">"nonce"</span>]</div><div class="line">            echostr = args[<span class="string">"echostr"</span>]</div><div class="line">            ls = [token, timestamp, nonce]</div><div class="line">            ls.sort()</div><div class="line">            sha1 = hashlib.sha1()</div><div class="line">            map(sha1.update, ls)</div><div class="line">            hashcode = sha1.hexdigest()</div><div class="line">            <span class="keyword">print</span> <span class="string">"handle/GET func: hashcode, signature: "</span>, hashcode, signature</div><div class="line">            <span class="keyword">if</span> hashcode == signature:</div><div class="line">                <span class="keyword">return</span> echostr</div><div class="line">            <span class="keyword">else</span>:</div><div class="line">                <span class="keyword">return</span> <span class="string">""</span></div><div class="line">        <span class="keyword">except</span> Exception, Argument:</div><div class="line">            <span class="keyword">return</span> Argument</div></pre></td></tr></table></figure>
-
-其中的 `main` 是一个 flask 蓝图，`token` 就是在测试号申请的时候输入的 Token。
-验证URL有效性成功后即接入生效，成为开发者。成为开发者后，用户每次向公众号发送消息、或者产生自定义菜单、或产生微信支付订单等情况时，开发者填写的服务器配置 URL 将得到微信服务器推送过来的消息和事件，开发者可以依据自身业务逻辑进行响应，如回复消息。
-用户向公众号发送消息时，公众号方收到的消息发送者是一个 OpenID ，是使用用户微信号加密后的结果，每个用户对每个公众号有一个唯一的 OpenID。
-</code></pre><ol>
+<p>其中的 <code>main</code> 是一个 flask 蓝图，<code>token</code> 就是在测试号申请的时候输入的 Token。<br>验证URL有效性成功后即接入生效，成为开发者。成为开发者后，用户每次向公众号发送消息、或者产生自定义菜单、或产生微信支付订单等情况时，开发者填写的服务器配置 URL 将得到微信服务器推送过来的消息和事件，开发者可以依据自身业务逻辑进行响应，如回复消息。<br>用户向公众号发送消息时，公众号方收到的消息发送者是一个 OpenID ，是使用用户微信号加密后的结果，每个用户对每个公众号有一个唯一的 OpenID。</p>
+</li>
 <li><p>获取 access_token<br>access_token 是公众号的全局唯一接口调用凭据，公众号调用各接口时都需使用 access_token。开发者需要进行妥善保存。access_token 的存储至少要保留512个字符空间。access_token 的有效期目前为2个小时，需定时刷新，重复获取将导致上次获取的 access_token 失效。<br>公众平台的API调用所需的 access_token 的使用及生成方式说明：</p>
 <ol>
 <li>建议公众号开发者使用中控服务器统一获取和刷新 access_token，其他业务逻辑服务器所使用的 access_token 均来自于该中控服务器，不应该各自去刷新，否则容易造成冲突，导致 access_token 覆盖而影响业务；</li>

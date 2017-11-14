@@ -1210,32 +1210,6 @@ body .markdown-body
   }
 }
 </style><title>微信公众号开发 1</title></head><body><article class="markdown-body"><h4 id="_1"><a name="user-content-_1" href="#_1" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>注册，配置，接入，自定义菜单</h4>
-<table>
-<thead>
-<tr>
-<th>参数</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>signature</td>
-<td>随机字符串</td>
-</tr>
-<tr>
-<td>timestamp</td>
-<td>时间戳</td>
-</tr>
-<tr>
-<td>nonce</td>
-<td>随机数</td>
-</tr>
-<tr>
-<td>echostr</td>
-<td>随机字符串</td>
-</tr>
-</tbody>
-</table>
 <ol>
 <li>到<a href="https://mp.weixin.qq.com/" target="_blank" rel="external">微信公众平台</a> 注册一个订阅号，服务号需要进行审核，出于测设开发的目的申请的是一个订阅号。</li>
 <li>到<a href="https://mp.weixin.qq.com/wiki?t=resource/res_main&amp;id=mp1445241432" target="_blank" rel="external">微信公众平台技术文档</a>的开始开发选项卡中申请一个接口测试号。</li>
@@ -1262,6 +1236,32 @@ Token: helloworld
 <li>
 <p>接入指南，参考开始开发选项卡中的接入指南。<br>
     开发者提交信息后，微信服务器将发送 GET 请求到填写的服务器地址 URL 上，GET 请求携带参数如下表所示：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>signature</td>
+<td>随机字符串</td>
+</tr>
+<tr>
+<td>timestamp</td>
+<td>时间戳</td>
+</tr>
+<tr>
+<td>nonce</td>
+<td>随机数</td>
+</tr>
+<tr>
+<td>echostr</td>
+<td>随机字符串</td>
+</tr>
+</tbody>
+</table>
 <p>开发者通过检验 signature 对请求进行校验。若确认此次 GET 请求来自微信服务器，请原样返回 echostr    参数内容，则接入生效，成为开发者成功，否则接入失败。加密/校验流程如下：<br>
 1. 将token、timestamp、nonce三个参数进行字典序排序<br>
 2. 将三个参数字符串拼接成一个字符串进行sha1加密<br>
