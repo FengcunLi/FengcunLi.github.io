@@ -1234,15 +1234,35 @@ Token: helloworld
 </ol>
 </li>
 <li>
-<p>接入指南，参考开始开发选项卡中的接入指南。<br>
-    开发者提交信息后，微信服务器将发送 GET 请求到填写的服务器地址 URL 上，GET 请求携带参数如下表所示：<br>
-     | 参数      | 描述       |<br>
-     | --------- | ---------: |<br>
-     | signature | 随机字符串 |<br>
-     | timestamp | 时间戳     |<br>
-     | nonce     | 随机数     |<br>
-     | echostr   | 随机字符串 |</p>
-<p>开发者通过检验 signature 对请求进行校验。若确认此次 GET 请求来自微信服务器，请原样返回 echostr    参数内容，则接入生效，成为开发者成功，否则接入失败。加密/校验流程如下：<br>
+<p>接入指南，参考开始开发选项卡中的接入指南。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>signature</td>
+<td>随机字符串</td>
+</tr>
+<tr>
+<td>timestamp</td>
+<td>时间戳</td>
+</tr>
+<tr>
+<td>nonce</td>
+<td>随机数</td>
+</tr>
+<tr>
+<td>echostr</td>
+<td>随机字符串</td>
+</tr>
+</tbody>
+</table>
+<p>开发者提交信息后，微信服务器将发送 GET 请求到填写的服务器地址 URL 上，GET 请求携带参数如下表所示：<br>
+开发者通过检验 signature 对请求进行校验。若确认此次 GET 请求来自微信服务器，请原样返回 echostr    参数内容，则接入生效，成为开发者成功，否则接入失败。加密/校验流程如下：<br>
 1. 将token、timestamp、nonce三个参数进行字典序排序<br>
 2. 将三个参数字符串拼接成一个字符串进行sha1加密<br>
 3. 开发者获得加密后的字符串可与signature对比，标识该请求来源于微信</p>
