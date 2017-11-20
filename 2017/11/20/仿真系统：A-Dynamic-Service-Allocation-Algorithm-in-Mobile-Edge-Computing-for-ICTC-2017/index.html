@@ -197,8 +197,7 @@
 <li><code>system.Simulator</code>搭建了整个仿真的环境，按照给定的分布和数量实例化了机器，服务，请求，区域等，为进行调度算法的测试做好了准备。</li>
 <li><code>naive_dispatcher.NaiveDispatcher</code> 实现了一个朴素调度器，通过 <code>service_deploy</code> 方法按照服务的热度从高到低将服务部署到对该服务请求最多的机器上。</li>
 <li><code>random_dispatcher.RandomDispatcher</code> 实现了一个随机调度器，通过 <code>service_deploy</code> 方法将服务随机部署到各个机器上。</li>
-<li><code>dispatcher.Dispatcher</code> 实现了一个调度器，可以通过传入一个 <code>system.Simulator</code> 对象，实例化一个调度器，调度器的调度算法分为两个阶段 <code>stage_1</code> 和 <code>stage_2</code>。</li>
-</ol>
+<li><p><code>dispatcher.Dispatcher</code> 实现了一个调度器，可以通过传入一个 <code>system.Simulator</code> 对象，实例化一个调度器，调度器的调度算法分为两个阶段 <code>stage_1</code> 和 <code>stage_2</code>。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">dispatcher.Dispatcher</div><div class="line">|</div><div class="line">+- stage_1</div><div class="line">+- stage_2</div><div class="line">+- machine_slave_dispatch_round_0</div><div class="line">+- machine_slave_dispatch_round_1</div><div class="line">+- machine_slave_dispatch_round_2</div></pre></td></tr></table></figure>
 <ol>
 <li><p><code>dispatcher.Dispatcher.stage_1</code> 完成区域的划分并将各个机器划入不同的区域。</p>
@@ -213,6 +212,8 @@
 <li><p><code>dispatcher.Dispatcher.stage_2</code> 在各个区域将服务部署到各个机器<br>通过 <code>get_service_spots_num_in_district</code> 方法得到一个服务需要部署的机器数目，通过 Dispatcher 的静态方法 <code>init_service_server_in_district</code> 将服务部署到允许部署且对该服务请求最热的机器上，从而完成服务的服务器初始化。</p>
 </li>
 <li><code>dispatcher.Dispatcher.stage_2_ergodic</code> 在 <code>dispatcher.Dispatcher.stage_2</code> 的基础上在每个区域中进行服务的服务器微调。</li>
+</ol>
+</li>
 </ol>
 
 
