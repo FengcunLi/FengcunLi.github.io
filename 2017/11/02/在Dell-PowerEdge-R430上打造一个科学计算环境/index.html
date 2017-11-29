@@ -213,6 +213,16 @@ Ubuntu 默认是不启用 ">
 <blockquote>
 <p>-c&lt;备注&gt;：加上备注文字。备注文字会保存在passwd的备注栏位中<br>-d&lt;登入目录&gt;：指定用户登入时的起始目录<br>-D：变更预设值<br>-e&lt;有效期限&gt;：指定帐号的有效期限<br>-f&lt;缓冲天数&gt;：指定在密码过期后多少天即关闭该帐号<br>-g&lt;群组&gt;：指定用户所属的群组<br>-G&lt;群组&gt;：指定用户所属的附加群组<br>-m：自动建立用户的登入目录<br>-M：不要自动建立用户的登入目录<br>-n：取消建立以用户名称为名的群组<br>-r：建立系统帐号<br>-s：指定用户登入后所使用的shell<br>-u：指定用户id</p>
 </blockquote>
+<h3 id="Jupyter-Notebook-远程访问"><a href="#Jupyter-Notebook-远程访问" class="headerlink" title="Jupyter Notebook 远程访问"></a>Jupyter Notebook 远程访问</h3><ol>
+<li>密码加密，打开 ipython，<code>from notebook.auth import passwd; passwd()</code> 得到形式为 <code>sha1:-----------------------</code> 的密码加密结果。</li>
+<li>生成 jupyter 的配置文件，<code>$ jupyter notebook --generate-config</code>，将会在 home 目录下生成一个隐藏文件夹 .jupyter，该文件夹中有一个 jupyter 的配置文件；</li>
+<li><p>修改 jupyter 的配置文件 <code>$ vim ~/.jupyter/jupyter_notebook_config.py</code>，去掉下面对应行前的注释符号<code>#</code>并修改为下面的样子。</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">c.NotebookApp.ip = &apos;*&apos;</div><div class="line">c.NotebookApp.password = &apos;sha1:-----&apos; #这里就是上面的密码加密结果</div><div class="line">c.NotebookApp.port = 8000</div></pre></td></tr></table></figure>
+</li>
+<li><p><code>jupyter notebook</code> 启动 notebook。 </p>
+</li>
+<li>此时通过 <a href="http://10.108.101.111:8000" target="_blank" rel="external">http://10.108.101.111:8000</a> 就可以访问 jupyter notebook 了。</li>
+</ol>
 
 
                 
