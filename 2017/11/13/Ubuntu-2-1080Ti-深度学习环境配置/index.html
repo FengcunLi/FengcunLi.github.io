@@ -333,6 +333,17 @@
 </blockquote>
 </li>
 </ol>
+<h3 id="新增一个用户，将其家目录链接到硬盘挂载点下的一个目录上"><a href="#新增一个用户，将其家目录链接到硬盘挂载点下的一个目录上" class="headerlink" title="新增一个用户，将其家目录链接到硬盘挂载点下的一个目录上"></a>新增一个用户，将其家目录链接到硬盘挂载点下的一个目录上</h3><p>之前一直是我和师弟一人一个 1T 的硬盘，为了给同学新建一个用户，且为其分配足够的空间，需要将其家目录链接到硬盘挂载点下的一个目录上。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">sudo useradd -d /home/hz -m -s /bin/bash hz</div><div class="line">mkdir /home/wjx/Codes/HZ</div><div class="line">sudo chown -R hz:hz HZ/</div><div class="line">ln -s /home/hz /home/wjx/Codes/HZ/</div></pre></td></tr></table></figure></p>
+<p>验证链接成功：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">ls /home/wjx/Codes/HZ/hz</div><div class="line">examples.desktop</div><div class="line">ls /home/hz/</div><div class="line">examples.desktop</div><div class="line">ll /home/hz/</div><div class="line">总用量 32</div><div class="line">drwxr-xr-x 2 hz   hz   4096 11月 29 20:08 ./</div><div class="line">drwxr-xr-x 5 root root 4096 11月 29 20:08 ../</div><div class="line">-rw-r--r-- 1 hz   hz    220 9月   1  2015 .bash_logout</div><div class="line">-rw-r--r-- 1 hz   hz   3771 9月   1  2015 .bashrc</div><div class="line">-rw-r--r-- 1 hz   hz   8980 4月  20  2016 examples.desktop</div><div class="line">-rw-r--r-- 1 hz   hz    655 6月  24  2016 .profile</div><div class="line">ll /home/wjx/Codes/HZ/hz</div><div class="line">lrwxrwxrwx 1 root root 8 11月 29 20:11 /home/wjx/Codes/HZ/hz -&gt; /home/hz/</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p><strong>软链接与硬链接的区别：</strong></p>
+<ol>
+<li>对于一个文件来说，有唯一的索引节点与之对应，而对于一个索引节点号，却可以有多个文件名与之对应。因此，在磁盘上的同一个文件可以通过不同的路径去访问。注意在Linux下是一切皆文件。<br>链接有软链接和硬链接(hard link)之分的，软链接(symbolic link)又叫符号链接。符号链接相当于 Windows下的快捷方式。<br><code>ln -s source dist</code>        # 建立软链接<br><code>ln -s /mnt/hgfs/ /home/luo/</code>    # 注意后面的 “/”，是将目录里所有的文件链接过去，必须加上，否则，建立的目录显示颜色异常，不能正常访问，比如 cd 进不去<br><code>ln source dist</code>           # 建立硬链接</li>
+<li>软链接实际上只是一段文字，里面包含着它所指向的文件的名字，系统看到软链接后自动跳到对应的文件位置处进行处理；相反，硬链接为文件开设一个新的目录项，硬链接与文件原有的名字是平权的，在Linux看来它们是等价的。由于这个原因，硬链接不能链接两个不同文件系统上的文件。<br>软链接可以跨文件系统 ，硬链接不可以。</li>
+<li>关于 I 节点的问题 。硬链接不管有多少个，都指向的是同一个 I 节点，会把节点链接数增加，只要节点的链接数不是 0，文件就一直存在，不管你删除的是源文件还是链接的文件 。只要有一个存在 ，文件就存在 （其实也不分什么源文件,链接文件的 ，因为他们指向都是同一个 I 节点）。当你修改源文件或者链接文件任何一个的时候 ，其他的文件都会做同步的修改。<br>软链接不直接使用 I 节点号作为文件指针,而是使用文件路径名作为指针。所以删除链接文件 对源文件无影响，但是删除源文件，链接文件就会找不到要指向的文件。软链接有自己的 I 节点,并在磁盘上有一小片空间存放路径名。</li>
+<li>I 节点 :它是UNIX内部用于描述文件特性的数据结构。我们通常称 I 节点为文件索引节点(信息节点)。I 节点含有关于文件的大部分的重要信息,包括文件数据块在磁盘上的地址.每一个 I 节点有它自己的标志号,我们称为文件顺序号。I 节点包含的信息 1.文件类型 2.文件属主关系 3.文件的访问权限 4.文件的时间截。</li>
+</ol>
+</blockquote>
 
 
                 
