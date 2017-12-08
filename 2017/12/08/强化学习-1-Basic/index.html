@@ -192,7 +192,8 @@ body .markdown-body
 
             <!-- Post Main Content -->
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <!DOCTYPE html><html><head><meta charset="utf-8"><meta name="date" content="2017-12-07 20:55:59">
+                <!DOCTYPE html><html><head><meta charset="utf-8"><meta name="mathjax" content="true">
+<meta name="date" content="2017-12-07 20:55:59">
 <meta name="tags" content=""><style>body {
   max-width: 980px;
   border: 1px solid #ddd;
@@ -1209,9 +1210,7 @@ body .markdown-body
     page-break-after: avoid;
   }
 }
-</style><title>强化学习 1 Basic</title></head><body><article class="markdown-body"><script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
-
-<h2 id="_1"><a name="user-content-_1" href="#_1" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>强化学习</h2>
+</style><title>强化学习 1 Basic</title></head><body><article class="markdown-body"><h2 id="_1"><a name="user-content-_1" href="#_1" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>强化学习</h2>
 <p>主要用于解决连续决策问题<br>
 三个主要概念：<br>
 1. 环境（Environment）<br>
@@ -1394,8 +1393,10 @@ with tf.Session() as sess:
 1. Q-learning 中的期望价值指从当前的这一步到后续的所有步骤，总共可以期望获得的最大价值。也就说是对未来进行了断言，这一步采取这样的动作，不管未来采取什么样的动作，可以期望获得的价值不会超过这个Q值。Q值的意义就是最大价值，当前最大 = 当前 + gamma * 以后续一步为当前的最大。<br>
 2. Q-learning 的目的就是求解 Q(s, a)，可以将其看作一个表格，每一行是不同的状态，每一列是不同的动作，学习的过程就是把这个表用合适的值填充起来。<br>
 3. Q-learning 的训练思路也很简单，以（状态，动作，奖励，下一状态）四元组作为样本进行训练。<br>
+4. 学习的目标 r_{}<br>
 $$x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}$$<br>
-\(x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}\)</p></article></body></html>
+\(x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}\)</p>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script></article></body></html>
 
                 
             </div>
