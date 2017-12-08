@@ -181,27 +181,39 @@
             <!-- Post Main Content -->
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">system 模块</div><div class="line">|</div><div class="line">+-  system.CommonObject</div><div class="line">|   |</div><div class="line">|   +- system.Machine</div><div class="line">|   |   |</div><div class="line">|   |   +- system.Backend</div><div class="line">|   |</div><div class="line">|   +- system.Service</div><div class="line">|   |</div><div class="line">|   +- system.Request</div><div class="line">|   |</div><div class="line">|   +- system.District</div><div class="line">|</div><div class="line">+- system.Simulator</div><div class="line">|</div><div class="line">+- ram_generator_factory</div><div class="line">|</div><div class="line">+- bandwidth_generator_factory</div><div class="line">|</div><div class="line">+- request_generator_factory</div><div class="line">|</div><div class="line">+- position_generator_factory</div><div class="line"></div><div class="line"></div><div class="line">dispatcher 模块</div><div class="line">|</div><div class="line">+- dispatcher.Dispatcher</div><div class="line"></div><div class="line">naive_dispatcher 模块</div><div class="line">|</div><div class="line">+- naive_dispatcher.NaiveDispatcher</div><div class="line"></div><div class="line">random_dispatcher 模块</div><div class="line">+- random_dispatcher.RandomDispatcher</div></pre></td></tr></table></figure>
-<ol style="list-style-type: decimal">
+<ol>
 <li><code>system.CommonObject</code> 提供唯一 id 标识的基类。继承该基类的子类都能获得唯一 id 标识的 <code>setter</code> 和 <code>getter</code>。</li>
-<li><p><code>system.Machine</code> 具有内存（<code>_ram</code>），带宽(<code>_bandwidth</code>)，位置(<code>_position</code>)等固有属性，机器的当前状态是通过维护 当前可用内存、可用带宽、请求队列、服务中请求列表、外派请求列表、可用服务池等进行更新的。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">system.Machine</div><div class="line">|</div><div class="line">+- receive_request 接受请求，更新请求队列</div><div class="line">+- serve_request 服务请求，更新请求队列，服务中请求列表，带宽等</div><div class="line">+- stop_serving_request 停止服务请求，更新请求队列，服务中请求列表，带宽等</div><div class="line">+- deploy_service 部署服务，更新可用服务池，内存等。</div><div class="line">+- undeploy_service 卸载服务，更新可用服务池，内存等。</div><div class="line">+- send_request 将请求发送出去，更新请求列表和外派请求列表</div><div class="line">+- find_nearest_machine 寻找“临近”机器并使用 send_request 将请求发送至其他机器或者后台进行处理</div></pre></td></tr></table></figure></p></li>
-<li><code>system.Backend</code> 是资源和处理能力无限的“机器”。</li>
-<li><p><code>system.Service</code> 具有消耗内存（<code>_ram</code>），消耗带宽（<code>_bandwidth</code>）等固有属性，服务的部署机器列表（<code>_deployment</code>)会随着部署和卸载而更新。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">system.Service</div><div class="line">|</div><div class="line">+- deploy</div><div class="line">|</div><div class="line">+- undeploy</div></pre></td></tr></table></figure></p></li>
-<li><code>system.Request</code> 具有请求者（<code>_source</code>），请求目标机器（<code>_machine</code>），请求服务（<code>_service</code>）等属性。</li>
+<li><p><code>system.Machine</code> 具有内存（<code>_ram</code>），带宽(<code>_bandwidth</code>)，位置(<code>_position</code>)等固有属性，机器的当前状态是通过维护<br>当前可用内存、可用带宽、请求队列、服务中请求列表、外派请求列表、可用服务池等进行更新的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">system.Machine</div><div class="line">|</div><div class="line">+- receive_request 接受请求，更新请求队列</div><div class="line">+- serve_request 服务请求，更新请求队列，服务中请求列表，带宽等</div><div class="line">+- stop_serving_request 停止服务请求，更新请求队列，服务中请求列表，带宽等</div><div class="line">+- deploy_service 部署服务，更新可用服务池，内存等。</div><div class="line">+- undeploy_service 卸载服务，更新可用服务池，内存等。</div><div class="line">+- send_request 将请求发送出去，更新请求列表和外派请求列表</div><div class="line">+- find_nearest_machine 寻找“临近”机器并使用 send_request 将请求发送至其他机器或者后台进行处理</div></pre></td></tr></table></figure>
+</li>
+<li><p><code>system.Backend</code> 是资源和处理能力无限的“机器”。</p>
+</li>
+<li><p><code>system.Service</code> 具有消耗内存（<code>_ram</code>），消耗带宽（<code>_bandwidth</code>）等固有属性，服务的部署机器列表（<code>_deployment</code>)会随着部署和卸载而更新。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">system.Service</div><div class="line">|</div><div class="line">+- deploy</div><div class="line">|</div><div class="line">+- undeploy</div></pre></td></tr></table></figure>
+</li>
+<li><p><code>system.Request</code> 具有请求者（<code>_source</code>），请求目标机器（<code>_machine</code>），请求服务（<code>_service</code>）等属性。</p>
+</li>
 <li><code>system.District</code> 具有主机（<code>_master</code>）和从机列表（<code>_slaves</code>）等固有属性，可以通过方法 <code>add_slave</code> 将某个机器加入从机列表从而将这个机器加入这个区域划分。类方法 <code>average_load</code> 可以计算所有区域的平均负载。</li>
 <li><code>system.Simulator</code>搭建了整个仿真的环境，按照给定的分布和数量实例化了机器，服务，请求，区域等，为进行调度算法的测试做好了准备。</li>
 <li><code>naive_dispatcher.NaiveDispatcher</code> 实现了一个朴素调度器，通过 <code>service_deploy</code> 方法按照服务的热度从高到低将服务部署到对该服务请求最多的机器上。</li>
 <li><code>random_dispatcher.RandomDispatcher</code> 实现了一个随机调度器，通过 <code>service_deploy</code> 方法将服务随机部署到各个机器上。</li>
-<li><p><code>dispatcher.Dispatcher</code> 实现了一个调度器，可以通过传入一个 <code>system.Simulator</code> 对象，实例化一个调度器，调度器的调度算法分为两个阶段 <code>stage_1</code> 和 <code>stage_2</code>。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">dispatcher.Dispatcher</div><div class="line">|</div><div class="line">+- stage_1</div><div class="line">+- stage_2</div><div class="line">+- machine_slave_dispatch_round_0</div><div class="line">+- machine_slave_dispatch_round_1</div><div class="line">+- machine_slave_dispatch_round_2</div></pre></td></tr></table></figure></p>
-<ol style="list-style-type: decimal">
-<li><code>dispatcher.Dispatcher.stage_1</code> 完成区域的划分并将各个机器划入不同的区域。
+<li><p><code>dispatcher.Dispatcher</code> 实现了一个调度器，可以通过传入一个 <code>system.Simulator</code> 对象，实例化一个调度器，调度器的调度算法分为两个阶段 <code>stage_1</code> 和 <code>stage_2</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">dispatcher.Dispatcher</div><div class="line">|</div><div class="line">+- stage_1</div><div class="line">+- stage_2</div><div class="line">+- machine_slave_dispatch_round_0</div><div class="line">+- machine_slave_dispatch_round_1</div><div class="line">+- machine_slave_dispatch_round_2</div></pre></td></tr></table></figure>
+<ol>
+<li><p><code>dispatcher.Dispatcher.stage_1</code> 完成区域的划分并将各个机器划入不同的区域。</p>
 <ul>
 <li><code>dispatcher.Dispatcher.machine_slave_dispatch_round_0</code> 根据机器的负载选出 <code>machine_master_num</code> 个主机并围绕这些主机进行区域的划分。</li>
-<li><p><code>dispatcher.Dispatcher.machine_slave_dispatch_round_1</code>将未被选中作为主机的机器分配进各个区域。 首先找出最空闲的区域，并找出与其最邻近的一台未分配机器，如果这台机器的划入不会引起该区域负载高于所有区域的平均负载，则将其指定为该区域的从机并划入该区域，否则将这台机器指定为重负载机器并加入繁忙机器列表，即该机器划入区域失败。</p></li>
-<li><p><code>dispatcher.Dispatcher.machine_slave_dispatch_round_2</code>对于<code>dispatcher.Dispatcher.machine_slave_dispatch_round_1</code>划入区域失败的机器找到其最邻近的区域并划入。</p></li>
-</ul></li>
-<li><code>dispatcher.Dispatcher.stage_2</code> 在各个区域将服务部署到各个机器 通过 <code>get_service_spots_num_in_district</code> 方法得到一个服务需要部署的机器数目，通过 Dispatcher 的静态方法 <code>init_service_server_in_district</code> 将服务部署到允许部署且对该服务请求最热的机器上，从而完成服务的服务器初始化。</li>
+<li><p><code>dispatcher.Dispatcher.machine_slave_dispatch_round_1</code>将未被选中作为主机的机器分配进各个区域。<br>首先找出最空闲的区域，并找出与其最邻近的一台未分配机器，如果这台机器的划入不会引起该区域负载高于所有区域的平均负载，则将其指定为该区域的从机并划入该区域，否则将这台机器指定为重负载机器并加入繁忙机器列表，即该机器划入区域失败。</p>
+</li>
+<li><p><code>dispatcher.Dispatcher.machine_slave_dispatch_round_2</code>对于<code>dispatcher.Dispatcher.machine_slave_dispatch_round_1</code>划入区域失败的机器找到其最邻近的区域并划入。</p>
+</li>
+</ul>
+</li>
+<li><p><code>dispatcher.Dispatcher.stage_2</code> 在各个区域将服务部署到各个机器<br>通过 <code>get_service_spots_num_in_district</code> 方法得到一个服务需要部署的机器数目，通过 Dispatcher 的静态方法 <code>init_service_server_in_district</code> 将服务部署到允许部署且对该服务请求最热的机器上，从而完成服务的服务器初始化。</p>
+</li>
 <li><code>dispatcher.Dispatcher.stage_2_ergodic</code> 在 <code>dispatcher.Dispatcher.stage_2</code> 的基础上在每个区域中进行服务的服务器微调。</li>
-</ol></li>
+</ol>
+</li>
 </ol>
 
 
