@@ -183,6 +183,31 @@
                 <h3 id="修改-hexo-中引用（blockquote）的样式"><a href="#修改-hexo-中引用（blockquote）的样式" class="headerlink" title="修改 hexo 中引用（blockquote）的样式"></a>修改 hexo 中引用（blockquote）的样式</h3><p>在 clean blog 中使用引用<code>&gt;</code>时，渲染后引用会字体变大文本居中，十分不美观。因此需要修改样式。<br>找到文件<code>\themes\clean-blog\source\css\article.styl</code>，在其中搜索关键字<code>blockquote</code>:<br>change<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">blockquote</div><div class="line">  font-style italic</div><div class="line">  font-family font-serif</div><div class="line">  font-size 1.2em</div><div class="line">  padding 0 30px 15px</div><div class="line">  text-align center</div><div class="line">  footer....</div></pre></td></tr></table></figure></p>
 <p>to<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">blockquote</div><div class="line">  font-style italic</div><div class="line">  font-family font-serif</div><div class="line">  font-size 0.95em</div><div class="line">  padding 0 30px 15px</div><div class="line">  text-align left</div><div class="line">  footer....</div></pre></td></tr></table></figure></p>
 <p>效果就是：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/11/before_fixing.png" alt="before_fixing"><br>to<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/11/after_fixing.png" alt="after_fixing"></p>
+<h3 id="Hexo-下-Mathjax-的转义问题"><a href="#Hexo-下-Mathjax-的转义问题" class="headerlink" title="Hexo 下 Mathjax 的转义问题"></a>Hexo 下 Mathjax 的转义问题</h3><p>Q(s_{t}) 会被转义成 Q(s&lt;/em&gt;{t}) 导致 Mathjax 不能正确渲染出公式。</p>
+<h4 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h4><p>Mathjax 可以解析网页上的数学公式，与hexo的结合也很简单，可以手动加入js，或者直接使用 hexo-math 插件。大部分情况下都是可以的，但是 Markdwon 本身的特殊符号与 Latex 中的符号会出现冲突的时候:</p>
+<ul>
+<li>_的转义，在 Markdown 中，_是斜体，但是在 Latex 中，却有下标的意思，就会出现问题。</li>
+<li>\\\\的换行，在 Markdown 中，\\\\会被转义为\\, 这样也会影响影响 Mathjax 对公式中的 \\\ 进行渲染。</li>
+</ul>
+<h4 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h4><p>Hexo 默认使用 marked.js 去解析我们写的 Markdown，比如一些符号，_代表斜体，会被处理为&lt;em&gt;标签，比如x_i在开始被渲染的时候，处理为x&lt;em&gt;i&lt;/em&gt;，这个时候 Mathjax 就无法渲染成下标了。很多符号都有这个问题，比如粗体*，也是无法在Mathjax渲染出来的。所以说到底，是 Hexo 使用的 Markdown 引擎的锅，因为很多其它引擎在这方面处理的很好。</p>
+<h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><p>修改 Hexo 渲染源码<br>思路就是修改hexo的渲染源码: nodes_modules/lib/marked/lib/marked.js:</p>
+<ul>
+<li>去掉\的额外转义</li>
+<li>将 em 标签对应的符号中，去掉_，因为markdown中有*可以表示斜体，_就去掉了。</li>
+</ul>
+<p>具体思路参考了使Marked.js与MathJax共存， 打开nodes_modules/marked/lib/marked.js:</p>
+<ol>
+<li>第一步<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">escape: /^\\([\\`*&#123;&#125;\[\]()# +\-.!_&gt;])/,</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>改为:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">escape: /^\\([`*&#123;&#125;\[\]()# +\-.!_&gt;])/,</div></pre></td></tr></table></figure></p>
+<p>这样就会去掉\的转义了。</p>
+<ol>
+<li>第二步，找到em的符号:<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">em: /^\b_((?:[^_]|__)+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>改为:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">em:/^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</div></pre></td></tr></table></figure></p>
+<p>去掉_的斜体含义，这样通用性很高，因为没有修改文章的内容，可以放到别的引擎下也会顺利渲染。</p>
 
 
                 

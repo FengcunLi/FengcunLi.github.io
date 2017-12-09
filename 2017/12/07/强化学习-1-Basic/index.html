@@ -184,8 +184,7 @@
 
             <!-- Post Main Content -->
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <p><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script></p>
-<h2 id="强化学习"><a href="#强化学习" class="headerlink" title="强化学习"></a>强化学习</h2><p>主要用于解决连续决策问题<br>三个主要概念：</p>
+                <h2 id="强化学习"><a href="#强化学习" class="headerlink" title="强化学习"></a>强化学习</h2><p>主要用于解决连续决策问题<br>三个主要概念：</p>
 <ol>
 <li>环境（Environment）</li>
 <li>动作（Action）</li>
@@ -220,17 +219,17 @@
 <h2 id="估值网络"><a href="#估值网络" class="headerlink" title="估值网络"></a>估值网络</h2><h4 id="概念："><a href="#概念：" class="headerlink" title="概念："></a>概念：</h4><ol>
 <li>Q-learning 中的期望价值指从当前的这一步到后续的所有步骤，总共可以期望获得的最大价值。也就说是对未来进行了断言，这一步采取这样的动作，不管未来采取什么样的动作，可以期望获得的价值不会超过这个Q值。Q值的意义就是最大价值，当前最大 = 当前 + gamma * 以后续一步为当前的最大。</li>
 <li>Q-learning 的目的就是求解 \(Q(s_t, a_t)\)，可以将其看作一个表格，每一行是不同的状态，每一列是不同的动作，学习的过程就是把这个表用合适的值填充起来。</li>
-<li>Q-learning 的训练思路也很简单，以（状态，动作，奖励，下一状态）四元组（\((s_t, a<em>t, r</em>{t+1}, s_{t+1})\)）作为样本进行训练。</li>
-<li>学习目标 \(r<em>{t+1} + \gamma \cdot \max\limits</em>{a} Q(s_{t+1}, a)\)，即相当于 label。</li>
-<li>学习过程 \(Q_{new}(s_t, a<em>t) \gets (1-\alpha) \cdot Q</em>{old}(s_t, a<em>t) + \alpha \cdot (r</em>{t+1} + \gamma \cdot \max\limits<em>{a} Q</em>{old}(s_{t+1}, a))\)</li>
+<li>Q-learning 的训练思路也很简单，以（状态，动作，奖励，下一状态）四元组（\((s_t, a_t, r_{t+1}, s_{t+1})\)）作为样本进行训练。</li>
+<li>学习目标 \(r_{t+1} + \gamma \cdot \max\limits_{a} Q(s_{t+1}, a)\)，即相当于 label。</li>
+<li>学习过程 \(Q_{new}(s_t, a_t) \gets (1-\alpha) \cdot Q_{old}(s_t, a_t) + \alpha \cdot (r_{t+1} + \gamma \cdot \max\limits_{a} Q_{old}(s_{t+1}, a))\)</li>
 <li>Q-learning 的模型是神经网络时，即将\(Q(s_t, a_t)\)表达为神经网络，就是估值网络。</li>
 <li>DQN 是 DeepMind 在 Human-level control through deep reinforcement learning 中提出的。</li>
 </ol>
 <h4 id="Tricks："><a href="#Tricks：" class="headerlink" title="Tricks："></a>Tricks：</h4><ol>
 <li>Experience Replay，因为深度学习需要大量的样本，所以传统的Q-learning 的 online update 的方法不太适合于 DQN，可以像训练CNN 那样进行多个 epoch 的训练，主要思想就是存储 Agent 的 Experience，并且每次训练时随机抽取一部分样本训练网络。这样就能比较稳定的完成学习任务，避免只短视地学习新接触地样本，而是综合地反复利用过往的大量样本进行学习。可以创建一个用来存储Experience的缓存buffer，缓存满了之后就使用新的样本进行替换，如此就可以保证样本都有相近的概率被抽到，如果不替换，那么一开始就有的老样本在整个训练过程中被抽中的概率就会比新样本大得多。</li>
-<li>使用 target DQN 进行辅助训练，它的意义是用来计算目标 Q 值（label），即提供\(\max\limits<em>{a} Q(s</em>{t+1}, a)\)。之所以拆分为两个网络，一个用来制造学习目标，一个用来进行实际训练，是为了让 Q-learning 训练的目标平稳。强化学习的学习目标每次更新后都在变化，即相同的输入，目标Q值（label）并不相同，如果模型参数更新地很频繁，幅度很大，训练过程就会因为目标剧烈变化而非常不稳定，容易失控。为了降低这个影响，需要让目标Q值（label）尽量平稳，因此需要一个比较稳定的 target DQN 辅助计算目标Q值，让target DQN 进行低频率的学习，让它输出的目标Q值波动也小，可以减少对训练过程的影响。</li>
-<li>Double DQN 是在拆分出target DQN 的基础上更近一步，DeepMind 的研究者在 Deep Reinforcement Learning with Double Q-learning 中指出，传统的DQN通常会高估 Action 的Q值，如果这中高估是不均匀的，可能会导致本来次优的 Action 总是被高估而超过最后的 Action，这样就可能永远发现不了最优的 Action。之前，target DQN 完全负责生成目标Q值，先产生\(Q(s<em>{t+1}, a)\),再通过\(\max\limits</em>{a}\)选择那个最大的Q值。Double DQN 改变了第二步，不是直接选择 target DQN 输出中的最大Q值，而是在主DQN的输出中找到最大Q值对应的 Action，再找到 target DQN 的输出中这个 Action 对应的Q值，这个Q值作为目标Q值（即label）。使用的目标Q值不一定总是 target DQN 输出中的最大Q值，这样就避免了总是从 target DQN 的输出中选择被高估的同一个 Action 对应的Q值作为 label。此时学习目标就可以写成 $$Target=r<em>{t+1} + \gamma \cdot Q</em>{target}(s<em>{t+1}, argmax</em>{a}(Q<em>{main}(s</em>{t+1}, a)))$$</li>
-<li>Dueling DQN 是 DQN 一大改进，在 Dueling Network Architectures for Deep Reinforcement Learning 中提出，将Q值函数\(Q(s<em>{t}, a)\)拆分成两部分，一部分是静态的环境本身具有的价值\(V(s</em>{t})\)，称为 Value；另外一部分是通过执行 Action 额外带来的价值\(A(a<em>{t})\)，称为 Advantage，即 \(Q(s</em>{t}, a<em>{t})=V(s</em>{t})+A(a_{t})\)。Dueling 的目的就是让网络分别计算环境本身的 Value 和 Action 带来的 Advantage，Advantage 或好或坏，设计成零均值。<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/dueling.png" alt="传统DQN和Dueling DQN 的对比"><br>Dueling DQN 的输出是一个标量和向量，分别代表 Value 和每个 Action 的 Advantage。</li>
+<li>使用 target DQN 进行辅助训练，它的意义是用来计算目标 Q 值（label），即提供\(\max\limits_{a} Q(s_{t+1}, a)\)。之所以拆分为两个网络，一个用来制造学习目标，一个用来进行实际训练，是为了让 Q-learning 训练的目标平稳。强化学习的学习目标每次更新后都在变化，即相同的输入，目标Q值（label）并不相同，如果模型参数更新地很频繁，幅度很大，训练过程就会因为目标剧烈变化而非常不稳定，容易失控。为了降低这个影响，需要让目标Q值（label）尽量平稳，因此需要一个比较稳定的 target DQN 辅助计算目标Q值，让target DQN 进行低频率的学习，让它输出的目标Q值波动也小，可以减少对训练过程的影响。</li>
+<li>Double DQN 是在拆分出target DQN 的基础上更近一步，DeepMind 的研究者在 Deep Reinforcement Learning with Double Q-learning 中指出，传统的DQN通常会高估 Action 的Q值，如果这中高估是不均匀的，可能会导致本来次优的 Action 总是被高估而超过最后的 Action，这样就可能永远发现不了最优的 Action。之前，target DQN 完全负责生成目标Q值，先产生\(Q(s_{t+1}, a)\),再通过\(\max\limits_{a}\)选择那个最大的Q值。Double DQN 改变了第二步，不是直接选择 target DQN 输出中的最大Q值，而是在主DQN的输出中找到最大Q值对应的 Action，再找到 target DQN 的输出中这个 Action 对应的Q值，这个Q值作为目标Q值（即label）。使用的目标Q值不一定总是 target DQN 输出中的最大Q值，这样就避免了总是从 target DQN 的输出中选择被高估的同一个 Action 对应的Q值作为 label。此时学习目标就可以写成 $$Target=r_{t+1} + \gamma \cdot Q_{target}(s_{t+1}, argmax_{a}(Q_{main}(s_{t+1}, a)))$$</li>
+<li>Dueling DQN 是 DQN 一大改进，在 Dueling Network Architectures for Deep Reinforcement Learning 中提出，将Q值函数\(Q(s_{t}, a)\)拆分成两部分，一部分是静态的环境本身具有的价值\(V(s_{t})\)，称为 Value；另外一部分是通过执行 Action 额外带来的价值\(A(a_{t})\)，称为 Advantage，即 \(Q(s_{t}, a_{t})=V(s_{t})+A(a_{t})\)。Dueling 的目的就是让网络分别计算环境本身的 Value 和 Action 带来的 Advantage，Advantage 或好或坏，设计成零均值。<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/dueling.png" alt="传统DQN和Dueling DQN 的对比"><br>Dueling DQN 的输出是一个标量和向量，分别代表 Value 和每个 Action 的 Advantage。<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script></li>
 </ol>
 
 
