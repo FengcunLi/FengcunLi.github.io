@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="强化学习 2 策略网络及其 TensorFlow 实现策略网络在强化学习中，我们并不知道标签，对于某一个特定的环境状态，我们并不知道它对应的最好的动作是什么，只知道当前动作获得的奖励和试验后获得的未来奖励。我们需要让模型通过试验自己学习什么动作才是某一个特定环境状态下的较优动作，而不是告诉模型较优动">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Robert Lexis">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="强化学习 2 策略网络及其 TensorFlow 实现"/>
+    
+
+    <!--Open Graph Description-->
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="This is WHY."/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+        <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>强化学习 2 策略网络及其 TensorFlow 实现 - This is WHY.</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Google Analytics -->
+    
+
+
+    <!-- favicon -->
+    
+	
+</head>
+
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">This is WHY.</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li>
+                        <a href="/">
+                            
+                                Home
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/archives">
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/tags">
+                            
+                                Tags
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/categories">
+                            
+                                Categories
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="https://github.com/RobertLexis">
+                            
+                                <i class="fa fa-github fa-stack-2x"></i>
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('http://www.codeblocq.com/assets/projects/hexo-theme-clean-blog/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>强化学习 2 策略网络及其 TensorFlow 实现</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2017-12-09
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+
+            <!-- Gallery -->
+            
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <h1 id="强化学习-2-策略网络及其-TensorFlow-实现"><a href="#强化学习-2-策略网络及其-TensorFlow-实现" class="headerlink" title="强化学习 2 策略网络及其 TensorFlow 实现"></a>强化学习 2 策略网络及其 TensorFlow 实现</h1><h2 id="策略网络"><a href="#策略网络" class="headerlink" title="策略网络"></a>策略网络</h2><p>在强化学习中，我们并不知道标签，对于某一个特定的环境状态，我们并不知道它对应的最好的动作是什么，只知道当前动作获得的奖励和试验后获得的未来奖励。我们需要让模型通过试验自己学习什么动作才是某一个特定环境状态下的较优动作，而不是告诉模型较优动作是什么，因为我们也不知道正确的答案。<br>为了让策略网络更好的理解未来，不仅仅要考虑动作的当前奖励，还要动作的考虑未来的、潜在的奖励，即奖励为 Discounted Reward。在训练过程中，模型会接触到好的动作以及它们带来的高奖励，差的动作以及它们带来的低奖励，通过学习，模型会逐渐增加选择好的动作的概率，降低选择差动作的概率，这样就逐渐完成了策略的学习。策略网络是一个End-to-End（端到端）的方法，直接产生动作。</p>
+<h2 id="Gym"><a href="#Gym" class="headerlink" title="Gym"></a>Gym</h2><p>核心概念</p>
+<ol>
+<li>Environment，</li>
+<li>Agent（编写的算法/模型）<br>Agent 观察环境状态（Observation），执行动作（Action）改变环境（Environment），得到奖励（Reward），再观察环境状态执行动作得到奖励，周而复始。即 Observation-Action-Reward 循环。<h2 id="策略网络解决-CartPole-任务"><a href="#策略网络解决-CartPole-任务" class="headerlink" title="策略网络解决 CartPole 任务"></a>策略网络解决 CartPole 任务</h2></li>
+<li>Observation 四元组（车的位置，车的速度，杆的角度，杆的速度）</li>
+<li>Action Space 给小车施加正向或者反向的力（0， 1）</li>
+<li>任务目标时尽可能保持杆竖直不倒，当小车偏离中心超过2.4个单位或者杆的倾角大于15度时，任务失败。</li>
+<li>在每坚持一步就会获得+1的奖励，模型要坚持尽可能长的时间而不导致任务失败。</li>
+<li>模型为了获得尽可能多的奖励就要有远见，不能仅考虑当前的奖励，也要考虑未来长远的奖励<br>采取随机动作的 Agent：<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</div><div class="line"><span class="keyword">import</span> gym</div><div class="line">env = gym.make(<span class="string">"CartPole-v0"</span>)</div><div class="line"></div><div class="line">env.reset()</div><div class="line">random_episodes = <span class="number">0</span></div><div class="line">reward_sum = <span class="number">0</span></div><div class="line"><span class="keyword">while</span> random_episodes &lt; <span class="number">10</span>:</div><div class="line">    observation, reward, done, _ = env.step(np.random.choice([<span class="number">0</span>, <span class="number">1</span>]))</div><div class="line">    reward_sum += reward</div><div class="line">    <span class="keyword">if</span> done:</div><div class="line">        random_episodes += <span class="number">1</span></div><div class="line">        print(<span class="string">"Reward for this episode was: "</span>, reward_sum)</div><div class="line">        reward_sum = <span class="number">0</span></div><div class="line">        env.reset()</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>MLP Policy Network：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!coding: utf-8</span></div><div class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np </div><div class="line"><span class="keyword">import</span> gym </div><div class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf </div><div class="line">env = gym.make(<span class="string">"CartPole-v0"</span>)</div><div class="line"></div><div class="line"><span class="comment">################################# 网络结构 #####################</span></div><div class="line">hidden_n = <span class="number">50</span></div><div class="line">batch_size = <span class="number">25</span></div><div class="line">learning_rate = <span class="number">1e-1</span></div><div class="line">input_dim = <span class="number">4</span></div><div class="line">output_dim = <span class="number">1</span></div><div class="line">gamma = <span class="number">0.99</span></div><div class="line"></div><div class="line">observation_placeholder = tf.placeholder(tf.float32, [<span class="keyword">None</span>, input_dim], name=<span class="string">"observation_placeholder"</span>)</div><div class="line">w_1 = tf.get_variable(<span class="string">"w_1"</span>, shape=[input_dim, hidden_n], initializer=tf.contrib.layers.xavier_initializer())</div><div class="line">layer_1 = tf.nn.relu(tf.matmul(observation_placeholder, w_1))</div><div class="line">w_2 = tf.get_variable(<span class="string">"w_2"</span>, shape=[hidden_n, output_dim], initializer=tf.contrib.layers.xavier_initializer())</div><div class="line">probability = tf.nn.sigmoid(tf.matmul(layer_1, w_2))</div><div class="line"></div><div class="line"><span class="comment">################################# 批优化 #####################</span></div><div class="line"><span class="string">'''</span></div><div class="line"><span class="string">深度强化学习的训练也是采用 batch training，不逐个“样本”的更新参数，而累计 batch_size 个经历（episode）再更新参数，防止</span></div><div class="line"><span class="string">单一经历（episode）随机扰动噪声对模型训练带来的不利影响。</span></div><div class="line"><span class="string">不像 CNN 那样一个 batch 样本 feed 进模型，直接产生一个梯度平均值就可以进行一次参数的更新，</span></div><div class="line"><span class="string">这里需要进行 batch_size 次play从而得到 batch_size 个经历（episode），需要存储每经历（episode）中的平均梯度，并进行平均，最终更新一次参数。</span></div><div class="line"><span class="string">'''</span></div><div class="line">adam = tf.train.AdamOptimizer(learning_rate=learning_rate)</div><div class="line">w_1_grad = tf.placeholder(tf.float32, name=<span class="string">"batch_grad_1"</span>)</div><div class="line">w_2_grad = tf.placeholder(tf.float32, name=<span class="string">"batch_grad_2"</span>)</div><div class="line">batch_grad = [w_1_grad, w_2_grad]</div><div class="line">update = adam.apply_gradients(zip(batch_grad, tf.trainable_variables()))</div><div class="line"></div><div class="line"><span class="comment">################################# 损失 #####################</span></div><div class="line"><span class="string">'''</span></div><div class="line"><span class="string">在 CartPole 问题中，每一次得到的奖励和这次奖励之前的所有动作都有关，也就说之前的所有动作导致了这次奖励的得到，</span></div><div class="line"><span class="string">为了计算一个动作带来的奖励我们要计算这个动作之后全部奖励的折扣和。</span></div><div class="line"><span class="string">我们倒推求解每一个动作带来的奖励。在 CartPole 任务中除了导致任务失败的那次动作之外，所有动作的即时奖励都是 1。</span></div><div class="line"><span class="string">一个动作带来的奖励是后一时间步动作带来的奖励的折扣加上这个动作的即时奖励。</span></div><div class="line"><span class="string">'''</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">discount_reward</span><span class="params">(r)</span>:</span></div><div class="line">    d_r = np.zeros_like(r)</div><div class="line">    d_r[<span class="number">-1</span>] = r[<span class="number">-1</span>]</div><div class="line">    <span class="keyword">for</span> time <span class="keyword">in</span> range(len(r)<span class="number">-1</span>)[::<span class="number">-1</span>]:</div><div class="line">        d_r[time] =  d_r[time+<span class="number">1</span>] * gamma + r[time]</div><div class="line">    <span class="keyword">return</span> d_r</div><div class="line"></div><div class="line"><span class="comment"># 模型做出的动作的反动作，学习目标，相当于 label，是来自于模型的概率输出与一个来自均匀分布的随机数的比较</span></div><div class="line">opposite_action = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">1</span>], name=<span class="string">"opposite_action"</span>)</div><div class="line"><span class="comment"># 动作带来的奖励</span></div><div class="line">advantage = tf.placeholder(tf.float32, name=<span class="string">"reward_signal"</span>)</div><div class="line"><span class="string">'''</span></div><div class="line"><span class="string">模型得到这份奖励的概率：</span></div><div class="line"><span class="string">opposite_action=1 时，即 action=0，1- probability</span></div><div class="line"><span class="string">opposite_action=0 时，即 action=1，probability</span></div><div class="line"><span class="string">综合上面两个式子，模型得到这份奖励的概率：</span></div><div class="line"><span class="string">opposite_action * (opposite_action - probability) + (1 - opposite_action) * (opposite_action + probability)</span></div><div class="line"><span class="string">'''</span></div><div class="line"><span class="comment"># 模型得到这份奖励的概率的对数：</span></div><div class="line">log_prob = tf.log(opposite_action * (opposite_action - probability) </div><div class="line">    + (<span class="number">1</span> - opposite_action) * (opposite_action + probability))</div><div class="line">loss = -tf.reduce_mean(log_prob * advantage)</div><div class="line">gradients = tf.gradients(loss, tf.trainable_variables())</div><div class="line"></div><div class="line"><span class="comment">################################# 训练 #####################</span></div><div class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</div><div class="line">    init = tf.global_variables_initializer()</div><div class="line">    sess.run(init)</div><div class="line"></div><div class="line">    observation = env.reset()</div><div class="line">    xs, ys, rewards = [], [], []</div><div class="line">    reward_sum = <span class="number">0</span></div><div class="line">    episode = <span class="number">1</span></div><div class="line">    total_episodes = <span class="number">10000</span></div><div class="line"></div><div class="line">    grad_buffer = sess.run(tf.trainable_variables())</div><div class="line">    <span class="keyword">for</span> i, grad <span class="keyword">in</span> enumerate(grad_buffer):</div><div class="line">        grad_buffer[i] = grad * <span class="number">0</span></div><div class="line"></div><div class="line">    <span class="keyword">while</span> episode &lt;= total_episodes:</div><div class="line">        x = np.reshape(observation, [<span class="number">1</span>, input_dim])</div><div class="line">        prob = sess.run(probability, feed_dict=&#123;observation_placeholder: x&#125;)</div><div class="line">        action = <span class="number">1</span> <span class="keyword">if</span> np.random.uniform() &lt; prob <span class="keyword">else</span> <span class="number">0</span></div><div class="line">        xs.append(x)</div><div class="line">        ys.append(<span class="number">1</span> - action)</div><div class="line">        observation, reward, done, info = env.step(action)</div><div class="line">        reward_sum += reward</div><div class="line">        rewards.append(reward)</div><div class="line">        <span class="keyword">if</span> done:</div><div class="line">            <span class="comment">### 构建一个经历（episode）的样本，计算该经历（episode）中所有样本上的梯度和，并加入到此批次的梯度buffer中 #####</span></div><div class="line">            episode += <span class="number">1</span></div><div class="line">            xs_per_episode = np.vstack(xs)</div><div class="line">            ys_per_episode = np.vstack(ys)</div><div class="line">            rewards_per_episode = np.vstack(rewards)</div><div class="line">            xs, ys, rewards = [], [], []</div><div class="line">            d_r = discount_reward(rewards_per_episode)</div><div class="line">            d_r -= np.mean(d_r)</div><div class="line">            d_r /= np.std(d_r)</div><div class="line">            grad_per_episode = sess.run(gradients, feed_dict=&#123;observation_placeholder: xs_per_episode,</div><div class="line">                opposite_action: ys_per_episode,</div><div class="line">                advantage: d_r&#125;)</div><div class="line">            <span class="keyword">for</span> i, grad <span class="keyword">in</span> enumerate(grad_per_episode):</div><div class="line">                grad_buffer[i] += grad</div><div class="line"></div><div class="line">            <span class="keyword">if</span> episode % batch_size == <span class="number">0</span>:</div><div class="line">                sess.run(update, feed_dict=&#123;w_1_grad: grad_buffer[<span class="number">0</span>], w_2_grad: grad_buffer[<span class="number">1</span>]&#125;)</div><div class="line"></div><div class="line">                <span class="keyword">for</span> i, grad <span class="keyword">in</span> enumerate(grad_buffer):</div><div class="line">                    grad_buffer[i] = grad * <span class="number">0</span></div><div class="line"></div><div class="line">                print(<span class="string">"Average reward for episode %d : %.2f"</span> %(episode, reward_sum/batch_size))</div><div class="line"></div><div class="line">                <span class="keyword">if</span> reward_sum/batch_size &gt;= <span class="number">200</span>:</div><div class="line">                    print(<span class="string">"Task solved in %d episodes"</span> % episode)</div><div class="line">                    <span class="keyword">break</span></div><div class="line">                reward_sum =<span class="number">0</span></div><div class="line">            observation = env.reset()</div></pre></td></tr></table></figure></p>
+
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+
+                    
+
+                    
+                        <li>
+                            <a href="https://github.com/RobertLexis" target="_blank">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <p class="copyright text-muted">&copy; 2017 Robert Lexis<br></p>
+                <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
+                <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>
