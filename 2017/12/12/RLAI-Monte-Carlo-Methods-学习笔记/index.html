@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="Chapter 5Monte Carlo Methods 一种估计值函数和发现最优策略的方法不需知道环境的完整信息，MC方法只需要 experience，也就是来自真实或者仿真环境下的状态、动作、奖励的序列。尽管需要环境模型，但是仅仅需要这个模型产生样本，而不是像动态规划那样需要完整的转移概率分布。">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Robert Lexis">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="RLAI Monte Carlo Methods 学习笔记"/>
+    
+
+    <!--Open Graph Description-->
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="This is WHY."/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+        <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>RLAI Monte Carlo Methods 学习笔记 - This is WHY.</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Google Analytics -->
+    
+
+
+    <!-- favicon -->
+    
+	
+</head>
+
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">This is WHY.</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li>
+                        <a href="/">
+                            
+                                Home
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/archives">
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/tags">
+                            
+                                Tags
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/categories">
+                            
+                                Categories
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="https://github.com/RobertLexis">
+                            
+                                <i class="fa fa-github fa-stack-2x"></i>
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('http://www.codeblocq.com/assets/projects/hexo-theme-clean-blog/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>RLAI Monte Carlo Methods 学习笔记</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2017-12-12
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+
+            <!-- Gallery -->
+            
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <h2 id="Chapter-5"><a href="#Chapter-5" class="headerlink" title="Chapter 5"></a>Chapter 5</h2><h2 id="Monte-Carlo-Methods-一种估计值函数和发现最优策略的方法"><a href="#Monte-Carlo-Methods-一种估计值函数和发现最优策略的方法" class="headerlink" title="Monte Carlo Methods 一种估计值函数和发现最优策略的方法"></a>Monte Carlo Methods 一种估计值函数和发现最优策略的方法</h2><p>不需知道环境的完整信息，MC方法只需要 experience，也就是来自真实或者仿真环境下的状态、动作、奖励的序列。尽管需要环境模型，但是仅仅需要这个模型产生样本，而不是像动态规划那样需要完整的转移概率分布。在很多情况下，获得样本是容易的，而给出具体形式的分布确实困难的，这就使得MC方法十分的有用。<br>MC 方法基于采样与平均。experience 分为不同的 episode，只有在一个 episode 完成之后才会进行值估计和策略提升。MC 方法是 episode-by-episode （offline）的形式，而不是 step-by-step （online）的方式。</p>
+<h3 id="Monte-Carlo-Prediction"><a href="#Monte-Carlo-Prediction" class="headerlink" title="Monte Carlo Prediction"></a>Monte Carlo Prediction</h3><p>一个状态的 value 是一个期望回报，即从该状态出发遵循一定的策略可以期望获得的累积未来折扣奖励。<br>MC 方法内在的想法就是，从 experience 中估计状态值函数，对访问一个状态之后获得的回报进行平均，随着 episode 次数的增多，这个平均值会收敛到期望值。\(v_{\pi}(s)\) 是在策略 \(\pi\) 下，状态 \(s\) 的 value，我们要做的就是在给定一些遵循策略 \(\pi\) 经历了状态 \(s\) 的 episode 时，对 \(v_{\pi}(s)\) 进行估计。在 episode 中的 \(s\) 每一次出现就称之为对状态 \(s\) 的一次访问。根据进行估计时使用 \(s\) 的第一访问还是每一次访问，MC 方法可以分为 First-visit MC 和 Every-visit MC。<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/first-visit-mc-prediction.png" alt="first-visit-mc-prediction"></p>
+<h3 id="Monte-Carlo-Estimation-of-Action-Values"><a href="#Monte-Carlo-Estimation-of-Action-Values" class="headerlink" title="Monte Carlo Estimation of Action Values"></a>Monte Carlo Estimation of Action Values</h3><p>上面讲了在给定策略的条件下使用 MC 对状态值函数进行估计。<br>当环境模型未知时，对状态-动作值函数进行估计就比对状态值函数进行估计要有用了，这是因为在环境模型已知时，状态值函数对于确定（给出）一个策略就足够了，即在根据当前状态选择动作时，仅仅需要选择立即奖励和下一状态的 value 之和最大的那个动作。这样可行是因为，当环境模型已知时，一个动作带来的奖励是已知的，状态转移概率是已知的，即在当前状态下采取一个动作转移到下一状态及由下一状态带来的期望回报都是已知的。但是在没有环境模型时，状态值函数不足以给出一个策略，为了可以得到一个策略，就需要更加显式直接的状态-动作对值函数。<br>\(q_{\pi}(s,a)\) the expected return when starting in state \(s\), taking action \(a\), and thereafter following policy \(\pi\)（从状态 \(s\) 出发，采取动作 \(a\) 并在后续遵循策略 \(\pi\) 可以得到的期望回报）。在使用 MC 进行估计时，和状态值函数的估计很像，不做在这里我们考虑的不再是对状态 \(s\) 的访问而是对状态-动作对 \(s\)-\(a\) 的访问。<br>这里唯一的问题在于，很多的状态-动作对可能永远不会被访问到。如果策略是确定性的，那么在一个状态下做出的动作就是确定性的，有的状态-动作对就不会被访问到，就无法更新状态-动作对的 value, 这是一个严重的问题，因为学习状态-动作对的 value 的目的就是用来在一个状态下可用的动作中做出选择，这就需要我们能够对一个状态的所有可能动作的 value 做出估计，而不是仅仅估计我们目前策略所指定的状态-动作对的 value。这就是一个保持探索（maintaining exploration）的问题，一个解决方法就是 exploring starts 假设，即每一个状态-动作对都有不为零的概率被选择成为一个 episode 的开始。但是在“实际”环境中这通常是不可行的。另外一个确保所有的状态-动作对都被访问到的方法是使用在每一个状态下以非零概率选择各个动作的随机策略。</p>
+<h3 id="Monte-Carlo-Control"><a href="#Monte-Carlo-Control" class="headerlink" title="Monte Carlo Control"></a>Monte Carlo Control</h3><p>遵循 GPI（generalized policy iteration 泛化策略迭代）的指导，即策略的评估（利用上面讲到的状态-动作对值函数对一个策略的好坏进行评估）和策略的提高（对得到的状态-动作对值函数进行利用从而提高策略）。<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/GPI.png" alt="GPI"><br>policy evaluation and policy improvement, beginning with an arbitrary policy \(\pi_{0}\) and ending with the optimal policy and optimal action-value function:<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/evaluation-improvement.png" alt="evaluation-improvement"><br>策略评估是通过多个 episode，用状态-动作对值函数的估计渐进地逼近真实的函数。<br>策略提升是通过对状态-动作对值函数进行利用得到的贪婪策略，即$$\pi(s)=argmax_{a}q(s,a)$$<br>策略提高之所以有效是因为：<br>$$q_{\pi_{k}}(s, \pi_{k+1}(s))=q_{\pi_{k}}(s, argmax_{a}q_{\pi_{k}}(s,a))$$<br>$$=max_{a}q_{\pi_{k}}(s,a)$$<br>$$\ge q_{\pi_{k}}(s, \pi_{k}(s))$$<br>上面的公式可以做如下解释：<br>\(q_{\pi_{k}}(s,a)\) 是在策略 \(\pi_{k}\) 指导下进行多次 episode 而得到的对状态-动作对值函数的估计，使用贪心的方式得到的新策略 \(\pi_{k+1}(s)\)，\(q_{\pi_{k}}(s, \pi_{k+1}(s))\) 是在新的策略 \(\pi_{k+1}(s)\)指导下可以得到的状态-动作对值函数的预期，实际上尚未在其指导下进行过一次 episode，可以看到这个预期是大于等于已经得到的状态-动作对值函数的估计的，因此新的策略 \(\pi_{k+1}(s)\) 相较于 \(\pi_{k}(s)\) 是提升了的。可以看到状态-动作对值函数的提高提升了策略，而策略的提高提升了状态-动作对值函数，两者交替上升。由此可见，MC 方法可以在对环境模型未知的情况下仅仅通过 episode 找到最优的策略。</p>
+<p>We made two unlikely assumptions above in order to easily obtain this guarantee of convergence for the Monte Carlo method. One was that the episodes have exploring starts, and the other was that policy evaluation could be done with an infinite number of episodes.<br>第二个假设相对而言比较容易移除，一种有效的避免策略评估需要无限次数的 episode 的途径是，我们放弃完整地完成策略评估，而是中途进入策略提升阶段，我们并不需要直达或者逼近真实的\(q_{\pi_{k}}\)，而只需要 move toward \(q_{\pi_{k}}\) step-by-step。<br>一个极端的例子就是值迭代，在两次策略提升之间是只有迭代策略评估的一次迭代；in-place 版本的值迭代更加极端，在提升和评估之间只有一个状态。<br>For Monte Carlo policy evaluation it is natural to alternate between evaluation and improvement on<br>an episode-by-episode basis. 在每次 episode 之后，观测到的回报被用于策略评估，然后策略会在此次 episode 中被访问的所有状态上进行提升。<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/MC-ES.png" alt="MC-ES"></p>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+
+                    
+
+                    
+                        <li>
+                            <a href="https://github.com/RobertLexis" target="_blank">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <p class="copyright text-muted">&copy; 2017 Robert Lexis<br></p>
+                <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
+                <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>
