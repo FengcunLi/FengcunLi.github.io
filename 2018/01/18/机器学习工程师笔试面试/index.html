@@ -10,6 +10,18 @@
 
     <!--Description-->
     
+        <meta name="description" content="整体要求机器学习方面的面试主要分成三个部分：
+
+算法和理论基础
+工程实现能力与编码水平
+业务理解和思考深度
+
+推荐书籍
+理论方面，我推荐最经典的一本书《统计学习方法》，这书可能不是最全的，但是讲得最精髓，薄薄一本，适合面试前突击准备。
+
+杂项
+统计学习的核心步骤：模型、策略、算法，你应当对logis">
+    
 
     <!--Author-->
     
@@ -18,7 +30,7 @@
 
     <!--Open Graph Title-->
     
-        <meta property="og:title" content="This is WHY."/>
+        <meta property="og:title" content="机器学习工程师笔试面试"/>
     
 
     <!--Open Graph Description-->
@@ -29,7 +41,7 @@
 
     <!--Type page-->
     
-        <meta property="og:type" content="website" />
+        <meta property="og:type" content="article" />
     
 
     <!--Page Cover-->
@@ -40,7 +52,7 @@
 
     <!-- Title -->
     
-    <title>page - 归档 - This is WHY.</title>
+    <title>机器学习工程师笔试面试 - This is WHY.</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
@@ -142,170 +154,90 @@
 </nav>
 
     <!-- Main Content -->
-    
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
 
-<!-- Page Header -->
-<!-- Set your background image for this header in the theme's configuration: index_cover -->
 <header class="intro-header" style="background-image: url('http://www.codeblocq.com/assets/projects/hexo-theme-clean-blog/img/home-bg.jpg')">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <div class="site-heading">
-                    <h1>归档</h1>
+                <div class="post-heading">
+                    <h1>机器学习工程师笔试面试</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2018-01-18
+                        
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 </header>
 
-<!-- Main Content -->
-<div class="container">
-    <div class="row">
-        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+
+            <!-- Gallery -->
             
-                <div class="post-preview">
-    <a href="/2017/12/07/循环神经网络的原理及-TensorFlow-实现/">
-        <h1 class="post-title archive">
-            循环神经网络的原理及 TensorFlow 实现
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2017-12-07
-    </p>
-</div>
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <h3 id="整体要求"><a href="#整体要求" class="headerlink" title="整体要求"></a>整体要求</h3><p>机器学习方面的面试主要分成三个部分：</p>
+<ol>
+<li>算法和理论基础</li>
+<li>工程实现能力与编码水平</li>
+<li>业务理解和思考深度</li>
+</ol>
+<h3 id="推荐书籍"><a href="#推荐书籍" class="headerlink" title="推荐书籍"></a>推荐书籍</h3><ol>
+<li>理论方面，我推荐最经典的一本书《统计学习方法》，这书可能不是最全的，但是讲得最精髓，薄薄一本，适合面试前突击准备。</li>
+</ol>
+<h3 id="杂项"><a href="#杂项" class="headerlink" title="杂项"></a>杂项</h3><ol>
+<li>统计学习的核心步骤：模型、策略、算法，你应当对logistic、SVM、决策树、KNN及各种聚类方法有深刻的理解。能够随手写出这些算法的核心递归步的伪代码以及他们优化的函数表达式和对偶问题形式。</li>
+<li>数学知识方面，你应当深刻理解矩阵的各种变换，尤其是特征值相关的知识。</li>
+<li>算法方面，你应当深刻理解常用的优化方法：梯度下降、牛顿法、各种随机搜索算法（基因、蚁群等等），深刻理解的意思是你要知道梯度下降是用平面来逼近局部，牛顿法是用曲面逼近局部等等。 </li>
+<li>工程实现能力与编码水平<br> 机器学习从工程实现一般来讲都是某种数据结构上的搜索问题。<br> 你应当深刻理解各种算法对应应该采用的数据结构和对应的搜索方法。比如KNN对应的KD树、如何给图结构设计数据结构？如何将算法map-reduce化等等。<br> 一般来说要么你会写C，而且会用MPI，要么你懂Hadoop，工程上基本都是在这两个平台实现。实在不济你也学个python吧。 </li>
+</ol>
+<h3 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h3><ol>
+<li>SVM的原理，SVM里面的核</li>
+<li>K-means，如何用hadoop实现k-means</li>
+<li>naive bayes和logistic regression的区别</li>
+<li>LDA的原理和推导</li>
+</ol>
+<h3 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h3><ol>
+<li>做广告点击率预测，用哪些数据、什么算法</li>
+<li>推荐系统的算法中最近邻和矩阵分解各自适用场景</li>
+<li>用户流失率预测怎么做（游戏公司的数据挖掘都喜欢问这个）</li>
+<li>一个游戏的设计过程中该收集什么数据</li>
+<li>如何从登陆日志中挖掘尽可能多的信息</li>
+</ol>
+<h3 id="其他人的一些经验总结"><a href="#其他人的一些经验总结" class="headerlink" title="其他人的一些经验总结"></a>其他人的一些经验总结</h3><ol>
+<li>实际工作中，算法的先进性对真正业务结果的影响，大概不到30%。当然算法必须要足够快，离线算法最好能在4小时内完成，实时算法我没搞过，要求大概更高。机器学习大多数场景是搜索、广告、垃圾过滤、安全、推荐系统等等。对业务有深刻的理解对你做出来的系统的结果影响超过70%。这里你没做过实际的项目，是完全不可能有任何体会的，我做过一个推荐系统，没有什么算法上的高大上的改进，主要是业务逻辑的创新，直接就提高了很明显的一个CTR（具体数目不太方便透露，总之很明显就是了）。如果你做过实际的项目，一定要主动说出来，主动让面试官知道，这才是最大最大的加分项目。</li>
+<li>这些问题的特点是很基础很简单，因为实际中很少用复杂的算法，复杂的算法不好控制，而且理论要求高。另一个特点是注重考查实际工程能力，我经常被问到自己实现了哪些算法。还有的问题很契合实际。</li>
+</ol>
+
+
+                
+            </div>
+
+            <!-- Comments -->
             
-                <div class="post-preview">
-    <a href="/2017/12/07/Learning-TensorFlow-1-Basic/">
-        <h1 class="post-title archive">
-            Learning TensorFlow 1 Basic
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2017-12-07
-    </p>
-</div>
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
             
-                <div class="post-preview">
-    <a href="/2017/12/05/Learning-Simpy-3/">
-        <h1 class="post-title archive">
-            Learning Simpy 3
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2017-12-05
-    </p>
-</div>
-            
-                <div class="post-preview">
-    <a href="/2017/11/21/Pandas-加载数据的I-O性能比较/">
-        <h1 class="post-title archive">
-            Pandas 加载数据的I/O性能比较
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2017-11-21
-    </p>
-</div>
-            
-                <div class="post-preview">
-    <a href="/2017/11/20/Alibaba-集群数据导入MySQL数据库/">
-        <h1 class="post-title archive">
-            Alibaba 集群数据导入MySQL数据库
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2017-11-20
-    </p>
-</div>
-            
-                <div class="post-preview">
-    <a href="/2017/11/20/仿真系统：A-Dynamic-Service-Allocation-Algorithm-in-Mobile-Edge-Computing-for-ICTC-2017/">
-        <h1 class="post-title archive">
-            仿真系统：A Dynamic Service Allocation Algorithm in Mobile Edge Computing for ICTC 2017
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2017-11-20
-    </p>
-</div>
-            
-                <div class="post-preview">
-    <a href="/2017/11/20/Learning-Simpy-2/">
-        <h1 class="post-title archive">
-            Learning Simpy 2
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2017-11-20
-    </p>
-</div>
-            
-                <div class="post-preview">
-    <a href="/2017/11/16/Learning-Simpy/">
-        <h1 class="post-title archive">
-            Learning Simpy
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2017-11-16
-    </p>
-</div>
-            
-                <div class="post-preview">
-    <a href="/2017/11/13/Ubuntu-2-1080Ti-深度学习环境配置/">
-        <h1 class="post-title archive">
-            Ubuntu + 2*1080Ti 深度学习环境配置
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2017-11-13
-    </p>
-</div>
-            
-                <div class="post-preview">
-    <a href="/2017/11/07/微信公众号开发-2/">
-        <h1 class="post-title archive">
-            微信公众号开发-2
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2017-11-07
-    </p>
-</div>
-            
-            <div class="archive-before-pagination"></div>
-            <ul class="pager">
-    
-        <li class="previous"><a href="/archives/">&larr;  下一页</a></li>
-    
-    
-        <li class="next"><a href="/archives/page/3/">上一页  &rarr;</a></li>
-    
-</ul>
         </div>
     </div>
-</div>
-
+</article>
 
     <!-- Footer -->
     <hr />
