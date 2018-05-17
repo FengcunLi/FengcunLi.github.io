@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="STL 里的内存池实现内存池的目的是什么？
+通过 new 表达式动态分配一个对象时，会调用 operator new 进行内存分配，这一步是直接和操作系统打交道的, 操作系统可能需要经过相对繁琐的过程才能将一块指向空闲内存的指针返回给用户, 所以这也是 new 比较耗时的一部分, 而第二步就是使用构">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Robert Lexis">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="STL 内存池实现"/>
+    
+
+    <!--Open Graph Description-->
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="This is WHY."/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+        <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>STL 内存池实现 - This is WHY.</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Google Analytics -->
+    
+
+
+    <!-- favicon -->
+    
+	
+</head>
+
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">This is WHY.</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li>
+                        <a href="/">
+                            
+                                Home
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/archives">
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/tags">
+                            
+                                Tags
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/categories">
+                            
+                                Categories
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="https://github.com/RobertLexis">
+                            
+                                <i class="fa fa-github fa-stack-2x"></i>
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('http://www.codeblocq.com/assets/projects/hexo-theme-clean-blog/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>STL 内存池实现</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2018-03-25
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+
+            <!-- Gallery -->
+            
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <h3 id="STL-里的内存池实现"><a href="#STL-里的内存池实现" class="headerlink" title="STL 里的内存池实现"></a>STL 里的内存池实现</h3><h4 id="内存池的目的是什么？"><a href="#内存池的目的是什么？" class="headerlink" title="内存池的目的是什么？"></a>内存池的目的是什么？</h4><ol>
+<li>通过 new 表达式动态分配一个对象时，会调用 operator new 进行内存分配，这一步是直接和操作系统打交道的, 操作系统可能需要经过相对繁琐的过程才能将一块指向空闲内存的指针返回给用户, 所以这也是 new 比较耗时的一部分, 而第二步就是使用构造函数进行初始化。既然内存分配耗时, 那我们很容易想到的就是一次性分配一大块内存, 然后在用户需要的时候再划分其中一部分给用户, 这样的话, 一次分配, 多次使用, 自然而然提高了效率, 而用来管理这所谓的一大块内存的内存结构, 也就是今天我们要说的内存池。</li>
+<li>内存池带来的另外一个好处在于，频繁地使用new将导致系统内存空间碎片化严重， 容易导致的后果就是很难找到一块连续的大块内存, 空间利用率低，而内存池是一次性分配一大块内存空间，就缓解了内存碎片的问题。</li>
+</ol>
+<h4 id="一、STL中的内存管理"><a href="#一、STL中的内存管理" class="headerlink" title="一、STL中的内存管理"></a>一、STL中的内存管理</h4><p>当我们 new 一个对象时：</p>
+<ol>
+<li>使用 operator new 申请了一块内存。</li>
+<li>执行构造函数。<br>在SGI中，这两步独立出了两个函数：allocate申请内存，construct调用构造函数。这两个函数分别在<code>&lt;stl_alloc.h&gt;</code>和<code>&lt;stl_construct.h&gt;</code>中。<br><img src="http://oytnj8g2y.bkt.clouddn.com/1.jfif" alt=""></li>
+</ol>
+<h4 id="二、第一级配置器"><a href="#二、第一级配置器" class="headerlink" title="二、第一级配置器"></a>二、第一级配置器</h4><p>第一级配置器以 malloc()，free()，realloc()等C函数执行实际的内存配置、释放、重新配置等操作，并且能在内存需求不被满足的时候，调用一个指定的函数。</p>
+<h4 id="三、第二级配置器"><a href="#三、第二级配置器" class="headerlink" title="三、第二级配置器"></a>三、第二级配置器</h4><p>第二级配置器维护着16个空闲链表（free list），各自管理大小分别为8、16、24、32、40、48、56、64、72、80、88、96、104、112、120、128 bytes的小内存块。<br>如果要分配的内存大于 128bytes，则移交给第一级配置器处理，直接用malloc。<br>如果要分配的内存小于 128bytes，则以内存池管理（memory pool），使用第二级配置器，找出适合的空闲链表, 从其上摘下一个节点将其头指针返回给用户，这就完成了对用户的内存分配。<br>释放过程则正好与分配相对应，如果用户分配的内存大于128bytes，直接用free，否则找出适当的空闲链表， 将指针所指的该段内存重新连接到空闲链表中(注意此时并不把内存返回给操作系统, 如此可以重复利用)。 </p>
+<h5 id="1-空闲链表（free-list）的设计"><a href="#1-空闲链表（free-list）的设计" class="headerlink" title="1. 空闲链表（free list）的设计"></a>1. 空闲链表（free list）的设计</h5><p>空闲链表节点的设计十分巧妙，用了一个联合体既可以记录下一个空闲内存块（存在于空闲链表中）的地址，也可以给出分配给用户使用内存块的地址。<br><img src="http://oytnj8g2y.bkt.clouddn.com/2.jfif" alt=""><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">template &lt;bool threads, int inst&gt;  </div><div class="line">class __default_alloc_template  </div><div class="line">&#123;  </div><div class="line">private:  </div><div class="line">    //将bytes上调至8的倍数  </div><div class="line">    static size_t ROUND_UP(size_t bytes)  </div><div class="line">    &#123;  </div><div class="line">        return (((bytes) + __ALIGN - 1) &amp; ~(__ALIGN - 1));//等价于(bytes + 7) / 8  </div><div class="line">    &#125;  </div><div class="line">    //空闲链表的节点构造 </div><div class="line">    union obj  </div><div class="line">    &#123;  </div><div class="line">        union obj * free_list_link;  </div><div class="line">        char client_data[1];  </div><div class="line">    &#125;;  </div><div class="line">private:  </div><div class="line">    //16个空闲链表，初始化为0，即每个链表中都没有空闲内存块  </div><div class="line">    static obj * volatile free_list[__NFREELISTS];  </div><div class="line">    //根据申请内存块的大小找到相应空闲链表的下标  </div><div class="line">    static  size_t FREELIST_INDEX(size_t bytes)  </div><div class="line">    &#123;  </div><div class="line">        return (((bytes) + __ALIGN - 1)/__ALIGN - 1);  </div><div class="line">    &#125;  </div><div class="line">    ......  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h5 id="2-从空闲列表中取内存块"><a href="#2-从空闲列表中取内存块" class="headerlink" title="2. 从空闲列表中取内存块"></a>2. 从空闲列表中取内存块</h5><p>首先先要检查申请空间的大小，如果大于128字节就调用第一级配置器，小于128字节就检查对应的空闲链表，如果该空闲链表中有可用内存块，则直接拿来用（拿取空闲链表中的第一个可用内存块，然后把该空闲链表的地址设置为该内存块指向的下一个地址），如果没有可用内存块，则调用 refill 为该空闲链表填充新的空间。<br><img src="http://oytnj8g2y.bkt.clouddn.com/3.jfif" alt=""><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">//申请大小为 n 的内存块，返回该内存块的起始地址</div><div class="line">static void * allocate(size_t n)  </div><div class="line">&#123;  </div><div class="line">    obj * __VOLATILE * my_free_list;  </div><div class="line">    obj * __RESTRICT result;  </div><div class="line">  </div><div class="line">    if (n &gt; (size_t) __MAX_BYTES)//大于128字节调用第一级配置器  </div><div class="line">    &#123;  </div><div class="line">        return(malloc_alloc::allocate(n));  </div><div class="line">    &#125;  </div><div class="line">    my_free_list = free_list + FREELIST_INDEX(n);//根据申请空间的大小寻找相应的空闲链表（16个空闲链表中的一个）  </div><div class="line">  </div><div class="line">    result = *my_free_list;  </div><div class="line">    if (result == 0)//如果该空闲链表没有空闲的内存块</div><div class="line">    &#123;  </div><div class="line">        void *r = refill(ROUND_UP(n));//为该空闲链表填充新的空间  </div><div class="line">        return r;  </div><div class="line">    &#125;  </div><div class="line">    *my_free_list = result -&gt; free_list_link;//如果空闲链表中有空闲内存块，则取出一个，并把空闲链表的指针指向下一个内存块</div><div class="line">    return (result);  </div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<h5 id="3-从内存池取空间，重新填充空闲链表"><a href="#3-从内存池取空间，重新填充空闲链表" class="headerlink" title="3. 从内存池取空间，重新填充空闲链表"></a>3. 从内存池取空间，重新填充空闲链表</h5><p>在用 allocate 配置空间时，如果空闲链表中没有可用内存块，就会调用refill来为该空闲链表填充新的空间，新的空间取自内存池。缺省取20个内存块，如果内存池空间不足，那么能取多少个节点就取多少个。<br>这里有两种情况会导致没有可用的内存块, 第一种是用光了, 第二种是这是该内存池初始化以来第一次使用这个大小的空闲链表, 所以还未为空闲链表分配过空间。<br><img src="http://oytnj8g2y.bkt.clouddn.com/5.jfif" alt=""><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">template &lt;bool threads, int inst&gt;  </div><div class="line">void* refill(size_t n)  </div><div class="line">&#123;  </div><div class="line">    int nobjs = 20;  </div><div class="line">    //从内存池里取出nobjs个大小为n的内存块,返回值nobjs为真实申请到的内存块个数，注意这里nobjs个大小为n的内存块所在的空间是连续的</div><div class="line">    char * chunk = chunk_alloc(n, nobjs);</div><div class="line">    obj * __VOLATILE * my_free_list;  </div><div class="line">    obj * result;  </div><div class="line">    obj * current_obj, * next_obj;  </div><div class="line">    int i;  </div><div class="line">  </div><div class="line">    if (1 == nobjs) return(chunk);//如果只获得一个内存块，那么这个内存块就直接分给调用者，空闲链表中不会增加新节点  </div><div class="line">    my_free_list = free_list + FREELIST_INDEX(n);//否则根据申请内存块的大小找到相应空闲链表  </div><div class="line">  </div><div class="line">    result = (obj *)chunk;  </div><div class="line">    *my_free_list = next_obj = (obj *)(chunk + n);//第0个内存块给调用者，地址访问即chunk~chunk + n - 1  </div><div class="line">    for (i = 1; ; i++)//1~nobjs-1的内存块插入到空闲链表  </div><div class="line">    &#123;  </div><div class="line">        current_obj = next_obj;  </div><div class="line">        next_obj = (obj *)((char *)next_obj + n);//由于之前内存池里申请到的空间连续，所以这里需要人工划分成小块一次插入到空闲链表  </div><div class="line">  </div><div class="line">        if (nobjs - 1 == i)  </div><div class="line">        &#123;  </div><div class="line">            current_obj -&gt; free_list_link = 0;  </div><div class="line">            break;  </div><div class="line">        &#125;  </div><div class="line">        else  </div><div class="line">        &#123;  </div><div class="line">            current_obj -&gt; free_list_link = next_obj;  </div><div class="line">        &#125;  </div><div class="line">    &#125;  </div><div class="line">  </div><div class="line">    return(result);  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h5 id="4-从系统内存取空间给内存池"><a href="#4-从系统内存取空间给内存池" class="headerlink" title="4. 从系统内存取空间给内存池"></a>4. 从系统内存取空间给内存池</h5><p>首先根据end_free-start_free来判断内存池中的剩余空间是否足以调出nobjs个大小为size的内存块出去，如果内存连一个内存块的空间都无法供应，需要用malloc取堆中申请内存。<br><img src="http://oytnj8g2y.bkt.clouddn.com/6.jfif" alt=""><br>申请内存后，如果要拨出去20个大小为8字节的内存块。<br><img src="http://oytnj8g2y.bkt.clouddn.com/7.jfif" alt=""><br>假如山穷水尽，整个系统的堆空间都不够用了，malloc失败，那么chunk_alloc会从空闲链表中找是否有大的内存块，然后将该内存块的空间分给内存池（这个内存块会从链表中去除）。即内存池强制回收空闲链表的内存空间。<br><img src="http://oytnj8g2y.bkt.clouddn.com/8.jfif" alt=""><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div></pre></td><td class="code"><pre><div class="line">template &lt;bool threads, int inst&gt;  </div><div class="line">class __default_alloc_template  </div><div class="line">&#123;  </div><div class="line">private:  </div><div class="line">    ......  </div><div class="line">    static char *start_free;//内存池可用空间的起始位置，初始化为0  </div><div class="line">    static char *end_free;//内存池可用空间的结束位置,初始化为0  </div><div class="line">    static size_t heap_size;//内存池的总大小  </div><div class="line">  </div><div class="line">public:  </div><div class="line">    // 申请 nobjs 个大小为size的内存块， </div><div class="line">    // nobjs传进去的是引用，因为可能会出现内存池空间不够的情况，nobjs最终为最后真实申请到的内存块个数</div><div class="line">    static char *chunk_alloc(size_t size, int &amp;nobjs)  </div><div class="line">    &#123;  </div><div class="line">        char * result;  </div><div class="line">        size_t total_bytes = size * nobjs;//需要申请空间的大小  </div><div class="line">        size_t bytes_left = end_free - start_free;//计算内存池剩余空间  </div><div class="line">  </div><div class="line">        //如果内存池剩余空间完全满足需求量  </div><div class="line">        if (bytes_left &gt;= total_bytes)  </div><div class="line">        &#123;  </div><div class="line">            result = start_free;  </div><div class="line">            start_free += total_bytes;  </div><div class="line">            return(result);  </div><div class="line">        &#125;  </div><div class="line">        //内存池剩余空间不满足需求量，但是至少能够提供一个以上内存块  </div><div class="line">        else if (bytes_left &gt;= size)  </div><div class="line">        &#123;  </div><div class="line">            nobjs = bytes_left / size;  </div><div class="line">            total_bytes = size * nobjs;  </div><div class="line">            result = start_free;  </div><div class="line">            start_free += total_bytes;  </div><div class="line">            return(result);  </div><div class="line">        &#125;  </div><div class="line">        //剩余空间连一个内存块（大小为size）也无法提供  </div><div class="line">        else  </div><div class="line">        &#123;  </div><div class="line">            size_t bytes_to_get = 2 * total_bytes + ROUND_UP(heap_size &gt;&gt; 4);  </div><div class="line">  </div><div class="line">            //内存池的剩余空间分给合适的空闲链表  </div><div class="line">            if (bytes_left &gt; 0)  </div><div class="line">            &#123;  </div><div class="line">                obj * __VOLATILE * my_free_list = free_list + FREELIST_INDEX(bytes_left);  </div><div class="line">  </div><div class="line">                ((obj *)start_free) -&gt; free_list_link = *my_free_list;  </div><div class="line">                *my_free_list = (obj *)start_free;  </div><div class="line">            &#125;  </div><div class="line">            start_free = (char *)malloc(bytes_to_get);//配置heap空间，用来补充内存池  </div><div class="line">            if (0 == start_free)  </div><div class="line">            &#123;  </div><div class="line">                int i;  </div><div class="line">                obj * __VOLATILE * my_free_list, *p;  </div><div class="line">  </div><div class="line">                //从空闲链表中找出一个比较大的空闲内存块还给内存池（之后会将这个大的空闲内存块切成多个小的空闲内存块再次加入到空闲链表）  </div><div class="line">                for (i = size; i &lt;= __MAX_BYTES; i += __ALIGN)  </div><div class="line">                &#123;  </div><div class="line">                    my_free_list = free_list + FREELIST_INDEX(i);  </div><div class="line">                    p = *my_free_list;  </div><div class="line">                    if (0 != p)  </div><div class="line">                    &#123;  </div><div class="line">                        *my_free_list = p -&gt; free_list_link;  </div><div class="line">                        start_free = (char *)p;  </div><div class="line">                        end_free = start_free + i;  </div><div class="line">                        return(chunk_alloc(size, nobjs));//递归调用自己，为了修正nobjs  </div><div class="line">                    &#125;  </div><div class="line">                &#125;  </div><div class="line">                end_free = 0;  </div><div class="line">                start_free = (char *)malloc_alloc::allocate(bytes_to_get);//如果连这个大的内存块都找不出来则调用第一级配置器  </div><div class="line">            &#125;  </div><div class="line">            //如果分配成功  </div><div class="line">            heap_size += bytes_to_get;//内存池大小增加  </div><div class="line">            end_free = start_free + bytes_to_get;//修改内存池可用空间的结束位置  </div><div class="line">            return(chunk_alloc(size, nobjs));//递归调用自己，为了修正nobjs  </div><div class="line">        &#125;  </div><div class="line">    &#125;  </div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<h5 id="5-空间释放函数deallocate"><a href="#5-空间释放函数deallocate" class="headerlink" title="5. 空间释放函数deallocate"></a>5. 空间释放函数deallocate</h5><p>首先先要检查释放内存块的大小，如果大于128字节就调用第一级配置器，小于128字节则根据内存块的大小来判断回收后的空间会被插入到哪个空闲链表。<br>例如回收下面指定位置大小为16字节的内存块，首先内存块的大小判断回收后的内存块应该插入到第二个空闲链表，把该节点指向的下一个地址修改为原链表指向的地址（这里是NULL）,然后将原链表指向该节点。<br><img src="http://oytnj8g2y.bkt.clouddn.com/4.jfif" alt=""><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">//释放地址为p，释放大小为n  </div><div class="line">static void deallocate(void *p, size_t n)  </div><div class="line">&#123;  </div><div class="line">    obj *q = (obj *)p;  </div><div class="line">    obj * __VOLATILE * my_free_list;  </div><div class="line">  </div><div class="line">    if (n &gt; (size_t) __MAX_BYTES)//如果空间大于128字节，采用普通的方法析构  </div><div class="line">    &#123;  </div><div class="line">        malloc_alloc::deallocate(p, n);  </div><div class="line">        return;  </div><div class="line">    &#125;  </div><div class="line">  </div><div class="line">    my_free_list = free_list + FREELIST_INDEX(n);//否则将空间回收到相应空闲链表（由释放块的大小决定）中  </div><div class="line">    q -&gt; free_list_link = *my_free_list;  </div><div class="line">    *my_free_list = q;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h4 id="流程总结"><a href="#流程总结" class="headerlink" title="流程总结"></a>流程总结</h4><ol>
+<li>使用 allocate 请求size大小的内存空间, 如果需要请求的内存大小大于128bytes, 直接使用malloc.</li>
+<li>如果需要的内存大小小于128bytes, allocate根据size找到最适合的空闲链表.<br>&nbsp;a. 如果链表不为空, 返回第一个内存块, 链表头改为第二个内存块。<br>&nbsp;b. 如果链表为空, 使用refill为该空闲链表填充新的空间。<br>&nbsp;&nbsp;x. 如果内存池中有大于一个内存块的空间, 分配尽可能多的内存块(但是最多20个), 将一个内存块返回, 其他的内存块添加到链表中。<br>&nbsp;&nbsp;y. 如果内存池只有一个内存块的空间, 直接返回给用户.<br>&nbsp;&nbsp;z. 如果内存池连一个内存块的空间都没有, 再次向操作系统请求分配内存.<br>&nbsp;&nbsp;&nbsp;I 系统内存足够，分配成功，再次进行b过程<br>&nbsp;&nbsp;&nbsp;II 分配失败, 循环各个空闲链表, 寻找空间<br>&nbsp;&nbsp;&nbsp;&nbsp;A. 找到空间, 再次进行过程b<br>&nbsp;&nbsp;&nbsp;&nbsp;B. 找不到空间, 抛出异常</li>
+<li>用户调用deallocate释放内存空间, 如果要求释放的内存空间大于128bytes, 直接调用free。</li>
+<li>否则按照其大小找到合适的空闲链表, 并将其插入。</li>
+</ol>
+<p>特点其实是这样的:</p>
+<ol>
+<li>刚开始初始化内存池的时候, 其实内存池中并没有内存, 同时所有的空闲链表都为空链表.</li>
+<li>只有用户第一次向内存池请求内存时, 内存池会依次执行上述过程的 1-&gt;2-&gt;b-&gt;z来完成内存池以及链表的首次填充, 而此时, 其他未使用链表仍然是空的.<br><img src="http://oytnj8g2y.bkt.clouddn.com/10.png" alt=""><br><img src="http://oytnj8g2y.bkt.clouddn.com/11.png" alt=""><br><img src="http://oytnj8g2y.bkt.clouddn.com/12.png" alt=""></li>
+</ol>
+
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+
+                    
+
+                    
+                        <li>
+                            <a href="https://github.com/RobertLexis" target="_blank">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <p class="copyright text-muted">&copy; 2018 Robert Lexis<br></p>
+                <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
+                <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>

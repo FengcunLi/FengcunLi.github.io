@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="C/C++ 中的 const 关键字const 可以用来修饰变量，指针，函数参数，函数返回值，成员函数本身。而后三者是 const 最具威力的用法。const 成员函数有两个语义：
+
+使得 class 的接口更加容易被理解，方便的知道哪个函数可以修改调用对象的内容，哪个函数不行。
+使得区别对待常量调">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Robert Lexis">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="C++ const/extern/static/volatile"/>
+    
+
+    <!--Open Graph Description-->
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="This is WHY."/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+        <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>C++ const/extern/static/volatile - This is WHY.</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Google Analytics -->
+    
+
+
+    <!-- favicon -->
+    
+	
+</head>
+
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">This is WHY.</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li>
+                        <a href="/">
+                            
+                                Home
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/archives">
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/tags">
+                            
+                                Tags
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/categories">
+                            
+                                Categories
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="https://github.com/RobertLexis">
+                            
+                                <i class="fa fa-github fa-stack-2x"></i>
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('http://www.codeblocq.com/assets/projects/hexo-theme-clean-blog/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>C++ const/extern/static/volatile</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2018-02-10
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+
+            <!-- Gallery -->
+            
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <h2 id="C-C-中的-const-关键字"><a href="#C-C-中的-const-关键字" class="headerlink" title="C/C++ 中的 const 关键字"></a>C/C++ 中的 const 关键字</h2><p>const 可以用来修饰变量，指针，函数参数，函数返回值，成员函数本身。而后三者是 const 最具威力的用法。<br>const 成员函数有两个语义：</p>
+<ol>
+<li>使得 class 的接口更加容易被理解，方便的知道哪个函数可以修改调用对象的内容，哪个函数不行。</li>
+<li>使得区别对待常量调用对象与非常量调用对象成为可能。（两个成员函数仅仅是常量性不同是可以被重载的）<br>改善 C++ 程序效率的一个根本办法是 pass-by-reference-to-const</li>
+</ol>
+<h2 id="C-C-中extern关键字详解"><a href="#C-C-中extern关键字详解" class="headerlink" title="C/C++中extern关键字详解"></a>C/C++中extern关键字详解</h2><h3 id="基本解释"><a href="#基本解释" class="headerlink" title="基本解释"></a>基本解释</h3><pre><code>+ extern 暗示这个变量/函数的定义存在于别的源文件中
++ 用来进行链接指定，当它与&quot;C&quot;一起连用时，如: extern &quot;C&quot; void fun(int a, int b);则告诉编译器在编译fun这个函数名时按着C的规则去翻译，而不是C++的，因为C++支持函数重载。
+</code></pre><h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><ol>
+<li>extern 变量<br>在一个源文件里定义了一个数组：char a[6];在另外一个文件里用下列语句进行了声明：extern char *a；<br>请问，这样可以吗？<br>答案与分析：<ol>
+<li>不可以，程序运行时会告诉你非法访问。原因在于，类型T的指针并不等价于类型T的数组。extern char *a声明的是一个字符指针而不是字符数组，因此与实际的定义不同，从而造成运行时非法访问。应该将声明改为extern char a[]。</li>
+<li>在使用extern时候要严格对应声明时的格式，在实际编程中，这样的错误屡见不鲜。你在* .c文件中声明了一个全局的变量，这个全局的变量如果要被其他*.c引用，就放在*.h中并用 extern 来声明。</li>
+</ol>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">//在.h文件的头上</div><div class="line">#ifdef __cplusplus</div><div class="line">#if __cplusplus</div><div class="line">extern &quot;C&quot;&#123;</div><div class="line">　#endif</div><div class="line">　#endif /* __cplusplus */ </div><div class="line">    ...............</div><div class="line">    ...............</div><div class="line">　#ifdef __cplusplus</div><div class="line">　#if __cplusplus</div><div class="line">&#125;</div><div class="line">#endif</div><div class="line">#endif /* __cplusplus */</div></pre></td></tr></table></figure>
+</li>
+<li><p>常常见extern放在函数的前面成为函数声明的一部分，那么，C语言的关键字extern在函数的声明中起什么作用？<br> 答案与分析：<br> 仅仅是暗示这个函数的定义存在于别的源文件中。</p>
+</li>
+<li>extern 和 static<ul>
+<li>extern 暗示这个变量的定义存在于别的源文件中。</li>
+<li>static 表示静态变量，分配内存的时候, 存储在静态区,不存储在栈上面。<br>static 修饰全局变量的作用域只是本编译单元，也就是说它的“全局”只对本编译单元有效，其他编译单元则看不到它。<br>h.h<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">#ifndef H_H</div><div class="line">#define H_H</div><div class="line"></div><div class="line">static char str[] = &quot;SJY&quot;;</div><div class="line">void func1();</div><div class="line">void func2();</div><div class="line"></div><div class="line">#endif</div></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ol>
+<p>a.cpp<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">#include &quot;h.h&quot;</div><div class="line">#include &lt;iostream&gt;</div><div class="line">void func1() &#123;</div><div class="line">    str[0] = &apos;L&apos;;</div><div class="line">    std::cout &lt;&lt; str &lt;&lt; std::endl;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>b.cpp<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">#include &quot;h.h&quot;</div><div class="line">#include &lt;iostream&gt;</div><div class="line">void func2() &#123;</div><div class="line">    str[1] = &apos;F&apos;;</div><div class="line">    std::cout &lt;&lt; str &lt;&lt; std::endl;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>main.cpp<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">#include &quot;h.h&quot;</div><div class="line">#include &lt;iostream&gt;</div><div class="line"></div><div class="line">int main(int argc, char const *argv[])</div><div class="line">&#123;</div><div class="line">    str[2] = &apos;C&apos;;</div><div class="line">    func1();</div><div class="line">    func2();</div><div class="line">    std::cout &lt;&lt; str &lt;&lt; std::endl;</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>./main 输出<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">LJY</div><div class="line">SFY</div><div class="line">SJC</div></pre></td></tr></table></figure></p>
+<h2 id="static是C和C-的关键词，static在C-中比在C中有着更丰富的用法。"><a href="#static是C和C-的关键词，static在C-中比在C中有着更丰富的用法。" class="headerlink" title="static是C和C++的关键词，static在C++中比在C中有着更丰富的用法。"></a>static是C和C++的关键词，static在C++中比在C中有着更丰富的用法。</h2><h3 id="static在C中的作用"><a href="#static在C中的作用" class="headerlink" title="static在C中的作用"></a>static在C中的作用</h3><ol>
+<li>static 修饰局部变量<br>static 修饰局部变量时，使得被修饰的变量成为静态变量，存储在静态区。存储在静态区的数据生命周期与程序相同，在 main 函数之前初始化，在程序退出时销毁。（无论是局部静态还是全局静态）。局部静态变量使得该变量在退出函数后，不会被销毁，因此再次调用该函数时，该变量的值与上次退出函数时值相同。<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">void function()</div><div class="line">&#123;</div><div class="line">    /*实际上nCount的初始化不是在函数体第一次执行时完成，而是在编译期其值就已经被</div><div class="line">       确定，在main函数之前就完成了初始化，所以局部静态变量只会初始化一次*/</div><div class="line">    static int nCount(0);    </div><div class="line">    std::cout &lt;&lt; &quot;Call function &quot; &lt;&lt; ++nCount &lt;&lt; &quot; times&quot; &lt;&lt; endl;</div><div class="line">&#125;</div><div class="line">int main()</div><div class="line">&#123;</div><div class="line">    for (int i = 0; i &lt; 5; ++i) </div><div class="line">    &#123;</div><div class="line">        function();</div><div class="line">    &#125;</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>输出结果是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Call function 1 times</div><div class="line">Call function 2 times</div><div class="line">Call function 3 times</div><div class="line">Call function 4 times</div><div class="line">Call function 5 times</div></pre></td></tr></table></figure></p>
+<ol>
+<li>static修饰全局变量<br>全局变量本来就存储在静态区，因此static并不能改变其存储位置。但是，static限制了其链接属性。static 修饰全局变量的作用域只是本编译单元，也就是说它的“全局”只对本编译单元有效，其他编译单元则看不到它。</li>
+</ol>
+<p>在头文件a.h中定义一个全局变量<br>a.h<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">#ifndef A_H</div><div class="line">    #define A_H</div><div class="line">    int a = 1;</div><div class="line">#endif</div></pre></td></tr></table></figure></p>
+<p>b.h<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">#ifndef B_H</div><div class="line">    #define B_H</div><div class="line">    void func();</div><div class="line">#endif</div></pre></td></tr></table></figure></p>
+<p>实现文件a.cpp,包含头文件a.h<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">#include &quot;a.h&quot;</div><div class="line">#include &quot;b.h&quot;</div><div class="line">#include &lt;iostream&gt;</div><div class="line"></div><div class="line">using namespace std;</div><div class="line"></div><div class="line">int main()</div><div class="line">&#123;</div><div class="line">    func();</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>实现文件b.cpp，包含头文件a.h<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">#include &quot;a.h&quot;</div><div class="line">#include &quot;b.h&quot;</div><div class="line">#include &lt;iostream&gt;</div><div class="line"></div><div class="line">using namespace std;</div><div class="line"></div><div class="line">void func()</div><div class="line">&#123;   a = 2;</div><div class="line">    cout &lt;&lt; a &lt;&lt; endl;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>编译出现重定义错误，因为头文件a被包含两次，在a.cpp和b.cpp分别被定义了一次。 </p>
+<p>要解决这样的冲突怎么办？两种解决办法。 </p>
+<pre><code>1. 将a定义为静态的全局变量，每个编译单元各一份。
+a.h
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">#ifndef A_H</div><div class="line">    #define A_H</div><div class="line">    static int a = 1;</div><div class="line">#endif</div></pre></td></tr></table></figure>
+
+b.h
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">#ifndef B_H</div><div class="line">    #define B_H</div><div class="line">    void func();</div><div class="line">#endif</div></pre></td></tr></table></figure>
+
+实现文件a.cpp,包含头文件a.h
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">#include &quot;a.h&quot;</div><div class="line">#include &quot;b.h&quot;</div><div class="line">#include &lt;iostream&gt;</div><div class="line"></div><div class="line">using namespace std;</div><div class="line"></div><div class="line">int main()</div><div class="line">&#123;</div><div class="line">    func();</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+实现文件b.cpp，包含头文件a.h
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">#include &quot;a.h&quot;</div><div class="line">#include &quot;b.h&quot;</div><div class="line">#include &lt;iostream&gt;</div><div class="line"></div><div class="line">using namespace std;</div><div class="line"></div><div class="line">void func()</div><div class="line">&#123;</div><div class="line">    cout &lt;&lt; a &lt;&lt; endl;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+2. 使用extern，将a声明为extern类型的变量，所有的编译单元共用一个。
+</code></pre><ol>
+<li>static修饰函数<br>static 修饰函数的作用域只是本编译单元，也就是说它只对本编译单元有效，其他编译单元则看不到它。</li>
+</ol>
+<p><strong>不管是修饰函数或者变量，static 的语义就是仅限于此编译单元。</strong></p>
+<h3 id="static在C-中的作用"><a href="#static在C-中的作用" class="headerlink" title="static在C++中的作用"></a>static在C++中的作用</h3><p>类属性 类方法<br>对于静态成员变量和静态成员函数，所有的对象都共享一份。 </p>
+<h2 id="C-C-中的volatile-关键字"><a href="#C-C-中的volatile-关键字" class="headerlink" title="C/C++ 中的volatile 关键字"></a>C/C++ 中的volatile 关键字</h2><ol>
+<li>volatile 是一个类型修饰符（type specifier），就像大家更熟悉的const一样，它是被设计用来修饰被不同线程访问和修改的变量。</li>
+<li>volatile 的作用是作为指令关键字，确保本条指令不会因编译器的优化而省略，且要求每次直接读值。</li>
+<li>volatile的变量是说这变量可能会被意想不到地改变，这样，编译器就不会去假设这个变量的值了。</li>
+<li>精确地说就是，优化器在用到这个变量时必须每次都小心地重新读取这个变量的值，而不是使用保存在寄存器里的备份。</li>
+<li><p>下面是volatile变量的几个例子：</p>
+<ul>
+<li>并行设备的硬件寄存器（如：状态寄存器）</li>
+<li>一个中断服务子程序中会访问到的非自动变量（Non-automatic variables)</li>
+<li><p>多线程应用中被几个任务共享的变量<br>简单地说就是防止编译器对代码进行优化。比如如下程序：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">XBYTE[2]=0x55;</div><div class="line">XBYTE[2]=0x56;</div><div class="line">XBYTE[2]=0x57;</div><div class="line">XBYTE[2]=0x58;</div></pre></td></tr></table></figure>
+<p>对外部硬件而言，上述四条语句分别表示不同的操作，会产生四种不同的动作，但是编译器却会对上述四条语句进行优化，认为只有XBYTE[2]=0x58（即忽略前三条语句，只产生一条机器代码）。如果键入volatile，则编译器会逐一地进行编译并产生相应的机器代码（产生四条代码）。</p>
+</li>
+</ul>
+</li>
+</ol>
+
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+
+                    
+
+                    
+                        <li>
+                            <a href="https://github.com/RobertLexis" target="_blank">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <p class="copyright text-muted">&copy; 2018 Robert Lexis<br></p>
+                <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
+                <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>

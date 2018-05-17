@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="C++ 的类型转换运算符的重载类型转换可以通过类型转换运算符和构造函数两种方式完成在需要做数据类型转换时，一般显式的写法是：12type2 d;  i = (type1)d; // 显式的类型转换，把 d 从 type2 类型转为 type1 类型
+这种写法不能做到隐式转换，也就是直接写 i = d">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Robert Lexis">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="C++类型转换操作符的重载"/>
+    
+
+    <!--Open Graph Description-->
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="This is WHY."/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+        <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>C++类型转换操作符的重载 - This is WHY.</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Google Analytics -->
+    
+
+
+    <!-- favicon -->
+    
+	
+</head>
+
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">This is WHY.</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li>
+                        <a href="/">
+                            
+                                Home
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/archives">
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/tags">
+                            
+                                Tags
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/categories">
+                            
+                                Categories
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="https://github.com/RobertLexis">
+                            
+                                <i class="fa fa-github fa-stack-2x"></i>
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('http://www.codeblocq.com/assets/projects/hexo-theme-clean-blog/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>C++类型转换操作符的重载</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2018-02-11
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+
+            <!-- Gallery -->
+            
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <h2 id="C-的类型转换运算符的重载"><a href="#C-的类型转换运算符的重载" class="headerlink" title="C++ 的类型转换运算符的重载"></a>C++ 的类型转换运算符的重载</h2><h3 id="类型转换可以通过类型转换运算符和构造函数两种方式完成"><a href="#类型转换可以通过类型转换运算符和构造函数两种方式完成" class="headerlink" title="类型转换可以通过类型转换运算符和构造函数两种方式完成"></a>类型转换可以通过类型转换运算符和构造函数两种方式完成</h3><p>在需要做数据类型转换时，一般显式的写法是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">type2 d;  </div><div class="line">i = (type1)d; // 显式的类型转换，把 d 从 type2 类型转为 type1 类型</div></pre></td></tr></table></figure></p>
+<p>这种写法不能做到隐式转换，也就是直接写 i = d。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">class Integer  </div><div class="line">&#123;  </div><div class="line">public:  </div><div class="line">    Integer(int v);  </div><div class="line">    Integer&amp; opetaror=(const int &amp;v); //重载赋值运算符，可以做到 Integer i = 10（错）; 这里原博文博主犯了一个错误，Integer it = 10 调用的是构造函数而不是赋值运算符，因为有新对象的生成必然有构造函数的调用。</div><div class="line">    Integer it; it=10; 也是错误的，这是因为 10 不是一个变量，不存在对其的引用。</div><div class="line">    正确的说法是： Integer it; int i=10; it=i;</div><div class="line">    operator int(); // 重载类型转换运算符，可以做到 int i; Integer it;  i = it;</div><div class="line">private:  </div><div class="line">    int data;</div><div class="line">&#125;;</div><div class="line">Integer::Integer(int v)</div><div class="line">&#123;  </div><div class="line">    data = v;</div><div class="line">&#125;  </div><div class="line"></div><div class="line">Integer&amp; Integer::opetaror =(const int &amp;v)  </div><div class="line">&#123;  </div><div class="line">    data = v;  </div><div class="line">    return *this;  </div><div class="line">&#125;  </div><div class="line">Integer::operator int()</div><div class="line">&#123;  </div><div class="line">    return data;  </div><div class="line">&#125;  </div><div class="line"> </div><div class="line">#include &lt;iostream&gt;  </div><div class="line">using namespace std;  </div><div class="line">  </div><div class="line">int main()  </div><div class="line">&#123;  </div><div class="line">    Integer integer1(10);</div><div class="line">    Integer integer2;  </div><div class="line">    int i1 = 10;  </div><div class="line">    integer2 = i1;</div><div class="line">  </div><div class="line">    int i2;  </div><div class="line">    i2 = integer1; //integer1是Integer类型，这里隐式把Integer类型转换为int，然后赋值给i2  </div><div class="line">                   //如果没有重载了int()，需要类型转换的话，这里必须写成 i2 = (int)integer1;</div><div class="line">    return 0;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="重载类型转换需要注意的问题"><a href="#重载类型转换需要注意的问题" class="headerlink" title="重载类型转换需要注意的问题"></a>重载类型转换需要注意的问题</h3><p>转换函数采用如下通用形式: <code>operator type();</code><br>这里，type表示内置类型、类类型或有类型别名。一般而言，不允许转换为数组或函数类型，转换为指针类型(数组和函数指针)以及引用类型是可以的。</p>
+<p>注解：</p>
+<ol>
+<li>转换函数必须是成员函数</li>
+<li>不能指定返回类型</li>
+<li>形参列表必须为空。<br>下述所有的声明都是错误的：<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">operator int(Small Int&amp;); // error:nonmember</div><div class="line">class SmallInt</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">    int operator int(); // error: return list</div><div class="line">    operator int(int = 0);  // error:parameter list</div><div class="line">// ...</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>虽然转换函数不能指定返回类型，但是每个转换函数必须显式返回一个指定的值。例如，operator int 返回一个int值；如果定义operator Sales_item,它将返回一个Sales_item对象，诸如此类。</p>
+<h3 id="最佳实践-转换函数一般不应该改变被转换的对象。因此，类型转换运算符通常应定义为const成员。"><a href="#最佳实践-转换函数一般不应该改变被转换的对象。因此，类型转换运算符通常应定义为const成员。" class="headerlink" title="最佳实践: 转换函数一般不应该改变被转换的对象。因此，类型转换运算符通常应定义为const成员。"></a>最佳实践: 转换函数一般不应该改变被转换的对象。因此，类型转换运算符通常应定义为const成员。</h3><ol>
+<li>使用类类型转换<br>只要存在转换，编译器将在可以使用隐式转换的地方自动调用它<br>在表达式中:<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">SmallInt si;</div><div class="line">double dval;</div><div class="line">si &gt;= dval // si converted to int and then convert to bool</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>在条件中:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">if(si) // si convert to int and then convert to bool</div></pre></td></tr></table></figure></p>
+<p>将实参传给函数或从函数返回：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">int calc(int);</div><div class="line">SmallInt si;</div><div class="line">int i = calc(si); // convert si to int and call calc</div></pre></td></tr></table></figure></p>
+<p>作为重载运算符的运算数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">// convert si to int then call &lt;&lt; on the int value</div><div class="line"></div><div class="line">cout &lt;&lt; si &lt;&lt; endl;</div></pre></td></tr></table></figure></p>
+<p>在显示类型转换中:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">int ival;</div><div class="line"></div><div class="line">SmallInt si = 3.54;</div><div class="line"></div><div class="line">// instruct compiler to cast si to int</div><div class="line"></div><div class="line">ival = static_cast&lt;int&gt;(si) + 3;</div></pre></td></tr></table></figure></p>
+<ol>
+<li>使用类类型转换和标准转换<br>使用转换函数时，被转换的类型不必与所在需要的类型完全匹配。必要时可在类类型转换之后跟上标准转换以获得想要的类型。例如，在一个SmallInt对象与一个double值的比较中：<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">SmallInt si;</div><div class="line"></div><div class="line">double dval;</div><div class="line"></div><div class="line">si &gt;= dval // si converted to int and then convert to double.</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>首先将si从SmallInt对象转换为int值，然后将该int值转换为double值。</p>
+<ol>
+<li>只能应用一个类类型转换<br>类类型转换之后再跟另一个类类型转换。如果需要多个类类型转换，则代码将出错。<br>例如，假定有一个类Integral,它可以转换为SmallInt但不能转换为int:<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">// class to hold unsigned integral values</div><div class="line">class Integral</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">    Integral(int i = 0):val(i)&#123;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    operator SmallInt() const</div><div class="line">    &#123;</div><div class="line">        return val % 256; // 这里就存在一个构造函数的调用，完成了隐式类型转换。</div><div class="line">    &#125;</div><div class="line">private:</div><div class="line">    std::size_t val;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>可以在需要 SmallInt 的地方使用 Integral，但不能再需要 int 的地方使用 Integral:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">int calc(int);</div><div class="line">Integral intVal;</div><div class="line">SmallInt si(intVal); // ok:convert intVal to Small Int and copy to si</div><div class="line">int i = calc(si);  // ok:convert si to int and call calc</div><div class="line">int j = calc(intVal);// error:on convertion to int from Integral</div></pre></td></tr></table></figure></p>
+<ol>
+<li>标准转换可放在类类型转换之前<br>使用构造函数执行隐式转换的时候，构造函数的形参类型不必与所提供的类型完全匹配。例如，下面的代码调用SmallInt类中定义的构造函数SmallInt(int)将sobj转换为SmallInt类型:<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">void calc(SmallInt);</div><div class="line"></div><div class="line">short sobj;</div><div class="line"></div><div class="line">// sobj prometed from short to int </div><div class="line"></div><div class="line">// that int converted to SmallInt through the SmallInt(int) constructor</div><div class="line"></div><div class="line">calc(sobj);</div></pre></td></tr></table></figure>
+</li>
+</ol>
+
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+
+                    
+
+                    
+                        <li>
+                            <a href="https://github.com/RobertLexis" target="_blank">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <p class="copyright text-muted">&copy; 2018 Robert Lexis<br></p>
+                <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
+                <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>

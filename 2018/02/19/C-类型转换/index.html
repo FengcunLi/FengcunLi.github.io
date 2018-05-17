@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="类型转换可以分为:隐式类型转换和显式类型转换(强制类型转换)隐式类型转换比较常见，在混合类型表达式中经常发生，比如在表达式中存在 short 和 int，那么就会发生整型提升。
+四种强制类型转换操作符：static_cast、dynamic_cast、const_cast、reinterpret_c">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Robert Lexis">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="C++类型转换"/>
+    
+
+    <!--Open Graph Description-->
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="This is WHY."/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+        <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>C++类型转换 - This is WHY.</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Google Analytics -->
+    
+
+
+    <!-- favicon -->
+    
+	
+</head>
+
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">This is WHY.</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li>
+                        <a href="/">
+                            
+                                Home
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/archives">
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/tags">
+                            
+                                Tags
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/categories">
+                            
+                                Categories
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="https://github.com/RobertLexis">
+                            
+                                <i class="fa fa-github fa-stack-2x"></i>
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('http://www.codeblocq.com/assets/projects/hexo-theme-clean-blog/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>C++类型转换</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2018-02-19
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+
+            <!-- Gallery -->
+            
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <h3 id="类型转换可以分为-隐式类型转换和显式类型转换-强制类型转换"><a href="#类型转换可以分为-隐式类型转换和显式类型转换-强制类型转换" class="headerlink" title="类型转换可以分为:隐式类型转换和显式类型转换(强制类型转换)"></a>类型转换可以分为:隐式类型转换和显式类型转换(强制类型转换)</h3><p>隐式类型转换比较常见，在混合类型表达式中经常发生，比如在表达式中存在 short 和 int，那么就会发生整型提升。</p>
+<h4 id="四种强制类型转换操作符：static-cast、dynamic-cast、const-cast、reinterpret-cast。"><a href="#四种强制类型转换操作符：static-cast、dynamic-cast、const-cast、reinterpret-cast。" class="headerlink" title="四种强制类型转换操作符：static_cast、dynamic_cast、const_cast、reinterpret_cast。"></a>四种强制类型转换操作符：static_cast、dynamic_cast、const_cast、reinterpret_cast。</h4><h4 id="static-cast-与-dynamic-cast"><a href="#static-cast-与-dynamic-cast" class="headerlink" title="static_cast 与 dynamic_cast"></a>static_cast 与 dynamic_cast</h4><p>把这两个放在一起比较容易记忆，”一静一动”，从字面上也可以看出，前者提供的是编译时期的静态类型检测，后者提供的是<br>运行时检测。<br>static_cast 完成以下类型</p>
+<ol>
+<li>基础数据类型 </li>
+<li>同一个继承体系中的类型</li>
+<li>任意类型与空指针类型void*之间的转换。<br>dynamic_cast 使用多态的场景，增加了一层对真实调用对象类型的检查<br><strong>C-like 的强制类型转换太“随意”了，而 C++ 的这四个对类型转换提供了相应的类型检查。</strong></li>
+</ol>
+<h4 id="static-cast"><a href="#static-cast" class="headerlink" title="static_cast:"></a>static_cast:</h4><ol>
+<li>基础数据类型<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">#include &lt;iostream&gt;</div><div class="line">using namespace std;</div><div class="line">int main(int argc, char const *argv[])</div><div class="line">&#123;</div><div class="line">    char c  = 65;</div><div class="line">    int *p = (int *)&amp;c;</div><div class="line">    cout &lt;&lt; *p &lt;&lt; endl;</div><div class="line">    cout &lt;&lt; (char)*p &lt;&lt; endl; //&apos;A&apos;</div><div class="line">    *p = 1644054338;</div><div class="line">    cout &lt;&lt; (char)*p &lt;&lt; endl; //&apos;B&apos;</div><div class="line">    *p = 5;</div><div class="line">    // 下面这一行会导致**运行时**错误</div><div class="line">    // cout &lt;&lt; (char)*p &lt;&lt; endl; //&apos;B&apos;</div><div class="line">    // int *q = static_cast&lt;int *&gt;(&amp;c); //编译报错: error: invalid static_cast from type ‘char*’ to type ‘int*’</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>static_cast 可以将错误在编译时期检查出。</p>
+<ol>
+<li>自定义类型<br><strong>不同继承体系：</strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line">#include &lt;iostream&gt;</div><div class="line"></div><div class="line">class A</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">    A()&#123;&#125;</div><div class="line">    ~A()&#123;&#125;</div><div class="line">    void printA()</div><div class="line">    &#123;</div><div class="line">        std::cout &lt;&lt;&quot;call printA() in class A&quot; &lt;&lt;std::endl;</div><div class="line">    &#125;</div><div class="line">private:</div><div class="line">    int i, j;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">class C</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">    C()&#123;&#125;</div><div class="line">    ~C()&#123;&#125;</div><div class="line">    void printC()</div><div class="line">    &#123;</div><div class="line">        std::cout &lt;&lt;&quot;call printC() in class C&quot; &lt;&lt;std::endl;</div><div class="line">    &#125;</div><div class="line">private:</div><div class="line">    char c1, c2;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">int main(int argc, char const *argv[])</div><div class="line">&#123;</div><div class="line">    A* ptrA = new A();</div><div class="line">    C* ptrC = (C*)ptrA;</div><div class="line">    //---------------------------------------//</div><div class="line">    ptrC-&gt;printC(); // &quot;call printC() in class C&quot;</div><div class="line">    // 下面一行会报出 error: &apos;class C&apos; has no member named &apos;printA&apos;; did you mean &apos;printC&apos;?</div><div class="line">    // ptrC-&gt;printA();</div><div class="line"></div><div class="line">    //---------------------------------------//</div><div class="line">    ptrA-&gt;printA(); // &quot;call printA() in class A&quot;</div><div class="line">    // 下面一行会报出 error: &apos;class A&apos; has no member named &apos;printC&apos;; did you mean &apos;printA&apos;?</div><div class="line">    // ptrA-&gt;printC();</div><div class="line">    // 上面的测试证明，怎么和具体对象的类型没有了关系，而只与指针的类型有关了？</div><div class="line"></div><div class="line">    //ptrC = static_cast&lt;C*&gt;(ptrA); //编译报错: error: invalid static_cast from type &apos;A*’ to type C*’</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>上面A、C是两个无关的类，然而使用 C-like 可以实现这种类型的强制转换，这是十分危险的! 使用static_cast 可以将这种潜在的危险在编译期找出来。<br><strong>同一继承体系：</strong></p>
+<ul>
+<li>upcast(向上转换即子类转成父类)：这个对象本身是子类对象，但是你“强行”将其 cast 成父类指针，当通过父类的指针调用父类的方法时，由于父类方法中所需的全部成员变量或者成员函数，都是有定义的，因此方法的行为是有定义的。</li>
+<li>downcast(向下转换)：有可能会出现问题，编译时可能不会发现，这个对象本身是父类的对象，当通过子类的指针调用子类的方法时，方法所需的成员变量或者成员函数不一定在父类对象中有定义，所以就有可能导致方法的行为无定义。<br>上面是子类类型的指针调用子类的方法，父类类型的指针调用父类的方法。<br>下面是两者的交叉行为：</li>
+<li>当通过父类的指针调用子类特有的方法时就会报出 has no member named 的错误。</li>
+<li>当通过子类的指针调用父类的方法时，没有一点问题。<br>一个类的行为和自身的类型相关，就是一个A类型的指针总会优先调用自己A类内的函数，当然继承中的虚函数例外。<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div></pre></td><td class="code"><pre><div class="line">#include &lt;iostream&gt;</div><div class="line">#include &lt;cstdio&gt;</div><div class="line"></div><div class="line">using namespace std;</div><div class="line">class A</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">    A():i(1), j(1)&#123;&#125;</div><div class="line">    ~A()&#123;&#125;</div><div class="line">    void printA()</div><div class="line">    &#123;</div><div class="line">        std::cout &lt;&lt; &quot;call printA() in class A&quot; &lt;&lt; std::endl;</div><div class="line">    &#125;</div><div class="line">    void printSum()</div><div class="line">    &#123;</div><div class="line">        std::cout &lt;&lt; &quot;sum = in class A: &quot; &lt;&lt; i+j &lt;&lt; std::endl;</div><div class="line">    &#125;</div><div class="line">private:</div><div class="line">    int i, j;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">class B : public A</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">    B():a(2), b(2) &#123;&#125;</div><div class="line">    ~B()&#123;&#125;</div><div class="line">    void printB()</div><div class="line">    &#123;</div><div class="line">        std::cout &lt;&lt; &quot;call printB() in class B&quot; &lt;&lt; std::endl;</div><div class="line">    &#125;</div><div class="line">    void printSum()</div><div class="line">    &#123;</div><div class="line">        std::cout &lt;&lt; &quot;sum = in class B: &quot; &lt;&lt; a+b &lt;&lt; std::endl;</div><div class="line">    &#125;</div><div class="line">    void Add()</div><div class="line">    &#123;</div><div class="line">        a++;</div><div class="line">        b++;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">private:</div><div class="line">  double a, b;</div><div class="line">&#125;;</div><div class="line">int main()</div><div class="line">&#123;</div><div class="line">    A *ptrA=nullptr;</div><div class="line">    B *ptrB=nullptr;</div><div class="line">    </div><div class="line">    ptrB = new B;</div><div class="line">    ptrB -&gt; printSum();</div><div class="line">    ptrA = static_cast&lt;A *&gt;(ptrB);</div><div class="line">    ptrA -&gt; printA();</div><div class="line">    ptrA -&gt; printSum();</div><div class="line">    std::cout &lt;&lt; &quot;-------&quot; &lt;&lt; std::endl;</div><div class="line">    //打印结果：sum = 2</div><div class="line">    //在进行 upcast 的时候，行为与指针类型相关。</div><div class="line"></div><div class="line">    ptrA = new A;</div><div class="line">    ptrB = static_cast&lt;B *&gt;(ptrA);</div><div class="line">    ptrB -&gt; printB();</div><div class="line">    ptrB -&gt; printSum();</div><div class="line">    //打印结果：sum = 0</div><div class="line">    //在进行 downcast 的时候，调用的函数是对的，但是值不对，是因为确实无法正确地找到值。</div><div class="line"></div><div class="line">    std::cout &lt;&lt; &quot;#######&quot; &lt;&lt; std::endl;</div><div class="line"></div><div class="line">    B b;</div><div class="line">    B &amp; rB = b;</div><div class="line">    rB.printSum();</div><div class="line">    A &amp; rA = static_cast&lt;A &amp;&gt;(b);</div><div class="line">    rA.printA();</div><div class="line">    rA.printSum();</div><div class="line"></div><div class="line">    std::cout &lt;&lt; &quot;+++++++&quot; &lt;&lt; std::endl;</div><div class="line">    </div><div class="line">    A a;</div><div class="line">    A &amp; rA1 = a;</div><div class="line">    rA1.printSum();</div><div class="line">    B &amp; rB1 = static_cast&lt;B &amp;&gt;(a);</div><div class="line">    rB1.printB();</div><div class="line">    rB1.printSum();</div><div class="line"></div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>输出结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">sum = in class B: 4</div><div class="line">call printA() in class A</div><div class="line">sum = in class A: 2</div><div class="line">-------</div><div class="line">call printB() in class B</div><div class="line">sum = in class B: 2.01105e-317</div><div class="line">#######</div><div class="line">sum = in class B: 4</div><div class="line">call printA() in class A</div><div class="line">sum = in class A: 2</div><div class="line">+++++++</div><div class="line">sum = in class A: 2</div><div class="line">call printB() in class B</div><div class="line">sum = in class B: 2</div></pre></td></tr></table></figure></p>
+<h4 id="dynamic-cast"><a href="#dynamic-cast" class="headerlink" title="dynamic_cast"></a>dynamic_cast</h4><ol>
+<li>dynamic_cast 是在运行时检查的，用于在继承体系中进行安全的向下转换，即：基类指针/引用 -&gt; 派生类指针/引用，如果源和目标没有继承/被继承关系，编译器会报错！</li>
+<li>dynamic_cast 是4个转换中唯一的RTTI操作符，提供运行时类型检查。</li>
+<li>dynamic_cast不是强制转换，而是带有某种”咨询“性质的，如果不能转换，返回NULL。这是强制转换做不到的。</li>
+<li>源类中必须要有虚函数，保证多态，才能使用dynamic_cast<source>(expression)。</li>
+</ol>
+<h4 id="reinterpret-cast"><a href="#reinterpret-cast" class="headerlink" title="reinterpret_cast"></a>reinterpret_cast</h4><p>仅仅是复制 n 的比特位到 d_r，没有进行必要的分析，interpret_cast 是映射到一个完全不同类型<br>的意思，这是所有映射中最危险的。</p>
+<h4 id="const-cast"><a href="#const-cast" class="headerlink" title="const_cast"></a>const_cast</h4><p>去除 const 常量属性，使其可以修改</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">#include &lt;iostream&gt;</div><div class="line">#include &lt;cstdio&gt;</div><div class="line">#include &lt;string&gt;</div><div class="line"></div><div class="line">using namespace std;</div><div class="line"></div><div class="line">class A &#123;</div><div class="line">    public:</div><div class="line">    A()&#123;&#125;;</div><div class="line">    int m_a;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">class B &#123;</div><div class="line">    public:</div><div class="line">    int m_b;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">class C : public A, public B &#123;&#125;;</div><div class="line"></div><div class="line">int main()</div><div class="line">&#123;</div><div class="line">    const A a;</div><div class="line">    // a.m_a = 1;</div><div class="line">    A &amp; a_ref = const_cast&lt;A &amp;&gt;(a);</div><div class="line">    a_ref.m_a = 2;</div><div class="line">    // a.m_a = 3; // 编译不能通过</div><div class="line">    cout &lt;&lt; a.m_a &lt;&lt;endl;</div><div class="line">    int n = 9;</div><div class="line">    double d_s = static_cast&lt;double&gt;(n);</div><div class="line">    double d_r = reinterpret_cast&lt;double&amp;&gt;(n);</div><div class="line">    cout &lt;&lt; d_s &lt;&lt; endl;</div><div class="line">    cout &lt;&lt; d_r &lt;&lt; endl;//4.24399e-314</div><div class="line">    // 在进行计算以后, d_r 包含无用值. 这是因为 reinterpret_cast 仅仅是复制n的比特位到d_r, </div><div class="line">    // 没有进行必要的分析.</div><div class="line"></div><div class="line">    C c;</div><div class="line">    printf(&quot;%p, %p, %p\n&quot;, &amp;c, reinterpret_cast&lt;B*&gt;(&amp;c), static_cast&lt;B*&gt;(&amp;c));</div><div class="line">    // 前两个的输出值是相同的，最后一个则会在原基础上偏移4个字节，这是因为static_cast计算了父子类指针转换的偏移量,</div><div class="line">    // 并将之转换到正确的地址（c里面有m_a, m_b, 转换为 B* 指针后指到 m_b 处），而 reinterpret_cast 却不会做这一层转换.</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+
+                    
+
+                    
+                        <li>
+                            <a href="https://github.com/RobertLexis" target="_blank">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <p class="copyright text-muted">&copy; 2018 Robert Lexis<br></p>
+                <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
+                <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>

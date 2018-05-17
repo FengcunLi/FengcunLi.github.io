@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="子类父类的同名函数子类和父类的方法之间就只能是重写，不允许重载，如果你试图重载发生的就只能是隐藏，子类的方法会完全隐藏父类所有的同名函数，即你在子类中定义了一个父类中函数的同名函数，则父类中所有的同名函数对于子类来说均不可用了，一是因为发生重写，二是因为不允许子类和父类的方法之间发生重载，子类中的这">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Robert Lexis">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="C++ Miscellaneous"/>
+    
+
+    <!--Open Graph Description-->
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="This is WHY."/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+        <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>C++ Miscellaneous - This is WHY.</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Google Analytics -->
+    
+
+
+    <!-- favicon -->
+    
+	
+</head>
+
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">This is WHY.</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li>
+                        <a href="/">
+                            
+                                Home
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/archives">
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/tags">
+                            
+                                Tags
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/categories">
+                            
+                                Categories
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="https://github.com/RobertLexis">
+                            
+                                <i class="fa fa-github fa-stack-2x"></i>
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('http://www.codeblocq.com/assets/projects/hexo-theme-clean-blog/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>C++ Miscellaneous</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2018-05-17
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+
+            <!-- Gallery -->
+            
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <h3 id="子类父类的同名函数"><a href="#子类父类的同名函数" class="headerlink" title="子类父类的同名函数"></a>子类父类的同名函数</h3><p>子类和父类的方法之间就只能是重写，不允许重载，如果你试图重载发生的就只能是隐藏，子类的方法会完全隐藏父类所有的同名函数，即<strong>你在子类中定义了一个父类中函数的同名函数，则父类中所有的同名函数对于子类来说均不可用了</strong>，一是因为发生重写，二是因为不允许子类和父类的方法之间发生重载，子类中的这个函数会完全隐藏父类所有的同名函数。</p>
+<h3 id="为什么对于存在虚函数的类中析构函数要定义成虚函数"><a href="#为什么对于存在虚函数的类中析构函数要定义成虚函数" class="headerlink" title="为什么对于存在虚函数的类中析构函数要定义成虚函数"></a>为什么对于存在虚函数的类中析构函数要定义成虚函数</h3><p>存在虚函数的类，也就是多态，<strong>经常会（如果不是总会的话）</strong>用一个基类指针去指向一个派生类对象，如果析构函数是 non-virtual 的，当 delete 基类指针时，其结果是未定义的，实际执行时通常发生的是对象的 derived 成分未被销毁。 即调用的是基类的析构函数，而派生类的析构函数未能执行，会造成一个诡异的“局部销毁”对象，这会导致资源泄露，数据结构败坏，在调试器上浪费很多的时间。<br>用一个基类指针指向派生类的对象时，不管存不存在虚函数，delete 基类指针都会陷入局部销毁的陷阱。如果你企图继承一个标准容器或者任何其他的“带有non-virtual析构函数”的 class，拒绝诱惑吧。<strong>基类应该有个虚析构函数。</strong>这一句话说的是带有多态性质的基类，即“通过基类的接口处理派生类对象”。有的类不是意图当作基类的，有的基类并不用于多态性质，即并非被设计用来“通过基类的接口处理派生类对象”，这样的类是不需为其提供虚析构函数的，因为它们就不可能陷入“局部销毁”陷阱。如果一个类你是企图设计它作为基类，那么它就应该拥有一个虚析构函数，这样的话，就当 delete 一个指向派生类对象的基类指针时就绝不会陷入“局部销毁”的陷阱了。由于像 string 这些标准库中的类就不是设计用来当作基类的，所有没有虚析构函数，不该尝试对其进行继承操作。<br>不是企图当作基类的类，不该为其定义虚函数，这是出于空间和移植性的考虑；虚函数的语义就是强制派生类对其进行重写，也就是这个类是意图当作基类的语义。所以在一个侧面，虚函数和基类是挂钩的。<br>当将一个类的析构函数申明为纯虚函数，这个类变成了一个抽象类，与普通的纯虚函数不一样的是，你必须要为这个纯虚析构函数提供一份定义，不然的话就会导致链接错误，这和析构函数的运作方式有关。析构函数的运作方式是：最深层派生的那个class其析构函数最先被调用，然后是其每一个基类的析构函数被调用，编译器会在类A的派生类的析构函数中创建一个对 ~A 的调用动作， 所以必须要为这个函数提供一份定义，否则链接器就会报错。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">class A</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">    virtual ~A()=0;    </div><div class="line">&#125;;</div><div class="line">A::~A() &#123;&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="析构函数能抛出异常吗"><a href="#析构函数能抛出异常吗" class="headerlink" title="析构函数能抛出异常吗"></a>析构函数能抛出异常吗</h3><p>C++ 并不禁止析构函数抛出异常，当它并不鼓励你这样做。只要析构函数抛出异常，即使并非使用容器或者array，程序也可能过早结束或者出现不明确的行为。请记住：</p>
+<ol>
+<li>析构函数绝对不要抛出异常，如果一个被析构函数调用的函数可能抛出异常，析构函数应该捕捉任何异常，然后吐下它们（不传播）或者结束程序。</li>
+<li>如果客户需要对某个操作函数运行期间抛出的异常做出反应，那么 class 应该提供一个普通函数（而非在析构函数）中执行该操作。</li>
+</ol>
+<h3 id="构造函数和析构函数中能调用虚函数吗？"><a href="#构造函数和析构函数中能调用虚函数吗？" class="headerlink" title="构造函数和析构函数中能调用虚函数吗？"></a>构造函数和析构函数中能调用虚函数吗？</h3><p>绝对不要在构造函数和析构函数中调用虚函数，而且确保它们调用的所有函数也都服从这一约束。是因为如此并不能做到多态，这与构造函数和析构函数的运作方式有关，当在继承链中执行构造或者析构时，派生类的对象尚未存在或者已经不复存在，不能做到多态，这与你的设计初衷不符会使得程序的执行结果不符预期，所以就不要这样做。在构造和析构期间不要调用虚函数，因为这类调用从不能下降至派生类，这是合理的，是因为此时派生类的特有成员变量会呈现未定义状态，不管是因为尚未定义或是已经销毁，一旦下降至派生类并调用函数可能会触发对这些未定义变量的访问。</p>
+<h3 id="智能指针"><a href="#智能指针" class="headerlink" title="智能指针"></a>智能指针</h3><ol>
+<li>什么时候改变引用计数？<br>构造函数中计数初始化为1；拷贝构造函数中计数值加1；赋值运算符中，左边的对象引用计数减一，右边的对象引用计数加一；析构函数中引用计数减一；在赋值运算符和析构函数中，如果减一后为0，则调用delete释放对象。</li>
+</ol>
+<ul>
+<li>当用一个 shared_ptr 初始化另一个 shared_ptr</li>
+<li>作为函数参数传递给一个函数</li>
+<li>作为函数的返回值</li>
+<li>给 shared_ptr 赋予一个新值</li>
+<li>shared_ptr 被销毁，例如一个局部的 shared_ptr 离开其作用域</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">#include &lt;iostream&gt;</div><div class="line">#include &lt;memory&gt;</div><div class="line">#include &lt;vector&gt;</div><div class="line">using namespace std;</div><div class="line"></div><div class="line">int main(int argc, char const *argv[])</div><div class="line">&#123;</div><div class="line">    shared_ptr&lt;string&gt; p1(new string(&quot;Jasmine&quot;));</div><div class="line">    shared_ptr&lt;string&gt; p2(new string(&quot;Robert&quot;), [] (string* p) &#123;</div><div class="line">        cout &lt;&lt; &quot;But maybe there is hope.&quot; &lt;&lt; endl;</div><div class="line">        delete p;</div><div class="line">    &#125;);</div><div class="line">    vector&lt;shared_ptr&lt;string&gt;&gt; v;</div><div class="line">    v.push_back(p1);</div><div class="line">    v.push_back(p1);</div><div class="line">    v.push_back(p2);</div><div class="line">    cout &lt;&lt; *p1 &lt;&lt; &quot; Love &quot; &lt;&lt; *p2 &lt;&lt; endl;</div><div class="line">    cout &lt;&lt; p1.use_count() &lt;&lt; &quot;;&quot; &lt;&lt; p2.use_count() &lt;&lt; endl;</div><div class="line">    p1 = p2;</div><div class="line">    // 这时候 p1 和 p2 是 “同一个” shared_ptr。</div><div class="line">    cout &lt;&lt; p1.use_count() &lt;&lt; &quot;;&quot; &lt;&lt; p2.use_count() &lt;&lt; endl;</div><div class="line">    // 这样查看才是正确的。</div><div class="line">    cout &lt;&lt; v[0].use_count() &lt;&lt; &quot;;&quot; &lt;&lt; p2.use_count() &lt;&lt; endl;</div><div class="line">    cout &lt;&lt; &quot;This is a sad story~&quot; &lt;&lt; endl;</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>输出结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Jasmine Love Robert</div><div class="line">3;2</div><div class="line">3;3</div><div class="line">2;3</div><div class="line">This is a sad story~</div><div class="line">But maybe there is hope.</div></pre></td></tr></table></figure></p>
+<ol>
+<li><p>智能指针是怎么实现的？<br>基于引用计数的智能指针实现:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div></pre></td><td class="code"><pre><div class="line">#include &lt;iostream&gt;</div><div class="line">using namespace std;</div><div class="line">// 基于引用计数的智能指针简单实现</div><div class="line">template&lt;class T&gt;</div><div class="line">class SmartPtr</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">    SmartPtr(T *p);</div><div class="line">    ~SmartPtr();</div><div class="line">    SmartPtr(const SmartPtr &amp; orig);            // 浅拷贝</div><div class="line">    SmartPtr&amp; operator=(const SmartPtr &amp; rhs);    // 浅拷贝</div><div class="line">private:</div><div class="line">    T *ptr;</div><div class="line">    // 将 use_count 声明成指针是为了方便对其的递增或递减操作</div><div class="line">    int *use_count;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">template&lt;class T&gt;</div><div class="line">SmartPtr&lt;T&gt;::SmartPtr(T *p) : ptr(p)</div><div class="line">&#123;</div><div class="line">    try</div><div class="line">    &#123;   // 动态分配一个整型对象，并用 1 进行初始化</div><div class="line">        use_count = new int(1);</div><div class="line">    &#125;</div><div class="line">    catch (...)</div><div class="line">    &#123;</div><div class="line">        delete ptr;</div><div class="line">        ptr = nullptr;</div><div class="line">        use_count = nullptr;</div><div class="line">        cout &lt;&lt; &quot;Allocate memory for use_count fails.&quot; &lt;&lt; endl;</div><div class="line">        exit(1);</div><div class="line">    &#125;</div><div class="line">    cout &lt;&lt; &quot;Constructor is called!&quot; &lt;&lt; endl;</div><div class="line">&#125;</div><div class="line"></div><div class="line">template&lt;class T&gt;</div><div class="line">SmartPtr&lt;T&gt;::~SmartPtr()</div><div class="line">&#123;</div><div class="line">    // 只在最后一个对象引用ptr时才释放内存</div><div class="line">    if (--(*use_count) == 0)</div><div class="line">    &#123;</div><div class="line">        delete ptr;</div><div class="line">        delete use_count;</div><div class="line">        ptr = nullptr;</div><div class="line">        use_count = nullptr;</div><div class="line">        cout &lt;&lt; &quot;Destructor is called!&quot; &lt;&lt; endl;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">template&lt;class T&gt;</div><div class="line">SmartPtr&lt;T&gt;::SmartPtr(const SmartPtr&lt;T&gt; &amp;orig)</div><div class="line">&#123;</div><div class="line">    ptr = orig.ptr;</div><div class="line">    use_count = orig.use_count;</div><div class="line">    ++(*use_count);</div><div class="line">    cout &lt;&lt; &quot;Copy constructor is called!&quot; &lt;&lt; endl;</div><div class="line">&#125;</div><div class="line"></div><div class="line">// 拷贝赋值运算符不同于拷贝构造函数，即等号左边的对象可能已经指向某块内存。</div><div class="line">// 这样，我们就需要判断左边对象指向的内存已经被引用的次数。如果次数为1，</div><div class="line">// 表明我们可以释放这块内存；反之则不释放，由其他对象来释放。</div><div class="line">template&lt;class T&gt;</div><div class="line">SmartPtr&lt;T&gt;&amp; SmartPtr&lt;T&gt;::operator=(const SmartPtr&lt;T&gt; &amp;rhs)</div><div class="line">&#123;</div><div class="line">    // 《C++ primer》：“这个赋值操作符在减少左操作数的使用计数之前使 rhs 的使用计数加1，</div><div class="line">    // 从而防止自身赋值”而导致的提早释放内存</div><div class="line">    ++(*rhs.use_count);</div><div class="line"></div><div class="line">    // 将左操作数对象的使用计数减1，若该对象的使用计数减至0，则删除该对象</div><div class="line">    if (--(*use_count) == 0)</div><div class="line">    &#123;   </div><div class="line">        // 左操作数是最后一个指向管理对象的智能指针了，</div><div class="line">        // 虽然左侧操作数这个对象本身不至删除，但是左操作数所管理的对象及左操作数原来所分配的空间必须被销毁。</div><div class="line">        delete ptr;</div><div class="line">        delete use_count;</div><div class="line">        cout &lt;&lt; &quot;Left side object is deleted!&quot; &lt;&lt; endl;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    ptr = rhs.ptr;</div><div class="line">    use_count = rhs.use_count;</div><div class="line">    </div><div class="line">    cout &lt;&lt; &quot;Assignment operator is called!&quot; &lt;&lt; endl;</div><div class="line">    return *this;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>share_prt与weak_ptr的区别？<br>只要有一个 shared_ptr 指向一个对象，这个对象就不会被销毁。<br>而一旦指向一个对象的最后一个 shared_ptr 被销毁，这个对象就会被销毁，即使有 weak_ptr 指向这个对象。<br>weak_ptr 不控制所指向对象的生存期，将一个 weak_ptr 绑定到一个 shared_ptr 上，并不增加 shared_ptr 所管理对象的引用计数，体现出了“弱”共享对象的特点。</p>
+</li>
+</ol>
+<h3 id="内存对齐的原则"><a href="#内存对齐的原则" class="headerlink" title="内存对齐的原则"></a>内存对齐的原则</h3><p>CPU 的优化原则: 对于 n 个字节的元素(n=2, 4, 8,…) ,它的首地址能被 n 整除,才能获得最好的性能.设计编译器时可以这样做:对于每一个变量,从当前位置向后找到第一个满足这样条件的地址作为首地址.<br>结构体长度一定是最长元素的整数倍,这样当其放入数组的时候,才不会为遵守CPU 的优化原则而产生空隙.</p>
+<h3 id="内联函数有什么优点？内联函数与宏定义的区别？"><a href="#内联函数有什么优点？内联函数与宏定义的区别？" class="headerlink" title="内联函数有什么优点？内联函数与宏定义的区别？"></a>内联函数有什么优点？内联函数与宏定义的区别？</h3><p>内联函数和普通函数相比可以加快程序运行的速度，因为不需要中断调用，在编译的时候内联函数可以直接被镶嵌到目标代码中。<br>用内联函数完全取代宏：</p>
+<ol>
+<li>内联函数可利用调试器进行调试，而宏定义不可以;</li>
+<li>编译器会对内联函数的参数类型做安全检查或自动类型转换（同普通函数），而宏定<br>义则不会； </li>
+<li>内联函数可以访问类的成员变量，宏定义则不能； </li>
+<li>在类中声明同时定义的成员函数，自动转化为内联函数。</li>
+</ol>
+<p>inline 是指嵌入代码，就是在调用函数的地方不是跳转，而是把代码直接写到那里去。对于短小的代码来说，inline可以带来一定的效率提升，而且和C时代的宏函数相比，inline 更安全可靠。可是这个是以增加空间消耗为代价的。至于是否需要inline函数就需要根据你的实际情况取舍了, 频繁的调用内联函数和宏定义容易造成代码膨胀，消耗更大的内存而<strong>造成过多的换页操作</strong>。</p>
+<p>inline一般只用于如下情况：</p>
+<ol>
+<li>一个函数不断被重复调用。</li>
+<li>函数只有简单的几行，且函数不包含for、while、switch语句等复杂结构, 否则编译器不会将其当作内联函数看待，而是把它决议成为一个静态函数.<br>宏不是函数，只是在编译预处理阶段将程序中有关字符串替换成宏体。<br>inline函数是函数，但在编译中不单独产生代码，而是将有关代码嵌入到调用处。<br>关于类的例子如下:<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">Class A</div><div class="line">&#123;</div><div class="line">public：</div><div class="line">    int readTest（）</div><div class="line">    &#123;</div><div class="line">        return nTest；</div><div class="line">    &#125;</div><div class="line">    void setTest（int i);</div><div class="line">&#125;;</div><div class="line">inline void A::setTest(int i)</div><div class="line">&#123;</div><div class="line">    nTest=i;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>类A的成员函数readTest（）和setTest（）都是内联函数，readTest（）函数的定义体被放在类声明之中，因而 readTest（）自动转换成inline函数，setTest函数的定义体在类声明之外，因此要加上inline关键字。</p>
+
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+
+                    
+
+                    
+                        <li>
+                            <a href="https://github.com/RobertLexis" target="_blank">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <p class="copyright text-muted">&copy; 2018 Robert Lexis<br></p>
+                <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
+                <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>
