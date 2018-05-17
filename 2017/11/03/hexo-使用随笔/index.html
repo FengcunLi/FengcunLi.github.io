@@ -238,18 +238,13 @@
 <p>要求你输入密码，这个密码会在你提交项目时使用，如果为空的话提交项目时则不用输入。这个设置是防止别人往你的项目里提交内容。<br>注意：输入密码的时候没有*字样的，直接输入就好。<br>然后：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Your identification has been saved in /c/Users/robert/.ssh/id_rsa.</div><div class="line">Your public key has been saved in /c/Users/robert/.ssh/id_rsa.pub.</div><div class="line">The key fingerprint is:</div><div class="line">...</div></pre></td></tr></table></figure></p>
 <p>至此，密钥已经成功生成。</p>
 <ol>
-<li><p>接下来在 github 上添加SSH key：</p>
-<ol>
-<li><p>打开本地文件：id_rsa.pub（文件路径可以在上一步SSH生成成功后看到路径，比如我的是c/Users/robert/.ssh/id_rsa.pub），可以将这个文件在编辑器中打开，然后全选复制。</p>
-</li>
-<li><p>登陆 github，点击头像位置处 Settings ——&gt; SSH and GPG keys ——&gt; New SSH key，点击新建SSH key。</p>
-</li>
-<li><p>将 1 中复制的内容粘贴在 key 文本框里，title 可以不用填（或者自己起一个名字也可以）。</p>
-</li>
+<li>接下来在 github 上添加SSH key：<ol>
+<li>打开本地文件：id_rsa.pub（文件路径可以在上一步SSH生成成功后看到路径，比如我的是c/Users/robert/.ssh/id_rsa.pub），可以将这个文件在编辑器中打开，然后全选复制。</li>
+<li>登陆 github，点击头像位置处 Settings ——&gt; SSH and GPG keys ——&gt; New SSH key，点击新建SSH key。</li>
+<li>将 1 中复制的内容粘贴在 key 文本框里，title 可以不用填（或者自己起一个名字也可以）。</li>
 </ol>
 </li>
-<li><p>测试设置是否成功：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ssh -T git@github.com</div></pre></td></tr></table></figure>
+<li>测试设置是否成功：<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ssh -T git@github.com</div></pre></td></tr></table></figure>
 </li>
 </ol>
 <p>出现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Hi RobertLexis! You&apos;ve successfully authenticated, but GitHub does not </div><div class="line">provide shell access.</div></pre></td></tr></table></figure></p>
