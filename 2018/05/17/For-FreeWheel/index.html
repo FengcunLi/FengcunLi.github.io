@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="epollepoll is a Linux kernel system call for a scalable I/O event notification mechanism. Its function is to monitor multiple file descriptors to see ">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Robert Lexis">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="For FreeWheel"/>
+    
+
+    <!--Open Graph Description-->
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="This is WHY."/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+        <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>For FreeWheel - This is WHY.</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Google Analytics -->
+    
+
+
+    <!-- favicon -->
+    
+	
+</head>
+
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">This is WHY.</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li>
+                        <a href="/">
+                            
+                                Home
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/archives">
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/tags">
+                            
+                                Tags
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/categories">
+                            
+                                Categories
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="https://github.com/RobertLexis">
+                            
+                                <i class="fa fa-github fa-stack-2x"></i>
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('http://www.codeblocq.com/assets/projects/hexo-theme-clean-blog/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>For FreeWheel</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2018-05-17
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+
+            <!-- Gallery -->
+            
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <h2 id="epoll"><a href="#epoll" class="headerlink" title="epoll"></a>epoll</h2><p>epoll is a Linux kernel <strong>system call</strong> for a scalable <strong>I/O event notification mechanism</strong>. Its function is to monitor multiple file descriptors to see if I/O is possible on any of them. It is meant to replace the older POSIX select(2) and poll(2) system calls, to achieve better performance in more demanding applications, where the number of watched file descriptors is large (unlike the older system calls, which operate in O(n) time, epoll operates in O(1) time).</p>
+<h4 id="API"><a href="#API" class="headerlink" title="API"></a>API</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">int epoll_create1(int flags);</div></pre></td></tr></table></figure>
+<p>Creates an epoll object and returns its file descriptor(标识内核事件表). The flags parameter allows epoll behavior to be modified. It has only one valid value, EPOLL_CLOEXEC. epoll_create() is an older variant of epoll_create1() and is deprecated as of Linux kernel version 2.6.27 and glibc version 2.9.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);</div></pre></td></tr></table></figure></p>
+<p>Controls (configures) which file descriptors are watched by this object, and for which events. op can be ADD, MODIFY or DELETE.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);</div></pre></td></tr></table></figure></p>
+<p>Waits for any of the events registered for with epoll_ctl, until at least one occurs or the timeout elapses. Returns the occurred events in events, up to maxevents at once.</p>
+<h4 id="Triggering-modes"><a href="#Triggering-modes" class="headerlink" title="Triggering modes"></a>Triggering modes</h4><p>epoll provides both edge-triggered and level-triggered modes. In edge-triggered mode, a call to epoll_wait will return only when a new event is enqueued with the epoll object, while in level-triggered mode, epoll_wait will return as long as the condition holds（可读）.</p>
+<p>For instance, if a pipe registered with epoll has received data, a call to epoll_wait will return, signaling the presence of data to be read. Suppose the reader only consumed part of data from the buffer. In level-triggered mode, further calls to epoll_wait will return immediately, as long as the pipe’s buffer contains data to be read. （每次读一部分就可以了，因为会不断地触发）In edge-triggered mode, however, epoll_wait will return only once new data is written to the pipe.（因此需要一次性读完）<br>ET 是高效工作模式，很大程度上降低同一个事件被重复触发的次数。</p>
+<h2 id="HTTP-Hypertext-Transfer-Protocol"><a href="#HTTP-Hypertext-Transfer-Protocol" class="headerlink" title="HTTP Hypertext Transfer Protocol"></a>HTTP Hypertext Transfer Protocol</h2><p>Client request<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">GET /index.html HTTP/1.1</div><div class="line">Host: www.example.com</div></pre></td></tr></table></figure></p>
+<p>Server response<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">HTTP/1.1 200 OK</div><div class="line">Date: Mon, 23 May 2005 22:38:34 GMT</div><div class="line">Content-Type: text/html; charset=UTF-8</div><div class="line">Content-Encoding: UTF-8</div><div class="line">Content-Length: 138</div><div class="line">Last-Modified: Wed, 08 Jan 2003 23:11:55 GMT</div><div class="line">Server: Apache/1.3.3.7 (Unix) (Red-Hat/Linux)</div><div class="line">ETag: &quot;3f80f-1b6-3e1cb03b&quot;</div><div class="line">Accept-Ranges: bytes</div><div class="line">Connection: close</div><div class="line"></div><div class="line">&lt;html&gt;</div><div class="line">&lt;head&gt;</div><div class="line">  &lt;title&gt;An Example Page&lt;/title&gt;</div><div class="line">&lt;/head&gt;</div><div class="line">&lt;body&gt;</div><div class="line">  Hello World, this is a very simple HTML document.</div><div class="line">&lt;/body&gt;</div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure></p>
+<p>Status codes<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Informational 1XX</div><div class="line">Successful 2XX</div><div class="line">Redirection 3XX</div><div class="line">Client Error 4XX</div><div class="line">Server Error 5XX</div></pre></td></tr></table></figure></p>
+<p>The <strong>ETag (entity tag)</strong> header field is used to determine if a cached version of the requested resource is identical to the current version of the resource on the server.<br>Content-Type specifies the Internet media type of the data conveyed by the HTTP message, while Content-Length indicates its length in bytes. The HTTP/1.1 webserver publishes its ability to respond to requests for certain byte ranges of the document by setting the field Accept-Ranges: bytes. This is useful, if the client needs to have only certain portions of a resource sent by the server, which is called <strong>byte serving</strong>.<br>When Connection: close is sent, it means that the web server will close the TCP connection immediately after the transfer of this response.<br>A Content-Encoding like gzip can be used to compress the transmitted data.</p>
+<h4 id="Message-format"><a href="#Message-format" class="headerlink" title="Message format"></a>Message format</h4><p>The client and server communicate by sending plain-text (ASCII) messages. The client sends requests to the server and the server sends responses.</p>
+<h6 id="Request-message"><a href="#Request-message" class="headerlink" title="Request message"></a>Request message</h6><p>The request message consists of the following:<br><strong>A request line</strong> (e.g., GET /images/logo.png HTTP/1.1, which requests a resource called /images/logo.png from the server).<br><strong>Request header fields</strong> (e.g., Accept-Language: en).<br>An empty line.<br>An optional message body.<br>The request line and other header fields must each end with <cr><lf>. The empty line must consist of only <cr><lf> and no other whitespace. In the HTTP/1.1 protocol, all header fields except Host are optional.</lf></cr></lf></cr></p>
+<h6 id="Response-message"><a href="#Response-message" class="headerlink" title="Response message"></a>Response message</h6><p>The response message consists of the following:<br><strong>A status line</strong> which includes the status code and reason message (e.g., HTTP/1.1 200 OK, which indicates that the client’s request succeeded).<br><strong>Response header fields</strong> (e.g., Content-Type: text/html).<br>An empty line.<br>An optional message body.<br>The status line and other header fields must all end with <cr><lf>. The empty line must consist of only <cr><lf> and no other whitespace.</lf></cr></lf></cr></p>
+<h2 id="C-内存布局"><a href="#C-内存布局" class="headerlink" title="C++ 内存布局"></a>C++ 内存布局</h2><p>在 C++ 中，内存分成5个区，他们分别是堆、栈、自由存储区、全局/静态存储区和常量存储区。</p>
+<ol>
+<li>栈，在执行函数时，函数内局部变量的存储单元都可以在栈上创建，函数执行结束时这些存储单元自动被释放。栈内存分配运算内置于处理器的指令集中，效率很高，但是分配的内存容量有限。</li>
+<li>堆，就是那些由 new 分配的内存块，他们的释放编译器不去管，由我们的应用程序去控制，一般一个new就要对应一个delete。如果程序员没有释放掉，那么在程序结束后，操作系统会自动回收。</li>
+<li>自由存储区，就是那些由malloc等分配的内存块，他和堆是十分相似的，不过它是用free来结束自己的生命的。</li>
+<li>全局/静态存储区，全局变量和静态变量被分配到同一块内存中，在以前的C语言中，全局变量又分为初始化的和未初始化的，在C++里面没有这个区分了，他们共同占用同一块内存区。</li>
+<li>常量存储区，这是一块比较特殊的存储区，他们里面存放的是常量，不允许修改。</li>
+</ol>
+<h2 id="fork"><a href="#fork" class="headerlink" title="fork"></a>fork</h2><p>Fork (system call)<br>In computing, particularly in the context of the Unix operating system, fork is an operation whereby a process creates a copy of itself. It is usually a system call, implemented in the kernel. Fork is the primary (and historically, only) method of process creation on Unix-like operating systems.</p>
+<h4 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h4><p>In multitasking operating systems, processes (running programs) need a way to create new processes, e.g. to run other programs. Fork and its variants are typically the only way of doing so in Unix-like systems. For a process to start the execution of a different program, it first forks to create a copy of itself. Then, the copy, called the “child process”, calls the <strong>exec system call</strong> to overlay itself with the other program: it ceases execution of its former program in favor of the other.</p>
+<p>The fork operation creates a separate <strong>address space</strong> for the child. The child process has an exact copy of all the memory segments of the parent process. In modern UNIX variants that follow the <strong>virtual memory model</strong> from SunOS-4.0, <strong>copy-on-write</strong> semantics are implemented and the physical memory need not be actually copied. Instead, <strong>virtual memory pages in both processes may refer to the same pages of physical memory until one of them writes to such a page: then it is copied</strong>. This optimization is important in the common case where fork is used in conjunction with exec to execute a new program: typically, the child process performs only a small set of actions before it ceases execution of its program in favour of the program to be started, and it requires very few, if any, of its parent’s data structures.<br>堆、栈、全局/静态存储区均被复制成独立的两份，但打开的文件等是同一个，总不能因为 fork 复制进程映像就去拷贝文件吧。</p>
+<h2 id="strcpy-memcpy-memset"><a href="#strcpy-memcpy-memset" class="headerlink" title="strcpy/memcpy/memset"></a>strcpy/memcpy/memset</h2><p>都是标准 C 库函数。</p>
+<h4 id="strcpy"><a href="#strcpy" class="headerlink" title="strcpy"></a>strcpy</h4><p>strcpy 提供了字符串的复制。即 strcpy 只用于字符串复制，并且它不仅复制字符串内容，还会复制字符串的结束符。<br>strcpy 函数的原型是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">char* strcpy(char* dest, const char* src);</div></pre></td></tr></table></figure></p>
+<p>实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">char * strcpy(char * dest, const char * src) // 实现src到dest的复制 </div><div class="line">&#123; </div><div class="line">　　if ((src == NULL) || (dest == NULL)) // 判断参数src和dest的有效性 </div><div class="line">　　&#123;</div><div class="line"></div><div class="line">　　　　　　return NULL; </div><div class="line">　　&#125; </div><div class="line">　　char *strdest = dest; // 保存目标字符串的首地址 </div><div class="line">　　while ((*dest++ = *src++)!=’\0’); // 把src字符串的内容复制到dest下 </div><div class="line">　　return strdest; </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h4 id="memcpy"><a href="#memcpy" class="headerlink" title="memcpy"></a>memcpy</h4><p>memcpy 提供了一般内存的复制。即 memcpy 对于需要复制的内容没有限制，因此用途更广。<br>函数的原型是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">void *memcpy( void *dest, const void *src, size_t count );</div></pre></td></tr></table></figure></p>
+<p>实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">void *memcpy(void *memTo, const void *memFrom, size_t size) </div><div class="line">&#123; </div><div class="line">　　if((memTo == NULL) || (memFrom == NULL)) // memTo和memFrom必须有效 </div><div class="line">        return NULL; </div><div class="line">　　char* tempFrom = (char* )memFrom; // 保存memFrom首地址 </div><div class="line">　　char* tempTo = (char* )memTo; // 保存memTo首地址 </div><div class="line">　　while(size-–&gt;0) // 循环size次，复制memFrom的值到memTo中 </div><div class="line">        *tempTo++ = *tempFrom++ ; </div><div class="line">　　return memTo; </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>说明： memTo 和 memFrom 所指内存区域不能重叠，函数返回指向 memTo 的指针.可以拿它拷贝任何数据类型的对象。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">char a[10],b[5];              </div><div class="line">memcpy(b, a, sizeof(b)); /*注意如果用sizeof(a)，会造成b的内存地址溢出*/</div></pre></td></tr></table></figure></p>
+<h4 id="memset"><a href="#memset" class="headerlink" title="memset"></a>memset</h4><p>把 buffer 所指内存区域的前 count 个字节设置成字符 c，主要用于初始化某个内存空间。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">extern void *memset(void *buffer, int c, int count);</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">char a[10];                        </div><div class="line">memset(a, &apos;\0&apos;, sizeof(a));</div></pre></td></tr></table></figure>
+<h4 id="strcpy-和-memcpy-主要有以下3方面的区别。"><a href="#strcpy-和-memcpy-主要有以下3方面的区别。" class="headerlink" title="strcpy 和 memcpy 主要有以下3方面的区别。"></a>strcpy 和 memcpy 主要有以下3方面的区别。</h4><p>1、复制的内容不同。strcpy只能复制字符串，而memcpy可以复制任意内容，例如字符数组、整型、结构体、类等。<br>2、复制的方法不同。strcpy不需要指定长度，它遇到被复制字符的串结束符”\0”才结束，所以容易溢出。memcpy则是根据其第3个参数决定复制的长度。<br>3、用途不同。<br>emcpy和strcpy区别以及它们的效率分析<br>2015年08月13日 17:46:21<br>阅读数：3457<br>1、首先介绍这两个函数的原型：</p>
+<p> #include <cstring><br>char <em>strcpy( char </em>to, const char *from );</cstring></p>
+<p> #include <cstring><br>  void <em>memcpy( void </em>to, const void *from, size_t count );<br>从以上两个函数的参数类型和返回类型，可以看出两个函数的第一个不同点：<br>a、strcpy只能应用字符类型的复制，而memcpy应用范围更广，任何类型都可以；</cstring></p>
+<p>其次，函数memcpy多了一个count参数，用于拷贝指定字节大小的数据。从这可以得出它们的第二个不同点，</p>
+<p>b、memcpy相比使用strcpy会更加的安全，当然也可以使用strcpy的安全板本strncpy函数；</p>
+<p>从表面我们还是不能看到这两个函数更加深入的异同，以及它们到底哪个效率更高。下面从它们的源码出发，期望可以解决问题。</p>
+<p>2、strcpy函数和memcpy的源码的windows版本</p>
+<p>strcpy函数源码：</p>
+<p>[cpp] view plain copy<br>char <em> __cdecl strcpy(char </em> dst, const char <em> src)<br>{<br>        char </em> cp = dst;  </p>
+<pre><code>while( *cp++ = *src++ )  
+        ;               /* Copy src over dst */  
+
+return( dst );  
+</code></pre><p>}  </p>
+<p>memcpy函数源码：<br>[cpp] view plain copy<br>void <em> __cdecl memcpy (<br>        void </em> dst,<br>        const void <em> src,<br>        size_t count<br>        )<br>{<br>        void </em> ret = dst;  </p>
+<p>#if defined (_M_MRX000) || defined (_M_ALPHA) || defined (_M_PPC)<br>        {<br>        extern void RtlMoveMemory( void <em>, const void </em>, size_t count );  </p>
+<pre><code>RtlMoveMemory( dst, src, count );  
+}  
+</code></pre><p>#else  /<em> defined (_M_MRX000) || defined (_M_ALPHA) || defined (_M_PPC) </em>/<br>        /* </p>
+<pre><code> * copy from lower addresses to higher addresses 
+ */  
+while (count--) {  
+        *(char *)dst = *(char *)src;  
+        dst = (char *)dst + 1;  
+        src = (char *)src + 1;  
+}  
+</code></pre><p>#endif  /<em> defined (_M_MRX000) || defined (_M_ALPHA) || defined (_M_PPC) </em>/  </p>
+<pre><code>return(ret);  
+</code></pre><p>}  </p>
+<p>memcpy中的预定义不用考虑，现在都不支持了，先分析strcpy源码中关键代码：<br>[cpp] view plain copy<br>while( <em>cp++ = </em>src++ )<br>可以看出该循环退出的条件是*cp = ‘\0’，也就是说，源字符串中的结尾‘\0’也被拷贝到目的字符串中，这个很关键。<br>而memcpy中退出循环是count为0,也就是按照用户的要求，拷贝count个字节。</p>
+<p>所以从这可以得出两个函数的第3个不同点：</p>
+<p>C、strcpy一定会拷贝字符串结尾符’\0’，memcpy在拷贝字符串的时候，根据指定拷贝字节数拷贝字符串，是否拷贝‘\0’结束符，根据count的大小。</p>
+<p>最后，从两个函数的源码中，可以分析出哪个函数的效率更快（当然是都拷贝相同的字符串），比较它们的关键代码，也就是循环，可以看出，memcpy函数中，有3个变量在变化，分别是count, dst, src，而strcpy只有两个变量变化，分别是cp和src，从这可以看出strcpy更胜一筹。再者，</p>
+<p>[cpp] view plain copy<br><em>cp++ = </em>src++   和   <pre name="code" class="cpp"><em>(char </em>)dst = <em>(char </em>)src;<br>dst = (char <em>)dst + 1;<br>src = (char </em>)src + 1;<br>效果是一样，但下面耗费更大，它有类型转换的花费，在上面中没有的，从这也可以看出strcpy更胜一筹。</pre></p>
+<p>综上两点，我认为在拷贝相同字符串，相同字节的情况下，strcpy的效率比memcpy效率更高。</p>
+<p>3、下面再实践证明下，如下图。</p>
+<p>测试代码：</p>
+<p>[cpp] view plain copy</p>
+<p>#include <stdio.h>  </stdio.h></p>
+<p>#include <string.h><br>int main()<br>{<br>    char src[] = “hello,memcpy and strcpy!”;<br>    char dest[32];<br>    memcpy(dest, src, 25);<br>    //strcpy(dest, src);<br>    return 0;<br>}  </string.h></p>
+<p>运行上面代码用时如下：</p>
+<p>将memcpy(dest, src, 25);注释，取消下面strcpy(dest, src）运行代码用时如下：</p>
+<p>从上可以看出，strcpy以微弱的优势，相比memcpy效率更快。</p>
+<p>所以memcpy和strcpy的第四个不同点是：</p>
+<p>d、在拷贝相同的字符串，且字节数相同(包括‘]0’)的情况下，strcpy效率比memcpy效率更快。</p>
+<p>4、总结，memcpy和strcpy的区别与比较</p>
+<p>a、strcpy只能应用字符类型的复制，而memcpy应用范围更广，任何类型都可以；</p>
+<p>b、memcpy相比使用strcpy会更加的安全，当然也可以使用strcpy的安全板本strncpy函数；</p>
+<p>c、strcpy一定会拷贝字符串结尾符’\0’，memcpy在拷贝字符串的时候，根据指定拷贝字节数拷贝字符串，是否拷贝‘\0’结束符，根据count的大小;</p>
+<p>d、在拷贝相同的字符串，且字节数相同(包括‘]0’)的情况下，strcpy效率比memcpy效率更快。</p>
+
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+
+                    
+
+                    
+                        <li>
+                            <a href="https://github.com/RobertLexis" target="_blank">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <p class="copyright text-muted">&copy; 2018 Robert Lexis<br></p>
+                <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
+                <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>
