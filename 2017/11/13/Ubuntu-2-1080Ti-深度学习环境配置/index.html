@@ -344,6 +344,13 @@
 <li>I 节点 :它是UNIX内部用于描述文件特性的数据结构。我们通常称 I 节点为文件索引节点(信息节点)。I 节点含有关于文件的大部分的重要信息,包括文件数据块在磁盘上的地址.每一个 I 节点有它自己的标志号,我们称为文件顺序号。I 节点包含的信息 1.文件类型 2.文件属主关系 3.文件的访问权限 4.文件的时间截。</li>
 </ol>
 </blockquote>
+<h3 id="安装CUDA-9-0"><a href="#安装CUDA-9-0" class="headerlink" title="安装CUDA 9.0"></a>安装CUDA 9.0</h3><p>tensorflow 1.4 使用的 cuda 8.0，在更新至 1.8 之后，tensorflow 1.8 使用的是 cuda 9.0，因此有必要进行 cuda 的更新。</p>
+<ol>
+<li><code>sudo apt-get --purge remove cuda</code><br>An incomplete installation of libglvnd was found. Do you want to install a</li>
+</ol>
+<p>full copy of libglvnd? This will overwrite any existing libglvnd libraries.</p>
+<p>(Answer: Abort installation.)<br>To uninstall the CUDA Toolkit, run the uninstall script in /usr/local/cuda-9.0/bin<br>To uninstall the NVIDIA Driver, run nvidia-uninstall</p>
+<p>Please see CUDA_Installation_Guide_Linux.pdf in /usr/local/cuda-9.0/doc/pdf for detailed information on setting up CUDA.<br>sudo /usr/local/cuda-9.0/bin/uninstall_cuda_9.0.pl </p>
 
 
                 
