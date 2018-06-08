@@ -10,6 +10,9 @@
 
     <!--Description-->
     
+        <meta name="description" content="这篇博文是 Emmanuelle Gouillart (scikit-image 开发者) 在 PyData 2015 上演讲 Introduction to scikit-image 的笔记。
+scikit-imagescikit-image is a general-purpose image ">
+    
 
     <!--Author-->
     
@@ -18,7 +21,7 @@
 
     <!--Open Graph Title-->
     
-        <meta property="og:title" content="This is WHY."/>
+        <meta property="og:title" content="笔记 for PyData 2015 - Introduction to scikit-image"/>
     
 
     <!--Open Graph Description-->
@@ -29,7 +32,7 @@
 
     <!--Type page-->
     
-        <meta property="og:type" content="website" />
+        <meta property="og:type" content="article" />
     
 
     <!--Page Cover-->
@@ -40,7 +43,7 @@
 
     <!-- Title -->
     
-    <title>page - This is WHY.</title>
+    <title>笔记 for PyData 2015 - Introduction to scikit-image - This is WHY.</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
@@ -143,68 +146,143 @@
 
     <!-- Main Content -->
     <!-- Page Header -->
-<!-- Set your background image for this header in the theme's configuration: index_cover -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
 <header class="intro-header" style="background-image: url('http://www.codeblocq.com/assets/projects/hexo-theme-clean-blog/img/home-bg.jpg')">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <div class="site-heading">
-                    <h1>This is WHY.</h1>
-                    <hr class="small">
-                    <span class="subheading">Dawn is coming.</span>
+                <div class="post-heading">
+                    <h1>笔记 for PyData 2015 - Introduction to scikit-image</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2018-06-08
+                        
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 </header>
 
-<!-- Main Content -->
-<div class="container">
-    <div class="row">
-        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-            
-                <div class="post-preview">
-    <a href="/2017/11/01/Github-Hexo-个人博客/">
-        <h2 class="post-title">
-            Github+Hexo:个人博客
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2017-11-01
-    </p>
-</div>
-<hr>
-            
-                <div class="post-preview">
-    <a href="/2017/06/13/编程范式-1/">
-        <h2 class="post-title">
-            编程范式 1
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2017-06-13
-    </p>
-</div>
-<hr>
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+                <div class="col-lg-4 col-lg-offset-2 col-md-5 col-md-offset-1 post-tags">
+                    
+                        
+
+
+<a href="/tags/Python/">#Python</a>
+
+
+                    
+                </div>
+                <div class="col-lg-4 col-md-5 post-categories">
+                    
+                </div>
             
 
-            <ul class="pager">
-    
-        <li class="previous"><a href="/page/4/">&larr;  下一页</a></li>
-    
-    
+            <!-- Gallery -->
+            
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <p>这篇博文是 Emmanuelle Gouillart (scikit-image 开发者) 在 PyData 2015 上演讲 Introduction to scikit-image 的笔记。</p>
+<h3 id="scikit-image"><a href="#scikit-image" class="headerlink" title="scikit-image"></a>scikit-image</h3><p>scikit-image is a general-purpose image processing module for the Python programming language. It is designed to interact efficiently with other popular scientific Python libraries, such as NumPy and SciPy. In particular, scikit-image leverages the powerful data array container of NumPy, that can store images of various dimensions (2-D, 2D RGB, 3D, 4D…).</p>
+<h3 id="Foundation"><a href="#Foundation" class="headerlink" title="Foundation"></a>Foundation</h3><p>NumPy-native: images as NumPy arrays</p>
+<h3 id="Filtering：-transforming-image-data"><a href="#Filtering：-transforming-image-data" class="headerlink" title="Filtering： transforming image data"></a>Filtering： transforming image data</h3><p>modules:</p>
+<ul>
+<li>skimage.filter</li>
+<li>skimage.exposure</li>
+<li>skimage.restoration</li>
 </ul>
+<p>word cloud:</p>
+<ul>
+<li>median</li>
+<li>gaussian</li>
+<li>canny</li>
+<li>sobel</li>
+<li>wiener</li>
+<li>equalize</li>
+<li>denoising</li>
+<li>enhance_contrast</li>
+<li>total_variation</li>
+</ul>
+<h3 id="Extracting-features"><a href="#Extracting-features" class="headerlink" title="Extracting features"></a>Extracting features</h3><p>Feature detection: extracting features from images to feed into classifiers or estimators.<br>modules:</p>
+<ul>
+<li>skimage.feature</li>
+<li>skimage.filter</li>
+</ul>
+<p>word cloud:</p>
+<ul>
+<li>corners</li>
+<li>daisy</li>
+<li>local_maxima</li>
+<li>gabor</li>
+<li>harris</li>
+<li>hog</li>
+<li>hough</li>
+<li>cooccurance</li>
+<li>canny</li>
+</ul>
+<h3 id="Geometrical-transformations"><a href="#Geometrical-transformations" class="headerlink" title="Geometrical transformations"></a>Geometrical transformations</h3><p>modules:</p>
+<ul>
+<li>skimage.transform</li>
+</ul>
+<p>word cloud</p>
+<ul>
+<li>scale</li>
+<li>zoom</li>
+<li>rotate</li>
+<li>swirl</li>
+<li>wrap</li>
+</ul>
+<h3 id="Segmentation-labelling-regions"><a href="#Segmentation-labelling-regions" class="headerlink" title="Segmentation: labelling regions"></a>Segmentation: labelling regions</h3><p>label different pixels to separate objects.<br>modules:</p>
+<ul>
+<li>skimage.segmentation</li>
+</ul>
+<p>word cloud:</p>
+<ul>
+<li>thresholding: histogram based</li>
+<li>otsu</li>
+<li>randomwalker</li>
+<li>superpixel: separating connected objects</li>
+<li>watershed</li>
+</ul>
+<h3 id="Measures-on-images"><a href="#Measures-on-images" class="headerlink" title="Measures on images"></a>Measures on images</h3><p>After image segmentation, you have some regions, you may want to compute statistics and label each regions.<br>modules:<br>skimage.measure</p>
+<p>word cloud:</p>
+<ul>
+<li>measure</li>
+<li>label: very useful, give different label to different connected components.</li>
+<li>size</li>
+<li>histogram</li>
+<li>regionprops</li>
+</ul>
+<p><img src="http://oytnj8g2y.bkt.clouddn.com/skimage/skimage_label.png" alt="skimage.measure.label"></p>
+
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
         </div>
     </div>
-</div>
-
-
+</article>
 
     <!-- Footer -->
     <hr />
