@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="在训练卷积神经网络时，为了充分利用GPU的计算能力，让GPU充分运转，减少GPU等待批次（batch）数据的时间，需要进行图像数据加载的并行编程。可以进行多进程或者多线程编程，需要注意的是，由于 Python GIL 的存在，基于多线程的并行编程仅适用于 I/O 密集型的并发，并不适用于 CPU 计">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Robert Lexis">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="喂饱GPU：多线程加载图像数据"/>
+    
+
+    <!--Open Graph Description-->
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="This is WHY."/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+        <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>喂饱GPU：多线程加载图像数据 - This is WHY.</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Google Analytics -->
+    
+
+
+    <!-- favicon -->
+    
+	
+</head>
+
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">This is WHY.</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li>
+                        <a href="/">
+                            
+                                Home
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/archives">
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/tags">
+                            
+                                Tags
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/categories">
+                            
+                                Categories
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="https://github.com/RobertLexis">
+                            
+                                <i class="fa fa-github fa-stack-2x"></i>
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('http://www.codeblocq.com/assets/projects/hexo-theme-clean-blog/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>喂饱GPU：多线程加载图像数据</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2018-05-05
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+
+            <!-- Gallery -->
+            
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <p>在训练卷积神经网络时，为了充分利用GPU的计算能力，让GPU充分运转，减少GPU等待批次（batch）数据的时间，需要进行图像数据加载的并行编程。可以进行多进程或者多线程编程，需要注意的是，由于 Python GIL 的存在，基于多线程的并行编程仅适用于 I/O 密集型的并发，并不适用于 CPU 计算密集型的并发。因此，如果图像数据加载（I/O密集型）后，需要进行图像数据的预处理（CPU 计算密集型），推荐使用多进程编程，关于多进程编程我后续会写一篇博客进行介绍，本文主要介绍我在使用使用多线程加载图像数据时遇到的一些知识点，主要包括：</p>
+<ul>
+<li>加锁：关键代码区访问控制</li>
+<li>双重锁验证</li>
+<li>长时代码移出关键代码区</li>
+</ul>
+<p>另外如果想了解关于线程之间通信的相关知识，可以查看我的另一篇博文<a href="https://robertlexis.github.io/2017/11/05/Python-threads-communication-and-stopping/" target="_blank" rel="external">Python threads: communication and stopping</a>。</p>
+<h3 id="加锁，关键代码区访问控制"><a href="#加锁，关键代码区访问控制" class="headerlink" title="加锁，关键代码区访问控制"></a>加锁，关键代码区访问控制</h3><p>利用锁划定关键代码区，使得同一时刻只能有一个线程在执行该关键代码区的代码，之所以要进行如此的访问控制，是因为在多线程中，“全局”变量是由线程共享的，进行访问控制可以防止多个线程同时修改同一个“全局”变量造成变量的值的错乱。</p>
+<p>在 Python 中利用锁划定关键代码区有两种方式，<strong>手动方式</strong>和<strong>上下文管理器方式</strong>，无论使用哪种方式，都要求即使在关键代码区的代码发生异常时，依然可以正常的释放锁，不然该异常线程一直持有锁会导致其他线程一直处于等待锁被释放的状态，不能正常的处理工作和退出。</p>
+<p>手动方式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">import threading</div><div class="line">lock = threading.Lock()</div><div class="line">def thread_function():</div><div class="line">    ...</div><div class="line">    lock.acquire()</div><div class="line">    ~~~~~~~~~~~~~~~~~~~~~~ begin of critical code region</div><div class="line">    try:</div><div class="line">        ...</div><div class="line">    finally:</div><div class="line">    ~~~~~~~~~~~~~~~~~~~~~~ end of critical code region</div><div class="line">        lock.release()</div><div class="line">    ...</div></pre></td></tr></table></figure></p>
+<p>上下文管理器方式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">import threading</div><div class="line">lock = threading.Lock()</div><div class="line">def thread_function():</div><div class="line">    ...</div><div class="line">    with lock：</div><div class="line">        ~~~~~~~~~~~~~~~~~~~~~~ begin of critical code region</div><div class="line">        ...</div><div class="line">        ~~~~~~~~~~~~~~~~~~~~~~ end of critical code region</div><div class="line">    ...</div></pre></td></tr></table></figure></p>
+<p>上下文管理器方式的方式可以自动在异常时释放锁，并且代码结构上也更加简洁清晰，是推荐的划定关键代码区的方式。</p>
+<h3 id="双重锁验证"><a href="#双重锁验证" class="headerlink" title="双重锁验证"></a>双重锁验证</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">import threading</div><div class="line">import numpy as np</div><div class="line">from skimage import io</div><div class="line">import os</div><div class="line"></div><div class="line">directory = &quot;images/&quot;</div><div class="line">filenames = [name for name in os.listdir(directory)]</div><div class="line">num_images = len(filenames)</div><div class="line"></div><div class="line">images = np.empty((num_images, 256, 256, 3))</div><div class="line">current_image_index = 0</div><div class="line">lock = threading.Lock()</div><div class="line"></div><div class="line">def load_images(directory):</div><div class="line">    global current_image_index</div><div class="line">    global images</div><div class="line">    while current_image_index &lt; num_images: # 第一次验证</div><div class="line">        with lock:</div><div class="line">            if current_image_index &lt; num_images: # 第二次验证</div><div class="line">                image = io.imread(os.path.join(directory, filenames[current_image_index]))</div><div class="line">                images[current_image_index] = image</div><div class="line">                current_image_index += 1</div><div class="line">num_threads = 4</div><div class="line">threads = []</div><div class="line">for i in range(num_threads):</div><div class="line">    t = threading.Thread(target=load_images, args=(directory, ))</div><div class="line">    threads.append(t)</div><div class="line"></div><div class="line"># Fire all threads up</div><div class="line">for t in threads:</div><div class="line">    t.start()</div><div class="line"></div><div class="line"># wait for all threads</div><div class="line">for t in threads:</div><div class="line">    t.join()</div></pre></td></tr></table></figure>
+<p>上面的代码起了4个线程，它们分别根据全局变量 <code>current_image_index</code> 的指示加载图像并将图像数据赋给全局变量 <code>images</code>。<br>第一次验证控制循环的退出和线程的退出，只要 <code>current_image_index</code> 小于 <code>num_images</code>，说明目录中尚有图像未被加载，需要进入循环继续加载。进入循环之后首先请求锁构建关键代码区，因为我们要对共享全局变量进行修改了，而这必须发生在关键代码区。如果线程获得锁，就进入关键代码区执行；如果当前有其他线程持有锁，该线程就“堵塞”在此处直到其他线程释放锁并且该线程获得锁，才进入关键代码区。</p>
+<p>进入关键代码区之后，我们进行了第二次验证，这是因为线程在等待获得锁的过程中流逝了一段时间，可能有其他线程加载了一些图像并修改了 <code>current_image_index</code> 的值，导致目录中的图像文件被加载完并设置 <code>current_image_index</code> 等于了 <code>num_images</code>，因此在进行加载之前需要再次进行验证，仅在 <code>current_image_index</code> 小于 <code>num_images</code> 时才进行加载，否则就会发生filenames 列表的访问越界错误。</p>
+<h3 id="长时代码移出关键代码区"><a href="#长时代码移出关键代码区" class="headerlink" title="长时代码移出关键代码区"></a>长时代码移出关键代码区</h3><p>上一部分中的代码实际上是“伪”多线程，我们是起了 4 个线程，但是难道这 4 个线程真的是在并行地处理各自的工作吗？<br><code>image = io.imread(os.path.join(directory, filenames[current_image_index]))</code> 这一行是每一个线程的主要功能代码，也是耗时较长的部分（涉及到 I/O 操作，虽然没有太多的指令，即不是 CPU 密集型，但是却是耗时较长的部分），它被放到了关键代码区！！这意味着这实际上是在“单线程”执行着的，因为在关键代码区实际上由于锁的控制使得同一时刻只能有一个线程进入关键代码区。</p>
+<p>我们要做就是要把长时代码移出关键代码区，从而实现“真”多线程。</p>
+<p>这里需要记住的一点就是：关键代码区的代码运行时间要短，这是因为在关键代码区实际上由于锁的控制使得同一时刻只能有一个线程进入关键代码区，即“单线程模式”，为了减少其他线程的等待时间，提高“并行模式”运行时间 vs “单线程模式”运行时间的比例。做到这一点，就要求在关键代码区中仅进行全局共享变量的修改，而将长时代码移出关键代码区。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">import threading</div><div class="line">import numpy as np</div><div class="line">from skimage import io</div><div class="line">import os</div><div class="line"></div><div class="line">directory = &quot;images/&quot;</div><div class="line">filenames = [name for name in os.listdir(directory)]</div><div class="line">num_images = len(filenames)</div><div class="line"></div><div class="line">images = np.empty((num_images, 256, 256, 3))</div><div class="line">current_image_index = 0</div><div class="line">lock = threading.Lock()</div><div class="line"></div><div class="line">def load_images(directory):</div><div class="line">    global current_image_index</div><div class="line">    global images</div><div class="line">    while current_image_index &lt; num_images: # 第一次验证</div><div class="line">        with lock:</div><div class="line">            if current_image_index &lt; num_images: # 第二次验证</div><div class="line">                index = current_image_index</div><div class="line">                current_image_index += 1</div><div class="line">            else:</div><div class="line">                break</div><div class="line"></div><div class="line">        image = io.imread(os.path.join(directory, filenames[index]))</div><div class="line"></div><div class="line">        with lock:</div><div class="line">            images[index] = image</div><div class="line"></div><div class="line">num_threads = 4</div><div class="line">threads = []</div><div class="line">for i in range(num_threads):</div><div class="line">    t = threading.Thread(target=load_images, args=(directory, ))</div><div class="line">    threads.append(t)</div><div class="line"></div><div class="line"># Fire all threads up</div><div class="line">for t in threads:</div><div class="line">    t.start()</div><div class="line"></div><div class="line"># wait for all threads</div><div class="line">for t in threads:</div><div class="line">    t.join()</div></pre></td></tr></table></figure></p>
+<p>上面的代码通过将一个关键代码区分成两个关键代码区，将图像文件打开代码移出了关键代码区，并使用线程局部变量 <code>index</code> 来标识该线程当前要加载的图像。通过实验可以发现，整个程序的运行时间减少了。</p>
+<h3 id="实验对比"><a href="#实验对比" class="headerlink" title="实验对比"></a>实验对比</h3><p><img src="http://oytnj8g2y.bkt.clouddn.com/python/concurrency/compare.png" alt="compare"><br>“真”多线程：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line">import threading</div><div class="line">import time</div><div class="line"></div><div class="line"></div><div class="line">num_iterations = 100</div><div class="line"></div><div class="line">current_iteration = 0</div><div class="line"></div><div class="line">lock = threading.Lock()</div><div class="line"></div><div class="line">def thread_function():</div><div class="line">    global current_iteration</div><div class="line">    while current_iteration &lt; num_iterations: # 第一次验证</div><div class="line">        with lock:</div><div class="line">            if current_iteration &lt; num_iterations: # 第二次验证</div><div class="line">                iteration = current_iteration</div><div class="line">                current_iteration += 1</div><div class="line">            else:</div><div class="line">                break</div><div class="line"></div><div class="line">        # using iteration</div><div class="line">        # Long running time code </div><div class="line">        time.sleep(0.1)</div><div class="line"></div><div class="line">        with lock:</div><div class="line">            pass</div><div class="line"></div><div class="line">num_threads = 4</div><div class="line">threads = []</div><div class="line">for i in range(num_threads):</div><div class="line">    t = threading.Thread(target=thread_function)</div><div class="line">    threads.append(t)</div><div class="line"></div><div class="line">tic = time.time()</div><div class="line"># Fire all threads up</div><div class="line">for t in threads:</div><div class="line">    t.start()</div><div class="line"></div><div class="line"># wait for all threads</div><div class="line">for t in threads:</div><div class="line">    t.join()</div><div class="line">toc = time.time()</div><div class="line">print(&quot;Time elapsed %.2f&quot; % (toc - tic))</div></pre></td></tr></table></figure></p>
+<p>“伪”多线程：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">import threading</div><div class="line">import time</div><div class="line"></div><div class="line"></div><div class="line">num_iterations = 100</div><div class="line"></div><div class="line">current_iteration = 0</div><div class="line"></div><div class="line">lock = threading.Lock()</div><div class="line"></div><div class="line">def thread_function():</div><div class="line">    global current_iteration</div><div class="line">    while current_iteration &lt; num_iterations: # 第一次验证</div><div class="line">        with lock:</div><div class="line">            if current_iteration &lt; num_iterations: # 第二次验证</div><div class="line">                iteration = current_iteration</div><div class="line">                current_iteration += 1</div><div class="line">                # using iteration</div><div class="line">                # Long running time code </div><div class="line">                time.sleep(0.1)</div><div class="line"></div><div class="line">num_threads = 4</div><div class="line">threads = []</div><div class="line">for i in range(num_threads):</div><div class="line">    t = threading.Thread(target=thread_function)</div><div class="line">    threads.append(t)</div><div class="line"></div><div class="line">tic = time.time()</div><div class="line"># Fire all threads up</div><div class="line">for t in threads:</div><div class="line">    t.start()</div><div class="line"></div><div class="line"># wait for all threads</div><div class="line">for t in threads:</div><div class="line">    t.join()</div><div class="line">toc = time.time()</div><div class="line">print(&quot;Time elapsed %.2f&quot; % (toc - tic))</div></pre></td></tr></table></figure></p>
+<p>单线程：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">import time</div><div class="line"></div><div class="line"></div><div class="line">num_iterations = 100</div><div class="line"></div><div class="line">tic = time.time()</div><div class="line"></div><div class="line">for iteration in range(num_iterations):</div><div class="line">    # using iteration</div><div class="line">    # Long running time code </div><div class="line">    time.sleep(0.1)</div><div class="line"></div><div class="line">toc = time.time()</div><div class="line">print(&quot;Time elapsed %.2f&quot; % (toc - tic))</div></pre></td></tr></table></figure></p>
+<p>相关的代码放置在我的 GitHub <a href="https://github.com/RobertLexis/python_concurrency" target="_blank" rel="external">仓库</a>中。</p>
+
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+
+                    
+
+                    
+                        <li>
+                            <a href="https://github.com/RobertLexis" target="_blank">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <p class="copyright text-muted">&copy; 2018 Robert Lexis<br></p>
+                <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
+                <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>

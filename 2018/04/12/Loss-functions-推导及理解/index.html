@@ -10,6 +10,9 @@
 
     <!--Description-->
     
+        <meta name="description" content="本博文主要是在学习 CS231n: Convolutional Neural Networks for Visual Recognition Spring 2017 Lecture 3: Loss Functions and Optimization 之后的总结。
+问题描述Suppose: 3 tr">
+    
 
     <!--Author-->
     
@@ -18,7 +21,7 @@
 
     <!--Open Graph Title-->
     
-        <meta property="og:title" content="This is WHY."/>
+        <meta property="og:title" content="Loss functions 推导及理解"/>
     
 
     <!--Open Graph Description-->
@@ -29,7 +32,7 @@
 
     <!--Type page-->
     
-        <meta property="og:type" content="website" />
+        <meta property="og:type" content="article" />
     
 
     <!--Page Cover-->
@@ -40,7 +43,7 @@
 
     <!-- Title -->
     
-    <title>page - This is WHY.</title>
+    <title>Loss functions 推导及理解 - This is WHY.</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
@@ -143,190 +146,84 @@
 
     <!-- Main Content -->
     <!-- Page Header -->
-<!-- Set your background image for this header in the theme's configuration: index_cover -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
 <header class="intro-header" style="background-image: url('http://www.codeblocq.com/assets/projects/hexo-theme-clean-blog/img/home-bg.jpg')">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <div class="site-heading">
-                    <h1>This is WHY.</h1>
-                    <hr class="small">
-                    <span class="subheading">Dawn is coming.</span>
+                <div class="post-heading">
+                    <h1>Loss functions 推导及理解</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2018-04-12
+                        
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 </header>
 
-<!-- Main Content -->
-<div class="container">
-    <div class="row">
-        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-            
-                <div class="post-preview">
-    <a href="/2018/03/25/STL-内存池实现/">
-        <h2 class="post-title">
-            STL 内存池实现
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2018-03-25
-    </p>
-</div>
-<hr>
-            
-                <div class="post-preview">
-    <a href="/2018/03/16/计算机概念的英文表述/">
-        <h2 class="post-title">
-            计算机概念的英文表述
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2018-03-16
-    </p>
-</div>
-<hr>
-            
-                <div class="post-preview">
-    <a href="/2018/03/15/MySQL-Crash-Course-读书笔记/">
-        <h2 class="post-title">
-            MySQL Crash Course 读书笔记
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2018-03-15
-    </p>
-</div>
-<hr>
-            
-                <div class="post-preview">
-    <a href="/2018/03/01/C-内存管理/">
-        <h2 class="post-title">
-            C++内存管理
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2018-03-01
-    </p>
-</div>
-<hr>
-            
-                <div class="post-preview">
-    <a href="/2018/02/19/C-类型转换/">
-        <h2 class="post-title">
-            C++类型转换
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2018-02-19
-    </p>
-</div>
-<hr>
-            
-                <div class="post-preview">
-    <a href="/2018/02/17/多线程编程/">
-        <h2 class="post-title">
-            多线程编程
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2018-02-17
-    </p>
-</div>
-<hr>
-            
-                <div class="post-preview">
-    <a href="/2018/02/11/C-类型转换操作符的重载/">
-        <h2 class="post-title">
-            C++类型转换操作符的重载
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2018-02-11
-    </p>
-</div>
-<hr>
-            
-                <div class="post-preview">
-    <a href="/2018/02/10/C-const-extern-static-volatile/">
-        <h2 class="post-title">
-            C++ const/extern/static/volatile
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2018-02-10
-    </p>
-</div>
-<hr>
-            
-                <div class="post-preview">
-    <a href="/2018/01/23/数据结构与算法分析C/">
-        <h2 class="post-title">
-            数据结构与算法分析C++
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2018-01-23
-    </p>
-</div>
-<hr>
-            
-                <div class="post-preview">
-    <a href="/2018/01/18/机器学习工程师笔试面试/">
-        <h2 class="post-title">
-            机器学习工程师笔试面试
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2018-01-18
-    </p>
-</div>
-<hr>
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+                <div class="col-lg-4 col-lg-offset-2 col-md-5 col-md-offset-1 post-tags">
+                    
+                        
+
+
+<a href="/tags/DL/">#DL</a>
+
+
+                    
+                </div>
+                <div class="col-lg-4 col-md-5 post-categories">
+                    
+                </div>
             
 
-            <ul class="pager">
-    
-        <li class="previous"><a href="/page/2/">&larr;  下一页</a></li>
-    
-    
-        <li class="next"><a href="/page/4/">上一页  &rarr;</a></li>
-    
+            <!-- Gallery -->
+            
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <p>本博文主要是在学习 <a href="http://cs231n.stanford.edu/2017/" target="_blank" rel="external">CS231n: Convolutional Neural Networks for Visual Recognition Spring 2017</a> Lecture 3: Loss Functions and Optimization 之后的总结。</p>
+<h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><p><img src="" alt="problem"><br>Suppose: 3 training examples, 3 classes. With some \(W\) the scores \( f(x, W) = Wx\) are:<br>损失函数告诉我们目前模型性能的好坏（A loss function tells how<br>good our current classifier is）。<br>Loss function takes in the \(W\), looks at the scores, then tell us how bad quantitatively the \(W\) is.<br>Optimizer comes up a procedure for searching through the space of all possible \(Ws\) to get the least bad W.<br>给定数据集 \(\lbrace (x_i, y_i) \rbrace_{i=1}^N\)，其中 \(x_i\) 是图片，\(y_i\) 是一个整数标签，在整个数据集上损失是：<br>$$<br>L = \frac{1}{N} \sum_i L_i(f(x_i, W), y_i)<br>$$</p>
+<h3 id="Multiclass-SVM-loss"><a href="#Multiclass-SVM-loss" class="headerlink" title="Multiclass SVM loss"></a>Multiclass SVM loss</h3><p>$$<br>\begin{split}<br>L_i &amp; = \sum_{j \not= y_i} \begin{cases}<br>    0 &amp; s_{y_i} &gt; s_j + 1 \\\<br>    s_j - s_{y_i} + 1 &amp; otherwise<br>    \end{cases} \\\<br>    &amp; = \sum_{j \not= y_i} max(0, s_j - s_{y_i} + 1)<br>\end{split}<br>$$</p>
+<p>对一个样本\(i\)而言，我们可以得到其在各个类别上的 score，如上图所示，<br>仅在不是真实标签类别\(y_i\)的其他类别上\(j\)上计算损失，仅当其他类别上的 score \(s_j\) 加上一个 safety margin值之后还小于真实类别上的 score \(s_{y_i}\)时，损失才为0。即不仅仅要求真实类别score \(s_{y_i}\) 大于其他类别score \(s_j}\)，而且更进一步要求优化器使得前者大于后者加上一个safety margin。<br>在 otherwise 分支，\(s_j\) 比 \(s_{y_i}\) 大的值再加上safety margin就是损失值。<br>$$<br>HingeLoss_{i, j} = max(0, s_j - s_{y_i} + 1)<br>$$<br>作为 \(s_{y_i}\) 的函数斜率为 -1，必过点 \((s_j + 1, 0)\)。<br><img src="" alt="hinge_loss"></p>
+<p><img src="" alt="losses"><br>$$<br>L = (2.9 + 0 + 12.9) / 3 = 5.27<br>$$</p>
+<h5 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h5><ul>
+<li>What happens to loss if car scores change a bit ?<br>  The loss will not change.<br>  这说明 SVM loss 关心的仅仅是让真实标签类别的 score 比其他类别的 score 大 1。</li>
+<li>what is the min/max possible loss?<br>  0/infinity</li>
+<li>At initialization W is small so all s ≈ 0. What is the loss?<br>  number of classes minus one<br>  这一点在 debug 时是很有用的。在我们尚未进行训练之前，我们可以思考一下此时的预期损失。</li>
+<li>What if the sum was over all classes (including \(j = y_i\))?<br>  The loss will increase exactly by one.训练结果不会变，会获得同一个的分类器。但是损失的最小值不再是 0，而是1。</li>
+<li>What if we used mean instead of sum?<br>  Just rescale the whole loss function by a constant (number of classes minus one). 训练结果不会变，会获得同一个的分类器。</li>
+<li>What if we used \( L_i = \sum_{j \not= y_i} max(0, s_j - s_{y_i} + 1)^2 \) ?<br>  现在我们有了一个完全不同的 loss function，squared hinge loss，<strong>不同损失函数对分类器犯下的不同错误的关注点不一样，也就是说，分类器会犯下不同错误，不同的损失函数对这些不同错误的关注程度不一致。</strong> hinge loss 不在乎 score 的错误程度是很错误还是一般错误，而 squared hinge loss 会着重关注那些偏得离谱的错误，因为他们的 wrong 会变成 squared wrong。对于 hinge loss 来说，同等看待，让一个很错误的样本预测结果变得不太错误了，和让一个不太错误的样本预测结果变得更加不太错误，比如，\(4-&gt;3\) 与 \(3-&gt;2\)，而对于 squared hinge loss 来说，<br>  (16-&gt;9) 要比 \(9-&gt;4\) loss 降低幅度要大，但是分类的 accuracy 并没有变化。</li>
 </ul>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
         </div>
     </div>
-</div>
-
-
+</article>
 
     <!-- Footer -->
     <hr />
