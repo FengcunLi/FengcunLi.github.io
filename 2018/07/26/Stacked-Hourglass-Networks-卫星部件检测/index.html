@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="STACKED HOURGLASS NETWORKSSTACKED HOURGLASS NETWORKS 是由密歇根大学的研究团队设计的一个专门用来进行人体姿态估计的网络结构。在卫星的部件检测项目中，我们对其进行了修改和调整，利用同样的网络结构完成了太阳帆板的检测定位（类似图像分割任务）、发动机和对">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Robert Lexis">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="Stacked Hourglass Networks 卫星部件检测"/>
+    
+
+    <!--Open Graph Description-->
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="This is WHY."/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+        <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>Stacked Hourglass Networks 卫星部件检测 - This is WHY.</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Google Analytics -->
+    
+
+
+    <!-- favicon -->
+    
+	
+</head>
+
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">This is WHY.</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li>
+                        <a href="/">
+                            
+                                Home
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/archives">
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/tags">
+                            
+                                Tags
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/categories">
+                            
+                                Categories
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="https://github.com/RobertLexis">
+                            
+                                <i class="fa fa-github fa-stack-2x"></i>
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('http://www.codeblocq.com/assets/projects/hexo-theme-clean-blog/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>Stacked Hourglass Networks 卫星部件检测</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2018-07-26
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+
+            <!-- Gallery -->
+            
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <h3 id="STACKED-HOURGLASS-NETWORKS"><a href="#STACKED-HOURGLASS-NETWORKS" class="headerlink" title="STACKED HOURGLASS NETWORKS"></a>STACKED HOURGLASS NETWORKS</h3><p><a href="http://www-personal.umich.edu/~alnewell/pose/" target="_blank" rel="external">STACKED HOURGLASS NETWORKS</a> 是由密歇根大学的研究团队设计的一个专门用来进行人体姿态估计的网络结构。在卫星的部件检测项目中，我们对其进行了修改和调整，利用同样的网络结构完成了太阳帆板的检测定位（类似图像分割任务）、发动机和对接环的定位（关键点检测任务）、发动机和对接环的检测定位（类似图像分割任务）。<br>下面对 STACKED HOURGLASS NETWORKS 进行介绍及对自主实现的 Keras 关键代码进行分析。</p>
+<h3 id="网络结构"><a href="#网络结构" class="headerlink" title="网络结构"></a>网络结构</h3><p>在该论文中，作者指出：</p>
+<blockquote>
+<p>This work introduces a novel convolutional network architecture for the task of human pose estimation. Features are processed across all scales and consolidated to best capture the various spatial relationships associated with the body. We show how repeated bottom-up, top-down processing used in conjunction with intermediate supervision is critical to improving the performance of the network. We refer to the architecture as a “stacked hourglass” network based on the successive steps of pooling and upsampling that are done to produce a final set of predictions. State-of-the-art results are achieved on the FLIC and MPII benchmarks outcompeting all recent methods.</p>
+</blockquote>
+<p>特征在各个不同尺度上的进行处理并合并，可以让神经网络更好地把握部件的空间关系。将 bottom-up, top-down 的处理模块（hourglass 模块）进行重复堆叠（stack），在辅以中间监督 （intermediate supervision），可以极大地提高网络的性能。<br>实际上，是通过卷积神经网络对部件模型进行了编码表示，是一种隐式空间模型（implicit spatial model）。<br>STACKED HOURGLASS NETWORKS 与 CPM (Convolutional Pose Machines) 方法相比，思路更明晰，网络更简洁。<br><img src="/2018/07/26/Stacked-Hourglass-Networks-卫星部件检测/stacked-hg.png" alt="stacked hourglass"></p>
+<h5 id="hourglass-模块"><a href="#hourglass-模块" class="headerlink" title="hourglass 模块"></a>hourglass 模块</h5><p>一个 hourglass 模块如下图所示，体现了跳级的思想。除红框内的 box 之外，每一个 box 都是一个 residual 模块的输出。<br>下图是 4 阶 hourglass 模块，进行了 4 次下采样（及对应的 4 次上采样）。n 阶 hourglass 模块可以提取从原始尺度到\(\frac{1}{2^n}\)<br>尺度的特征。<strong>在一个 hourglass 模块中特征图的通道数目保持不变。</strong><br><img src="/2018/07/26/Stacked-Hourglass-Networks-卫星部件检测/hourglass.png" alt="hourglass"></p>
+<h5 id="residual-模块"><a href="#residual-模块" class="headerlink" title="residual 模块"></a>residual 模块</h5><p>一个 residual 模块如下图所示，residual 模块的 upper branch 是一个卷积模块 conv block，卷积模块首先进行一次\( 1 \times 1 \) 的卷积操作，缩减特征图的通道数目，然后进行一次 \( 3 \times 3 \)的卷积操作，最后再进行一次\( 1 \times 1 \)的卷积操作。residual 模块的 lower branch 是一个 skip layer，是一个跳级结构，在 skip layer 的输入与 conv block 的输出的通道数目不一致时，skip layer 会进行必要的 \( 1 \times 1 \) 卷积操作，使得其输出与 conv block 的输出通道数目一致，从而能够进行 element-wise 的相加。<br>一个 residual 模块可以看成是一个尺寸保持、通道数目可变可不变的“卷积层”。<br><img src="/2018/07/26/Stacked-Hourglass-Networks-卫星部件检测/residual.png" alt="residual"></p>
+<h5 id="intermediate-supervision"><a href="#intermediate-supervision" class="headerlink" title="intermediate supervision"></a>intermediate supervision</h5><p>中间监督（intermediate supervision）的结构如下图所示，网络进行分支，并产生图中蓝色所示的热图（heatmap），热图可以被用来计算损失。在热图上应用一次 \( 1 \times 1\) 卷积操作，增加通道数目使得其可以与网络的中间特征图进行相加。图中虚线是来自上一个 hourglass 模块输出的特征图，这里也体现了跳级（skip layer）的思想。</p>
+<p>跳级结构一方面可以看成是一个梯度反向传播的高速通道，另一方面也是网络正则化的一个替代，允许训练过程中神经网络自主选择其深度（结构复杂度）。<br><img src="/2018/07/26/Stacked-Hourglass-Networks-卫星部件检测/intermediate_supervision.png" alt="intermediate_supervision"></p>
+<h5 id="损失函数"><a href="#损失函数" class="headerlink" title="损失函数"></a>损失函数</h5><p>对于 \( H \times W  \times N \)<br>的输入，每一个 hourglass 模块都会生成一个 \( \frac{H}{2}  \times \frac{W}{2} \times K\)<br>的热图。对于每个热图，都比较其与真值（groundtruth）的误差作为损失，体现了中间监督(intermediate supervision)的思想。</p>
+<h5 id="预测"><a href="#预测" class="headerlink" title="预测"></a>预测</h5><p>在做预测时，仅选择最后一个 hourglass 模块输出的热图作为结果。</p>
+<h3 id="关键代码"><a href="#关键代码" class="headerlink" title="关键代码"></a>关键代码</h3><h5 id="residual-模块-1"><a href="#residual-模块-1" class="headerlink" title="residual 模块"></a>residual 模块</h5><h6 id="conv-block"><a href="#conv-block" class="headerlink" title="conv block"></a>conv block</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">def conv_block(inputs, num_output):</div><div class="line">    &quot;&quot;&quot; Convolutional Block</div><div class="line">    Args:</div><div class="line">        inputs  : Input Tensor (Not after being activated!!!!!)</div><div class="line">        num_output  : Desired output number of channel</div><div class="line">    Returns:</div><div class="line">        output  : Output Tensor</div><div class="line">    &quot;&quot;&quot;</div><div class="line"></div><div class="line">    x = BatchNormalization()(inputs)</div><div class="line">    x = Activation(&apos;relu&apos;)(x)</div><div class="line">    x = Conv2D(num_output // 2, (1, 1), strides=1, padding=&apos;valid&apos;)(x)</div><div class="line"></div><div class="line">    x = BatchNormalization()(x)</div><div class="line">    x = Activation(&apos;relu&apos;)(x)</div><div class="line">    x = Conv2D(num_output // 2, (3, 3), strides=1, padding=&apos;same&apos;)(x)</div><div class="line"></div><div class="line">    x = BatchNormalization()(x)</div><div class="line">    x = Activation(&apos;relu&apos;)(x)</div><div class="line">    output = Conv2D(num_output, (1, 1), strides=1, padding=&apos;valid&apos;)(x)</div><div class="line">    return output</div></pre></td></tr></table></figure>
+<h6 id="skip-layer"><a href="#skip-layer" class="headerlink" title="skip layer"></a>skip layer</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">def skip_layer(inputs, num_output):</div><div class="line">    &quot;&quot;&quot; Skip Layer</div><div class="line">    Args:</div><div class="line">        inputs  : Input Tensor</div><div class="line">        num_output  : Desired output number of channel</div><div class="line">    Returns:</div><div class="line">        Tensor of shape (None, inputs.height, inputs.width, num_output)</div><div class="line">    &quot;&quot;&quot;</div><div class="line">    if inputs.get_shape().as_list()[3] == num_output:</div><div class="line">        return inputs</div><div class="line">    else:</div><div class="line">        x = BatchNormalization()(inputs)</div><div class="line">        x = Activation(&apos;relu&apos;)(x)</div><div class="line">        output = Conv2D(num_output, (1, 1), strides=1, padding=&apos;valid&apos;)(x)</div><div class="line">        return output</div></pre></td></tr></table></figure>
+<h6 id="residual"><a href="#residual" class="headerlink" title="residual"></a>residual</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">def residual(inputs, num_output):</div><div class="line">    &quot;&quot;&quot; Residual Unit</div><div class="line">    Args:</div><div class="line">        inputs  : Input Tensor</div><div class="line">        num_output  : Number of Output Features (channels)</div><div class="line">    &quot;&quot;&quot;</div><div class="line">    convb = conv_block(inputs, num_output)</div><div class="line">    skipl = skip_layer(inputs, num_output)</div><div class="line">    return Add()([convb, skipl])</div></pre></td></tr></table></figure>
+<h5 id="hourglass-模块-1"><a href="#hourglass-模块-1" class="headerlink" title="hourglass 模块"></a>hourglass 模块</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">def hourglass(inputs, num_low, num_output):</div><div class="line">    &quot;&quot;&quot; Hourglass Module</div><div class="line">    Args:</div><div class="line">        inputs  : Input Tensor</div><div class="line">        num_low       : Number of downsampling step</div><div class="line">        num_output  : Number of Output Features (channels)</div><div class="line">    &quot;&quot;&quot;</div><div class="line">    # Upper Branch</div><div class="line">    up_1 = residual(inputs, num_output)</div><div class="line"></div><div class="line">    # Lower Branch</div><div class="line">    low_ = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(inputs)</div><div class="line">    low_1= residual(low_, num_output)</div><div class="line"></div><div class="line">    if num_low &gt; 0:</div><div class="line">        low_2 = hourglass(low_1, num_low-1, num_output)</div><div class="line">    else:</div><div class="line">        low_2 = residual(low_1, num_output)</div><div class="line"></div><div class="line">    low_3 = residual(low_2, num_output)</div><div class="line"></div><div class="line">    up_2 = UpSampling2D(size=(2, 2))(low_3)</div><div class="line">    return Add()([up_2, up_1])</div></pre></td></tr></table></figure>
+<h5 id="loss"><a href="#loss" class="headerlink" title="loss"></a>loss</h5><p>在使用 Keras 对损失函数进行实现的时候，需要注意的几点是：</p>
+<ul>
+<li>定义的 Python 损失函数需要传入模型的 <code>fit</code> 或者 <code>fit_generator</code> 方法，这两个方法会在内部调用该函数并为其传入训练数据中的标签和神经网络的输出，这两个参数是损失函数计算损失的唯二参数，此处由于使用中间监督的模型结构，即网络中间产生的热图也需要参与到损失值的计算，所以需要将所有这些热图都 stack 起来当作网络的输出，从而可以被传入损失函数完成损失值的计算。</li>
+<li>Keras 中定义 loss，返回的是 batch_size 长度的 tensor， 而不是像 tensorflow 中那样是一个 scalar。</li>
+<li><code>K.binary_crossentropy</code> 的默认设置是 <code>from_logits=False</code>,即该函数的默认设置假设输入是经过 <code>sigmoid</code> 激活之后的值，而不是仅经过卷积操作之后的<code>logits</code>，这是由其需要注意的一点，<code>K.binary_crossentropy</code> 的源码如下，如果<code>from_logits==True</code>，则直接调用 TensorFlow 的 <code>tf.nn.sigmoid_cross_entropy_with_logits</code>；如果<code>from_logits==False</code>，则首先将输入转换回 logits，再调用<code>tf.nn.sigmoid_cross_entropy_with_logits</code>。如果使用错误，就会 logits 就会被 <code>clip_by_value</code> 裁剪到（0，1）之间。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">def binary_crossentropy(target, output, from_logits=False):</div><div class="line">    &quot;&quot;&quot;Binary crossentropy between an output tensor and a target tensor.</div><div class="line"></div><div class="line">    # Arguments</div><div class="line">        target: A tensor with the same shape as `output`.</div><div class="line">        output: A tensor.</div><div class="line">        from_logits: Whether `output` is expected to be a logits tensor.</div><div class="line">            By default, we consider that `output`</div><div class="line">            encodes a probability distribution.</div><div class="line"></div><div class="line">    # Returns</div><div class="line">        A tensor.</div><div class="line">    &quot;&quot;&quot;</div><div class="line">    # Note: tf.nn.sigmoid_cross_entropy_with_logits</div><div class="line">    # expects logits, Keras expects probabilities.</div><div class="line">    if not from_logits:</div><div class="line">        # transform back to logits</div><div class="line">        _epsilon = _to_tensor(epsilon(), output.dtype.base_dtype)</div><div class="line">        output = tf.clip_by_value(output, _epsilon, 1 - _epsilon)</div><div class="line">        output = tf.log(output / (1 - output))</div><div class="line"></div><div class="line">    return tf.nn.sigmoid_cross_entropy_with_logits(labels=target,</div><div class="line">                                                   logits=output)</div></pre></td></tr></table></figure>
+<p>定义的损失函数如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">def loss(y_true, y_pred):</div><div class="line">	&quot;&quot;&quot;</div><div class="line">	# Arguments</div><div class="line">		y_true: A tensor of shape (batch_size, W, H, K), K is the num of heatmaps.</div><div class="line">		y_pred: A tensor of shape (batch_size, N, W, H, K), N is the num of hourglass modules. </div><div class="line">	&quot;&quot;&quot;</div><div class="line">    losses = []</div><div class="line">    shapes = y_pred.get_shape().as_list()</div><div class="line">    for i in range(shapes[1]):</div><div class="line">        losses.append(K.reshape(</div><div class="line">            K.mean(K.binary_crossentropy(y_true, y_pred[:, i], from_logits=True), axis=-1), </div><div class="line">            (-1, shapes[2]*shapes[3])))</div><div class="line">    </div><div class="line">    loss = K.mean(K.mean(K.stack(losses, axis=1), axis=1), axis=1)</div><div class="line"></div><div class="line">    return loss</div></pre></td></tr></table></figure></p>
+<h3 id="数据集及结果"><a href="#数据集及结果" class="headerlink" title="数据集及结果"></a>数据集及结果</h3><h5 id="发动机和对接环的定位（关键点检测任务）"><a href="#发动机和对接环的定位（关键点检测任务）" class="headerlink" title="发动机和对接环的定位（关键点检测任务）"></a>发动机和对接环的定位（关键点检测任务）</h5><h6 id="数据集"><a href="#数据集" class="headerlink" title="数据集"></a>数据集</h6><p><img src="/2018/07/26/Stacked-Hourglass-Networks-卫星部件检测/satellite_key_pts.png" alt="satellite_key_pts"></p>
+<h6 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h6><p><img src="/2018/07/26/Stacked-Hourglass-Networks-卫星部件检测/satellite_key_pts_ret.png" alt="satellite_key_pts_ret"></p>
+<h5 id="发动机和对接环的检测定位（类似图像分割任务）"><a href="#发动机和对接环的检测定位（类似图像分割任务）" class="headerlink" title="发动机和对接环的检测定位（类似图像分割任务）"></a>发动机和对接环的检测定位（类似图像分割任务）</h5><h6 id="数据集-1"><a href="#数据集-1" class="headerlink" title="数据集"></a>数据集</h6><p><img src="/2018/07/26/Stacked-Hourglass-Networks-卫星部件检测/satellite.png" alt="satellite"></p>
+<h6 id="结果-1"><a href="#结果-1" class="headerlink" title="结果"></a>结果</h6><p><img src="/2018/07/26/Stacked-Hourglass-Networks-卫星部件检测/satellite_ret.png" alt="satellite_ret"></p>
+<h5 id="太阳帆板的检测定位（类似图像分割任务）"><a href="#太阳帆板的检测定位（类似图像分割任务）" class="headerlink" title="太阳帆板的检测定位（类似图像分割任务）"></a>太阳帆板的检测定位（类似图像分割任务）</h5><h6 id="数据集-2"><a href="#数据集-2" class="headerlink" title="数据集"></a>数据集</h6><p><img src="/2018/07/26/Stacked-Hourglass-Networks-卫星部件检测/satellite_sol_pan.png" alt="satellite_sol_pan"></p>
+<h6 id="结果-2"><a href="#结果-2" class="headerlink" title="结果"></a>结果</h6><p><img src="/2018/07/26/Stacked-Hourglass-Networks-卫星部件检测/satellite_sol_pan_ret.png" alt="satellite_sol_pan_ret"></p>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+
+                    
+
+                    
+                        <li>
+                            <a href="https://github.com/RobertLexis" target="_blank">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <p class="copyright text-muted">&copy; 2018 Robert Lexis<br></p>
+                <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
+                <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>

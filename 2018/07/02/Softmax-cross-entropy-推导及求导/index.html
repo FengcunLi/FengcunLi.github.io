@@ -10,6 +10,8 @@
 
     <!--Description-->
     
+        <meta name="description" content="keras 中的 binary_crossentropy 和1234567891011121314151617181920212223def binary_crossentropy(target, output, from_logits=False):    &amp;quot;&amp;quot;&amp;quot;Bi">
+    
 
     <!--Author-->
     
@@ -172,13 +174,28 @@
 
             <!-- Tags and categories -->
            
+                <div class="col-lg-4 col-lg-offset-2 col-md-5 col-md-offset-1 post-tags">
+                    
+                        
+
+
+<a href="/tags/DL/">#DL</a>
+
+
+                    
+                </div>
+                <div class="col-lg-4 col-md-5 post-categories">
+                    
+                </div>
+            
 
             <!-- Gallery -->
             
 
             <!-- Post Main Content -->
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                
+                <h3 id="keras-中的-binary-crossentropy-和"><a href="#keras-中的-binary-crossentropy-和" class="headerlink" title="keras 中的 binary_crossentropy 和"></a>keras 中的 binary_crossentropy 和</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">def binary_crossentropy(target, output, from_logits=False):</div><div class="line">    &quot;&quot;&quot;Binary crossentropy between an output tensor and a target tensor.</div><div class="line"></div><div class="line">    # Arguments</div><div class="line">        target: A tensor with the same shape as `output`.</div><div class="line">        output: A tensor.</div><div class="line">        from_logits: Whether `output` is expected to be a logits tensor.</div><div class="line">            By default, we consider that `output`</div><div class="line">            encodes a probability distribution.</div><div class="line"></div><div class="line">    # Returns</div><div class="line">        A tensor.</div><div class="line">    &quot;&quot;&quot;</div><div class="line">    # Note: tf.nn.sigmoid_cross_entropy_with_logits</div><div class="line">    # expects logits, Keras expects probabilities.</div><div class="line">    if not from_logits:</div><div class="line">        # transform back to logits</div><div class="line">        _epsilon = _to_tensor(epsilon(), output.dtype.base_dtype)</div><div class="line">        output = tf.clip_by_value(output, _epsilon, 1 - _epsilon)</div><div class="line">        output = tf.log(output / (1 - output))</div><div class="line"></div><div class="line">    return tf.nn.sigmoid_cross_entropy_with_logits(labels=target,</div><div class="line">                                                   logits=output)</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">def categorical_crossentropy(target, output, from_logits=False, axis=-1):</div><div class="line">3177     &quot;&quot;&quot;Categorical crossentropy between an output tensor and a target tensor.</div><div class="line">3178 </div><div class="line">3179     # Arguments</div><div class="line">3180         target: A tensor of the same shape as `output`.</div><div class="line">3181         output: A tensor resulting from a softmax</div><div class="line">3182             (unless `from_logits` is True, in which</div><div class="line">3183             case `output` is expected to be the logits).</div><div class="line">3184         from_logits: Boolean, whether `output` is the</div><div class="line">3185             result of a softmax, or is a tensor of logits.</div><div class="line">3186         axis: Int specifying the channels axis. `axis=-1`</div><div class="line">3187             corresponds to data format `channels_last`,</div><div class="line">3188             and `axis=1` corresponds to data format</div><div class="line">3189             `channels_first`.</div><div class="line">3190 </div><div class="line">3191     # Returns</div><div class="line">3192         Output tensor.</div><div class="line">3193 </div><div class="line">3194     # Raises</div><div class="line">3195         ValueError: if `axis` is neither -1 nor one of</div><div class="line">3196             the axes of `output`.</div><div class="line">3197     &quot;&quot;&quot;</div><div class="line">3198     output_dimensions = list(range(len(output.get_shape())))</div><div class="line">3199     if axis != -1 and axis not in output_dimensions:</div><div class="line">3200         raise ValueError(</div><div class="line">3201             &apos;&#123;&#125;&#123;&#125;&#123;&#125;&apos;.format(</div><div class="line">3202                 &apos;Unexpected channels axis &#123;&#125;. &apos;.format(axis),</div><div class="line">3203                 &apos;Expected to be -1 or one of the axes of `output`, &apos;,</div><div class="line">3204                 &apos;which has &#123;&#125; dimensions.&apos;.format(len(output.get_shape()))))</div><div class="line">3205     # Note: tf.nn.softmax_cross_entropy_with_logits</div><div class="line">3206     # expects logits, Keras expects probabilities.</div><div class="line">3207     if not from_logits:</div><div class="line">3208         # scale preds so that the class probas of each sample sum to 1</div><div class="line">3209         output /= tf.reduce_sum(output, axis, True)</div><div class="line">3210         # manual computation of crossentropy</div><div class="line">3211         _epsilon = _to_tensor(epsilon(), output.dtype.base_dtype)</div><div class="line">3212         output = tf.clip_by_value(output, _epsilon, 1. - _epsilon)</div><div class="line">3213         return - tf.reduce_sum(target * tf.log(output), axis)</div><div class="line">3214     else:</div><div class="line">3215         return tf.nn.softmax_cross_entropy_with_logits(labels=target,</div><div class="line">3216                                                        logits=output)</div></pre></td></tr></table></figure>
 
                 
             </div>
