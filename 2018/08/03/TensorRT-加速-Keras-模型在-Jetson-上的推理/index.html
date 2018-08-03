@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="将一个训练好的 Keras 模型通过 TensorRT 加速并 Push 到 Jetson TX2 上的流程框图如下：下面对一些关键代码及步骤进行解释：
+Keras model to Tensorflow frozen graph这一步可以在任意一台机器上完成，不限于 Jetson TX2 或者其 ">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Robert Lexis">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="TensorRT 加速 Keras 模型在 Jetson 上的推理"/>
+    
+
+    <!--Open Graph Description-->
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="This is WHY."/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+        <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>TensorRT 加速 Keras 模型在 Jetson 上的推理 - This is WHY.</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Google Analytics -->
+    
+
+
+    <!-- favicon -->
+    
+	
+</head>
+
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">This is WHY.</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li>
+                        <a href="/">
+                            
+                                Home
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/archives">
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/tags">
+                            
+                                Tags
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/categories">
+                            
+                                Categories
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="https://github.com/RobertLexis">
+                            
+                                <i class="fa fa-github fa-stack-2x"></i>
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('http://www.codeblocq.com/assets/projects/hexo-theme-clean-blog/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>TensorRT 加速 Keras 模型在 Jetson 上的推理</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2018-08-03
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+
+            <!-- Gallery -->
+            
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <p>将一个训练好的 Keras 模型通过 TensorRT 加速并 Push 到 Jetson TX2 上的流程框图如下：<br><img src="" alt=""><br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/tensorRT/flowchart.png" alt="flowchart"><br>下面对一些关键代码及步骤进行解释：</p>
+<h3 id="Keras-model-to-Tensorflow-frozen-graph"><a href="#Keras-model-to-Tensorflow-frozen-graph" class="headerlink" title="Keras model to Tensorflow frozen graph"></a>Keras model to Tensorflow frozen graph</h3><p>这一步可以在任意一台机器上完成，不限于 Jetson TX2 或者其 Host PC 上，只要配置了 tensorflow 和 keras 即可。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">import tensorflow as tf </div><div class="line">from keras.models import model_from_json</div><div class="line">from keras import backend as K</div><div class="line">import os </div><div class="line"></div><div class="line">def keras_to_frozen(model_file, weights_file):</div><div class="line">    # load keras model and weights</div><div class="line">    with open(model_file, &apos;r&apos;) as f:</div><div class="line">        json_string = f.read()</div><div class="line">    K.set_learning_phase(0)</div><div class="line">    </div><div class="line">    model = model_from_json(json_string)</div><div class="line">    model.load_weights(weights_file)</div><div class="line"></div><div class="line">    # rename output nodes</div><div class="line">    output_node_prefix = &apos;output_node_&apos;</div><div class="line">    output_node_names = []</div><div class="line">    output_nodes = []</div><div class="line">    for i in range(len(model.outputs)):</div><div class="line">        output_node_name = output_node_prefix + str(i)</div><div class="line">        output_nodes.append(tf.identity(model.outputs[i],  name=output_node_name))</div><div class="line">        output_node_names.append(output_node_name)</div><div class="line">    print(&apos;output node names are: &apos;, output_node_names)</div><div class="line"></div><div class="line">    # freeze the graph</div><div class="line">    sess = K.get_session()</div><div class="line">    constant_graph = tf.graph_util.convert_variables_to_constants(sess=sess, </div><div class="line">                                                              input_graph_def=sess.graph.as_graph_def(), </div><div class="line">                                                              output_node_names=output_node_names)</div><div class="line">    # write graph as pb</div><div class="line">    output_dir = &apos;frozen_graph&apos;</div><div class="line">    if not os.path.isdir(output_dir):</div><div class="line">        os.mkdir(output_dir)</div><div class="line">    filename = &apos;model.pb&apos;</div><div class="line">    return tf.train.write_graph(constant_graph, output_dir, filename, as_text=False)</div></pre></td></tr></table></figure></p>
+<p>代码的关键要点：</p>
+<ol>
+<li><code>K.set_learning_phase(0)</code> 将学习阶段设置为 0， 即 test 阶段，像 <code>BatchNormalization</code> 这种 layer 在 test 阶段和 train 阶段的行为是不一样的。</li>
+<li><code>tf.graph_util.convert_variables_to_constants</code> 将变量转换为常量，这一步使得我们可以用一个文件完全地（fully）表达一个神经网络，即如果不做这一步的话，<code>tf.train.write_graph</code> 写到文件里的仅仅有网络结构而没有相应的训练得到的权重参数。</li>
+</ol>
+<h3 id="Tensorflow-frozen-graph-to-UFF"><a href="#Tensorflow-frozen-graph-to-UFF" class="headerlink" title="Tensorflow frozen graph to UFF"></a>Tensorflow frozen graph to UFF</h3><p>就目前[2018/08/03]来说，NVCaffe 框架搭建的神经网络可以直接被导入并转化为推理引擎，来自其他框架的神经网络模型可以转化为 UFF 或者 ONNX 格式，然后通过相应的解析器解析成推理引擎。</p>
+<p>将 Tensorflow frozen graph 转化为 UFF 文件，需要安装 uff Python 包。<br>这一步可以在 Jetson TX2 或者其 Host PC 上完成，只要安装了 uff 包即可。</p>
+<p>uff 包是 TensorRT 3.0.4 for Ubuntu 16.04 and CUDA 9.0 tar package 的一部分，因此需要下载这个 tar 包，同时这个 tar 包也可以用来安装 TensorRT，由于已经通过 JetPack 在 Jetson TX2 上安装了 TensorRT，这一点可以在上一篇文章<a href="https://robertlexis.github.io/2018/08/01/Nvidia-Jetson-TX2-开箱及刷机/" target="_blank" rel="external">Nvidia Jetson TX2 开箱及刷机</a>或者下图中看到，因此我在这里仅取用安装其中的 uff。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">tar -xzf TensorRT-3.0.4.Ubuntu-16.04.3.x86_64.cuda-9.0.cudnn7.0.tar.gz</div><div class="line">sudo pip install TensorRT-3.0.4/uff/uff-0.2.0-py2.py3-none-any.whl</div></pre></td></tr></table></figure></p>
+<p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/tensorRT/installed.png" alt="installed"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">import uff</div><div class="line"># generate uff from frozen graph</div><div class="line">uff_model = uff.from_tensorflow_frozen_model(</div><div class="line">    frozen_file=frozen_graph_filename,</div><div class="line">    output_nodes=output_node_names,</div><div class="line">    output_filename=uff_model_filename,</div><div class="line">    text=False,</div><div class="line">)</div></pre></td></tr></table></figure>
+<h3 id="UFF-to-plan-engine"><a href="#UFF-to-plan-engine" class="headerlink" title="UFF to plan (engine)"></a>UFF to plan (engine)</h3><p>这一步在安装了 TensorRT 的机器上完成，在此文章中为 Jetson TX2。<br>这一步可以参考 Nvidia <a href="https://developer.nvidia.com/embedded/twodaystoademo" target="_blank" rel="external">Two Days to a Demo</a> Advanced - TensorFlow to TensorRT Image Classification 的 <a href="https://github.com/NVIDIA-Jetson/tf_to_trt_image_classification" target="_blank" rel="external">github 仓库</a> 中的 <code>src/uff_to_plan.cpp</code>。<br>但是需要注意的是，该文件的 71 行方法调用存在错误：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">parser-&gt;registerInput(inputName.c_str(), DimsCHW(3, inputHeight, inputWidth));</div></pre></td></tr></table></figure></p>
+<p>编译时报错：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/tensorRT/error1.png" alt="error_1"><br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/tensorRT/error2.png" alt="error_2"><br>去 <code>/usr/include/aarch64-linux-gnu/NvUffParser.h</code> 查看函数声明，发现需要一个 <code>UffInputOrder</code> 类型的参数:<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/tensorRT/method_prototype.png" alt="error_2"><br>在这个头文件内搜索可以找到 <code>UffInputOrder</code> 这一个枚举类型:<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/tensorRT/enum.png" alt="error_2"></p>
+<p>修改 <code>src/uff_to_plan.cpp</code> 的行 71 为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">parser-&gt;registerInput(inputName.c_str(), DimsCHW(3, inputHeight, inputWidth), UffInputOrder::kNHWC);</div></pre></td></tr></table></figure></p>
+<p>即可。</p>
+<h3 id="predict-cu"><a href="#predict-cu" class="headerlink" title="predict.cu"></a>predict.cu</h3><p>这一步在安装了 TensorRT 的机器上完成，在此文章中为 Jetson TX2，即在 Jetson TX2 完成 <code>.cu</code> 文件的编译。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">#include &lt;iostream&gt;</div><div class="line">#include &lt;fstream&gt;</div><div class="line">#include &lt;sstream&gt;</div><div class="line">#include &lt;NvInfer.h&gt;</div><div class="line"></div><div class="line">using namespace std;</div><div class="line">using namespace nvinfer1;</div><div class="line"></div><div class="line"></div><div class="line">class Logger : public ILogger</div><div class="line">&#123;</div><div class="line">  void log(Severity severity, const char * msg) override</div><div class="line">  &#123;</div><div class="line">    if (severity != Severity::kINFO)</div><div class="line">      cout &lt;&lt; msg &lt;&lt; endl;</div><div class="line">  &#125;</div><div class="line">&#125; gLogger;</div><div class="line"></div><div class="line">/* load the engine */</div><div class="line">cout &lt;&lt; &quot;Loading TensorRT engine from plan file...&quot; &lt;&lt; endl;</div><div class="line"></div><div class="line">ifstream planFile(planFilename); </div><div class="line">if (!planFile.is_open())</div><div class="line">&#123;</div><div class="line">    cout &lt;&lt; &quot;Could not open plan file.&quot; &lt;&lt; endl;</div><div class="line">    return 1;</div><div class="line">&#125;</div><div class="line"></div><div class="line">stringstream planBuffer;</div><div class="line">planBuffer &lt;&lt; planFile.rdbuf();</div><div class="line">string plan = planBuffer.str();</div><div class="line"></div><div class="line">IRuntime *runtime = createInferRuntime(gLogger);</div><div class="line">ICudaEngine *engine = runtime-&gt;deserializeCudaEngine((void*)plan.data(), plan.size(), nullptr);</div></pre></td></tr></table></figure>
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+
+                    
+
+                    
+                        <li>
+                            <a href="https://github.com/RobertLexis" target="_blank">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <p class="copyright text-muted">&copy; 2018 Robert Lexis<br></p>
+                <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
+                <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>
