@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="转置卷积在 Fully Convolutional Network (FCN) 结构的卷积神经网络中完成“上采样”。转置卷积与卷积在神经网络结构的正向和反向传播中正好做着相反的运算。
+卷积4x4 的输入（蓝色），3x3 的卷积核, 2x2 的输出为（绿色）。
+
+卷积操作过程可以如下计算： 
+输入矩阵">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Robert Lexis">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="转置卷积 Transposed Convolution"/>
+    
+
+    <!--Open Graph Description-->
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="This is WHY."/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+        <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>转置卷积 Transposed Convolution - This is WHY.</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Google Analytics -->
+    
+
+
+    <!-- favicon -->
+    
+	
+</head>
+
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">This is WHY.</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li>
+                        <a href="/">
+                            
+                                Home
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/archives">
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/tags">
+                            
+                                Tags
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/categories">
+                            
+                                Categories
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="https://github.com/RobertLexis">
+                            
+                                <i class="fa fa-github fa-stack-2x"></i>
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('http://www.codeblocq.com/assets/projects/hexo-theme-clean-blog/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>转置卷积 Transposed Convolution</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2018-08-08
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+
+            <!-- Gallery -->
+            
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <p>转置卷积在 Fully Convolutional Network (FCN) 结构的卷积神经网络中完成“上采样”。<br><strong>转置卷积</strong>与<strong>卷积</strong>在神经网络结构的正向和反向传播中正好做着相反的运算。</p>
+<h3 id="卷积"><a href="#卷积" class="headerlink" title="卷积"></a>卷积</h3><p>4x4 的输入（蓝色），3x3 的卷积核, 2x2 的输出为（绿色）。</p>
+<p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/convolution.gif" alt="convolution"></p>
+<p>卷积操作过程可以如下计算： </p>
+<p>输入矩阵展开为 \( 4 \times 4 = 16 \) 维（列）向量，记作 \( \mathbf{x} \)。 </p>
+<p>输出矩阵展开为 \( 2 \times 2 = 4 \) 维（列）向量，记作 \( \mathbf{y} \)。 </p>
+<p>卷积核扩展为如下的形式 \( \mathbf{C} \)，注意这个矩阵并不是<a href="https://en.wikipedia.org/wiki/Toeplitz_matrix" target="_blank" rel="external">托普利兹矩阵（Toeplitz matrix）</a>：</p>
+<p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/kernel.png" alt="kernel"> </p>
+<h5 id="正向传播"><a href="#正向传播" class="headerlink" title="正向传播"></a>正向传播</h5><p>卷积神经网络的正向传播就转换为：<br>\[ \mathbf{y} = \mathbf{C} \mathbf{x} \]<br>左乘 \( \mathbf{C} \)。</p>
+<h5 id="反向传播"><a href="#反向传播" class="headerlink" title="反向传播"></a>反向传播</h5><p>\[<br>\begin{split}<br>\frac{\partial loss}{\partial x_i} &amp; = \sum_{j}\frac{\partial loss}{\partial y_j}\frac{\partial y_j}{\partial x_i} \\\\<br>&amp; = \sum_{j}\frac{\partial loss}{\partial y_j}C_{j, i} \\\\<br>&amp; = C_{*, i}^{T}\frac{\partial loss}{\partial y}<br>\end{split}<br>\]<br>即<br>\[<br>\frac{\partial loss}{\partial x} = C^T\frac{\partial loss}{\partial y}<br>\]</p>
+<p>左乘 \( C^T \)。</p>
+<h3 id="转置卷积"><a href="#转置卷积" class="headerlink" title="转置卷积"></a>转置卷积</h3><blockquote>
+<p>Transposed convolutions – also called fractionally strided convolutions or deconvolutions – work by swapping the forward and backward passes of a convolution.<a href="https://arxiv.org/pdf/1603.07285.pdf" target="_blank" rel="external"><font size="2">1</font></a></p>
+<p>The term “deconvolution” is sometimes used in the literature, but we advocate against it on the grounds that a deconvolution is mathematically defined as the inverse of a convolution, which is different from a transposed convolution.<a href="https://arxiv.org/pdf/1603.07285.pdf" target="_blank" rel="external"><font size="2">1</font></a></p>
+</blockquote>
+<p>转置卷积核扩展为如下的形式 \( \mathbf{C} \)，注意这个矩阵并不是<a href="https://en.wikipedia.org/wiki/Toeplitz_matrix" target="_blank" rel="external">托普利兹矩阵（Toeplitz matrix）</a>：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/kernel.png" alt="kernel"> </p>
+<h5 id="正向传播-1"><a href="#正向传播-1" class="headerlink" title="正向传播"></a>正向传播</h5><p>\[ \mathbf{y} = \mathbf{C}^T \mathbf{x} \]<br>左乘 \( \mathbf{C}^T \)。</p>
+<h5 id="反向传播-1"><a href="#反向传播-1" class="headerlink" title="反向传播"></a>反向传播</h5><p>\[<br>\begin{split}<br>\frac{\partial loss}{\partial x} &amp; = (C^T)^T\frac{\partial loss}{\partial y} \\\\<br>&amp; = C\frac{\partial loss}{\partial y}<br>\end{split}<br>\]<br>左乘 \( C \)。</p>
+<p>综上，转置卷积不是逆卷积，在信号处理中逆卷积是输入经过卷积的信号，还原出经过卷积之前的原始信号的操作。而神经网络中卷积和逆卷积仅仅分别是对输入左乘\( \mathbf{C} \) 和 \( \mathbf{C}^T\) 。</p>
+<h3 id="两者的联系"><a href="#两者的联系" class="headerlink" title="两者的联系"></a>两者的联系</h3><p>就像论文 <a href="https://arxiv.org/pdf/1603.07285.pdf" target="_blank" rel="external">A guide to convolution arithmetic for deep learning</a> 中讲到的，一个核定义了一个卷积操作，但是它是一个直接卷积（ direct convolution ）还是一个转置卷积（ transposed convolution ）取决于正向传播和反向传播是如何计算的。</p>
+<blockquote>
+<p>One way to put it is to note that the kernel defines a convolution, but whether it’s a direct convolution or a transposed convolution is determined by how the forward and backward passes are computed. </p>
+<p>For instance, although the kernel \( \mathbf{w} \) defines a convolution whose forward and backward passes are computed by multiplying with \( \mathbf{C} \) and \( \mathbf{C}^T \) respectively, it also defines a transposed convolution whose forward and backward passes are computed by multiplying with \( \mathbf{C}^T \) and  \( (\mathbf{C}^T)^T = \mathbf{C} \) respectively.</p>
+</blockquote>
+<p>另外需要注意的一点是，总是可以通过一个直接卷积（ direct convolution ）来模拟一个转置卷积（ transposed convolution ），但是这种方式的一个缺点是通常会在输入中引入大量的零行和零列，导致计算效率的降低。</p>
+<blockquote>
+<p>Finally note that it is always possible to emulate a transposed convolution with a direct convolution. The disadvantage is that it usually involves adding many columns and rows of zeros to the input, resulting in a much less efficient implementation.</p>
+</blockquote>
+<h5 id="直接卷积模拟转置卷积"><a href="#直接卷积模拟转置卷积" class="headerlink" title="直接卷积模拟转置卷积"></a>直接卷积模拟转置卷积</h5><p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/transpose_convolution.gif" alt="transpose convolution"> </p>
+<ol>
+<li>对输入 \( \mathbf{x} \) (1)进行补零得到 \( \tilde{\mathbf{x}} \)；</li>
+<li>对核 \( \mathbf{w} \) (2) 进行左右翻转上下翻转得到新的核 \( \tilde{\mathbf{w}} \) (3)；</li>
+<li>利用核 \( \tilde{\mathbf{w}} \) 对  \( \tilde{\mathbf{x}} \) 进行卷积，如上面的动图所示。</li>
+</ol>
+<p>\[<br> \left\{<br> \begin{matrix}<br>   x_0 &amp; x_1 \\\\<br>   x_2 &amp; x_3 \\\\<br>  \end{matrix}<br>  \right\}\tag{1}<br>\]<br>\[<br> \left\{<br> \begin{matrix}<br>   w_{00} &amp; w_{01} &amp; w_{02} \\\\<br>   w_{10} &amp; w_{11} &amp; w_{12} \\\\<br>   w_{20} &amp; w_{21} &amp; w_{22} \\\\<br>  \end{matrix}<br>  \right\}\tag{2}<br>\]<br>\[<br> \left\{<br> \begin{matrix}<br>   w_{22} &amp; w_{21} &amp; w_{20} \\\\<br>   w_{12} &amp; w_{11} &amp; w_{10} \\\\<br>   w_{02} &amp; w_{01} &amp; w_{00} \\\\<br>  \end{matrix}<br>  \right\}\tag{3}<br>\]</p>
+<p>由图可以看出：</p>
+<ol>
+<li>\( y_0 = w_{00} \cdot x_0 \)</li>
+<li>\( y_1 = w_{01} \cdot x_0 + w_{00} \cdot x_1 \)</li>
+<li>\( y_2 = w_{02} \cdot x_0 + w_{01} \cdot x_1 \)</li>
+<li>\( y_3 = w_{02} \cdot x_1 \)</li>
+<li>以此类推</li>
+</ol>
+<p>在结果上等效于转置卷积的定义式：</p>
+<p>\[<br> \left[<br> \begin{matrix}<br>   w_{00} &amp; 0      &amp; 0      &amp; 0      \\\\<br>   w_{01} &amp; w_{00} &amp; 0      &amp; 0      \\\\<br>   w_{02} &amp; w_{01} &amp; 0      &amp; 0      \\\\<br>   0      &amp; w_{02} &amp; 0      &amp; 0      \\\\<br>   w_{10} &amp; 0      &amp; w_{00} &amp; 0      \\\\<br>   w_{11} &amp; w_{10} &amp; w_{01} &amp; w_{00} \\\\<br>   w_{12} &amp; w_{11} &amp; w_{02} &amp; w_{01} \\\\<br>   0      &amp; w_{12} &amp; 0      &amp; w_{02} \\\\<br>   w_{20} &amp; 0      &amp; w_{10} &amp; 0      \\\\<br>   w_{21} &amp; w_{20} &amp; w_{11} &amp; w_{10} \\\\<br>   w_{22} &amp; w_{21} &amp; w_{12} &amp; w_{11} \\\\<br>   0      &amp; w_{22} &amp; 0      &amp; w_{12} \\\\<br>   0      &amp; 0      &amp; w_{20} &amp; 0      \\\\<br>   0      &amp; 0      &amp; w_{21} &amp; w_{20} \\\\<br>   0      &amp; 0      &amp; w_{22} &amp; w_{21} \\\\<br>   0      &amp; 0      &amp; 0      &amp; w_{22} \\\\<br>  \end{matrix}<br>  \right]<br>  \cdot<br>  \left[<br>  \begin{matrix}<br>   x_0 \\\\<br>   x_1 \\\\<br>   x_2 \\\\<br>   x_3 \\\\<br>  \end{matrix}<br>  \right]<br>\]</p>
+<p><font size="2">[1] A guide to convolution arithmetic for deep learning</font></p>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+
+                    
+
+                    
+                        <li>
+                            <a href="https://github.com/RobertLexis" target="_blank">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <p class="copyright text-muted">&copy; 2018 Robert Lexis<br></p>
+                <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
+                <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>
