@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="主要总结了轻量级深度卷积神经网络 MobileNet V1 &amp;amp; V2 的关键贡献 separable convolution 和 inverted resisual &amp;amp; linear bottlenecks。
+MobileNet V1MobileNets: Efficient Con">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Robert Lexis">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="MobileNet V1 and V2 带来的卷积结构革命"/>
+    
+
+    <!--Open Graph Description-->
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="This is WHY."/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+        <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>MobileNet V1 and V2 带来的卷积结构革命 - This is WHY.</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Google Analytics -->
+    
+
+
+    <!-- favicon -->
+    
+	
+</head>
+
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">This is WHY.</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li>
+                        <a href="/">
+                            
+                                Home
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/archives">
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/tags">
+                            
+                                Tags
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/categories">
+                            
+                                Categories
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="https://github.com/RobertLexis">
+                            
+                                <i class="fa fa-github fa-stack-2x"></i>
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('http://www.codeblocq.com/assets/projects/hexo-theme-clean-blog/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>MobileNet V1 and V2 带来的卷积结构革命</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2018-08-11
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+
+            <!-- Gallery -->
+            
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <p>主要总结了轻量级深度卷积神经网络 MobileNet V1 &amp; V2 的关键贡献 separable convolution 和 inverted resisual &amp; linear bottlenecks。</p>
+<h3 id="MobileNet-V1"><a href="#MobileNet-V1" class="headerlink" title="MobileNet V1"></a>MobileNet V1</h3><p><a href="https://arxiv.org/abs/1704.04861" target="_blank" rel="external">MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications</a><br>提出了<strong>可分离卷积结构（separable convolution）</strong>来代替传统的卷积结构，可以在很小的精度损失下有效地减少网络参数，适合于在移动端和嵌入式环境下构建轻量级深度卷积神经网络。</p>
+<blockquote>
+<p>A standard convolution both filters and combines inputs into a new set of outputs in one step. The depthwise separable convolution splits this into two layers, a separate layer for filtering and a separate layer for combining.</p>
+<p>Depthwise separable convolution are made up of two layers: depthwise convolutions and pointwise convolutions. We use depthwise convolutions to apply a single filter per each input channel (input depth). Pointwise convolution, a simple 1×1 convolution, is then used to create a linear combination of the output of the depthwise layer. MobileNets use both batchnorm and ReLU nonlinearities for both layers.</p>
+<p>MobileNet uses 3 × 3 depthwise separable convolutions which uses between 8 to 9 times less computation than standard convolutions at only a small reduction in accuracy.</p>
+</blockquote>
+<p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/mobilenet/separable_convolution.png" alt="separable_convolution"><br><strong>可分离卷积结构可以替代标准卷积结构在各种各样的卷积神经网络中作为基础卷积结构，实现卷积神经网络的轻量化。</strong></p>
+<h5 id="MobileNet-可分离卷积的官方实现（去掉关于-namescope-的代码）"><a href="#MobileNet-可分离卷积的官方实现（去掉关于-namescope-的代码）" class="headerlink" title="MobileNet 可分离卷积的官方实现（去掉关于 namescope 的代码）"></a>MobileNet 可分离卷积的官方实现（去掉关于 namescope 的代码）</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line">def split_separable_conv2d(input_tensor,</div><div class="line">                           num_outputs,</div><div class="line">                           normalizer_fn=None,</div><div class="line">                           stride=1,</div><div class="line">                           rate=1):</div><div class="line">    &quot;&quot;&quot;Separable mobilenet V1 style convolution.</div><div class="line"></div><div class="line">    Depthwise convolution, with default non-linearity (relu),</div><div class="line">    followed by 1x1 depthwise convolution.  This is similar to</div><div class="line">    slim.separable_conv2d, but differs in that it applies batch</div><div class="line">    normalization and non-linearity to depthwise. This  matches</div><div class="line">    the basic building of Mobilenet Paper</div><div class="line">    (https://arxiv.org/abs/1704.04861)</div><div class="line"></div><div class="line">    Args:</div><div class="line">      input_tensor: input</div><div class="line">      num_outputs: number of outputs</div><div class="line">      normalizer_fn: which normalizer function to use for depthwise/pointwise</div><div class="line">      stride: stride</div><div class="line">      rate: output rate (also known as dilation rate)</div><div class="line"></div><div class="line">    Returns:</div><div class="line">        output tesnor</div><div class="line">    &quot;&quot;&quot;</div><div class="line"></div><div class="line">    kernel_size = [3, 3]</div><div class="line">    padding = &apos;SAME&apos;</div><div class="line">    # 设置 num_outputs = None，即仅做 depthwise convoltion，而不做 slim.separable_conv2d 中的 pointwise convolution，然后依次使用了 normalizer_fn 和 slim.separable_conv2d 的默认非线性激活函数（relu），符合论文给出的卷积结构。</div><div class="line">    net = slim.separable_conv2d(</div><div class="line">        input_tensor,</div><div class="line">        num_outputs=None,</div><div class="line">        kernel_size,</div><div class="line">        depth_multiplier=1,</div><div class="line">        stride=stride,</div><div class="line">        rate=rate,</div><div class="line">        normalizer_fn=normalizer_fn,</div><div class="line">        padding=padding)</div><div class="line"></div><div class="line">    # 进行 pointwise convolution，然后依次使用了 normalizer_fn 和 slim.separable_conv2d 的默认非线性激活函数（relu），符合论文给出的卷积结构。</div><div class="line">    net = slim.conv2d(</div><div class="line">        net,</div><div class="line">        num_outputs, [1, 1],</div><div class="line">        stride=1,</div><div class="line">        normalizer_fn=normalizer_fn)</div><div class="line">  return net</div></pre></td></tr></table></figure>
+<p>slim.separable_conv2d 和 slim.conv2d 的<a href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/layers.py" target="_blank" rel="external">官方文档</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">slim.separable_conv2d(</div><div class="line">    inputs,</div><div class="line">    num_outputs,</div><div class="line">    kernel_size,</div><div class="line">    depth_multiplier=1,</div><div class="line">    stride=1,</div><div class="line">    padding=&apos;SAME&apos;,</div><div class="line">    data_format=DATA_FORMAT_NHWC,</div><div class="line">    rate=1,</div><div class="line">    activation_fn=nn.relu,</div><div class="line">    normalizer_fn=None,</div><div class="line">    normalizer_params=None,</div><div class="line">    ...)</div><div class="line">1. This op first performs a depthwise convolution that acts separately on</div><div class="line">channels, creating a variable called `depthwise_weights`. </div><div class="line">2. If `num_outputs` is not None, it adds a pointwise convolution that mixes channels, creating a</div><div class="line">variable called `pointwise_weights`. </div><div class="line">3. Then, if `normalizer_fn` is None, it adds bias to the result, creating a variable called &apos;biases&apos;, otherwise, the `normalizer_fn` is applied. </div><div class="line">4. It finally applies an activation function to produce the end result.</div><div class="line"></div><div class="line">slim.conv2d</div><div class="line">1. creates a variable called `weights`, representing the convolutional kernel, that is convolved (actually cross-correlated) with the `inputs`.</div><div class="line">2. If a `normalizer_fn` is provided (such as `batch_norm`), it is then applied. Otherwise, if</div><div class="line">`normalizer_fn` is None and a `biases_initializer` is provided then a `biases`</div><div class="line">variable would be created and added the activations. </div><div class="line">3. Finally, if `activation_fn` is not `None`, it is applied to the activations as well.</div></pre></td></tr></table></figure></p>
+<h3 id="MobileNet-V2"><a href="#MobileNet-V2" class="headerlink" title="MobileNet V2"></a>MobileNet V2</h3><p><a href="https://arxiv.org/abs/1801.04381" target="_blank" rel="external">MobileNetV2: Inverted Residuals and Linear Bottlenecks</a></p>
+<blockquote>
+<p>Main contribution:<br>A novel layer module: the inverted residual with linear bottleneck. This module takes as an input a low-dimensional compressed representation which is first expanded to high dimension and filtered with a lightweight depthwise convolution. Features are subsequently projected back to a low-dimensional representation with a <strong>linear convolution</strong>.<br>总结起来就是一句话，利用 MobileNet V1 提出的可分离卷积结构的变种（去掉可分离卷积结构中 pointwise 之后的 relu）作为基础卷积结构，对 residual block 的变种进行了“加速降参”。</p>
+</blockquote>
+<p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/mobilenet/inverted_residual.png" alt="inverted_residual"><br><small>Diagonally hatched layers do not use non-linearities. The thickness of each block to indicate its relative number of channels. Note how classical residuals connects the layers with high number of channels, whereas the inverted residuals connect the bottlenecks. </small></p>
+<ol>
+<li>为什么输入和输出的通道数目都被限制在较小的值？<br> The manifolds of interest in neural networks could be embedded in low-dimensional subspaces.</li>
+<li>为什么扩张通道数？<br> 由下图可以看出不应该在低维空间内应用 relu，因为会造成信息的丢失，而又需要 relu 提供非线性，就只能在扩张通道数（升维）之后再使用 relu。<blockquote>
+<p>The bottlenecks actually contain all the necessary information, while an expansion layer acts merely as an implementation detail that accompanies a non-linear transformation of the tensor. </p>
+</blockquote>
+</li>
+</ol>
+<p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/mobilenet/why_remove_relu.png" alt="why_remove_relu"></p>
+<ol>
+<li>为什么去掉可分离卷积结构中 pointwise 之后的 relu？<br>不应该在低维空间内应用 relu，因为会造成信息的丢失</li>
+</ol>
+<p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/mobilenet/inverted_residual_1.png" alt="inverted_residual_1"></p>
+<p><strong>Inverted Residuals 指中间通道多两头通道少，Linear Bottlenecks 指两头都是线性激活之后得到的 feature map。</strong></p>
+<h5 id="Inverted-Residuals-and-Linear-Bottlenecks-的官方实现（去掉关于-namescope-的代码）"><a href="#Inverted-Residuals-and-Linear-Bottlenecks-的官方实现（去掉关于-namescope-的代码）" class="headerlink" title="Inverted Residuals and Linear Bottlenecks 的官方实现（去掉关于 namescope 的代码）"></a>Inverted Residuals and Linear Bottlenecks 的官方实现（去掉关于 namescope 的代码）</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div></pre></td><td class="code"><pre><div class="line">def expanded_conv(input_tensor,</div><div class="line">                  num_outputs,</div><div class="line">                  expansion_size=expand_input_by_factor(6),</div><div class="line">                  stride=1,</div><div class="line">                  rate=1,</div><div class="line">                  kernel_size=(3, 3),</div><div class="line">                  normalizer_fn=None,</div><div class="line">                  depthwise_channel_multiplier=1,</div><div class="line">                  padding=&apos;SAME&apos;):</div><div class="line">    &quot;&quot;&quot;Depthwise Convolution Block with expansion.</div><div class="line"></div><div class="line">    Builds a composite convolution that has the following structure</div><div class="line">    expansion (1x1) -&gt; depthwise (kernel_size) -&gt; projection (1x1)</div><div class="line"></div><div class="line">    Args:</div><div class="line">        input_tensor: input</div><div class="line">        num_outputs: number of outputs in the final layer.</div><div class="line">        expansion_size: the size of expansion, could be a constant or a callable.</div><div class="line">            If latter it will be provided &apos;num_inputs&apos; as an input. For forward</div><div class="line">            compatibility it should accept arbitrary keyword arguments.</div><div class="line">            Default will expand the input by factor of 6.</div><div class="line">        stride: depthwise stride</div><div class="line">        rate: depthwise rate</div><div class="line">        kernel_size: depthwise kernel</div><div class="line">        normalizer_fn: batchnorm or otherwise</div><div class="line">        depthwise_channel_multiplier: depthwise channel multiplier:</div><div class="line">        padding: Padding type to use</div><div class="line"></div><div class="line">    Returns:</div><div class="line">        Tensor of depth num_outputs</div><div class="line"></div><div class="line">    &quot;&quot;&quot;</div><div class="line"></div><div class="line">    prev_depth = input_tensor.get_shape().as_list()[3]</div><div class="line"></div><div class="line">    # 设置 num_outputs = None，即仅做 depthwise convoltion，而不做 slim.separable_conv2d 中的 pointwise convolution，然后依次使用了 normalizer_fn 和 slim.separable_conv2d 的默认非线性激活函数（relu），符合论文给出的卷积结构。</div><div class="line">    depthwise_func = functools.partial(</div><div class="line">        slim.separable_conv2d,</div><div class="line">        num_outputs=None,</div><div class="line">        kernel_size=kernel_size,</div><div class="line">        depth_multiplier=depthwise_channel_multiplier,</div><div class="line">        stride=stride,</div><div class="line">        rate=rate,</div><div class="line">        normalizer_fn=normalizer_fn,</div><div class="line">        padding=padding)</div><div class="line"></div><div class="line">    net = input_tensor</div><div class="line"></div><div class="line">    # expand</div><div class="line">    if callable(expansion_size):</div><div class="line">      inner_size = expansion_size(num_inputs=prev_depth)</div><div class="line">    else:</div><div class="line">      inner_size = expansion_size</div><div class="line">    if inner_size &gt; net.shape[3]:</div><div class="line">        net = slim.conv2d(net, inner_size, [1, 1], stride=1, normalizer_fn=normalizer_fn, padding=padding)</div><div class="line"></div><div class="line">    # separable convolution</div><div class="line">    net = depthwise_func(net)</div><div class="line">    net = slim.conv2d(net, num_outputs, [1, 1], stride=1, normalizer_fn=normalizer_fn, activation_fn=None, padding=padding)</div><div class="line"></div><div class="line">    if residual and stride == 1 and net.get_shape().as_list()[3] == prev_depth: </div><div class="line">      net += input_tensor</div><div class="line">    return net</div></pre></td></tr></table></figure>
+
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+
+                    
+
+                    
+                        <li>
+                            <a href="https://github.com/RobertLexis" target="_blank">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <p class="copyright text-muted">&copy; 2018 Robert Lexis<br></p>
+                <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
+                <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>
