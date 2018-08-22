@@ -175,13 +175,27 @@ Keras model to Tensorflow frozen graph这一步可以在任意一台机器上完
 
             <!-- Tags and categories -->
            
+                <div class="col-lg-4 col-lg-offset-2 col-md-5 col-md-offset-1 post-tags">
+                    
+                        
+
+
+<a href="/tags/DL/">#DL</a>
+
+
+                    
+                </div>
+                <div class="col-lg-4 col-md-5 post-categories">
+                    
+                </div>
+            
 
             <!-- Gallery -->
             
 
             <!-- Post Main Content -->
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <p>将一个训练好的 Keras 模型通过 TensorRT 加速并 Push 到 Jetson TX2 上的流程框图如下：<br><img src="" alt=""><br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/tensorRT/flowchart.png" alt="flowchart"><br>下面对一些关键代码及步骤进行解释：</p>
+                <p>将一个训练好的 Keras 模型通过 TensorRT 加速并 Push 到 Jetson TX2 上的流程框图如下：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/tensorRT/flowchart.png" alt="flowchart"><br>下面对一些关键代码及步骤进行解释：</p>
 <h3 id="Keras-model-to-Tensorflow-frozen-graph"><a href="#Keras-model-to-Tensorflow-frozen-graph" class="headerlink" title="Keras model to Tensorflow frozen graph"></a>Keras model to Tensorflow frozen graph</h3><p>这一步可以在任意一台机器上完成，不限于 Jetson TX2 或者其 Host PC 上，只要配置了 tensorflow 和 keras 即可。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">import tensorflow as tf </div><div class="line">from keras.models import model_from_json</div><div class="line">from keras import backend as K</div><div class="line">import os </div><div class="line"></div><div class="line">def keras_to_frozen(model_file, weights_file):</div><div class="line">    # load keras model and weights</div><div class="line">    with open(model_file, &apos;r&apos;) as f:</div><div class="line">        json_string = f.read()</div><div class="line">    K.set_learning_phase(0)</div><div class="line">    </div><div class="line">    model = model_from_json(json_string)</div><div class="line">    model.load_weights(weights_file)</div><div class="line"></div><div class="line">    # rename output nodes</div><div class="line">    output_node_prefix = &apos;output_node_&apos;</div><div class="line">    output_node_names = []</div><div class="line">    output_nodes = []</div><div class="line">    for i in range(len(model.outputs)):</div><div class="line">        output_node_name = output_node_prefix + str(i)</div><div class="line">        output_nodes.append(tf.identity(model.outputs[i],  name=output_node_name))</div><div class="line">        output_node_names.append(output_node_name)</div><div class="line">    print(&apos;output node names are: &apos;, output_node_names)</div><div class="line"></div><div class="line">    # freeze the graph</div><div class="line">    sess = K.get_session()</div><div class="line">    constant_graph = tf.graph_util.convert_variables_to_constants(sess=sess, </div><div class="line">                                                              input_graph_def=sess.graph.as_graph_def(), </div><div class="line">                                                              output_node_names=output_node_names)</div><div class="line">    # write graph as pb</div><div class="line">    output_dir = &apos;frozen_graph&apos;</div><div class="line">    if not os.path.isdir(output_dir):</div><div class="line">        os.mkdir(output_dir)</div><div class="line">    filename = &apos;model.pb&apos;</div><div class="line">    return tf.train.write_graph(constant_graph, output_dir, filename, as_text=False)</div></pre></td></tr></table></figure></p>
 <p>代码的关键要点：</p>
 <ol>
