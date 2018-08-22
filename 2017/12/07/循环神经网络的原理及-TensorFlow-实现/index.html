@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 
 <!-- Head tag -->
 <head>
@@ -37,7 +37,7 @@
     <!--Page Cover-->
     
 
-        <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary" />
     
 
     <!-- Title -->
@@ -45,156 +45,127 @@
     <title>循环神经网络的原理及 TensorFlow 实现 - This is WHY.</title>
 
     <!-- Bootstrap Core CSS -->
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
-
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 
     <!-- Custom Fonts -->
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
-    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
     <!-- Gallery -->
     <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
 
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
     <!-- Google Analytics -->
     
 
 
-    <!-- favicon -->
-    
-	
 </head>
 
 
 <body>
 
-    <!-- Menu -->
-    <!-- Navigation -->
-<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
-    <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header page-scroll">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="/">This is WHY.</a>
-        </div>
+<div class="bg-gradient"></div>
+<div class="bg-pattern"></div>
 
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav navbar-right">
-                
-                    <li>
-                        <a href="/">
-                            
-                                Home
-                            
-                        </a>
-                    </li>
-                
-                    <li>
-                        <a href="/archives">
-                            
-                                Archives
-                            
-                        </a>
-                    </li>
-                
-                    <li>
-                        <a href="/tags">
-                            
-                                Tags
-                            
-                        </a>
-                    </li>
-                
-                    <li>
-                        <a href="/categories">
-                            
-                                Categories
-                            
-                        </a>
-                    </li>
-                
-                    <li>
-                        <a href="https://github.com/RobertLexis">
-                            
-                                <i class="fa fa-github fa-stack-2x"></i>
-                            
-                        </a>
-                    </li>
-                
-            </ul>
-        </div>
-        <!-- /.navbar-collapse -->
+<!-- Menu -->
+<!--Menu Links and Overlay-->
+<div class="menu-bg">
+    <div class="menu-container">
+        <ul>
+            
+            <li class="menu-item">
+                <a href="/">
+                    Home
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/archives">
+                    Archives
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/about.html">
+                    About
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/tags">
+                    Tags
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/categories">
+                    Categories
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/contact.html">
+                    Contact
+                </a>
+            </li>
+            
+        </ul>
     </div>
-    <!-- /.container -->
+</div>
+
+<!--Hamburger Icon-->
+<nav>
+    <a href="#menu"></a>
 </nav>
 
-    <!-- Main Content -->
-    <!-- Page Header -->
-<!-- Set your background image for this header in your post front-matter: cover -->
+<div class="container">
 
-<header class="intro-header" style="background-image: url('http://www.codeblocq.com/assets/projects/hexo-theme-clean-blog/img/home-bg.jpg')">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <div class="post-heading">
-                    <h1>循环神经网络的原理及 TensorFlow 实现</h1>
-                    
-                    <span class="meta">
-                        <!-- Date and Author -->
-                        
-                        
-                            2017-12-07
-                        
-                    </span>
-                </div>
-            </div>
-        </div>
+    <!-- Main Content -->
+    <div class="row">
+    <div class="col-sm-12">
+
+        <!--Title and Logo-->
+        <header>
+    <div class="logo">
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
+        
     </div>
 </header>
 
-<!-- Post Content -->
-<article>
-    <div class="container">
-        <div class="row">
-
-            <!-- Tags and categories -->
-           
-                <div class="col-lg-4 col-lg-offset-2 col-md-5 col-md-offset-1 post-tags">
-                    
-                        
-
-
-<a href="/tags/DL/">#DL</a>
-
-
-                    
-                </div>
-                <div class="col-lg-4 col-md-5 post-categories">
-                    
-                </div>
+        <section class="main">
             
+<div class="post">
 
-            <!-- Gallery -->
+    <div class="post-header">
+        <h1 class="title">
+            <a href="/2017/12/07/循环神经网络的原理及-TensorFlow-实现/">
+                循环神经网络的原理及 TensorFlow 实现
+            </a>
+        </h1>
+        <div class="post-info">
             
+                <span class="date">2017-12-07</span>
+            
+            
+            
+        </div>
+    </div>
 
-            <!-- Post Main Content -->
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <h2 id="循环神经网络的原理及-TensorFlow-实现"><a href="#循环神经网络的原理及-TensorFlow-实现" class="headerlink" title="循环神经网络的原理及 TensorFlow 实现"></a>循环神经网络的原理及 TensorFlow 实现</h2><h3 id="循环神经网络"><a href="#循环神经网络" class="headerlink" title="循环神经网络"></a>循环神经网络</h3><p><strong>循环体</strong>的网络结构的参数在不同时刻是共享的, 循环体的网络结构的输出不仅提供给下一时刻作为输入，同时也提供了当前时刻的输出。为了将循环体的输出转化为最终的输出，需要一个全连接来完成这个过程，这和卷积神经网络中最后的全连接层意义是一样的，不同时刻用于输出的全连接的参数也是一样的。<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/RNN1.jpg" alt="RNN的前向传播的计算过程示意图"><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">#!coding: utf-8</div><div class="line">import numpy as np</div><div class="line"></div><div class="line">X = [1, 2]</div><div class="line">state = [0.0, 0.0]</div><div class="line"># 分开定义不同输入部分的权重以方便操作</div><div class="line">w_cell_state = np.matrix([[0.1, 0.2], [0.3, 0.4]])</div><div class="line">w_cell_input = np.matrix([0.5, 0.6])</div><div class="line">b_cell = [0.1, -0.1]</div><div class="line"></div><div class="line">w_output = np.matrix([[1.0], [2.0]])</div><div class="line">b_output = 0.1</div><div class="line"></div><div class="line"># 按照时间顺序执行循环神经网络的前向传播过程</div><div class="line">for i in range(len(X)):</div><div class="line">     before_activation = state * w_cell_state + X[i] * w_cell_input + b_cell</div><div class="line">     state = np.tanh(before_activation)</div><div class="line">     final_output = state * w_output + b_output</div><div class="line">     print &quot;before activation: &quot;, before_activation</div><div class="line">     print &quot;state: &quot;, state</div><div class="line">     print &quot;output: &quot;, final_output</div></pre></td></tr></table></figure></p>
+    <div class="content">
+
+        <!-- Gallery -->
+        
+
+        <!-- Post Content -->
+        <h2 id="循环神经网络的原理及-TensorFlow-实现"><a href="#循环神经网络的原理及-TensorFlow-实现" class="headerlink" title="循环神经网络的原理及 TensorFlow 实现"></a>循环神经网络的原理及 TensorFlow 实现</h2><h3 id="循环神经网络"><a href="#循环神经网络" class="headerlink" title="循环神经网络"></a>循环神经网络</h3><p><strong>循环体</strong>的网络结构的参数在不同时刻是共享的, 循环体的网络结构的输出不仅提供给下一时刻作为输入，同时也提供了当前时刻的输出。为了将循环体的输出转化为最终的输出，需要一个全连接来完成这个过程，这和卷积神经网络中最后的全连接层意义是一样的，不同时刻用于输出的全连接的参数也是一样的。<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/RNN1.jpg" alt="RNN的前向传播的计算过程示意图"><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">#!coding: utf-8</div><div class="line">import numpy as np</div><div class="line"></div><div class="line">X = [1, 2]</div><div class="line">state = [0.0, 0.0]</div><div class="line"># 分开定义不同输入部分的权重以方便操作</div><div class="line">w_cell_state = np.matrix([[0.1, 0.2], [0.3, 0.4]])</div><div class="line">w_cell_input = np.matrix([0.5, 0.6])</div><div class="line">b_cell = [0.1, -0.1]</div><div class="line"></div><div class="line">w_output = np.matrix([[1.0], [2.0]])</div><div class="line">b_output = 0.1</div><div class="line"></div><div class="line"># 按照时间顺序执行循环神经网络的前向传播过程</div><div class="line">for i in range(len(X)):</div><div class="line">     before_activation = state * w_cell_state + X[i] * w_cell_input + b_cell</div><div class="line">     state = np.tanh(before_activation)</div><div class="line">     final_output = state * w_output + b_output</div><div class="line">     print &quot;before activation: &quot;, before_activation</div><div class="line">     print &quot;state: &quot;, state</div><div class="line">     print &quot;output: &quot;, final_output</div></pre></td></tr></table></figure></p>
 <p>输出结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">before activation:  [[ 0.6  0.5]]</div><div class="line">state:  [[ 0.53704957  0.46211716]]</div><div class="line">output:  [[ 1.56128388]]</div><div class="line">before activation:  [[ 1.2923401   1.39225678]]</div><div class="line">state:  [[ 0.85973818  0.88366641]]</div><div class="line">output:  [[ 2.72707101]]</div></pre></td></tr></table></figure></p>
 <h3 id="LSTM"><a href="#LSTM" class="headerlink" title="LSTM"></a>LSTM</h3><p>上面的RNN并没有记忆的功能，仅仅是将上一时刻的输出输入到该时刻，仅仅就是一个“循环”神经网络，LSTM 不仅仅将上一时刻的输出输入到该时刻，而且内部还有一个“记忆单元”可以长久保持细胞的状态。即将上一时刻细胞的状态保持到该时刻，并在该时刻进行更新，从而可以继续保持到下一时刻。<br>LSTM中有三种门，输入门，遗忘门，输出门。门是通过 sigmoid 产生的，产生的门要去 pointwise 地乘才能发挥作用，门都需要去乘以一个东西。三种门的产生所需的构造材料是不一样的，作用的对象也是不一样的。<code>h</code> 是循环体的输出（不一定是这一时刻网络的输出，因为可能还要经过一个全连接层才能成为这一时刻网络的输出；但是是可能经过激活函数激活的），<code>x</code> 是循环体的输入，<code>c</code>是一个细胞状态，通过 <code>h</code> 和 <code>x</code> 以及上一时刻的细胞状态进行更新，它的意义就是对过往的一切经过一系列遗忘之后还剩下的东西，是对过往的概括。<br>遗忘门的生成：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/forget_gate.png" alt="forget_gate"><br>输入门的生成：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/input_gate.png" alt="input_gate"><br>遗忘门和输入门发挥作用：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/forget_input_gate.png" alt="forget_input_gate"><br>输出门的生成及发挥作用：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/output_gate.png" alt="output_gate"><br>LSTM cell 输入、输出、状态、门之间的交互<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/RNN2.jpg" alt="RNN2"><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">lstm = rnn_cell.BasicLSTMCell(lstm_hidden_size)</div><div class="line"># 将LSTM中的状态初始化为全零数组</div><div class="line">state = lstm.zero_state(batch_size, tf.float32)</div><div class="line">loss = 0.0</div><div class="line"># 虽然理论上循环神经网络可以处理任意长度的序列，但是训练时为了避免梯度消散，会规定一个最大的序列长度，用 num_steps 来表示</div><div class="line">for i in range(num_steps):</div><div class="line">    if i &gt; 0:</div><div class="line">        tf.get_variable_scope().reuse_variables()</div><div class="line">    lstm_output, state = lstm(current_input, state)</div><div class="line">    final_output = fully_connected(lstm_output)</div><div class="line">    # 计算当前时刻 batch 上的损失</div><div class="line">    loss += calc_loss(final_output, expected_output)</div><div class="line"># 使用前面类似的方法训练模型</div></pre></td></tr></table></figure></p>
 <p><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/RNN3.jpg" alt="RNN3"></p>
@@ -202,71 +173,188 @@
 <h3 id="循环神经网络的变种"><a href="#循环神经网络的变种" class="headerlink" title="循环神经网络的变种"></a>循环神经网络的变种</h3><h4 id="双向循环神经网络"><a href="#双向循环神经网络" class="headerlink" title="双向循环神经网络"></a>双向循环神经网络</h4><p>在一些问题中，当前时刻的输出不仅与之前的状态有关还和之后的状态有关，这时就需要使用双向循环神经网络。例如预测一个句子中缺失的单词，就需要前后文相结合。</p>
 <h4 id="深层循环神经网络"><a href="#深层循环神经网络" class="headerlink" title="深层循环神经网络"></a>深层循环神经网络</h4><p>为了增强模型的表达能力，在一个时刻上堆叠多个循环体，和卷积神经网络一样，每一层的循环体参数是一致的共享的，不同层之间的参数是不一样的。<br>为了支持深层循环神经网络，TensorFlow 提供了 MultiRNNCell。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"># 定义一个循环体作为组件</div><div class="line">lstm = rnn_cell.BasicLSTMCell(lstm_size)</div><div class="line">stacked_lstm = rnn_cell.MultiRNNCell([lstm] * number_of_layers)</div><div class="line"></div><div class="line"># 与经典的循环神经网络一样，通过zero_state来初始化初始状态</div><div class="line">state = stacked_lstm.zero_state(batch_size, tf.float32)</div><div class="line"></div><div class="line">for i in range(num_steps):</div><div class="line">    if i &gt; 0:</div><div class="line">        tf.get_variable_scope().reuse_variables()</div><div class="line">    lstm_output, state = stacked_lstm(current_input, state)</div><div class="line">    final_output = fully_connected(lstm_output)</div><div class="line">    # 计算当前时刻 batch 上的损失</div><div class="line">    loss += calc_loss(final_output, expected_output)</div></pre></td></tr></table></figure></p>
 
-
-                
-            </div>
-
-            <!-- Comments -->
-            
-                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                    
-
-
-                </div>
-            
-        </div>
     </div>
-</article>
 
-    <!-- Footer -->
-    <hr />
+    
+
+    
+        <div class="post-tags">
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <a href="/tags/DL/">#DL</a>
+        </div>
+    
+
+    <!-- Comments -->
+    
+
+</div>
+        </section>
+
+    </div>
+</div>
+
+
+</div>
 
 <!-- Footer -->
-<footer>
+<div class="push"></div>
+
+<footer class="footer-content">
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <ul class="list-inline text-center">
-                    
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
+                <h2>About</h2>
+                <p>
+                    This theme was developed by <a href="https://github.com/klugjo">Jonathan Klughertz</a>. The source code is available on Github. Create Websites. Make Magic.
+                </p>
+            </div>
+            
+    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/13/消失的梯度/">消失的梯度</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/11/MobileNet-V1-and-V2-带来的卷积结构革命/">MobileNet V1 and V2 带来的卷积</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/09/卷积转置卷积关系在-TensorFLow-中的验证/">卷积转置卷积关系在 TensorFLow 中的验证</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/08/转置卷积-Transposed-Convolution/">转置卷积 Transposed Convoluti</a>
+            </li>
+            
+        </ul>
+    </div>
 
-                    
 
-                    
-                        <li>
-                            <a href="https://github.com/RobertLexis" target="_blank">
-                                <span class="fa-stack fa-lg">
-                                    <i class="fa fa-circle fa-stack-2x"></i>
-                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
-                                </span>
-                            </a>
-                        </li>
-                    
 
+            
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="list-inline footer-social-icons">
                     
-
+                    <li class="list-inline-item">
+                        <a href="https://github.com/klugjo/hexo-theme-alpha-dust">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-github"></i>
+                            </span>
+                        </a>
+                    </li>
                     
-
+                    
+                    <li class="list-inline-item">
+                        <a href="https://twitter.com/?lang=en">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-twitter"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.facebook.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-facebook"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.instagram.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-instagram"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://dribbble.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-dribbble"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://plus.google.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-google-plus"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.behance.net/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-behance"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://500px.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-500px"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="mailto:test@example.com">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-envelope-o"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="\#">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-rss"></i>
+                            </span>
+                        </a>
+                    </li>
                     
                 </ul>
-                <p class="copyright text-muted">&copy; 2018 Robert Lexis<br></p>
-                <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
-                <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="footer-copyright">
+                    @Untitled. All right reserved | Design & Hexo <a href="http://www.codeblocq.com/">Jonathan Klughertz</a>
+                </div>
             </div>
         </div>
     </div>
 </footer>
 
+<!-- After footer scripts -->
 
-    <!-- After footer scripts -->
-    
 <!-- jQuery -->
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 
-<!-- Bootstrap -->
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<!-- Tween Max -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
 
 <!-- Gallery -->
 <script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/main.js"></script>
 
 <!-- Disqus Comments -->
 

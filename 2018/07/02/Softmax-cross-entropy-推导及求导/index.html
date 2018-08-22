@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 
 <!-- Head tag -->
 <head>
@@ -38,7 +38,7 @@ binary_crossentropy适用于每个类别相互独立但互不排斥的情况，�
     <!--Page Cover-->
     
 
-        <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary" />
     
 
     <!-- Title -->
@@ -46,156 +46,127 @@ binary_crossentropy适用于每个类别相互独立但互不排斥的情况，�
     <title>Softmax cross entropy 推导及求导 - This is WHY.</title>
 
     <!-- Bootstrap Core CSS -->
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
-
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 
     <!-- Custom Fonts -->
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
-    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
     <!-- Gallery -->
     <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
 
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
     <!-- Google Analytics -->
     
 
 
-    <!-- favicon -->
-    
-	
 </head>
 
 
 <body>
 
-    <!-- Menu -->
-    <!-- Navigation -->
-<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
-    <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header page-scroll">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="/">This is WHY.</a>
-        </div>
+<div class="bg-gradient"></div>
+<div class="bg-pattern"></div>
 
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav navbar-right">
-                
-                    <li>
-                        <a href="/">
-                            
-                                Home
-                            
-                        </a>
-                    </li>
-                
-                    <li>
-                        <a href="/archives">
-                            
-                                Archives
-                            
-                        </a>
-                    </li>
-                
-                    <li>
-                        <a href="/tags">
-                            
-                                Tags
-                            
-                        </a>
-                    </li>
-                
-                    <li>
-                        <a href="/categories">
-                            
-                                Categories
-                            
-                        </a>
-                    </li>
-                
-                    <li>
-                        <a href="https://github.com/RobertLexis">
-                            
-                                <i class="fa fa-github fa-stack-2x"></i>
-                            
-                        </a>
-                    </li>
-                
-            </ul>
-        </div>
-        <!-- /.navbar-collapse -->
+<!-- Menu -->
+<!--Menu Links and Overlay-->
+<div class="menu-bg">
+    <div class="menu-container">
+        <ul>
+            
+            <li class="menu-item">
+                <a href="/">
+                    Home
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/archives">
+                    Archives
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/about.html">
+                    About
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/tags">
+                    Tags
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/categories">
+                    Categories
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/contact.html">
+                    Contact
+                </a>
+            </li>
+            
+        </ul>
     </div>
-    <!-- /.container -->
+</div>
+
+<!--Hamburger Icon-->
+<nav>
+    <a href="#menu"></a>
 </nav>
 
-    <!-- Main Content -->
-    <!-- Page Header -->
-<!-- Set your background image for this header in your post front-matter: cover -->
+<div class="container">
 
-<header class="intro-header" style="background-image: url('http://www.codeblocq.com/assets/projects/hexo-theme-clean-blog/img/home-bg.jpg')">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <div class="post-heading">
-                    <h1>Softmax cross entropy 推导及求导</h1>
-                    
-                    <span class="meta">
-                        <!-- Date and Author -->
-                        
-                        
-                            2018-07-02
-                        
-                    </span>
-                </div>
-            </div>
-        </div>
+    <!-- Main Content -->
+    <div class="row">
+    <div class="col-sm-12">
+
+        <!--Title and Logo-->
+        <header>
+    <div class="logo">
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
+        
     </div>
 </header>
 
-<!-- Post Content -->
-<article>
-    <div class="container">
-        <div class="row">
-
-            <!-- Tags and categories -->
-           
-                <div class="col-lg-4 col-lg-offset-2 col-md-5 col-md-offset-1 post-tags">
-                    
-                        
-
-
-<a href="/tags/DL/">#DL</a>
-
-
-                    
-                </div>
-                <div class="col-lg-4 col-md-5 post-categories">
-                    
-                </div>
+        <section class="main">
             
+<div class="post">
 
-            <!-- Gallery -->
+    <div class="post-header">
+        <h1 class="title">
+            <a href="/2018/07/02/Softmax-cross-entropy-推导及求导/">
+                Softmax cross entropy 推导及求导
+            </a>
+        </h1>
+        <div class="post-info">
             
+                <span class="date">2018-07-02</span>
+            
+            
+            
+        </div>
+    </div>
 
-            <!-- Post Main Content -->
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <p>主要分析了 binary_crossentropy 和 categorical_crossentropy 的定义， softmax 和 categorical_crossentropy 的求导。</p>
+    <div class="content">
+
+        <!-- Gallery -->
+        
+
+        <!-- Post Content -->
+        <p>主要分析了 binary_crossentropy 和 categorical_crossentropy 的定义， softmax 和 categorical_crossentropy 的求导。</p>
 <h3 id="binary-crossentropy"><a href="#binary-crossentropy" class="headerlink" title="binary_crossentropy"></a>binary_crossentropy</h3><p>适用于每个类别相互独立但互不排斥的情况，常见于单类别任务\( (batch size, 1) \)和多类别中的多标签任务\( (batch size, num classes) \)。</p>
 <p>\[<br>\begin{split}<br>    p_{i, j} &amp; = sigmoid(logits_{i, j}) \\\\<br>    &amp; = \frac{1}{1 + e^{-logits_{i, j} } } \\\\<br>    loss_{i, j} &amp; = -[y_{i, j} \times ln p_{i, j} + (1 - y_{i, j}) \times (1 - ln p_{i, j})]<br>\end{split}<br>\]<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">binary_crossentropy</span><span class="params">(target, output, from_logits=False)</span>:</span></div><div class="line">    <span class="string">"""Binary crossentropy between an output tensor and a target tensor.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">    # Arguments</span></div><div class="line"><span class="string">        target: A tensor with the same shape as `output`.</span></div><div class="line"><span class="string">        output: A tensor.</span></div><div class="line"><span class="string">        from_logits: Whether `output` is expected to be a logits tensor.</span></div><div class="line"><span class="string">            By default, we consider that `output`</span></div><div class="line"><span class="string">            encodes a probability distribution.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">    # Returns</span></div><div class="line"><span class="string">        A tensor.</span></div><div class="line"><span class="string">    """</span></div><div class="line">    <span class="comment"># Note: tf.nn.sigmoid_cross_entropy_with_logits</span></div><div class="line">    <span class="comment"># expects logits, Keras expects probabilities.</span></div><div class="line">    <span class="keyword">if</span> <span class="keyword">not</span> from_logits:</div><div class="line">        <span class="comment"># transform back to logits</span></div><div class="line">        _epsilon = _to_tensor(epsilon(), output.dtype.base_dtype)</div><div class="line">        output = tf.clip_by_value(output, _epsilon, <span class="number">1</span> - _epsilon)</div><div class="line">        output = tf.log(output / (<span class="number">1</span> - output))</div><div class="line"></div><div class="line">    <span class="keyword">return</span> tf.nn.sigmoid_cross_entropy_with_logits(labels=target,</div><div class="line">                                                   logits=output)</div></pre></td></tr></table></figure></p>
 <h3 id="categorical-crossentropy"><a href="#categorical-crossentropy" class="headerlink" title="categorical_crossentropy"></a>categorical_crossentropy</h3><p>适用于每个类别相互独立且排斥的情况（onehot），即多类别中的单标签任务\( (batch size, num classes) \)。<br>\[<br>\begin{split}<br>    p_{i, j} &amp; = \frac{e^{logits_{i, j} } }{\sum_{j=0}^{num classes - 1} e^{logits_{i, j} } } \\\\<br>    loss_i &amp; = - \sum_{j=0}^{num  classes - 1} y_{i, j} ln p_{i, j}<br>\end{split}<br>\]<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">categorical_crossentropy</span><span class="params">(target, output, from_logits=False, axis=<span class="number">-1</span>)</span>:</span></div><div class="line">    <span class="string">"""Categorical crossentropy between an output tensor and a target tensor.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">    # Arguments</span></div><div class="line"><span class="string">        target: A tensor of the same shape as `output`.</span></div><div class="line"><span class="string">        output: A tensor resulting from a softmax</span></div><div class="line"><span class="string">            (unless `from_logits` is True, in which</span></div><div class="line"><span class="string">            case `output` is expected to be the logits).</span></div><div class="line"><span class="string">        from_logits: Boolean, whether `output` is the</span></div><div class="line"><span class="string">            result of a softmax, or is a tensor of logits.</span></div><div class="line"><span class="string">        axis: Int specifying the channels axis. `axis=-1`</span></div><div class="line"><span class="string">            corresponds to data format `channels_last`,</span></div><div class="line"><span class="string">            and `axis=1` corresponds to data format</span></div><div class="line"><span class="string">            `channels_first`.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">    # Returns</span></div><div class="line"><span class="string">        Output tensor.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">    # Raises</span></div><div class="line"><span class="string">        ValueError: if `axis` is neither -1 nor one of</span></div><div class="line"><span class="string">            the axes of `output`.</span></div><div class="line"><span class="string">    """</span></div><div class="line">    output_dimensions = list(range(len(output.get_shape())))</div><div class="line">    <span class="keyword">if</span> axis != <span class="number">-1</span> <span class="keyword">and</span> axis <span class="keyword">not</span> <span class="keyword">in</span> output_dimensions:</div><div class="line">        <span class="keyword">raise</span> ValueError(</div><div class="line">            <span class="string">'&#123;&#125;&#123;&#125;&#123;&#125;'</span>.format(</div><div class="line">                <span class="string">'Unexpected channels axis &#123;&#125;. '</span>.format(axis),</div><div class="line">                <span class="string">'Expected to be -1 or one of the axes of `output`, '</span>,</div><div class="line">                <span class="string">'which has &#123;&#125; dimensions.'</span>.format(len(output.get_shape()))))</div><div class="line">    <span class="comment"># Note: tf.nn.softmax_cross_entropy_with_logits</span></div><div class="line">    <span class="comment"># expects logits, Keras expects probabilities.</span></div><div class="line">    <span class="keyword">if</span> <span class="keyword">not</span> from_logits:</div><div class="line">        <span class="comment"># scale preds so that the class probas of each sample sum to 1</span></div><div class="line">        output /= tf.reduce_sum(output, axis, <span class="keyword">True</span>)</div><div class="line">        <span class="comment"># manual computation of crossentropy</span></div><div class="line">        _epsilon = _to_tensor(epsilon(), output.dtype.base_dtype)</div><div class="line">        output = tf.clip_by_value(output, _epsilon, <span class="number">1.</span> - _epsilon)</div><div class="line">        <span class="keyword">return</span> - tf.reduce_sum(target * tf.log(output), axis)</div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        <span class="keyword">return</span> tf.nn.softmax_cross_entropy_with_logits(labels=target,</div><div class="line">                                                       logits=output)</div></pre></td></tr></table></figure></p>
@@ -212,71 +183,188 @@ binary_crossentropy适用于每个类别相互独立但互不排斥的情况，�
 </blockquote>
 <p>相较于相继调用 <code>softmax</code> 和 <code>cross_entropy</code> （正向传播，反向传播），<code>softmax_cross_entropy_with_logits</code> 的反向传播速度更快，原因就是可以直接使用上面的的推导结果\( \frac{\partial loss}{\partial logits_k} =  p_k - y_{k} \) 简单快速地求得 <code>logits</code> 上的梯度，并在此基础上继续反向传播，而不必对 <code>cross_entropy</code> 和 <code>softmax</code> 依次反向传播之后才得到 <code>logits</code> 上的梯度\( \sum_{j=0}^{m-1} \frac{\partial loss}{\partial p_j} \frac{\partial p_j}{\partial logits_k} \)[upstream gradients local gradients]。将这两个操作合为一个操作，正向传播速度一样，反向传播实现了加速。</p>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-
-                
-            </div>
-
-            <!-- Comments -->
-            
-                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                    
-
-
-                </div>
-            
-        </div>
     </div>
-</article>
 
-    <!-- Footer -->
-    <hr />
+    
+
+    
+        <div class="post-tags">
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <a href="/tags/DL/">#DL</a>
+        </div>
+    
+
+    <!-- Comments -->
+    
+
+</div>
+        </section>
+
+    </div>
+</div>
+
+
+</div>
 
 <!-- Footer -->
-<footer>
+<div class="push"></div>
+
+<footer class="footer-content">
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <ul class="list-inline text-center">
-                    
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
+                <h2>About</h2>
+                <p>
+                    This theme was developed by <a href="https://github.com/klugjo">Jonathan Klughertz</a>. The source code is available on Github. Create Websites. Make Magic.
+                </p>
+            </div>
+            
+    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/13/消失的梯度/">消失的梯度</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/11/MobileNet-V1-and-V2-带来的卷积结构革命/">MobileNet V1 and V2 带来的卷积</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/09/卷积转置卷积关系在-TensorFLow-中的验证/">卷积转置卷积关系在 TensorFLow 中的验证</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/08/转置卷积-Transposed-Convolution/">转置卷积 Transposed Convoluti</a>
+            </li>
+            
+        </ul>
+    </div>
 
-                    
 
-                    
-                        <li>
-                            <a href="https://github.com/RobertLexis" target="_blank">
-                                <span class="fa-stack fa-lg">
-                                    <i class="fa fa-circle fa-stack-2x"></i>
-                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
-                                </span>
-                            </a>
-                        </li>
-                    
 
+            
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="list-inline footer-social-icons">
                     
-
+                    <li class="list-inline-item">
+                        <a href="https://github.com/klugjo/hexo-theme-alpha-dust">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-github"></i>
+                            </span>
+                        </a>
+                    </li>
                     
-
+                    
+                    <li class="list-inline-item">
+                        <a href="https://twitter.com/?lang=en">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-twitter"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.facebook.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-facebook"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.instagram.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-instagram"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://dribbble.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-dribbble"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://plus.google.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-google-plus"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.behance.net/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-behance"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://500px.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-500px"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="mailto:test@example.com">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-envelope-o"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="\#">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-rss"></i>
+                            </span>
+                        </a>
+                    </li>
                     
                 </ul>
-                <p class="copyright text-muted">&copy; 2018 Robert Lexis<br></p>
-                <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
-                <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="footer-copyright">
+                    @Untitled. All right reserved | Design & Hexo <a href="http://www.codeblocq.com/">Jonathan Klughertz</a>
+                </div>
             </div>
         </div>
     </div>
 </footer>
 
+<!-- After footer scripts -->
 
-    <!-- After footer scripts -->
-    
 <!-- jQuery -->
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 
-<!-- Bootstrap -->
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<!-- Tween Max -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
 
 <!-- Gallery -->
 <script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/main.js"></script>
 
 <!-- Disqus Comments -->
 

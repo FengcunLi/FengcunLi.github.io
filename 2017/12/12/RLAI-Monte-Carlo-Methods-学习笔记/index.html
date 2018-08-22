@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 
 <!-- Head tag -->
 <head>
@@ -37,7 +37,7 @@
     <!--Page Cover-->
     
 
-        <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary" />
     
 
     <!-- Title -->
@@ -45,142 +45,127 @@
     <title>RLAI Monte Carlo Methods 学习笔记 - This is WHY.</title>
 
     <!-- Bootstrap Core CSS -->
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
-
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 
     <!-- Custom Fonts -->
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
-    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
     <!-- Gallery -->
     <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
 
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
     <!-- Google Analytics -->
     
 
 
-    <!-- favicon -->
-    
-	
 </head>
 
 
 <body>
 
-    <!-- Menu -->
-    <!-- Navigation -->
-<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
-    <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header page-scroll">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="/">This is WHY.</a>
-        </div>
+<div class="bg-gradient"></div>
+<div class="bg-pattern"></div>
 
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav navbar-right">
-                
-                    <li>
-                        <a href="/">
-                            
-                                Home
-                            
-                        </a>
-                    </li>
-                
-                    <li>
-                        <a href="/archives">
-                            
-                                Archives
-                            
-                        </a>
-                    </li>
-                
-                    <li>
-                        <a href="/tags">
-                            
-                                Tags
-                            
-                        </a>
-                    </li>
-                
-                    <li>
-                        <a href="/categories">
-                            
-                                Categories
-                            
-                        </a>
-                    </li>
-                
-                    <li>
-                        <a href="https://github.com/RobertLexis">
-                            
-                                <i class="fa fa-github fa-stack-2x"></i>
-                            
-                        </a>
-                    </li>
-                
-            </ul>
-        </div>
-        <!-- /.navbar-collapse -->
+<!-- Menu -->
+<!--Menu Links and Overlay-->
+<div class="menu-bg">
+    <div class="menu-container">
+        <ul>
+            
+            <li class="menu-item">
+                <a href="/">
+                    Home
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/archives">
+                    Archives
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/about.html">
+                    About
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/tags">
+                    Tags
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/categories">
+                    Categories
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/contact.html">
+                    Contact
+                </a>
+            </li>
+            
+        </ul>
     </div>
-    <!-- /.container -->
+</div>
+
+<!--Hamburger Icon-->
+<nav>
+    <a href="#menu"></a>
 </nav>
 
-    <!-- Main Content -->
-    <!-- Page Header -->
-<!-- Set your background image for this header in your post front-matter: cover -->
+<div class="container">
 
-<header class="intro-header" style="background-image: url('http://www.codeblocq.com/assets/projects/hexo-theme-clean-blog/img/home-bg.jpg')">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <div class="post-heading">
-                    <h1>RLAI Monte Carlo Methods 学习笔记</h1>
-                    
-                    <span class="meta">
-                        <!-- Date and Author -->
-                        
-                        
-                            2017-12-12
-                        
-                    </span>
-                </div>
-            </div>
-        </div>
+    <!-- Main Content -->
+    <div class="row">
+    <div class="col-sm-12">
+
+        <!--Title and Logo-->
+        <header>
+    <div class="logo">
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
+        
     </div>
 </header>
 
-<!-- Post Content -->
-<article>
-    <div class="container">
-        <div class="row">
-
-            <!-- Tags and categories -->
-           
-
-            <!-- Gallery -->
+        <section class="main">
             
+<div class="post">
 
-            <!-- Post Main Content -->
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <h2 id="Chapter-5"><a href="#Chapter-5" class="headerlink" title="Chapter 5"></a>Chapter 5</h2><h2 id="Monte-Carlo-Methods-一种估计值函数和发现最优策略的方法"><a href="#Monte-Carlo-Methods-一种估计值函数和发现最优策略的方法" class="headerlink" title="Monte Carlo Methods 一种估计值函数和发现最优策略的方法"></a>Monte Carlo Methods 一种估计值函数和发现最优策略的方法</h2><p>不需知道环境的完整信息，MC方法只需要 experience，也就是来自真实或者仿真环境下的状态、动作、奖励的序列。尽管需要环境模型，但是仅仅需要这个模型产生样本，而不是像动态规划那样需要完整的转移概率分布。在很多情况下，获得样本是容易的，而给出具体形式的分布确实困难的，这就使得MC方法十分的有用。</p>
+    <div class="post-header">
+        <h1 class="title">
+            <a href="/2017/12/12/RLAI-Monte-Carlo-Methods-学习笔记/">
+                RLAI Monte Carlo Methods 学习笔记
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2017-12-12</span>
+            
+            
+            
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- Gallery -->
+        
+
+        <!-- Post Content -->
+        <h2 id="Chapter-5"><a href="#Chapter-5" class="headerlink" title="Chapter 5"></a>Chapter 5</h2><h2 id="Monte-Carlo-Methods-一种估计值函数和发现最优策略的方法"><a href="#Monte-Carlo-Methods-一种估计值函数和发现最优策略的方法" class="headerlink" title="Monte Carlo Methods 一种估计值函数和发现最优策略的方法"></a>Monte Carlo Methods 一种估计值函数和发现最优策略的方法</h2><p>不需知道环境的完整信息，MC方法只需要 experience，也就是来自真实或者仿真环境下的状态、动作、奖励的序列。尽管需要环境模型，但是仅仅需要这个模型产生样本，而不是像动态规划那样需要完整的转移概率分布。在很多情况下，获得样本是容易的，而给出具体形式的分布确实困难的，这就使得MC方法十分的有用。</p>
 <p>MC 方法基于采样与平均。experience 分为不同的 episode，只有在一个 episode 完成之后才会进行值估计和策略提升。MC 方法是 episode-by-episode （offline）的形式，而不是 step-by-step （online）的方式。</p>
 <h3 id="Monte-Carlo-Prediction"><a href="#Monte-Carlo-Prediction" class="headerlink" title="Monte Carlo Prediction"></a>Monte Carlo Prediction</h3><p>一个状态的 value 是一个期望回报，即从该状态出发遵循一定的策略可以期望获得的累积未来折扣奖励。</p>
 <p>MC 方法内在的想法就是，从 experience 中估计状态值函数，对访问一个状态之后获得的回报进行平均，随着 episode 次数的增多，这个平均值会收敛到期望值。\(v_{\pi}(s)\) 是在策略 \(\pi\) 下，状态 \(s\) 的 value，我们要做的就是在给定一些遵循策略 \(\pi\) 经历了状态 \(s\) 的 episode 时，对 \(v_{\pi}(s)\) 进行估计。在 episode 中的 \(s\) 每一次出现就称之为对状态 \(s\) 的一次访问。根据进行估计时使用 \(s\) 的第一访问还是每一次访问，MC 方法可以分为 First-visit MC 和 Every-visit MC。<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/first-visit-mc-prediction.png" alt="first-visit-mc-prediction"></p>
@@ -199,71 +184,183 @@
 </ul>
 <h3 id="Off-policy-Prediction-via-Importance-Sampling"><a href="#Off-policy-Prediction-via-Importance-Sampling" class="headerlink" title="Off-policy Prediction via Importance Sampling"></a>Off-policy Prediction via Importance Sampling</h3><p>所有的 learning control 方式都有一个困境，那就是假设在后续最优动作的条件下得到状态-动作对的 value，但是又需要表现的非最优来探索所有的动作，即最优动作是确定的，但是又需要执行非最优动作来探索动作空间进行最优动作的寻找，使得最优策略的状态-动作对 value 的求解变得不可得。<br>How to learn about the optimal policy while behaving according to<br>an exploratory policy?<br>上面讲到的得 on-policy 是一种折中的方式，即学习到的并不是最优策略的状态-动作对的值，而是接近最优的仍在探索的策略的状态-动作对的值，即最优策略是固定的，但此处得到的策略是随机的非最优的。更直接的方式是使用两个策略，一个进行学习从而成为最优策略（target policy），另一个更具有探索性用来产出动作（behaviour policy），也就是 off-policy learning，这种方式方差较大，收敛地更慢。<br>下面首先进行策略的评估，也就是 prediction，从策略 \(b(b\ne\pi)\) 指导下的一些 episode 出发估计 \(v_{\pi}\) 或者 \(q_{\pi}\)。<br>收敛假设：$$\pi(a|s)&gt;0 implies b(a|s)&gt;0$$<br>另外，\(b\) 必须是随机的，而 \(\pi\) 可以是确定性的，在控制学里，典型的情形是 \(\pi\) 是在当前状态-动作值函数估计下的确定性策略，behaviour policy 保持随机，而 target policy 逐渐成为一个确定性的最优策略。<br>几乎所有的 off-policy 方法使用了重要性采样，a general technique for estimating expected<br>values under one distribution given samples from another。<br>在这里我们通过根据目标策略下的轨迹和行为策略下的轨迹之间的相对概率关系对回报进行加权的方式来将重要性采样应用到 off-policy 的学习中。<br>给定一个初始状态 \(S_{t}\)，\([A_{t}, S_{t+1}, A_{t+1},…,S_{T}]\)这样的一条轨迹出现的概率<br><img src="/2017/12/12/RLAI-Monte-Carlo-Methods-学习笔记/.." alt="trajectory_probability"><br>这样的一条轨迹在 target policy 和 behaviour policy 之间的相对概率也就是 importance-sampling ratio：<br><img src="/2017/12/12/RLAI-Monte-Carlo-Methods-学习笔记/.." alt="trajectory_importance_ratio"><br>Although the trajectory probabilities depend on the MDP’s transition probabilities, which are generally<br>unknown, they appear identically in both the numerator and denominator, and thus cancel. The<br>importance sampling ratio ends up depending only on the two policies and the sequence, not on the<br>MDP.<br>下面给出一个 MC 算法，该算法使用观察到的遵循策略 \(b\) 的一批次 episode 来估计 \(v_{\pi}(s)\).<br>给所有的 episode 中的时间步打破 episode 边界赋予一个唯一的递增的时间步序号，在所有的 episode 中，对于 every-visit 方式，定义对状态 \(s\) 进行了访问的时间步集合是 \(J(s)\)；对于 first-visit 方式，定义第一次对状态 \(s\)进行了访问的时间步集合是 \(J(s)\)。<br>let \(T(t)\) denote the first time<br>of termination following time \(t\), and \(G_{t}\) denote the return after \(t\) up through \(T(t)\)。<br>\(\lbrace G_{t}\rbrace_{t \in J(s)}\) 就是状态 \(s\) 的回报，\(\lbrace \rho_{t:T(t)-1} \rbrace_{t \in J(s)}\) 就是状态 \(s\) 的重要性采样比率。<br>To estimate \(v_{\pi}(s)\), we simply scale the returns by the ratios and average the results:<br><img src="/2017/12/12/RLAI-Monte-Carlo-Methods-学习笔记/.." alt="ordinary_scale_return_and_average"><br>通过简单平均完成的重要性采样叫做 ordinary importance sampling。<br><img src="/2017/12/12/RLAI-Monte-Carlo-Methods-学习笔记/.." alt="weighted_scale_return_and_average"><br>通过加权平均完成的重要性采样叫做 weighted importance sampling。<br>关于这两者的不同，请参考 Reinforcement Learning: An Introduction 5.5。</p>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-
-                
-            </div>
-
-            <!-- Comments -->
-            
-                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                    
-
-
-                </div>
-            
-        </div>
     </div>
-</article>
 
-    <!-- Footer -->
-    <hr />
+    
+
+    
+
+    <!-- Comments -->
+    
+
+</div>
+        </section>
+
+    </div>
+</div>
+
+
+</div>
 
 <!-- Footer -->
-<footer>
+<div class="push"></div>
+
+<footer class="footer-content">
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <ul class="list-inline text-center">
-                    
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
+                <h2>About</h2>
+                <p>
+                    This theme was developed by <a href="https://github.com/klugjo">Jonathan Klughertz</a>. The source code is available on Github. Create Websites. Make Magic.
+                </p>
+            </div>
+            
+    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/13/消失的梯度/">消失的梯度</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/11/MobileNet-V1-and-V2-带来的卷积结构革命/">MobileNet V1 and V2 带来的卷积</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/09/卷积转置卷积关系在-TensorFLow-中的验证/">卷积转置卷积关系在 TensorFLow 中的验证</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/08/转置卷积-Transposed-Convolution/">转置卷积 Transposed Convoluti</a>
+            </li>
+            
+        </ul>
+    </div>
 
-                    
 
-                    
-                        <li>
-                            <a href="https://github.com/RobertLexis" target="_blank">
-                                <span class="fa-stack fa-lg">
-                                    <i class="fa fa-circle fa-stack-2x"></i>
-                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
-                                </span>
-                            </a>
-                        </li>
-                    
 
+            
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="list-inline footer-social-icons">
                     
-
+                    <li class="list-inline-item">
+                        <a href="https://github.com/klugjo/hexo-theme-alpha-dust">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-github"></i>
+                            </span>
+                        </a>
+                    </li>
                     
-
+                    
+                    <li class="list-inline-item">
+                        <a href="https://twitter.com/?lang=en">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-twitter"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.facebook.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-facebook"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.instagram.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-instagram"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://dribbble.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-dribbble"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://plus.google.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-google-plus"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.behance.net/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-behance"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://500px.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-500px"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="mailto:test@example.com">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-envelope-o"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="\#">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-rss"></i>
+                            </span>
+                        </a>
+                    </li>
                     
                 </ul>
-                <p class="copyright text-muted">&copy; 2018 Robert Lexis<br></p>
-                <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
-                <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="footer-copyright">
+                    @Untitled. All right reserved | Design & Hexo <a href="http://www.codeblocq.com/">Jonathan Klughertz</a>
+                </div>
             </div>
         </div>
     </div>
 </footer>
 
+<!-- After footer scripts -->
 
-    <!-- After footer scripts -->
-    
 <!-- jQuery -->
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 
-<!-- Bootstrap -->
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<!-- Tween Max -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
 
 <!-- Gallery -->
 <script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/main.js"></script>
 
 <!-- Disqus Comments -->
 
