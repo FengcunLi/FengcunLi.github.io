@@ -28,7 +28,7 @@ This is a discussion on an old problem that hindered the Machine Lear">
     
 
     <!--Open Graph Site Name-->
-    <meta property="og:site_name" content="This is WHY."/>
+    <meta property="og:site_name" content="This is Robert Lexis."/>
 
     <!--Type page-->
     
@@ -43,7 +43,7 @@ This is a discussion on an old problem that hindered the Machine Lear">
 
     <!-- Title -->
     
-    <title>消失的梯度 - This is WHY.</title>
+    <title>消失的梯度 - This is Robert Lexis.</title>
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
@@ -181,8 +181,12 @@ This is a discussion on an old problem that hindered the Machine Lear">
 
 <p><small>The speed of learning decreases very rapidly for the early layers as the network trains.</small></p>
 <h3 id="改进措施"><a href="#改进措施" class="headerlink" title="改进措施"></a>改进措施</h3><h5 id="Initializing-the-weights-with-standard-techniques-like-Xavier-Intialization"><a href="#Initializing-the-weights-with-standard-techniques-like-Xavier-Intialization" class="headerlink" title="Initializing the weights with standard techniques like Xavier Intialization"></a>Initializing the weights with standard techniques like Xavier Intialization</h5><p>Initializing weights properly can reduce to some extend since the fact both too high or too low weights can result in exploding/vanishing gradients.</p>
-<h5 id="The-curse-of-Sigmoids-and-Tanhs"><a href="#The-curse-of-Sigmoids-and-Tanhs" class="headerlink" title="The curse of Sigmoids and Tanhs"></a>The curse of Sigmoids and Tanhs</h5><center><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/vanishing_grad/sigmoid_derivative.png" alt="sigmoid_derivative"></center><br>Let’s make some observations from these graphs.<br><br>1. Sigmoid is confined to the interval [0, 1], the output will be always between these interval for any input. If we consider to initialize the weights as big as say  [−400, 400], after the activation, that will a binay matrix. High values tend to 1 and low values to 0. This will make derivatives zero and thus vanishing gradients.<br>2. The maximum value of derivative of sigmoid function is 0.25. So by default, the input weights get \( {\frac{1}{4}}{th}\) of the original value on calculating the gradients.<br>Same are applicable to tanh which is an extended sigmoid.<br><br><strong>So the take away is don’t use them.</strong><br><br>##### Dying ReLUs<br><center><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/vanishing_grad/relu.png" alt="relu"></center>
-
+<h5 id="The-curse-of-Sigmoids-and-Tanhs"><a href="#The-curse-of-Sigmoids-and-Tanhs" class="headerlink" title="The curse of Sigmoids and Tanhs"></a>The curse of Sigmoids and Tanhs</h5><p><center><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/vanishing_grad/sigmoid_derivative.png" alt="sigmoid_derivative"></center><br>Let’s make some observations from these graphs.</p>
+<ol>
+<li>Sigmoid is confined to the interval [0, 1], the output will be always between these interval for any input. If we consider to initialize the weights as big as say  [−400, 400], after the activation, that will a binay matrix. High values tend to 1 and low values to 0. This will make derivatives zero and thus vanishing gradients.</li>
+<li>The maximum value of derivative of sigmoid function is 0.25. So by default, the input weights get \( {\frac{1}{4}}{th}\) of the original value on calculating the gradients.<br>Same are applicable to tanh which is an extended sigmoid.<br><strong>So the take away is don’t use them.</strong></li>
+</ol>
+<h5 id="Dying-ReLUs"><a href="#Dying-ReLUs" class="headerlink" title="Dying ReLUs"></a>Dying ReLUs</h5><p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/vanishing_grad/relu.png" alt="relu"></p>
 <ol>
 <li>ReLUs don’t suffer from limited interval problem like sigmoid. The minimum value is 0 but there is no limit for maximum value.</li>
 <li>If the input value is less than zero, then output and derivative are zero.<br>This will eliminate all the negative inputs which is okay. But derivatives getting zero is a problem. This means, in the entire training, that neuron which can’t fire above zero will remain unlearned or dead.</li>
@@ -222,7 +226,7 @@ This is a discussion on an old problem that hindered the Machine Lear">
             <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
                 <h2>About</h2>
                 <p>
-                    This theme was developed by <a href="https://github.com/klugjo">Jonathan Klughertz</a>. The source code is available on Github. Create Websites. Make Magic.
+                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
                 </p>
             </div>
             
@@ -258,7 +262,7 @@ This is a discussion on an old problem that hindered the Machine Lear">
                 <ul class="list-inline footer-social-icons">
                     
                     <li class="list-inline-item">
-                        <a href="https://github.com/klugjo/hexo-theme-alpha-dust">
+                        <a href="https://github.com/RobertLexis">
                             <span class="footer-icon-container">
                                 <i class="fa fa-github"></i>
                             </span>
@@ -266,71 +270,15 @@ This is a discussion on an old problem that hindered the Machine Lear">
                     </li>
                     
                     
-                    <li class="list-inline-item">
-                        <a href="https://twitter.com/?lang=en">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-twitter"></i>
-                            </span>
-                        </a>
-                    </li>
+                    
+                    
+                    
+                    
+                    
                     
                     
                     <li class="list-inline-item">
-                        <a href="https://www.facebook.com/">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-facebook"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="https://www.instagram.com/">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-instagram"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="https://dribbble.com/">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-dribbble"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="https://plus.google.com/">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-google-plus"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="https://www.behance.net/">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-behance"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="https://500px.com/">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-500px"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="mailto:test@example.com">
+                        <a href="mailto:robert_lexis@163.com">
                             <span class="footer-icon-container">
                                 <i class="fa fa-envelope-o"></i>
                             </span>
@@ -338,21 +286,13 @@ This is a discussion on an old problem that hindered the Machine Lear">
                     </li>
                     
                     
-                    <li class="list-inline-item">
-                        <a href="\#">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-rss"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
                 </ul>
             </div>
         </div>
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <div class="footer-copyright">
-                    @Untitled. All right reserved | Design & Hexo <a href="http://www.codeblocq.com/">Jonathan Klughertz</a>
+                    @Untitled. All right reserved | Robert Lexis Loves Wenny
                 </div>
             </div>
         </div>
