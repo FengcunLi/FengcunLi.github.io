@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="非最大值抑制 Non-max Suppression 是目标检测（object detection）中常用的后处理（post processing）技术。（Fast-， Faster-）RCNN，SSD，YOLO 等目标检测框架会对一个目标产生多个 bounding box 的预测结果，而我们最终需">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Robert Lexis">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="非最大值抑制"/>
+    
+
+    <!--Open Graph Description-->
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="This is Robert Lexis."/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+    <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>非最大值抑制 - This is Robert Lexis.</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Google Analytics -->
+    
+
+
+</head>
+
+
+<body>
+
+<div class="bg-gradient"></div>
+<div class="bg-pattern"></div>
+
+<!-- Menu -->
+<!--Menu Links and Overlay-->
+<div class="menu-bg">
+    <div class="menu-container">
+        <ul>
+            
+            <li class="menu-item">
+                <a href="/">
+                    Home
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/archives">
+                    Archives
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/about">
+                    About
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/tags">
+                    Tags
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/categories">
+                    Categories
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/contact">
+                    Contact
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+<!--Hamburger Icon-->
+<nav>
+    <a href="#menu"></a>
+</nav>
+
+<div class="container">
+
+    <!-- Main Content -->
+    <div class="row">
+    <div class="col-sm-12">
+
+        <!--Title and Logo-->
+        <header>
+    <div class="logo">
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
+        
+    </div>
+</header>
+
+        <section class="main">
+            
+<div class="post">
+
+    <div class="post-header">
+        <h1 class="title">
+            <a href="/2018/08/26/非最大值抑制/">
+                非最大值抑制
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-08-26</span>
+            
+            
+            
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- Gallery -->
+        
+
+        <!-- Post Content -->
+        <p>非最大值抑制 Non-max Suppression 是目标检测（object detection）中常用的后处理（post processing）技术。<br>（Fast-， Faster-）RCNN，SSD，YOLO 等目标检测框架会对一个目标产生多个 bounding box 的预测结果，而我们最终需要的仅仅是最“合适”的那一个。<br>非最大值抑制就是用来去除（clean up）多余的 bounding box 的预测结果，确保对一个目标只输出一个检测结果。<br>概率最大的 bounding box 被保留，且该 bounding box 周围的与它有较大交并比的 bounding box 会被抑制。<br><img src="/2018/08/26/非最大值抑制/grid.png" alt="grid"><br>Each output prediction is:<br>\[<br>    \left[<br>    \begin{matrix}<br>    p_c \\\\<br>    b_x \\\\<br>    b_y \\\\<br>    b_w \\\\<br>    b_h<br>    \end{matrix}<br>    \right]<br>\]<br>Algorithm:<br>Discard all boxes with \( p_c \leq 0.5\)<br>While there are any remaining boxes:</p>
+<ul>
+<li>Pick the box with the largest \( p_c \), output that as a prediction.</li>
+<li>Discard any remaining box with \(IOU \geq 0.5 \) with the box output in the previous step.<br><img src="/2018/08/26/非最大值抑制/non_max_suppression.png" alt="non_max_suppression"></li>
+</ul>
+<h3 id="Tensorflow-tf-image-non-max-suppression"><a href="#Tensorflow-tf-image-non-max-suppression" class="headerlink" title="Tensorflow tf.image.non_max_suppression"></a>Tensorflow tf.image.non_max_suppression</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">tf.image.non_max_suppression(</div><div class="line">    boxes,</div><div class="line">    scores,</div><div class="line">    max_output_size,</div><div class="line">    iou_threshold=<span class="number">0.5</span>,</div><div class="line">    score_threshold=float(<span class="string">'-inf'</span>),</div><div class="line">    name=<span class="keyword">None</span></div><div class="line">)</div></pre></td></tr></table></figure>
+<p>Greedily selects a subset of bounding boxes in descending order of score.</p>
+<p>Prunes away boxes that have high intersection-over-union (IOU) overlap with previously selected boxes. Bounding boxes are supplied as [y1, x1, y2, x2], where (y1, x1) and (y2, x2) are the coordinates of any diagonal pair of box corners and the coordinates can be provided as normalized (i.e., lying in the interval [0, 1]) or absolute. Note that this algorithm is agnostic to where the origin is in the coordinate system. Note that this algorithm is invariant to orthogonal transformations and translations of the coordinate system; thus translating or reflections of the coordinate system result in the same boxes being selected by the algorithm. The output of this operation is <strong>a set of integers indexing into the input collection of bounding boxes representing the selected boxes</strong>. The bounding box coordinates corresponding to the selected indices can then be obtained using the tf.gather operation. For example:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">selected_indices = tf.image.non_max_suppression( boxes, scores, max_output_size, iou_threshold) </div><div class="line">selected_boxes = tf.gather(boxes, selected_indices)</div></pre></td></tr></table></figure></p>
+<p>Args:<br>boxes: A 2-D float Tensor of shape [num_boxes, 4].<br>scores: A 1-D float Tensor of shape [num_boxes] representing a single score corresponding to each box (each row of boxes).<br>max_output_size: A scalar integer Tensor representing the maximum number of boxes to be selected by non max suppression.<br>iou_threshold: A float representing the threshold for deciding whether boxes overlap too much with respect to IOU.<br>score_threshold: A float representing the threshold for deciding when to remove boxes based on score.<br>name: A name for the operation (optional).<br>Returns:<br>selected_indices: A 1-D integer Tensor of shape [M] representing the selected indices from the boxes tensor, where M &lt;= max_output_size.</p>
+<h3 id="Tensorflow-多类别非最大值抑制"><a href="#Tensorflow-多类别非最大值抑制" class="headerlink" title="Tensorflow 多类别非最大值抑制"></a>Tensorflow 多类别非最大值抑制</h3><p>在 <a href="https://github.com/tensorflow/models/blob/master/research/object_detection/core/post_processing.py" target="_blank" rel="external">models/research/object_detection/core/post_processing.py</a> 中定义：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">multiclass_non_max_suppression</span><span class="params">(boxes,</span></span></div><div class="line"><span class="function"><span class="params">                                   scores,</span></span></div><div class="line"><span class="function"><span class="params">                                   score_thresh,</span></span></div><div class="line"><span class="function"><span class="params">                                   iou_thresh,</span></span></div><div class="line"><span class="function"><span class="params">                                   max_size_per_class,</span></span></div><div class="line"><span class="function"><span class="params">                                   max_total_size=<span class="number">0</span>,</span></span></div><div class="line"><span class="function"><span class="params">                                   clip_window=None,</span></span></div><div class="line"><span class="function"><span class="params">                                   change_coordinate_frame=False,</span></span></div><div class="line"><span class="function"><span class="params">                                   masks=None,</span></span></div><div class="line"><span class="function"><span class="params">                                   boundaries=None,</span></span></div><div class="line"><span class="function"><span class="params">                                   additional_fields=None,</span></span></div><div class="line"><span class="function"><span class="params">                                   scope=None)</span>:</span></div><div class="line">  <span class="string">"""Multi-class version of non maximum suppression.</span></div><div class="line"><span class="string">  This op greedily selects a subset of detection bounding boxes, pruning</span></div><div class="line"><span class="string">  away boxes that have high IOU (intersection over union) overlap (&gt; thresh)</span></div><div class="line"><span class="string">  with already selected boxes.  </span></div><div class="line"><span class="string">  It operates independently for each class for</span></div><div class="line"><span class="string">  which scores are provided (via the scores field of the input box_list),</span></div><div class="line"><span class="string">  pruning boxes with score less than a provided threshold prior to</span></div><div class="line"><span class="string">  applying NMS.</span></div><div class="line"><span class="string">  单独对每一类进行操作，在进行非最大值抑制之前，首先去掉 score 低于 score_thresh 的 boxes。</span></div><div class="line"><span class="string">  Please note that this operation is performed on *all* classes, therefore any</span></div><div class="line"><span class="string">  background classes should be removed prior to calling this function.</span></div><div class="line"><span class="string">  Selected boxes are guaranteed to be sorted in decreasing order by score (but</span></div><div class="line"><span class="string">  the sort is not guaranteed to be stable).</span></div><div class="line"><span class="string">  Args:</span></div><div class="line"><span class="string">    boxes: A [k, q, 4] float32 tensor containing k detections. `q` can be either</span></div><div class="line"><span class="string">      number of classes or 1 depending on whether a separate box is predicted</span></div><div class="line"><span class="string">      per class.</span></div><div class="line"><span class="string">      根据是否是在第 k 个 detection 处对每一类单独预测一个 box，输入参数 boxes 的 q 可能为 number of</span></div><div class="line"><span class="string">      class 或者 1。</span></div><div class="line"><span class="string">    scores: A [k, num_classes] float32 tensor containing the scores for each of</span></div><div class="line"><span class="string">      the k detections.</span></div><div class="line"><span class="string">    score_thresh: scalar threshold for score (low scoring boxes are removed).</span></div><div class="line"><span class="string">    iou_thresh: scalar threshold for IOU (new boxes that have high IOU overlap</span></div><div class="line"><span class="string">      with previously selected boxes are removed).</span></div><div class="line"><span class="string">    max_size_per_class: maximum number of retained boxes per class.</span></div><div class="line"><span class="string">    max_total_size: maximum number of boxes retained over all classes. By</span></div><div class="line"><span class="string">      default returns all boxes retained after capping boxes per class.</span></div><div class="line"><span class="string">    clip_window: A float32 tensor of the form [y_min, x_min, y_max, x_max]</span></div><div class="line"><span class="string">      representing the window to clip and normalize boxes to before performing</span></div><div class="line"><span class="string">      non-max suppression.</span></div><div class="line"><span class="string">      此处 before 是错误的，因为在下面代码的实际实现时是 after。</span></div><div class="line"><span class="string">      利用 clip_window 这个窗口对每一个 boxes 进行裁剪和 normalize。</span></div><div class="line"><span class="string">    change_coordinate_frame: Whether to normalize coordinates after clipping</span></div><div class="line"><span class="string">      relative to clip_window (this can only be set to True if a clip_window</span></div><div class="line"><span class="string">      is provided)</span></div><div class="line"><span class="string">    masks: (optional) a [k, q, mask_height, mask_width] float32 tensor</span></div><div class="line"><span class="string">      containing box masks. `q` can be either number of classes or 1 depending</span></div><div class="line"><span class="string">      on whether a separate mask is predicted per class.</span></div><div class="line"><span class="string">    boundaries: (optional) a [k, q, boundary_height, boundary_width] float32</span></div><div class="line"><span class="string">      tensor containing box boundaries. `q` can be either number of classes or 1</span></div><div class="line"><span class="string">      depending on whether a separate boundary is predicted per class.</span></div><div class="line"><span class="string">    additional_fields: (optional) If not None, a dictionary that maps keys to</span></div><div class="line"><span class="string">      tensors whose first dimensions are all of size `k`. After non-maximum</span></div><div class="line"><span class="string">      suppression, all tensors corresponding to the selected boxes will be</span></div><div class="line"><span class="string">      added to resulting BoxList.</span></div><div class="line"><span class="string">    scope: name scope.</span></div><div class="line"><span class="string">  Returns:</span></div><div class="line"><span class="string">    a BoxList holding M boxes.</span></div><div class="line"><span class="string">  Raises:</span></div><div class="line"><span class="string">    ValueError: if iou_thresh is not in [0, 1] or if input boxlist does not have</span></div><div class="line"><span class="string">      a valid scores field.</span></div><div class="line"><span class="string">  """</span></div><div class="line">  <span class="keyword">if</span> <span class="keyword">not</span> <span class="number">0</span> &lt;= iou_thresh &lt;= <span class="number">1.0</span>:</div><div class="line">    <span class="keyword">raise</span> ValueError(<span class="string">'iou_thresh must be between 0 and 1'</span>)</div><div class="line">  <span class="keyword">if</span> scores.shape.ndims != <span class="number">2</span>:</div><div class="line">    <span class="keyword">raise</span> ValueError(<span class="string">'scores field must be of rank 2'</span>)</div><div class="line">  <span class="keyword">if</span> scores.shape[<span class="number">1</span>].value <span class="keyword">is</span> <span class="keyword">None</span>:</div><div class="line">    <span class="keyword">raise</span> ValueError(<span class="string">'scores must have statically defined second '</span></div><div class="line">                     <span class="string">'dimension'</span>)</div><div class="line">  <span class="keyword">if</span> boxes.shape.ndims != <span class="number">3</span>:</div><div class="line">    <span class="keyword">raise</span> ValueError(<span class="string">'boxes must be of rank 3.'</span>)</div><div class="line">  <span class="keyword">if</span> <span class="keyword">not</span> (boxes.shape[<span class="number">1</span>].value == scores.shape[<span class="number">1</span>].value <span class="keyword">or</span></div><div class="line">          boxes.shape[<span class="number">1</span>].value == <span class="number">1</span>):</div><div class="line">    <span class="keyword">raise</span> ValueError(<span class="string">'second dimension of boxes must be either 1 or equal '</span></div><div class="line">                     <span class="string">'to the second dimension of scores'</span>)</div><div class="line">  <span class="keyword">if</span> boxes.shape[<span class="number">2</span>].value != <span class="number">4</span>:</div><div class="line">    <span class="keyword">raise</span> ValueError(<span class="string">'last dimension of boxes must be of size 4.'</span>)</div><div class="line">  <span class="keyword">if</span> change_coordinate_frame <span class="keyword">and</span> clip_window <span class="keyword">is</span> <span class="keyword">None</span>:</div><div class="line">    <span class="keyword">raise</span> ValueError(<span class="string">'if change_coordinate_frame is True, then a clip_window'</span></div><div class="line">                     <span class="string">'must be specified.'</span>)</div><div class="line"></div><div class="line">  <span class="keyword">with</span> tf.name_scope(scope, <span class="string">'MultiClassNonMaxSuppression'</span>):</div><div class="line">    num_scores = tf.shape(scores)[<span class="number">0</span>]</div><div class="line">    num_classes = scores.get_shape()[<span class="number">1</span>]</div><div class="line"></div><div class="line">    selected_boxes_list = []</div><div class="line">    per_class_boxes_list = tf.unstack(boxes, axis=<span class="number">1</span>)</div><div class="line">    <span class="keyword">if</span> masks <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</div><div class="line">      per_class_masks_list = tf.unstack(masks, axis=<span class="number">1</span>)</div><div class="line">    <span class="keyword">if</span> boundaries <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</div><div class="line">      per_class_boundaries_list = tf.unstack(boundaries, axis=<span class="number">1</span>)</div><div class="line">    boxes_ids = (range(num_classes) <span class="keyword">if</span> len(per_class_boxes_list) &gt; <span class="number">1</span></div><div class="line">                 <span class="keyword">else</span> [<span class="number">0</span>] * num_classes.value)</div><div class="line">    <span class="comment"># 对每一类单独处理</span></div><div class="line">    <span class="keyword">for</span> class_idx, boxes_idx <span class="keyword">in</span> zip(range(num_classes), boxes_ids):</div><div class="line">      per_class_boxes = per_class_boxes_list[boxes_idx]</div><div class="line">      boxlist_and_class_scores = box_list.BoxList(per_class_boxes)</div><div class="line">      class_scores = tf.reshape(</div><div class="line">          tf.slice(scores, [<span class="number">0</span>, class_idx], tf.stack([num_scores, <span class="number">1</span>])), [<span class="number">-1</span>])</div><div class="line"></div><div class="line">      boxlist_and_class_scores.add_field(fields.BoxListFields.scores,</div><div class="line">                                         class_scores)</div><div class="line">      <span class="keyword">if</span> masks <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</div><div class="line">        per_class_masks = per_class_masks_list[boxes_idx]</div><div class="line">        boxlist_and_class_scores.add_field(fields.BoxListFields.masks,</div><div class="line">                                           per_class_masks)</div><div class="line">      <span class="keyword">if</span> boundaries <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</div><div class="line">        per_class_boundaries = per_class_boundaries_list[boxes_idx]</div><div class="line">        boxlist_and_class_scores.add_field(fields.BoxListFields.boundaries,</div><div class="line">                                           per_class_boundaries)</div><div class="line">      <span class="keyword">if</span> additional_fields <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</div><div class="line">        <span class="keyword">for</span> key, tensor <span class="keyword">in</span> additional_fields.items():</div><div class="line">          boxlist_and_class_scores.add_field(key, tensor)</div><div class="line"></div><div class="line">      max_selection_size = tf.minimum(max_size_per_class,</div><div class="line">                                      boxlist_and_class_scores.num_boxes())</div><div class="line">      selected_indices = tf.image.non_max_suppression(</div><div class="line">          boxlist_and_class_scores.get(),</div><div class="line">          boxlist_and_class_scores.get_field(fields.BoxListFields.scores),</div><div class="line">          max_selection_size,</div><div class="line">          iou_threshold=iou_thresh,</div><div class="line">          score_threshold=score_thresh)</div><div class="line">      nms_result = box_list_ops.gather(boxlist_and_class_scores,</div><div class="line">                                       selected_indices)</div><div class="line">      nms_result.add_field(</div><div class="line">          fields.BoxListFields.classes, (tf.zeros_like(</div><div class="line">              nms_result.get_field(fields.BoxListFields.scores)) + class_idx))</div><div class="line">      selected_boxes_list.append(nms_result)</div><div class="line">    <span class="comment"># selected_boxes 是一个 BoxList 对象，内部以字典的形式存储了一个位置信息张量、score张量、class张量，三个张量中对应的 </span></div><div class="line">    <span class="comment"># index 构成了一个 box 的信息。 </span></div><div class="line">    selected_boxes = box_list_ops.concatenate(selected_boxes_list)</div><div class="line">    <span class="comment"># 打破类别的藩篱，对整个 BoxList 对象按照 score 进行排序</span></div><div class="line">    sorted_boxes = box_list_ops.sort_by_field(selected_boxes,</div><div class="line">                                              fields.BoxListFields.scores)</div><div class="line">    <span class="keyword">if</span> clip_window <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</div><div class="line">      sorted_boxes = box_list_ops.clip_to_window(sorted_boxes, clip_window)</div><div class="line">      <span class="keyword">if</span> change_coordinate_frame:</div><div class="line">        sorted_boxes = box_list_ops.change_coordinate_frame(</div><div class="line">            sorted_boxes, clip_window)</div><div class="line">    <span class="keyword">if</span> max_total_size:</div><div class="line">      max_total_size = tf.minimum(max_total_size,</div><div class="line">                                  sorted_boxes.num_boxes())</div><div class="line">      <span class="comment"># 打破类别的藩篱，仅选择 BoxList 对象中 score 最大的 max_total_size 个 box，并返回一个新的 BoxList 对象。</span></div><div class="line">      sorted_boxes = box_list_ops.gather(sorted_boxes,</div><div class="line">                                         tf.range(max_total_size))</div><div class="line">    <span class="keyword">return</span> sorted_boxes</div></pre></td></tr></table></figure></p>
+<p>关于 <code>BoxList</code> 的定义可以查看 <a href="https://github.com/tensorflow/models/blob/master/research/object_detection/core/box_list.py" target="_blank" rel="external">models/research/object_detection/core/box_list.py</a>。</p>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    </div>
+
+    
+
+    
+        <div class="post-tags">
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <a href="/tags/DL/">#DL</a>
+        </div>
+    
+
+    <!-- Comments -->
+    
+
+</div>
+        </section>
+
+    </div>
+</div>
+
+
+</div>
+
+<!-- Footer -->
+<div class="push"></div>
+
+<footer class="footer-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
+                <h2>About</h2>
+                <p>
+                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
+                </p>
+            </div>
+            
+    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/26/YOLO/">YOLO</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/26/非最大值抑制/">非最大值抑制</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/26/目标定位-vs-目标检测/">目标定位 vs 目标检测</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/13/消失的梯度/">消失的梯度</a>
+            </li>
+            
+        </ul>
+    </div>
+
+
+
+            
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="list-inline footer-social-icons">
+                    
+                    <li class="list-inline-item">
+                        <a href="https://github.com/RobertLexis">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-github"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="mailto:robert_lexis@163.com">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-envelope-o"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="footer-copyright">
+                    @Untitled. All right reserved | Robert Lexis Loves Wenny
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- After footer scripts -->
+
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Tween Max -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/main.js"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>

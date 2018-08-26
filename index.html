@@ -92,7 +92,7 @@
             </li>
             
             <li class="menu-item">
-                <a href="/about.html">
+                <a href="/about">
                     About
                 </a>
             </li>
@@ -110,7 +110,7 @@
             </li>
             
             <li class="menu-item">
-                <a href="/contact.html">
+                <a href="/contact">
                     Contact
                 </a>
             </li>
@@ -141,6 +141,156 @@
 </header>
 
         <section class="main">
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
+            <a href="/2018/08/26/YOLO/">
+                YOLO
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-08-26</span>
+            
+            
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <h3 id="Sliding-Windows-滑动窗口"><a href="#Sliding-Windows-滑动窗口" class="headerlink" title="Sliding Windows 滑动窗口"></a>Sliding Windows 滑动窗口</h3><p>通过滑动窗口的方式在图像上生成一系列的 box，然后利用分类器对每个 box 进行分类，即可完成对图像中目标的检测。<br>基于滑动窗口的目标检测效率很低，因为我们需要对每个区域都进行预测，而且为了获得更加准确的结果，我们需要尝试各种不同尺寸的 box。</p>
+<h3 id="Convolutional-Implementation-of-Sliding-Windows"><a href="#Convolutional-Implementation-of-Sliding-Windows" class="headerlink" title="Convolutional Implementation of Sliding Windows"></a>Convolutional Implementation of Sliding Windows</h3><p>这是一个加速的方法，共享计算。<br><img src="/2018/08/26/YOLO/cnn-slide.jpg" alt="cnn-slide"></p>
+<h3 id="More-accurate-bounding-boxes"><a href="#More-accurate-bounding-boxes" class="headerlink" title="More accurate bounding boxes"></a>More accurate bounding boxes</h3><p>通过上面一个 \( reduction factor = 8 \) 的卷积神经网络，我们可以在 4 个 \( 14 \times 14 \) 的方框内进行目标的检测，这样的检测结果并不会很精确。在下图中蓝色的方框也许是最吻合的，但是实际上它的位置并不精确，另外目标形状也许并不是一个正方形，而是像图中所示的那样是一个长方形。因此需要对其进行改进，即对这 4 个方框内的目标位置进行回归修正。<br><img src="/2018/08/26/YOLO/not_accurate.png" alt="not_accurate"></p>
+<h5 id="Grid-cells"><a href="#Grid-cells" class="headerlink" title="Grid cells"></a>Grid cells</h5><p>在实际的算法中，使用的是 \( 19 \times 19 \) grid cells，此处出于示意采用的是 \( 3 \times 3 \) grid cells。<br><img src="/2018/08/26/YOLO/grid_cell.jpg" alt="grid_cell"><br>如何将目标和具体的某一个 grid cell 联系起来呢？<br>YOLO 算法查看目标的 bounding box 的中心点，把目标归给中心点所在的那个 grid cell。<br><img src="/2018/08/26/YOLO/grid_cell_output.jpg" alt="grid_cell_output"><br>这样每一个 grid cell 就有了一个标签：<br>\[<br>y = \left[<br>    \begin{matrix}<br>    p_c \\\\<br>    b_x \\\\<br>    b_y \\\\<br>    b_h \\\\<br>    b_w \\\\<br>    c_1 \\\\<br>    c_2 \\\\<br>    c_3<br>    \end{matrix}<br>\right]<br>\]</p>
+<ul>
+<li>\( p_c \): 该 grid cell 中是否存在某一个目标的 bounding box 的中心点。</li>
+<li>\( b_x \): x coordinate, the center of the object corresponding to the upper left corner of the grid cell, the value range from 0~1,</li>
+<li>\( b_y \): y coordinate, the center of the object corresponding to the upper left corner of the grid cell, the value range from 0~1,</li>
+<li>\( b_h \): height of the bounding box with repect to the height of grid cell, the value could be greater than 1.</li>
+<li>\( b_w \): width of the bounding box with repect to the width of grid cell, the value could be greater than 1,</li>
+<li>\( c_1, c_2, c_3 \): 目标属于每一类的概率。</li>
+</ul>
+<p>通过这样的方式完成一张图片标签的构建。</p>
+<p>神经网络的输出是一个 \( 3 \times 3 \times 8\) 的 volume。此时，只要每一个 grid cell 中存在的一个目标个数不超过一个，这个算法就可以工作。此时算法很像 \( 3 \times 3 \) 个 Classification + Localization，直接输出每一个 grid cell 中是否存在目标及目标的类别和位置。关于 Classification + Localization 可以查看我的另一篇博文<a href="目标定位-vs-目标检测/">目标定位 vs 目标检测</a>。</p>
+<h5 id="Non-Max-Suppression"><a href="#Non-Max-Suppression" class="headerlink" title="Non Max Suppression"></a>Non Max Suppression</h5><p>使用非最大值抑制 clean up grid cells’ detections。</p>
+<h6 id="IoU"><a href="#IoU" class="headerlink" title="IoU"></a>IoU</h6><p>In general, so long as the IoU is greater than or equal to 0.5, then the result will look pretty decent. And by convention, very often 0.5 is used as a threshold to judge as whether the predicted bounding box is correct or not.<br>关于非最大值抑制可以查看我的另一篇博文<a href="http://localhost:4000/2018/08/26/非最大值抑制/" target="_blank" rel="external">非最大值抑制</a>。<br><img src="/2018/08/26/YOLO/before_nms.jpg" alt="before_nms"><br><img src="/2018/08/26/YOLO/after_nms.jpg" alt="affter_nms"></p>
+<h5 id="Anchor-Boxes"><a href="#Anchor-Boxes" class="headerlink" title="Anchor Boxes"></a>Anchor Boxes</h5><p>目前为止，如果某一个 grid cell 中含有多个目标的 bounding box 的中心点，那么算法只能检测一个目标而不得不舍弃其他的目标。<br><img src="/2018/08/26/YOLO/car-person.jpg" alt="car-person"><br>虽然使用更加细密的 grid cell 划分，可以降低多个目标中心点出现在同一个 grid cell 中的概率，但是还是难以避免的。因此可以在同一个 grid cell 中配备 n 个锚点 box，此时最多允许 n 个目标的 bounding box 的中心点出现在同一个 grid cell 中。<br><img src="/2018/08/26/YOLO/anchor_box.jpg" alt="anchor_box"><br>现在神经网络的输出是一个 \( 3 \times 3 \times 16\) 的 volume。<br><img src="/2018/08/26/YOLO/anchor_box_y.jpg" alt="anchor_box_y"><br>在之前算法中，图片中的每一个目标被归给含有该目标中心点的那个 grid cell。<br>在使用锚点 box 的算法中，图片中的每一个目标被归给含有该目标中心点的那个grid cell 中的、与该目标有最大交并比的那个 anchor box。</p>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+        </div>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
+            <a href="/2018/08/26/非最大值抑制/">
+                非最大值抑制
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-08-26</span>
+            
+            
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <p>非最大值抑制 Non-max Suppression 是目标检测（object detection）中常用的后处理（post processing）技术。<br>（Fast-， Faster-）RCNN，SSD，YOLO 等目标检测框架会对一个目标产生多个 bounding box 的预测结果，而我们最终需要的仅仅是最“合适”的那一个。<br>非最大值抑制就是用来去除（clean up）多余的 bounding box 的预测结果，确保对一个目标只输出一个检测结果。<br>概率最大的 bounding box 被保留，且该 bounding box 周围的与它有较大交并比的 bounding box 会被抑制。<br><img src="/2018/08/26/非最大值抑制/grid.png" alt="grid"><br>Each output prediction is:<br>\[<br>    \left[<br>    \begin{matrix}<br>    p_c \\\\<br>    b_x \\\\<br>    b_y \\\\<br>    b_w \\\\<br>    b_h<br>    \end{matrix}<br>    \right]<br>\]<br>Algorithm:<br>Discard all boxes with \( p_c \leq 0.5\)<br>While there are any remaining boxes:</p>
+<ul>
+<li>Pick the box with the largest \( p_c \), output that as a prediction.</li>
+<li>Discard any remaining box with \(IOU \geq 0.5 \) with the box output in the previous step.<br><img src="/2018/08/26/非最大值抑制/non_max_suppression.png" alt="non_max_suppression"></li>
+</ul>
+<h3 id="Tensorflow-tf-image-non-max-suppression"><a href="#Tensorflow-tf-image-non-max-suppression" class="headerlink" title="Tensorflow tf.image.non_max_suppression"></a>Tensorflow tf.image.non_max_suppression</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">tf.image.non_max_suppression(</div><div class="line">    boxes,</div><div class="line">    scores,</div><div class="line">    max_output_size,</div><div class="line">    iou_threshold=<span class="number">0.5</span>,</div><div class="line">    score_threshold=float(<span class="string">'-inf'</span>),</div><div class="line">    name=<span class="keyword">None</span></div><div class="line">)</div></pre></td></tr></table></figure>
+<p>Greedily selects a subset of bounding boxes in descending order of score.</p>
+<p>Prunes away boxes that have high intersection-over-union (IOU) overlap with previously selected boxes. Bounding boxes are supplied as [y1, x1, y2, x2], where (y1, x1) and (y2, x2) are the coordinates of any diagonal pair of box corners and the coordinates can be provided as normalized (i.e., lying in the interval [0, 1]) or absolute. Note that this algorithm is agnostic to where the origin is in the coordinate system. Note that this algorithm is invariant to orthogonal transformations and translations of the coordinate system; thus translating or reflections of the coordinate system result in the same boxes being selected by the algorithm. The output of this operation is <strong>a set of integers indexing into the input collection of bounding boxes representing the selected boxes</strong>. The bounding box coordinates corresponding to the selected indices can then be obtained using the tf.gather operation. For example:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">selected_indices = tf.image.non_max_suppression( boxes, scores, max_output_size, iou_threshold) </div><div class="line">selected_boxes = tf.gather(boxes, selected_indices)</div></pre></td></tr></table></figure></p>
+<p>Args:<br>boxes: A 2-D float Tensor of shape [num_boxes, 4].<br>scores: A 1-D float Tensor of shape [num_boxes] representing a single score corresponding to each box (each row of boxes).<br>max_output_size: A scalar integer Tensor representing the maximum number of boxes to be selected by non max suppression.<br>iou_threshold: A float representing the threshold for deciding whether boxes overlap too much with respect to IOU.<br>score_threshold: A float representing the threshold for deciding when to remove boxes based on score.<br>name: A name for the operation (optional).<br>Returns:<br>selected_indices: A 1-D integer Tensor of shape [M] representing the selected indices from the boxes tensor, where M &lt;= max_output_size.</p>
+<h3 id="Tensorflow-多类别非最大值抑制"><a href="#Tensorflow-多类别非最大值抑制" class="headerlink" title="Tensorflow 多类别非最大值抑制"></a>Tensorflow 多类别非最大值抑制</h3><p>在 <a href="https://github.com/tensorflow/models/blob/master/research/object_detection/core/post_processing.py" target="_blank" rel="external">models/research/object_detection/core/post_processing.py</a> 中定义：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">multiclass_non_max_suppression</span><span class="params">(boxes,</span></span></div><div class="line"><span class="function"><span class="params">                                   scores,</span></span></div><div class="line"><span class="function"><span class="params">                                   score_thresh,</span></span></div><div class="line"><span class="function"><span class="params">                                   iou_thresh,</span></span></div><div class="line"><span class="function"><span class="params">                                   max_size_per_class,</span></span></div><div class="line"><span class="function"><span class="params">                                   max_total_size=<span class="number">0</span>,</span></span></div><div class="line"><span class="function"><span class="params">                                   clip_window=None,</span></span></div><div class="line"><span class="function"><span class="params">                                   change_coordinate_frame=False,</span></span></div><div class="line"><span class="function"><span class="params">                                   masks=None,</span></span></div><div class="line"><span class="function"><span class="params">                                   boundaries=None,</span></span></div><div class="line"><span class="function"><span class="params">                                   additional_fields=None,</span></span></div><div class="line"><span class="function"><span class="params">                                   scope=None)</span>:</span></div><div class="line">  <span class="string">"""Multi-class version of non maximum suppression.</span></div><div class="line"><span class="string">  This op greedily selects a subset of detection bounding boxes, pruning</span></div><div class="line"><span class="string">  away boxes that have high IOU (intersection over union) overlap (&gt; thresh)</span></div><div class="line"><span class="string">  with already selected boxes.  </span></div><div class="line"><span class="string">  It operates independently for each class for</span></div><div class="line"><span class="string">  which scores are provided (via the scores field of the input box_list),</span></div><div class="line"><span class="string">  pruning boxes with score less than a provided threshold prior to</span></div><div class="line"><span class="string">  applying NMS.</span></div><div class="line"><span class="string">  单独对每一类进行操作，在进行非最大值抑制之前，首先去掉 score 低于 score_thresh 的 boxes。</span></div><div class="line"><span class="string">  Please note that this operation is performed on *all* classes, therefore any</span></div><div class="line"><span class="string">  background classes should be removed prior to calling this function.</span></div><div class="line"><span class="string">  Selected boxes are guaranteed to be sorted in decreasing order by score (but</span></div><div class="line"><span class="string">  the sort is not guaranteed to be stable).</span></div><div class="line"><span class="string">  Args:</span></div><div class="line"><span class="string">    boxes: A [k, q, 4] float32 tensor containing k detections. `q` can be either</span></div><div class="line"><span class="string">      number of classes or 1 depending on whether a separate box is predicted</span></div><div class="line"><span class="string">      per class.</span></div><div class="line"><span class="string">      根据是否是在第 k 个 detection 处对每一类单独预测一个 box，输入参数 boxes 的 q 可能为 number of</span></div><div class="line"><span class="string">      class 或者 1。</span></div><div class="line"><span class="string">    scores: A [k, num_classes] float32 tensor containing the scores for each of</span></div><div class="line"><span class="string">      the k detections.</span></div><div class="line"><span class="string">    score_thresh: scalar threshold for score (low scoring boxes are removed).</span></div><div class="line"><span class="string">    iou_thresh: scalar threshold for IOU (new boxes that have high IOU overlap</span></div><div class="line"><span class="string">      with previously selected boxes are removed).</span></div><div class="line"><span class="string">    max_size_per_class: maximum number of retained boxes per class.</span></div><div class="line"><span class="string">    max_total_size: maximum number of boxes retained over all classes. By</span></div><div class="line"><span class="string">      default returns all boxes retained after capping boxes per class.</span></div><div class="line"><span class="string">    clip_window: A float32 tensor of the form [y_min, x_min, y_max, x_max]</span></div><div class="line"><span class="string">      representing the window to clip and normalize boxes to before performing</span></div><div class="line"><span class="string">      non-max suppression.</span></div><div class="line"><span class="string">      此处 before 是错误的，因为在下面代码的实际实现时是 after。</span></div><div class="line"><span class="string">      利用 clip_window 这个窗口对每一个 boxes 进行裁剪和 normalize。</span></div><div class="line"><span class="string">    change_coordinate_frame: Whether to normalize coordinates after clipping</span></div><div class="line"><span class="string">      relative to clip_window (this can only be set to True if a clip_window</span></div><div class="line"><span class="string">      is provided)</span></div><div class="line"><span class="string">    masks: (optional) a [k, q, mask_height, mask_width] float32 tensor</span></div><div class="line"><span class="string">      containing box masks. `q` can be either number of classes or 1 depending</span></div><div class="line"><span class="string">      on whether a separate mask is predicted per class.</span></div><div class="line"><span class="string">    boundaries: (optional) a [k, q, boundary_height, boundary_width] float32</span></div><div class="line"><span class="string">      tensor containing box boundaries. `q` can be either number of classes or 1</span></div><div class="line"><span class="string">      depending on whether a separate boundary is predicted per class.</span></div><div class="line"><span class="string">    additional_fields: (optional) If not None, a dictionary that maps keys to</span></div><div class="line"><span class="string">      tensors whose first dimensions are all of size `k`. After non-maximum</span></div><div class="line"><span class="string">      suppression, all tensors corresponding to the selected boxes will be</span></div><div class="line"><span class="string">      added to resulting BoxList.</span></div><div class="line"><span class="string">    scope: name scope.</span></div><div class="line"><span class="string">  Returns:</span></div><div class="line"><span class="string">    a BoxList holding M boxes.</span></div><div class="line"><span class="string">  Raises:</span></div><div class="line"><span class="string">    ValueError: if iou_thresh is not in [0, 1] or if input boxlist does not have</span></div><div class="line"><span class="string">      a valid scores field.</span></div><div class="line"><span class="string">  """</span></div><div class="line">  <span class="keyword">if</span> <span class="keyword">not</span> <span class="number">0</span> &lt;= iou_thresh &lt;= <span class="number">1.0</span>:</div><div class="line">    <span class="keyword">raise</span> ValueError(<span class="string">'iou_thresh must be between 0 and 1'</span>)</div><div class="line">  <span class="keyword">if</span> scores.shape.ndims != <span class="number">2</span>:</div><div class="line">    <span class="keyword">raise</span> ValueError(<span class="string">'scores field must be of rank 2'</span>)</div><div class="line">  <span class="keyword">if</span> scores.shape[<span class="number">1</span>].value <span class="keyword">is</span> <span class="keyword">None</span>:</div><div class="line">    <span class="keyword">raise</span> ValueError(<span class="string">'scores must have statically defined second '</span></div><div class="line">                     <span class="string">'dimension'</span>)</div><div class="line">  <span class="keyword">if</span> boxes.shape.ndims != <span class="number">3</span>:</div><div class="line">    <span class="keyword">raise</span> ValueError(<span class="string">'boxes must be of rank 3.'</span>)</div><div class="line">  <span class="keyword">if</span> <span class="keyword">not</span> (boxes.shape[<span class="number">1</span>].value == scores.shape[<span class="number">1</span>].value <span class="keyword">or</span></div><div class="line">          boxes.shape[<span class="number">1</span>].value == <span class="number">1</span>):</div><div class="line">    <span class="keyword">raise</span> ValueError(<span class="string">'second dimension of boxes must be either 1 or equal '</span></div><div class="line">                     <span class="string">'to the second dimension of scores'</span>)</div><div class="line">  <span class="keyword">if</span> boxes.shape[<span class="number">2</span>].value != <span class="number">4</span>:</div><div class="line">    <span class="keyword">raise</span> ValueError(<span class="string">'last dimension of boxes must be of size 4.'</span>)</div><div class="line">  <span class="keyword">if</span> change_coordinate_frame <span class="keyword">and</span> clip_window <span class="keyword">is</span> <span class="keyword">None</span>:</div><div class="line">    <span class="keyword">raise</span> ValueError(<span class="string">'if change_coordinate_frame is True, then a clip_window'</span></div><div class="line">                     <span class="string">'must be specified.'</span>)</div><div class="line"></div><div class="line">  <span class="keyword">with</span> tf.name_scope(scope, <span class="string">'MultiClassNonMaxSuppression'</span>):</div><div class="line">    num_scores = tf.shape(scores)[<span class="number">0</span>]</div><div class="line">    num_classes = scores.get_shape()[<span class="number">1</span>]</div><div class="line"></div><div class="line">    selected_boxes_list = []</div><div class="line">    per_class_boxes_list = tf.unstack(boxes, axis=<span class="number">1</span>)</div><div class="line">    <span class="keyword">if</span> masks <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</div><div class="line">      per_class_masks_list = tf.unstack(masks, axis=<span class="number">1</span>)</div><div class="line">    <span class="keyword">if</span> boundaries <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</div><div class="line">      per_class_boundaries_list = tf.unstack(boundaries, axis=<span class="number">1</span>)</div><div class="line">    boxes_ids = (range(num_classes) <span class="keyword">if</span> len(per_class_boxes_list) &gt; <span class="number">1</span></div><div class="line">                 <span class="keyword">else</span> [<span class="number">0</span>] * num_classes.value)</div><div class="line">    <span class="comment"># 对每一类单独处理</span></div><div class="line">    <span class="keyword">for</span> class_idx, boxes_idx <span class="keyword">in</span> zip(range(num_classes), boxes_ids):</div><div class="line">      per_class_boxes = per_class_boxes_list[boxes_idx]</div><div class="line">      boxlist_and_class_scores = box_list.BoxList(per_class_boxes)</div><div class="line">      class_scores = tf.reshape(</div><div class="line">          tf.slice(scores, [<span class="number">0</span>, class_idx], tf.stack([num_scores, <span class="number">1</span>])), [<span class="number">-1</span>])</div><div class="line"></div><div class="line">      boxlist_and_class_scores.add_field(fields.BoxListFields.scores,</div><div class="line">                                         class_scores)</div><div class="line">      <span class="keyword">if</span> masks <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</div><div class="line">        per_class_masks = per_class_masks_list[boxes_idx]</div><div class="line">        boxlist_and_class_scores.add_field(fields.BoxListFields.masks,</div><div class="line">                                           per_class_masks)</div><div class="line">      <span class="keyword">if</span> boundaries <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</div><div class="line">        per_class_boundaries = per_class_boundaries_list[boxes_idx]</div><div class="line">        boxlist_and_class_scores.add_field(fields.BoxListFields.boundaries,</div><div class="line">                                           per_class_boundaries)</div><div class="line">      <span class="keyword">if</span> additional_fields <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</div><div class="line">        <span class="keyword">for</span> key, tensor <span class="keyword">in</span> additional_fields.items():</div><div class="line">          boxlist_and_class_scores.add_field(key, tensor)</div><div class="line"></div><div class="line">      max_selection_size = tf.minimum(max_size_per_class,</div><div class="line">                                      boxlist_and_class_scores.num_boxes())</div><div class="line">      selected_indices = tf.image.non_max_suppression(</div><div class="line">          boxlist_and_class_scores.get(),</div><div class="line">          boxlist_and_class_scores.get_field(fields.BoxListFields.scores),</div><div class="line">          max_selection_size,</div><div class="line">          iou_threshold=iou_thresh,</div><div class="line">          score_threshold=score_thresh)</div><div class="line">      nms_result = box_list_ops.gather(boxlist_and_class_scores,</div><div class="line">                                       selected_indices)</div><div class="line">      nms_result.add_field(</div><div class="line">          fields.BoxListFields.classes, (tf.zeros_like(</div><div class="line">              nms_result.get_field(fields.BoxListFields.scores)) + class_idx))</div><div class="line">      selected_boxes_list.append(nms_result)</div><div class="line">    <span class="comment"># selected_boxes 是一个 BoxList 对象，内部以字典的形式存储了一个位置信息张量、score张量、class张量，三个张量中对应的 </span></div><div class="line">    <span class="comment"># index 构成了一个 box 的信息。 </span></div><div class="line">    selected_boxes = box_list_ops.concatenate(selected_boxes_list)</div><div class="line">    <span class="comment"># 打破类别的藩篱，对整个 BoxList 对象按照 score 进行排序</span></div><div class="line">    sorted_boxes = box_list_ops.sort_by_field(selected_boxes,</div><div class="line">                                              fields.BoxListFields.scores)</div><div class="line">    <span class="keyword">if</span> clip_window <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</div><div class="line">      sorted_boxes = box_list_ops.clip_to_window(sorted_boxes, clip_window)</div><div class="line">      <span class="keyword">if</span> change_coordinate_frame:</div><div class="line">        sorted_boxes = box_list_ops.change_coordinate_frame(</div><div class="line">            sorted_boxes, clip_window)</div><div class="line">    <span class="keyword">if</span> max_total_size:</div><div class="line">      max_total_size = tf.minimum(max_total_size,</div><div class="line">                                  sorted_boxes.num_boxes())</div><div class="line">      <span class="comment"># 打破类别的藩篱，仅选择 BoxList 对象中 score 最大的 max_total_size 个 box，并返回一个新的 BoxList 对象。</span></div><div class="line">      sorted_boxes = box_list_ops.gather(sorted_boxes,</div><div class="line">                                         tf.range(max_total_size))</div><div class="line">    <span class="keyword">return</span> sorted_boxes</div></pre></td></tr></table></figure></p>
+<p>关于 <code>BoxList</code> 的定义可以查看 <a href="https://github.com/tensorflow/models/blob/master/research/object_detection/core/box_list.py" target="_blank" rel="external">models/research/object_detection/core/box_list.py</a>。</p>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+        </div>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
+            <a href="/2018/08/26/目标定位-vs-目标检测/">
+                目标定位 vs 目标检测
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-08-26</span>
+            
+            
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <p>计算机视觉领域的不同任务：<br><img src="/2018/08/26/目标定位-vs-目标检测/cls.png" alt="classification"><br><img src="/2018/08/26/目标定位-vs-目标检测/other.png" alt="other task"></p>
+<h3 id="主要任务类别"><a href="#主要任务类别" class="headerlink" title="主要任务类别"></a>主要任务类别</h3><ul>
+<li>Classification<br>图像中有一个主体目标，且该张图片被标记为该主体目标的类别。<ul>
+<li>one main object per image</li>
+<li>one class label per image</li>
+</ul>
+</li>
+</ul>
+<p>one-hot vector<br>\[<br>y = \left[<br>        \begin{matrix}<br>            c_1 \\\\<br>            c_2 \\\\<br>            c_3<br>        \end{matrix}<br>\right]<br>\]</p>
+<ul>
+<li>Classification + Localization<br>图像中有一个主体目标，且该张图片被标记为该主体的类别和位置。<ul>
+<li>one main object per image</li>
+<li>one class label per image</li>
+</ul>
+</li>
+</ul>
+<p>\[<br>y = \left[<br>    \begin{matrix}<br>        p_c \\\\<br>        b_x \\\\<br>        b_y \\\\<br>        b_w \\\\<br>        b_h \\\\<br>        c_1 \\\\<br>        c_2 \\\\<br>        c_3<br>    \end{matrix}<br>\right]<br>\]</p>
+<p>其中 \( p_c \) 标识图像中是否出现目标，\( (b_x, b_y, b_w, b_h) \) 标识若图像中目标存在则图像中目标的位置，\(  (c_1, c_2, c_3) \) 标识若图像中目标存在则图像中目标的类别（此处以三类目标为例）。</p>
+<ul>
+<li>Object Detection<br>图像中有属于多个类别的多个目标<ul>
+<li>multi objects per image</li>
+<li>multi classes per image</li>
+</ul>
+</li>
+</ul>
+<h3 id="推广任务类别"><a href="#推广任务类别" class="headerlink" title="推广任务类别"></a>推广任务类别</h3><ul>
+<li>Multi label classification<br>图像中有一个主体目标，且该张图片被标记为该主体目标的类别，但该主体目标可能同时属于多个类别。<ul>
+<li>one main object per image</li>
+<li>multi class labels per image</li>
+</ul>
+</li>
+</ul>
+<p>\[<br>y = \left[<br>    \begin{matrix}<br>        c_1 \\\\<br>        c_2 \\\\<br>        c_3<br>    \end{matrix}<br>\right]<br>\]<br>\( y \) 根据图像中主体目标所属类别的个数不一定是 one-hot 的。</p>
+<ul>
+<li>Multi objects Classification + Localization<ul>
+<li>n objects per image</li>
+<li>m classes per image</li>
+<li>\( n_{c_1} + n_{c_2} + n_{c_3} + … + n_{c_m} = n \)</li>
+<li>\( n, m, n_{c_i} \) 对于一个具体任务是一组确定的值。</li>
+</ul>
+</li>
+</ul>
+<p>\[<br>y\_category = \left[<br>    \begin{matrix}<br>    p_c \\\\<br>    c_1 \\\\<br>    c_2 \\\\<br>    c_{3, 1} \\\\<br>    c_{3, 2}<br>    \end{matrix}<br>\right]<br>y\_location = \left[<br>    \begin{matrix}<br>    \\\\<br>    b_{x, 1} \\\\<br>    b_{y, 1} \\\\<br>    b_{w, 1} \\\\<br>    b_{h, 1} \\\\<br>    b_{x, 2} \\\\<br>    b_{y, 2} \\\\<br>    b_{w, 2} \\\\<br>    b_{h, 2} \\\\<br>    b_{x, (3, 1)} \\\\<br>    b_{y, (3, 1)} \\\\<br>    b_{w, (3, 1)} \\\\<br>    b_{h, (3, 1)} \\\\<br>    b_{x, (3, 2)} \\\\<br>    b_{y, (3, 2)} \\\\<br>    b_{w, (3, 2)} \\\\<br>    b_{h, (3, 2)}<br>    \end{matrix}<br>\right]<br>\]</p>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+        </div>
+    
+
+</div>
             
                 
 <div class="post">
@@ -509,156 +659,6 @@
 
 </div>
             
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/08/01/Nvidia-Jetson-TX2-开箱及刷机/">
-                Nvidia Jetson TX2 开箱及刷机
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-08-01</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <p>钱学森实验室购买了 Nvidia <a href="https://developer.nvidia.com/embedded-computing" target="_blank" rel="external">Jetson</a> TX2 支持嵌入式 AI 开发。</p>
-<blockquote>
-<p>Jetson, the Platform for AI at the Edge<br>NVIDIA Jetson with GPU-accelerated parallel processing is the world’s leading embedded AI computing platform. The Jetson portfolio of devices, featuring the new NVIDIA Jetson TX2, delivers more performance and features for Artificial Intelligence at the edge. Devices at the edge, from drones to intelligent cameras, need on-board AI to process complex data without relying on network connectivity. AI at the Edge is the future of industry, transforming processes in manufacturing, industrial inspection, agriculture, general robotics, security, and AI cities.</p>
-</blockquote>
-<p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/jetson/Jetson.jpeg" alt="Jetson"><br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/jetson/Jetson_1.jpeg" alt="Jetson"></p>
-<h3 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h3><p>NVIDIA Tegra Linux Driver Package – L4T 28.2.1 <a href="https://developer.nvidia.com/embedded/linux-tegra" target="_blank" rel="external">Linux For Tegra</a> 是为支持 Jetson 平台上的开发而设计的。<br>通过 <code>uname -a</code> 查看到的信息是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Linux tegra-ubuntu 4.4.38-tegra #1 SMP PREEMPT Thu May 17 00:15:19 PDT 2018 aarch64 aarch64 aarch64 GNU/Linux</div></pre></td></tr></table></figure></p>
-<p>可以看出系统适配的是 aarch 处理器架构，而不是通常的 x86_64 架构。<br>L4T 28.2.1 支持的 Jetson 平台是 NVIDIA &#174; Tegra &#174; X2 series (Jetson TX2, Jetson TX2i)</p>
-<p>L4T 28.2.1 System Requirements </p>
-<ul>
-<li>Host PC running Ubuntu Linux version 16.04 is recommended.</li>
-<li>Tegra Linux Driver Package providing a kernel image, bootloader, NVIDIA drivers, and flashing utilities. </li>
-</ul>
-<h3 id="CPU"><a href="#CPU" class="headerlink" title="CPU"></a>CPU</h3><p><a href="https://www.nvidia.com/object/tegra.html" target="_blank" rel="external">Tegra</a> The World’s Fastest Mobile Processors.<br>Tegra ARM based processors.</p>
-<h3 id="JetPack"><a href="#JetPack" class="headerlink" title="JetPack"></a>JetPack</h3><p>NVIDIA <a href="https://developer.nvidia.com/embedded/jetpack" target="_blank" rel="external">JetPack</a> SDK is the most comprehensive solution for building AI applications. Use the JetPack installer to flash your Jetson Developer Kit with <strong>the latest OS image</strong>, to install developer tools for both <strong>host PC</strong> and <strong>Developer Kit</strong>, and to install the libraries and APIs, samples, and documentation needed to jumpstart your development environment.</p>
-<p>JetPack bundles all the Jetson platform software, including <a href="https://developer.nvidia.com/tensorrt" target="_blank" rel="external">TensorRT</a>, cuDNN, CUDA Toolkit, VisionWorks, GStreamer, and OpenCV, all built <strong>on top of L4T with LTS Linux kernel</strong>.</p>
-<p>在<strong>主机 host PC</strong> 上下载安装 JetPack 3.3, JetPack 3.3 contains CUDA toolkit for the host (Ubuntu) and target platform, the latest NVIDIA Developer Tools (Tegra Graphics Debugger 2.5 and NVIDIA System Profiler 4.0), VisionWorks 1.6, cuDNN v7.1.5, Multimedia API v28.2, OpenCV 3.3.1, and TensorRT 4.0 GA.<a href="https://developer.nvidia.com/embedded/jetpack-notes" target="_blank" rel="external">JetPack Release Notes</a></p>
-<p>JetPack 3.3 对主机的要求是 Ubuntu Linux x64 v16.04，对目标平台（Target Platform）的要求是 Jetson Developer Kit with Jetson TX2, Jetson TX2i, or Jetson TX1 module。</p>
-<p>另外也需要一根以太网网线，An Ethernet cable plugged into the on-board Ethernet port, which is connected to either a secondary network card on your Linux host or the same network router providing Internet access for the Linux host.</p>
-<p>JetPack 3.3 启动之后会下载所需的各种软件包，目前[2018/08/02]下载这些软件包需要主机 host PC 能够翻墙，可在 Ubuntu 下安装 ShadowSocks 客户端并配合 privoxy 连接 VPN 服务器实现翻墙，需要 VPN 服务器的可以联系我进行借用。</p>
-<ol>
-<li><p><code>sudo pip install shadowsocks</code></p>
-</li>
-<li><p>shawdowsocks.json</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&#123; </div><div class="line">&quot;server&quot;: &quot;_._._._&quot;, </div><div class="line">&quot;server_port&quot;: _, </div><div class="line">&quot;local_port&quot;: 1080, </div><div class="line">&quot;password&quot;: &quot;_&quot;, </div><div class="line">&quot;timeout&quot;: 600, </div><div class="line">&quot;method&quot;: &quot;aes-256-cfb&quot; </div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p><code>sudo sslocal -c shawdowsocks.json -d start</code></p>
-</li>
-<li><p>安装配置 privoxy。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install privoxy</div><div class="line"></div><div class="line">sudo vim /etc/privoxy/config</div><div class="line"></div><div class="line">1336行处 ：forward-socks5t / 127.0.0.1:1080 .</div><div class="line">sudo service privoxy start</div></pre></td></tr></table></figure>
-</li>
-<li><p>设置 http 和 https 全局代理 </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">export http_proxy=&apos;http://localhost:8118&apos;</div><div class="line">export https_proxy=&apos;https://localhost:8118&apos;</div></pre></td></tr></table></figure>
-</li>
-<li><p>测试</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">wget www.google.com</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<p>JetPack 安装图示参考<a href="https://docs.nvidia.com/jetpack-l4t/index.html#jetpack/3.3/install.htm" target="_blank" rel="external">官方文档</a>。</p>
-<h3 id="NVIDIA-TensorRT"><a href="#NVIDIA-TensorRT" class="headerlink" title="NVIDIA TensorRT"></a>NVIDIA <a href="https://developer.nvidia.com/tensorrt" target="_blank" rel="external">TensorRT</a></h3><p>Programmable Inference Accelerator (可编程推理加速器)<br>NVIDIA TensorRT is a high-performance deep learning <strong>inference</strong>(只有推理，NOT for Training) optimizer and runtime that delivers low latency and high-throughput for deep learning inference applications. With TensorRT, you can optimize neural network models, calibrate for lower precision with high accuracy, and finally deploy the models to hyperscale data centers, embedded, or automotive product platforms. TensorRT-based applications on GPUs perform up to 100x faster than CPU during inference for models trained in all major frameworks.</p>
-<p>TensorRT provides INT8 and FP16 optimizations for production deployments of deep learning inference applications such as video streaming, speech recognition, recommendation and natural language processing. Reduced precision inference significantly lowers application latency, which is a requirement for many real-time services as well as auto and embedded applications.</p>
-<p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/jetson/TRT.png" alt="TRT"><br>You can import trained models from every deep learning framework into TensorRT. After applying optimizations, TensorRT selects platform specific kernels to maximize performance on Tesla GPUs in the datacenter, Jetson embedded platforms, and NVIDIA DRIVE autonomous driving platforms. </p>
-<p>With TensorRT developers can focus on creating novel AI-powered applications rather than performance tuning for inference deployment.<br>关于使用详情，<a href="https://docs.nvidia.com/deeplearning/sdk/" target="_blank" rel="external">NVIDIA Deep Learning SDK</a>，<a href="https://devblogs.nvidia.com/deploying-deep-learning-nvidia-tensorrt/" target="_blank" rel="external">Deploying Deep Neural Networks with NVIDIA TensorRT</a>。</p>
-
-        </div>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/07/26/Stacked-Hourglass-Networks-卫星部件检测/">
-                Stacked Hourglass Networks 卫星部件检测
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-07-26</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <h3 id="STACKED-HOURGLASS-NETWORKS"><a href="#STACKED-HOURGLASS-NETWORKS" class="headerlink" title="STACKED HOURGLASS NETWORKS"></a>STACKED HOURGLASS NETWORKS</h3><p><a href="http://www-personal.umich.edu/~alnewell/pose/" target="_blank" rel="external">STACKED HOURGLASS NETWORKS</a> 是由密歇根大学的研究团队设计的一个专门用来进行人体姿态估计的网络结构。在卫星的部件检测项目中，我们对其进行了修改和调整，利用同样的网络结构完成了太阳帆板的检测定位（类似图像分割任务）、发动机和对接环的定位（关键点检测任务）、发动机和对接环的检测定位（类似图像分割任务）。<br>下面对 STACKED HOURGLASS NETWORKS 进行介绍及对自主实现的 Keras 关键代码进行分析。</p>
-<h3 id="网络结构"><a href="#网络结构" class="headerlink" title="网络结构"></a>网络结构</h3><p>在该论文中，作者指出：</p>
-<blockquote>
-<p>This work introduces a novel convolutional network architecture for the task of human pose estimation. Features are processed across all scales and consolidated to best capture the various spatial relationships associated with the body. We show how repeated bottom-up, top-down processing used in conjunction with intermediate supervision is critical to improving the performance of the network. We refer to the architecture as a “stacked hourglass” network based on the successive steps of pooling and upsampling that are done to produce a final set of predictions. State-of-the-art results are achieved on the FLIC and MPII benchmarks outcompeting all recent methods.</p>
-</blockquote>
-<p>特征在各个不同尺度上的进行处理并合并，可以让神经网络更好地把握部件的空间关系。将 bottom-up, top-down 的处理模块（hourglass 模块）进行重复堆叠（stack），在辅以中间监督 （intermediate supervision），可以极大地提高网络的性能。<br>实际上，是通过卷积神经网络对部件模型进行了编码表示，是一种隐式空间模型（implicit spatial model）。<br>STACKED HOURGLASS NETWORKS 与 CPM (Convolutional Pose Machines) 方法相比，思路更明晰，网络更简洁。<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/satellite/stacked-hg.png" alt="stacked hourglass"></p>
-<h5 id="hourglass-模块"><a href="#hourglass-模块" class="headerlink" title="hourglass 模块"></a>hourglass 模块</h5><p>一个 hourglass 模块如下图所示，体现了跳级的思想。除红框内的 box 之外，每一个 box 都是一个 residual 模块的输出。<br>下图是 4 阶 hourglass 模块，进行了 4 次下采样（及对应的 4 次上采样）。n 阶 hourglass 模块可以提取从原始尺度到\(\frac{1}{2^n}\)<br>尺度的特征。<strong>在一个 hourglass 模块中特征图的通道数目保持不变。</strong><br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/satellite/hourglass.png" alt="hourglass"></p>
-<h5 id="residual-模块"><a href="#residual-模块" class="headerlink" title="residual 模块"></a>residual 模块</h5><p>一个 residual 模块如下图所示，residual 模块的 upper branch 是一个卷积模块 conv block，卷积模块首先进行一次\( 1 \times 1 \) 的卷积操作，缩减特征图的通道数目，然后进行一次 \( 3 \times 3 \)的卷积操作，最后再进行一次\( 1 \times 1 \)的卷积操作。residual 模块的 lower branch 是一个 skip layer，是一个跳级结构，在 skip layer 的输入与 conv block 的输出的通道数目不一致时，skip layer 会进行必要的 \( 1 \times 1 \) 卷积操作，使得其输出与 conv block 的输出通道数目一致，从而能够进行 element-wise 的相加。<br>一个 residual 模块可以看成是一个尺寸保持、通道数目可变可不变的“卷积层”。<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/satellite/residual.png" alt="residual"></p>
-<h5 id="intermediate-supervision"><a href="#intermediate-supervision" class="headerlink" title="intermediate supervision"></a>intermediate supervision</h5><p>中间监督（intermediate supervision）的结构如下图所示，网络进行分支，并产生图中蓝色所示的热图（heatmap），热图可以被用来计算损失。在热图上应用一次 \( 1 \times 1\) 卷积操作，增加通道数目使得其可以与网络的中间特征图进行相加。图中虚线是来自上一个 hourglass 模块输出的特征图，这里也体现了跳级（skip layer）的思想。</p>
-<p>跳级结构一方面可以看成是一个梯度反向传播的高速通道，另一方面也是网络正则化的一个替代，允许训练过程中神经网络自主选择其深度（结构复杂度）。<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/satellite/intermediate_supervision.png" alt="intermediate_supervision"></p>
-<h5 id="损失函数"><a href="#损失函数" class="headerlink" title="损失函数"></a>损失函数</h5><p>对于 \( H \times W  \times N \)<br>的输入，每一个 hourglass 模块都会生成一个 \( \frac{H}{2}  \times \frac{W}{2} \times K\)<br>的热图。对于每个热图，都比较其与真值（groundtruth）的误差作为损失，体现了中间监督(intermediate supervision)的思想。</p>
-<h5 id="预测"><a href="#预测" class="headerlink" title="预测"></a>预测</h5><p>在做预测时，仅选择最后一个 hourglass 模块输出的热图作为结果。</p>
-<h3 id="关键代码"><a href="#关键代码" class="headerlink" title="关键代码"></a>关键代码</h3><h5 id="residual-模块-1"><a href="#residual-模块-1" class="headerlink" title="residual 模块"></a>residual 模块</h5><h6 id="conv-block"><a href="#conv-block" class="headerlink" title="conv block"></a>conv block</h6><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">conv_block</span><span class="params">(inputs, num_output)</span>:</span></div><div class="line">    <span class="string">""" Convolutional Block</span></div><div class="line"><span class="string">    Args:</span></div><div class="line"><span class="string">        inputs  : Input Tensor (Not after being activated!!!!!)</span></div><div class="line"><span class="string">        num_output  : Desired output number of channel</span></div><div class="line"><span class="string">    Returns:</span></div><div class="line"><span class="string">        output  : Output Tensor</span></div><div class="line"><span class="string">    """</span></div><div class="line"></div><div class="line">    x = BatchNormalization()(inputs)</div><div class="line">    x = Activation(<span class="string">'relu'</span>)(x)</div><div class="line">    x = Conv2D(num_output // <span class="number">2</span>, (<span class="number">1</span>, <span class="number">1</span>), strides=<span class="number">1</span>, padding=<span class="string">'valid'</span>)(x)</div><div class="line"></div><div class="line">    x = BatchNormalization()(x)</div><div class="line">    x = Activation(<span class="string">'relu'</span>)(x)</div><div class="line">    x = Conv2D(num_output // <span class="number">2</span>, (<span class="number">3</span>, <span class="number">3</span>), strides=<span class="number">1</span>, padding=<span class="string">'same'</span>)(x)</div><div class="line"></div><div class="line">    x = BatchNormalization()(x)</div><div class="line">    x = Activation(<span class="string">'relu'</span>)(x)</div><div class="line">    output = Conv2D(num_output, (<span class="number">1</span>, <span class="number">1</span>), strides=<span class="number">1</span>, padding=<span class="string">'valid'</span>)(x)</div><div class="line">    <span class="keyword">return</span> output</div></pre></td></tr></table></figure>
-<h6 id="skip-layer"><a href="#skip-layer" class="headerlink" title="skip layer"></a>skip layer</h6><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">skip_layer</span><span class="params">(inputs, num_output)</span>:</span></div><div class="line">    <span class="string">""" Skip Layer</span></div><div class="line"><span class="string">    Args:</span></div><div class="line"><span class="string">        inputs  : Input Tensor</span></div><div class="line"><span class="string">        num_output  : Desired output number of channel</span></div><div class="line"><span class="string">    Returns:</span></div><div class="line"><span class="string">        Tensor of shape (None, inputs.height, inputs.width, num_output)</span></div><div class="line"><span class="string">    """</span></div><div class="line">    <span class="keyword">if</span> inputs.get_shape().as_list()[<span class="number">3</span>] == num_output:</div><div class="line">        <span class="keyword">return</span> inputs</div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        x = BatchNormalization()(inputs)</div><div class="line">        x = Activation(<span class="string">'relu'</span>)(x)</div><div class="line">        output = Conv2D(num_output, (<span class="number">1</span>, <span class="number">1</span>), strides=<span class="number">1</span>, padding=<span class="string">'valid'</span>)(x)</div><div class="line">        <span class="keyword">return</span> output</div></pre></td></tr></table></figure>
-<h6 id="residual"><a href="#residual" class="headerlink" title="residual"></a>residual</h6><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">residual</span><span class="params">(inputs, num_output)</span>:</span></div><div class="line">    <span class="string">""" Residual Unit</span></div><div class="line"><span class="string">    Args:</span></div><div class="line"><span class="string">        inputs  : Input Tensor</span></div><div class="line"><span class="string">        num_output  : Number of Output Features (channels)</span></div><div class="line"><span class="string">    """</span></div><div class="line">    convb = conv_block(inputs, num_output)</div><div class="line">    skipl = skip_layer(inputs, num_output)</div><div class="line">    <span class="keyword">return</span> Add()([convb, skipl])</div></pre></td></tr></table></figure>
-<h5 id="hourglass-模块-1"><a href="#hourglass-模块-1" class="headerlink" title="hourglass 模块"></a>hourglass 模块</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hourglass</span><span class="params">(inputs, num_low, num_output)</span>:</span></div><div class="line">    <span class="string">""" Hourglass Module</span></div><div class="line"><span class="string">    Args:</span></div><div class="line"><span class="string">        inputs  : Input Tensor</span></div><div class="line"><span class="string">        num_low       : Number of downsampling step</span></div><div class="line"><span class="string">        num_output  : Number of Output Features (channels)</span></div><div class="line"><span class="string">    """</span></div><div class="line">    <span class="comment"># Upper Branch</span></div><div class="line">    up_1 = residual(inputs, num_output)</div><div class="line"></div><div class="line">    <span class="comment"># Lower Branch</span></div><div class="line">    low_ = MaxPooling2D(pool_size=(<span class="number">2</span>, <span class="number">2</span>), strides=(<span class="number">2</span>, <span class="number">2</span>))(inputs)</div><div class="line">    low_1= residual(low_, num_output)</div><div class="line"></div><div class="line">    <span class="keyword">if</span> num_low &gt; <span class="number">0</span>:</div><div class="line">        low_2 = hourglass(low_1, num_low<span class="number">-1</span>, num_output)</div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        low_2 = residual(low_1, num_output)</div><div class="line"></div><div class="line">    low_3 = residual(low_2, num_output)</div><div class="line"></div><div class="line">    up_2 = UpSampling2D(size=(<span class="number">2</span>, <span class="number">2</span>))(low_3)</div><div class="line">    <span class="keyword">return</span> Add()([up_2, up_1])</div></pre></td></tr></table></figure>
-<h5 id="loss"><a href="#loss" class="headerlink" title="loss"></a>loss</h5><p>在使用 Keras 对损失函数进行实现的时候，需要注意的几点是：</p>
-<ul>
-<li>定义的 Python 损失函数需要传入模型的 <code>fit</code> 或者 <code>fit_generator</code> 方法，这两个方法会在内部调用该函数并为其传入训练数据中的标签和神经网络的输出，这两个参数是损失函数计算损失的唯二参数，此处由于使用中间监督的模型结构，即网络中间产生的热图也需要参与到损失值的计算，所以需要将所有这些热图都 stack 起来当作网络的输出，从而可以被传入损失函数完成损失值的计算。</li>
-<li>Keras 中定义 loss，返回的是 batch_size 长度的 tensor， 而不是像 tensorflow 中那样是一个 scalar。</li>
-<li><code>K.binary_crossentropy</code> 的默认设置是 <code>from_logits=False</code>,即该函数的默认设置假设输入是经过 <code>sigmoid</code> 激活之后的值，而不是仅经过卷积操作之后的<code>logits</code>，这是由其需要注意的一点，<code>K.binary_crossentropy</code> 的源码如下，如果<code>from_logits==True</code>，则直接调用 TensorFlow 的 <code>tf.nn.sigmoid_cross_entropy_with_logits</code>；如果<code>from_logits==False</code>，则首先将输入转换回 logits，再调用<code>tf.nn.sigmoid_cross_entropy_with_logits</code>。如果使用错误，就会 logits 就会被 <code>clip_by_value</code> 裁剪到（0，1）之间。</li>
-</ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">binary_crossentropy</span><span class="params">(target, output, from_logits=False)</span>:</span></div><div class="line">    <span class="string">"""Binary crossentropy between an output tensor and a target tensor.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">    # Arguments</span></div><div class="line"><span class="string">        target: A tensor with the same shape as `output`.</span></div><div class="line"><span class="string">        output: A tensor.</span></div><div class="line"><span class="string">        from_logits: Whether `output` is expected to be a logits tensor.</span></div><div class="line"><span class="string">            By default, we consider that `output`</span></div><div class="line"><span class="string">            encodes a probability distribution.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">    # Returns</span></div><div class="line"><span class="string">        A tensor.</span></div><div class="line"><span class="string">    """</span></div><div class="line">    <span class="comment"># Note: tf.nn.sigmoid_cross_entropy_with_logits</span></div><div class="line">    <span class="comment"># expects logits, Keras expects probabilities.</span></div><div class="line">    <span class="keyword">if</span> <span class="keyword">not</span> from_logits:</div><div class="line">        <span class="comment"># transform back to logits</span></div><div class="line">        _epsilon = _to_tensor(epsilon(), output.dtype.base_dtype)</div><div class="line">        output = tf.clip_by_value(output, _epsilon, <span class="number">1</span> - _epsilon)</div><div class="line">        output = tf.log(output / (<span class="number">1</span> - output))</div><div class="line"></div><div class="line">    <span class="keyword">return</span> tf.nn.sigmoid_cross_entropy_with_logits(labels=target,</div><div class="line">                                                   logits=output)</div></pre></td></tr></table></figure>
-<p>定义的损失函数如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">loss</span><span class="params">(y_true, y_pred)</span>:</span></div><div class="line">	<span class="string">"""</span></div><div class="line"><span class="string">	# Arguments</span></div><div class="line"><span class="string">		y_true: A tensor of shape (batch_size, W, H, K), K is the num of heatmaps.</span></div><div class="line"><span class="string">		y_pred: A tensor of shape (batch_size, N, W, H, K), N is the num of hourglass modules. </span></div><div class="line"><span class="string">	"""</span></div><div class="line">    losses = []</div><div class="line">    shapes = y_pred.get_shape().as_list()</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(shapes[<span class="number">1</span>]):</div><div class="line">        losses.append(K.reshape(</div><div class="line">            K.mean(K.binary_crossentropy(y_true, y_pred[:, i], from_logits=<span class="keyword">True</span>), axis=<span class="number">-1</span>), </div><div class="line">            (<span class="number">-1</span>, shapes[<span class="number">2</span>]*shapes[<span class="number">3</span>])))</div><div class="line">    </div><div class="line">    loss = K.mean(K.mean(K.stack(losses, axis=<span class="number">1</span>), axis=<span class="number">1</span>), axis=<span class="number">1</span>)</div><div class="line"></div><div class="line">    <span class="keyword">return</span> loss</div></pre></td></tr></table></figure></p>
-<h3 id="数据集及结果"><a href="#数据集及结果" class="headerlink" title="数据集及结果"></a>数据集及结果</h3><h5 id="发动机和对接环的定位（关键点检测任务）"><a href="#发动机和对接环的定位（关键点检测任务）" class="headerlink" title="发动机和对接环的定位（关键点检测任务）"></a>发动机和对接环的定位（关键点检测任务）</h5><h6 id="数据集"><a href="#数据集" class="headerlink" title="数据集"></a>数据集</h6><p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/satellite/satellite_key_pts.png" alt="satellite_key_pts"></p>
-<h6 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h6><p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/satellite/satellite_key_pts_ret.png" alt="satellite_key_pts_ret"></p>
-<h5 id="发动机和对接环的检测定位（类似图像分割任务）"><a href="#发动机和对接环的检测定位（类似图像分割任务）" class="headerlink" title="发动机和对接环的检测定位（类似图像分割任务）"></a>发动机和对接环的检测定位（类似图像分割任务）</h5><h6 id="数据集-1"><a href="#数据集-1" class="headerlink" title="数据集"></a>数据集</h6><p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/satellite/satellite.png" alt="satellite"></p>
-<h6 id="结果-1"><a href="#结果-1" class="headerlink" title="结果"></a>结果</h6><p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/satellite/satellite_ret.png" alt="satellite_ret"></p>
-<h5 id="太阳帆板的检测定位（类似图像分割任务）"><a href="#太阳帆板的检测定位（类似图像分割任务）" class="headerlink" title="太阳帆板的检测定位（类似图像分割任务）"></a>太阳帆板的检测定位（类似图像分割任务）</h5><h6 id="数据集-2"><a href="#数据集-2" class="headerlink" title="数据集"></a>数据集</h6><p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/satellite/satellite_sol_pan.png" alt="satellite_sol_pan"></p>
-<h6 id="结果-2"><a href="#结果-2" class="headerlink" title="结果"></a>结果</h6><p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/satellite/satellite_sol_pan_ret.png" alt="satellite_sol_pan_ret"></p>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-        </div>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/07/03/Run-Keras-models-in-C-Tensorflow/">
-                Run Keras models in C++ Tensorflow
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-07-03</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            
-        </div>
-    
-
-</div>
-            
         </section>
     </div>
 </div>
@@ -701,19 +701,19 @@
         <ul>
             
             <li>
+                <a class="footer-post" href="/2018/08/26/YOLO/">YOLO</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/26/非最大值抑制/">非最大值抑制</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/26/目标定位-vs-目标检测/">目标定位 vs 目标检测</a>
+            </li>
+            
+            <li>
                 <a class="footer-post" href="/2018/08/13/消失的梯度/">消失的梯度</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2018/08/11/MobileNet-V1-and-V2-带来的卷积结构革命/">MobileNet V1 and V2 带来的卷积</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2018/08/09/卷积转置卷积关系在-TensorFLow-中的验证/">卷积转置卷积关系在 TensorFLow 中的验证</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2018/08/08/转置卷积-Transposed-Convolution/">转置卷积 Transposed Convoluti</a>
             </li>
             
         </ul>

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="Sliding Windows 滑动窗口通过滑动窗口的方式在图像上生成一系列的 box，然后利用分类器对每个 box 进行分类，即可完成对图像中目标的检测。基于滑动窗口的目标检测效率很低，因为我们需要对每个区域都进行预测，而且为了获得更加准确的结果，我们需要尝试各种不同尺寸的 box。
+Convol">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Robert Lexis">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="YOLO"/>
+    
+
+    <!--Open Graph Description-->
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="This is Robert Lexis."/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+    <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>YOLO - This is Robert Lexis.</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Google Analytics -->
+    
+
+
+</head>
+
+
+<body>
+
+<div class="bg-gradient"></div>
+<div class="bg-pattern"></div>
+
+<!-- Menu -->
+<!--Menu Links and Overlay-->
+<div class="menu-bg">
+    <div class="menu-container">
+        <ul>
+            
+            <li class="menu-item">
+                <a href="/">
+                    Home
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/archives">
+                    Archives
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/about">
+                    About
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/tags">
+                    Tags
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/categories">
+                    Categories
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/contact">
+                    Contact
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+<!--Hamburger Icon-->
+<nav>
+    <a href="#menu"></a>
+</nav>
+
+<div class="container">
+
+    <!-- Main Content -->
+    <div class="row">
+    <div class="col-sm-12">
+
+        <!--Title and Logo-->
+        <header>
+    <div class="logo">
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
+        
+    </div>
+</header>
+
+        <section class="main">
+            
+<div class="post">
+
+    <div class="post-header">
+        <h1 class="title">
+            <a href="/2018/08/26/YOLO/">
+                YOLO
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-08-26</span>
+            
+            
+            
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- Gallery -->
+        
+
+        <!-- Post Content -->
+        <h3 id="Sliding-Windows-滑动窗口"><a href="#Sliding-Windows-滑动窗口" class="headerlink" title="Sliding Windows 滑动窗口"></a>Sliding Windows 滑动窗口</h3><p>通过滑动窗口的方式在图像上生成一系列的 box，然后利用分类器对每个 box 进行分类，即可完成对图像中目标的检测。<br>基于滑动窗口的目标检测效率很低，因为我们需要对每个区域都进行预测，而且为了获得更加准确的结果，我们需要尝试各种不同尺寸的 box。</p>
+<h3 id="Convolutional-Implementation-of-Sliding-Windows"><a href="#Convolutional-Implementation-of-Sliding-Windows" class="headerlink" title="Convolutional Implementation of Sliding Windows"></a>Convolutional Implementation of Sliding Windows</h3><p>这是一个加速的方法，共享计算。<br><img src="/2018/08/26/YOLO/cnn-slide.jpg" alt="cnn-slide"></p>
+<h3 id="More-accurate-bounding-boxes"><a href="#More-accurate-bounding-boxes" class="headerlink" title="More accurate bounding boxes"></a>More accurate bounding boxes</h3><p>通过上面一个 \( reduction factor = 8 \) 的卷积神经网络，我们可以在 4 个 \( 14 \times 14 \) 的方框内进行目标的检测，这样的检测结果并不会很精确。在下图中蓝色的方框也许是最吻合的，但是实际上它的位置并不精确，另外目标形状也许并不是一个正方形，而是像图中所示的那样是一个长方形。因此需要对其进行改进，即对这 4 个方框内的目标位置进行回归修正。<br><img src="/2018/08/26/YOLO/not_accurate.png" alt="not_accurate"></p>
+<h5 id="Grid-cells"><a href="#Grid-cells" class="headerlink" title="Grid cells"></a>Grid cells</h5><p>在实际的算法中，使用的是 \( 19 \times 19 \) grid cells，此处出于示意采用的是 \( 3 \times 3 \) grid cells。<br><img src="/2018/08/26/YOLO/grid_cell.jpg" alt="grid_cell"><br>如何将目标和具体的某一个 grid cell 联系起来呢？<br>YOLO 算法查看目标的 bounding box 的中心点，把目标归给中心点所在的那个 grid cell。<br><img src="/2018/08/26/YOLO/grid_cell_output.jpg" alt="grid_cell_output"><br>这样每一个 grid cell 就有了一个标签：<br>\[<br>y = \left[<br>    \begin{matrix}<br>    p_c \\\\<br>    b_x \\\\<br>    b_y \\\\<br>    b_h \\\\<br>    b_w \\\\<br>    c_1 \\\\<br>    c_2 \\\\<br>    c_3<br>    \end{matrix}<br>\right]<br>\]</p>
+<ul>
+<li>\( p_c \): 该 grid cell 中是否存在某一个目标的 bounding box 的中心点。</li>
+<li>\( b_x \): x coordinate, the center of the object corresponding to the upper left corner of the grid cell, the value range from 0~1,</li>
+<li>\( b_y \): y coordinate, the center of the object corresponding to the upper left corner of the grid cell, the value range from 0~1,</li>
+<li>\( b_h \): height of the bounding box with repect to the height of grid cell, the value could be greater than 1.</li>
+<li>\( b_w \): width of the bounding box with repect to the width of grid cell, the value could be greater than 1,</li>
+<li>\( c_1, c_2, c_3 \): 目标属于每一类的概率。</li>
+</ul>
+<p>通过这样的方式完成一张图片标签的构建。</p>
+<p>神经网络的输出是一个 \( 3 \times 3 \times 8\) 的 volume。此时，只要每一个 grid cell 中存在的一个目标个数不超过一个，这个算法就可以工作。此时算法很像 \( 3 \times 3 \) 个 Classification + Localization，直接输出每一个 grid cell 中是否存在目标及目标的类别和位置。关于 Classification + Localization 可以查看我的另一篇博文<a href="目标定位-vs-目标检测/">目标定位 vs 目标检测</a>。</p>
+<h5 id="Non-Max-Suppression"><a href="#Non-Max-Suppression" class="headerlink" title="Non Max Suppression"></a>Non Max Suppression</h5><p>使用非最大值抑制 clean up grid cells’ detections。</p>
+<h6 id="IoU"><a href="#IoU" class="headerlink" title="IoU"></a>IoU</h6><p>In general, so long as the IoU is greater than or equal to 0.5, then the result will look pretty decent. And by convention, very often 0.5 is used as a threshold to judge as whether the predicted bounding box is correct or not.<br>关于非最大值抑制可以查看我的另一篇博文<a href="http://localhost:4000/2018/08/26/非最大值抑制/" target="_blank" rel="external">非最大值抑制</a>。<br><img src="/2018/08/26/YOLO/before_nms.jpg" alt="before_nms"><br><img src="/2018/08/26/YOLO/after_nms.jpg" alt="affter_nms"></p>
+<h5 id="Anchor-Boxes"><a href="#Anchor-Boxes" class="headerlink" title="Anchor Boxes"></a>Anchor Boxes</h5><p>目前为止，如果某一个 grid cell 中含有多个目标的 bounding box 的中心点，那么算法只能检测一个目标而不得不舍弃其他的目标。<br><img src="/2018/08/26/YOLO/car-person.jpg" alt="car-person"><br>虽然使用更加细密的 grid cell 划分，可以降低多个目标中心点出现在同一个 grid cell 中的概率，但是还是难以避免的。因此可以在同一个 grid cell 中配备 n 个锚点 box，此时最多允许 n 个目标的 bounding box 的中心点出现在同一个 grid cell 中。<br><img src="/2018/08/26/YOLO/anchor_box.jpg" alt="anchor_box"><br>现在神经网络的输出是一个 \( 3 \times 3 \times 16\) 的 volume。<br><img src="/2018/08/26/YOLO/anchor_box_y.jpg" alt="anchor_box_y"><br>在之前算法中，图片中的每一个目标被归给含有该目标中心点的那个 grid cell。<br>在使用锚点 box 的算法中，图片中的每一个目标被归给含有该目标中心点的那个grid cell 中的、与该目标有最大交并比的那个 anchor box。</p>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    </div>
+
+    
+
+    
+        <div class="post-tags">
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <a href="/tags/DL/">#DL</a>
+        </div>
+    
+
+    <!-- Comments -->
+    
+
+</div>
+        </section>
+
+    </div>
+</div>
+
+
+</div>
+
+<!-- Footer -->
+<div class="push"></div>
+
+<footer class="footer-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
+                <h2>About</h2>
+                <p>
+                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
+                </p>
+            </div>
+            
+    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/26/YOLO/">YOLO</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/26/非最大值抑制/">非最大值抑制</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/26/目标定位-vs-目标检测/">目标定位 vs 目标检测</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/13/消失的梯度/">消失的梯度</a>
+            </li>
+            
+        </ul>
+    </div>
+
+
+
+            
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="list-inline footer-social-icons">
+                    
+                    <li class="list-inline-item">
+                        <a href="https://github.com/RobertLexis">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-github"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="mailto:robert_lexis@163.com">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-envelope-o"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="footer-copyright">
+                    @Untitled. All right reserved | Robert Lexis Loves Wenny
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- After footer scripts -->
+
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Tween Max -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/main.js"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>
