@@ -11,7 +11,7 @@
     <!--Description-->
     
         <meta name="description" content="在参加数据挖掘的比赛时，遇到了类别不平衡的问题，在着手解决这个问题的过程中发现了来自 Silicon Valley Data Science(svds) TOM FAWCETT 的一篇博客 Learning from Imbalanced Classes 写的着实精彩，因此决定将其翻译过来。
-Lea">
+Learning from Imbalanced Classes如果你刚刚上完一门机器学习的课程，你使用的大部分数据集可能是很简单的。当你拟合分类器时，样本的类别是平衡的，也就是说这些类别的样本量大体相等。导师通常是使用清洗过的数据集进行教学，从而能够集中精力在讲解特定的算法和技术上。通常你看到的样本是下面这样的，点代表样本，不同的颜色或者形状代表不同的类型。">
     
 
     <!--Author-->
@@ -167,7 +167,9 @@ Lea">
 
         <!-- Post Content -->
         <p>在参加数据挖掘的比赛时，遇到了类别不平衡的问题，在着手解决这个问题的过程中发现了来自 <a href="https://www.svds.com/" target="_blank" rel="external">Silicon Valley Data Science(svds)</a> <a href="https://www.svds.com/team/tom-fawcett/" target="_blank" rel="external">TOM FAWCETT</a> 的一篇博客 <a href="https://www.svds.com/learning-imbalanced-classes/" target="_blank" rel="external">Learning from Imbalanced Classes</a> 写的着实精彩，因此决定将其翻译过来。</p>
-<h2 id="Learning-from-Imbalanced-Classes"><a href="#Learning-from-Imbalanced-Classes" class="headerlink" title="Learning from Imbalanced Classes"></a>Learning from Imbalanced Classes</h2><p>如果你刚刚上完一门机器学习的课程，你使用的大部分数据集可能是很简单的。当你拟合分类器时，样本的类别是平衡的，也就是说这些类别的样本量大体相等。导师通常是使用清洗过的数据集进行教学，从而能够集中精力在讲解特定的算法和技术上。通常你看到的样本是下面这样的，点代表样本，不同的颜色或者形状代表不同的类型。<br><img src="http://oytnj8g2y.bkt.clouddn.com/clean.png" alt="clean.png"><br>分类算法的目的是尝试学习出一个分类器能够区分这两者。基于不同的数学、统计或者几何假设，会有很多不同的算法。<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig2.png" alt="ImbalancedClasses_fig2.png"><br>但是当你接触到真实的未清洗的数据时，你会注意到的第一件事情就是数据会含有很多的噪声，并且类别不平衡。真实数据的散点图可能是下面这样的：<br><img src="http://oytnj8g2y.bkt.clouddn.com/messy.png" alt="messy.png"><br>这个数据的主要问题是类别不平衡，红色点几乎被蓝色点淹没了。<br>学术界在研究不平衡类别问题时少数类样本量会占到10%到20%。但是真实数据集会比这更加失衡。下面是几个这样的例子：</p>
+<h2 id="Learning-from-Imbalanced-Classes"><a href="#Learning-from-Imbalanced-Classes" class="headerlink" title="Learning from Imbalanced Classes"></a>Learning from Imbalanced Classes</h2><p>如果你刚刚上完一门机器学习的课程，你使用的大部分数据集可能是很简单的。当你拟合分类器时，样本的类别是平衡的，也就是说这些类别的样本量大体相等。导师通常是使用清洗过的数据集进行教学，从而能够集中精力在讲解特定的算法和技术上。通常你看到的样本是下面这样的，点代表样本，不同的颜色或者形状代表不同的类型。<br><img src="http://oytnj8g2y.bkt.clouddn.com/clean.png" alt="clean.png"></p>
+<a id="more"></a>
+<p>分类算法的目的是尝试学习出一个分类器能够区分这两者。基于不同的数学、统计或者几何假设，会有很多不同的算法。<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig2.png" alt="ImbalancedClasses_fig2.png"><br>但是当你接触到真实的未清洗的数据时，你会注意到的第一件事情就是数据会含有很多的噪声，并且类别不平衡。真实数据的散点图可能是下面这样的：<br><img src="http://oytnj8g2y.bkt.clouddn.com/messy.png" alt="messy.png"><br>这个数据的主要问题是类别不平衡，红色点几乎被蓝色点淹没了。<br>学术界在研究不平衡类别问题时少数类样本量会占到10%到20%。但是真实数据集会比这更加失衡。下面是几个这样的例子：</p>
 <ol>
 <li>每年有大约2%的信用卡遭到欺诈（大部分的欺诈检测领域是严重失衡的） [1][1] 。</li>
 <li>对疾病进行医学筛查通常是在没有疾病的大规模人群中进行的，检测出的患者是很少的一部分。</li>

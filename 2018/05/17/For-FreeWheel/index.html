@@ -10,7 +10,7 @@
 
     <!--Description-->
     
-        <meta name="description" content="epollepoll is a Linux kernel system call for a scalable I/O event notification mechanism. Its function is to monitor multiple file descriptors to see ">
+        <meta name="description" content="epollepoll is a Linux kernel system call for a scalable I/O event notification mechanism. Its function is to monitor multiple file descriptors to see if I/O is possible on any of them. It is meant to replace the older POSIX select(2) and poll(2) system calls, to achieve better performance in more demanding applications, where the number of watched file descriptors is large (unlike the older system calls, which operate in O(n) time, epoll operates in O(1) time).">
     
 
     <!--Author-->
@@ -165,7 +165,7 @@
         
 
         <!-- Post Content -->
-        <h2 id="epoll"><a href="#epoll" class="headerlink" title="epoll"></a>epoll</h2><p>epoll is a Linux kernel <strong>system call</strong> for a scalable <strong>I/O event notification mechanism</strong>. Its function is to monitor multiple file descriptors to see if I/O is possible on any of them. It is meant to replace the older POSIX select(2) and poll(2) system calls, to achieve better performance in more demanding applications, where the number of watched file descriptors is large (unlike the older system calls, which operate in O(n) time, epoll operates in O(1) time).</p>
+        <h2 id="epoll"><a href="#epoll" class="headerlink" title="epoll"></a>epoll</h2><p>epoll is a Linux kernel <strong>system call</strong> for a scalable <strong>I/O event notification mechanism</strong>. Its function is to monitor multiple file descriptors to see if I/O is possible on any of them. It is meant to replace the older POSIX select(2) and poll(2) system calls, to achieve better performance in more demanding applications, where the number of watched file descriptors is large (unlike the older system calls, which operate in O(n) time, epoll operates in O(1) time).<br><a id="more"></a></p>
 <h4 id="API"><a href="#API" class="headerlink" title="API"></a>API</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">int epoll_create1(int flags);</div></pre></td></tr></table></figure>
 <p>Creates an epoll object and returns its file descriptor(标识内核事件表). The flags parameter allows epoll behavior to be modified. It has only one valid value, EPOLL_CLOEXEC. epoll_create() is an older variant of epoll_create1() and is deprecated as of Linux kernel version 2.6.27 and glibc version 2.9.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);</div></pre></td></tr></table></figure></p>
 <p>Controls (configures) which file descriptors are watched by this object, and for which events. op can be ADD, MODIFY or DELETE.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);</div></pre></td></tr></table></figure></p>

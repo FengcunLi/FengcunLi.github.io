@@ -10,7 +10,7 @@
 
     <!--Description-->
     
-        <meta name="description" content="本博文主要是在阅读 scikit-learn 官方文档3.3. Model evaluation: quantifying the quality of predictions 之后的总结。首先看一下根据 label 特点的不同做出的分类任务类型的划分：scikit-learn 提供了三种不同的 A">
+        <meta name="description" content="本博文主要是在阅读 scikit-learn 官方文档3.3. Model evaluation: quantifying the quality of predictions 之后的总结。首先看一下根据 label 特点的不同做出的分类任务类型的划分：">
     
 
     <!--Author-->
@@ -165,7 +165,8 @@
         
 
         <!-- Post Content -->
-        <p>本博文主要是在阅读 scikit-learn 官方文档<a href="http://scikit-learn.org/stable/modules/model_evaluation.html" target="_blank" rel="external">3.3. Model evaluation: quantifying the quality of predictions</a> 之后的总结。<br>首先看一下根据 label 特点的不同做出的分类任务类型的划分：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/metrics/1.PNG" alt="不同的分类任务"><br>scikit-learn 提供了三种不同的 API 来评估模型的预测质量。</p>
+        <p>本博文主要是在阅读 scikit-learn 官方文档<a href="http://scikit-learn.org/stable/modules/model_evaluation.html" target="_blank" rel="external">3.3. Model evaluation: quantifying the quality of predictions</a> 之后的总结。<br>首先看一下根据 label 特点的不同做出的分类任务类型的划分：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/metrics/1.PNG" alt="不同的分类任务"><br><a id="more"></a></p>
+<p>scikit-learn 提供了三种不同的 API 来评估模型的预测质量。</p>
 <ul>
 <li>Estimator score method（学习器的score 方法）</li>
 <li>Scoring parameter （评分策略参数） 基于交叉验证的模型评估工具（比如 <code>model_selection.cross_val_score</code> and <code>model_selection.GridSearchCV</code>) 依赖于一个内部的评分策略 ）</li>

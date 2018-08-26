@@ -147,181 +147,6 @@
 
     <div class="post-header index">
         <h1 class="title">
-            <a href="/2017/11/13/Ubuntu-2-1080Ti-深度学习环境配置/">
-                Ubuntu + 2*1080Ti 深度学习环境配置
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2017-11-13</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <h2 id="Ubuntu-2-1080Ti-深度学习环境配置"><a href="#Ubuntu-2-1080Ti-深度学习环境配置" class="headerlink" title="Ubuntu + 2*1080Ti 深度学习环境配置"></a>Ubuntu + 2*1080Ti 深度学习环境配置</h2><h3 id="配置及环境"><a href="#配置及环境" class="headerlink" title="配置及环境"></a>配置及环境</h3><table>
-<thead>
-<tr>
-<th>配件</th>
-<th>型号</th>
-<th>数量</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>机箱</td>
-<td>美商海盗船 AIR740 中塔机箱</td>
-<td>1</td>
-</tr>
-<tr>
-<td>电源</td>
-<td>美商海盗船 HX1000 80plus 1000W</td>
-<td>1</td>
-</tr>
-<tr>
-<td>主板</td>
-<td>华硕（ASUS） X99-M WS (Intel X99/LGA 2011-V3)</td>
-<td>1</td>
-</tr>
-<tr>
-<td>CPU</td>
-<td>英特尔 至强 E5-2620</td>
-<td>1</td>
-</tr>
-<tr>
-<td>散热</td>
-<td>猫头鹰NH-U9S CPU散热器</td>
-<td>1</td>
-</tr>
-<tr>
-<td>硬盘</td>
-<td>西部数据 红盘 3T</td>
-<td>2</td>
-</tr>
-<tr>
-<td>SSD</td>
-<td>英特尔 600P 256G M.2</td>
-<td>1</td>
-</tr>
-<tr>
-<td>内存</td>
-<td>美商海盗船 DDR4 3000 16G</td>
-<td>2</td>
-</tr>
-<tr>
-<td>GPU</td>
-<td>技嘉 AORUS GTX 1080Ti Xtreme Edition</td>
-<td>2</td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>版本</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Ubuntu</td>
-<td>16.04.1</td>
-</tr>
-<tr>
-<td>Nvidia driver</td>
-<td>384.98</td>
-</tr>
-</tbody>
-</table>
-<h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><ol>
-<li><p>禁用 UEFI Secure Boot，不同的主板有不同的方法。Rod Smith 在 <a href="http://www.rodsbooks.com/efi-bootloaders/secureboot.html#disable" target="_blank" rel="external">Managing EFI Boot Loaders for Linux: Dealing with Secure Boot</a> 中描述的很细致。如果不禁用的话，会出现：</p>
-<ol>
-<li>驱动安装成功后并不会被成功地启动。<code>nvidia-smi</code>并不能成功地查看到 GPU 的信息。而是会报出 <code>NVIDIA-SMI has failed because it couldn&#39;t communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.</code> 的错误。</li>
-<li><p>开机后，在图形登录界面即使密码正确，也不能成功地登录（仍可以通过终端成功地登陆），而是不断地循环在输入密码、再次要求输入密码之间。</p>
-<blockquote>
-<p>Unified Extensible Firmware Interface<br>The Unified Extensible Firmware Interface (UEFI) is a specification(规格, 标准) that defines a software interface between an operating system and platform firmware. UEFI replaces the Basic Input/Output System (BIOS) firmware interface originally present in all IBM PC-compatible personal computers, with most UEFI firmware implementations providing legacy support for BIOS services. UEFI can support remote diagnostics and repair of computers, even with no operating system installed. The user can enter a setup utility by pressing their manufacturers specific setup keys. Most common keys are Delete,F2, F12,esc etc.</p>
-</blockquote>
-</li>
-</ol>
-</li>
-<li><p>关闭 X server。由于我是使用 Xshell 通过 ssh 登陆的，因此此处我就直接通过 <code>service lightdm stop</code> 关闭了图形界面，此时可以看到远端机器的屏幕黑屏了。这里命令需要根据具体的图形桌面是kdm，gdm，还是 lightdm 而定。<br>如果不关闭X server 就会报出 <code>You appear to be running an X server; please exit X before installing.</code>。</p>
-<blockquote>
-<p>X server 是 Linux 系统里图形接口服务器的简称。Windows 系统的界面是其系统构成不可分割的一部分，各种窗口操作的界面显示都是由系统核心直接管理的，而 Linux 的图形界面并不是系统的必要组成部分，Linux 可以在无界面的条件下运行。当需要 Linux 提供界面的时候，系统就会建立一个或者数个 X server，通过 X 协议跟窗口管理器交互，由独立于系统的应用程序来产生窗口，状态栏，按钮之类的交互界面。</p>
-<p>比较常见的 Linux 图形界面操作环境有 KDE 和 GNOME，为它们提供系统支持的就是 X server，而并非 Linux 核心。总结一下 Linux 图形界面层次关系：Linux本身–&gt;X服务器&lt;-[通过X协议交谈]-窗口管理器–&gt;X应用程序。</p>
-</blockquote>
-</li>
-</ol>
-<h3 id="安装显卡驱动"><a href="#安装显卡驱动" class="headerlink" title="安装显卡驱动"></a>安装显卡驱动</h3><ol>
-<li>到英伟达<a href="http://www.nvidia.cn/Download/index.aspx?lang=cn" target="_blank" rel="external">驱动程序下载官网</a>下载对应于显卡型号的驱动。</li>
-<li><p>安装</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">chmod a+x NVIDIA-Linux-x86_64-384.98.run</div><div class="line">./NVIDIA-Linux-x86_64-384.98.run</div></pre></td></tr></table></figure>
-<p> 安装过程中会询问是否通过 x-config 屏蔽开源驱动 nouveau，选择接受通过 x-config 进行备份，这样安装失败时，通过 <code>./NVIDIA-Linux-x86_64-384.98.run --uninstall</code> 卸载驱动，恢复使用 nouveau 就仍然可以使用图形界面。</p>
-</li>
-<li><code>nvidia-smi</code>查看显卡信息。<br> <img src="http://oytnj8g2y.bkt.clouddn.com/nvidia_smi.png" alt="显卡信息"></li>
-</ol>
-<h3 id="安装CUDA"><a href="#安装CUDA" class="headerlink" title="安装CUDA"></a>安装CUDA</h3><ol>
-<li>按照 <a href="http://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html" target="_blank" rel="external">CUDA TOOLKIT DOCUMENTATION</a> 给出的步骤进行 Pre-installation Actions，Package Manager Installation，Post-installation Actions 安装。</li>
-<li>到英伟达<a href="https://developer.nvidia.com/cuda-downloads" target="_blank" rel="external">CUDA Toolkit Download 官网</a>下载对应操作系统的 CUDA 。</li>
-<li>如果安装失败，需要重新尝试时通过 <code>sudo apt-get --purge remove cuda</code> 对 CUDA 进行卸载。</li>
-<li>最新版的 CUDA 是 9.0，但是 TensorFlow 目前并不支持 9.0，只好从 <a href="https://developer.nvidia.com/cuda-80-download-archive" target="_blank" rel="external">Legacy Releases</a> 下载 CUDA 8.0。</li>
-</ol>
-<h3 id="安装CUDNN"><a href="#安装CUDNN" class="headerlink" title="安装CUDNN"></a>安装CUDNN</h3><ol>
-<li>按照 <a href="http://docs.nvidia.com/deeplearning/sdk/cudnn-install/index.html" target="_blank" rel="external">DEEP LEARNING DOCUMENTATION</a> 给出的步骤进行。</li>
-</ol>
-<h3 id="安装tensorflow"><a href="#安装tensorflow" class="headerlink" title="安装tensorflow"></a>安装tensorflow</h3><ol>
-<li><code>sudo apt-get install libcupti-dev</code></li>
-<li><code>pip install tensorflow-gpu</code> 但是由于 tensorflow 目前只支持 3.5，所以会报出运行时和编译时 Python 版本不匹配的问题。</li>
-<li>改用 Installing with Anaconda： <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">conda create -n tensorflow python=3.5</div><div class="line">source activate tensorflow</div><div class="line">pip install tensorflow</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<h3 id="挂载磁盘"><a href="#挂载磁盘" class="headerlink" title="挂载磁盘"></a>挂载磁盘</h3><ol>
-<li>查看一下磁盘信息 <code>sudo lshw -C disk</code></li>
-<li>格式化磁盘，将磁盘格式化为 ext3 格式 <code>sudo mke2fs -j /dev/hdd1</code></li>
-<li>查看一下分区类型 <code>sudo blkid</code></li>
-<li><p>设置启动自动挂载磁盘</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sudo vim /etc/fstab</div><div class="line">/dev/sda /home/shark/Codes ext3 defaults 0 0</div><div class="line">/dev/sdb /home/wjx/Codes ext3 defaults 0 0</div></pre></td></tr></table></figure>
-</li>
-<li><p><code>sudo reboot</code></p>
-</li>
-</ol>
-<h3 id="监视NVIDIA的GPU"><a href="#监视NVIDIA的GPU" class="headerlink" title="监视NVIDIA的GPU"></a>监视NVIDIA的GPU</h3><ol>
-<li><code>watch -n 1 nvidia-smi</code><blockquote>
-<p>whatis watch<br>watch (1) - execute a program periodically, showing output fullscreen</p>
-</blockquote>
-</li>
-</ol>
-<h3 id="新增一个用户，将其家目录链接到硬盘挂载点下的一个目录上"><a href="#新增一个用户，将其家目录链接到硬盘挂载点下的一个目录上" class="headerlink" title="新增一个用户，将其家目录链接到硬盘挂载点下的一个目录上"></a>新增一个用户，将其家目录链接到硬盘挂载点下的一个目录上</h3><p>之前一直是我和师弟一人一个 1T 的硬盘，为了给同学新建一个用户，且为其分配足够的空间，需要将其家目录链接到硬盘挂载点下的一个目录上。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">sudo useradd -d /home/hz -m -s /bin/bash hz</div><div class="line">mkdir /home/wjx/Codes/HZ</div><div class="line">sudo chown -R hz:hz HZ/</div><div class="line">ln -s /home/hz /home/wjx/Codes/HZ/</div></pre></td></tr></table></figure></p>
-<p>验证链接成功：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">ls /home/wjx/Codes/HZ/hz</div><div class="line">examples.desktop</div><div class="line">ls /home/hz/</div><div class="line">examples.desktop</div><div class="line">ll /home/hz/</div><div class="line">总用量 32</div><div class="line">drwxr-xr-x 2 hz   hz   4096 11月 29 20:08 ./</div><div class="line">drwxr-xr-x 5 root root 4096 11月 29 20:08 ../</div><div class="line">-rw-r--r-- 1 hz   hz    220 9月   1  2015 .bash_logout</div><div class="line">-rw-r--r-- 1 hz   hz   3771 9月   1  2015 .bashrc</div><div class="line">-rw-r--r-- 1 hz   hz   8980 4月  20  2016 examples.desktop</div><div class="line">-rw-r--r-- 1 hz   hz    655 6月  24  2016 .profile</div><div class="line">ll /home/wjx/Codes/HZ/hz</div><div class="line">lrwxrwxrwx 1 root root 8 11月 29 20:11 /home/wjx/Codes/HZ/hz -&gt; /home/hz/</div></pre></td></tr></table></figure></p>
-<blockquote>
-<p><strong>软链接与硬链接的区别：</strong></p>
-<ol>
-<li>对于一个文件来说，有唯一的索引节点与之对应，而对于一个索引节点号，却可以有多个文件名与之对应。因此，在磁盘上的同一个文件可以通过不同的路径去访问。注意在Linux下是一切皆文件。<br>链接有软链接和硬链接(hard link)之分的，软链接(symbolic link)又叫符号链接。符号链接相当于 Windows下的快捷方式。<br><code>ln -s source dist</code>        # 建立软链接<br><code>ln -s /mnt/hgfs/ /home/luo/</code>    # 注意后面的 “/”，是将目录里所有的文件链接过去，必须加上，否则，建立的目录显示颜色异常，不能正常访问，比如 cd 进不去<br><code>ln source dist</code>           # 建立硬链接</li>
-<li>软链接实际上只是一段文字，里面包含着它所指向的文件的名字，系统看到软链接后自动跳到对应的文件位置处进行处理；相反，硬链接为文件开设一个新的目录项，硬链接与文件原有的名字是平权的，在Linux看来它们是等价的。由于这个原因，硬链接不能链接两个不同文件系统上的文件。<br>软链接可以跨文件系统 ，硬链接不可以。</li>
-<li>关于 I 节点的问题 。硬链接不管有多少个，都指向的是同一个 I 节点，会把节点链接数增加，只要节点的链接数不是 0，文件就一直存在，不管你删除的是源文件还是链接的文件 。只要有一个存在 ，文件就存在 （其实也不分什么源文件,链接文件的 ，因为他们指向都是同一个 I 节点）。当你修改源文件或者链接文件任何一个的时候 ，其他的文件都会做同步的修改。<br>软链接不直接使用 I 节点号作为文件指针,而是使用文件路径名作为指针。所以删除链接文件 对源文件无影响，但是删除源文件，链接文件就会找不到要指向的文件。软链接有自己的 I 节点,并在磁盘上有一小片空间存放路径名。</li>
-<li>I 节点 :它是UNIX内部用于描述文件特性的数据结构。我们通常称 I 节点为文件索引节点(信息节点)。I 节点含有关于文件的大部分的重要信息,包括文件数据块在磁盘上的地址.每一个 I 节点有它自己的标志号,我们称为文件顺序号。I 节点包含的信息 1.文件类型 2.文件属主关系 3.文件的访问权限 4.文件的时间截。</li>
-</ol>
-</blockquote>
-<h3 id="安装CUDA-9-0"><a href="#安装CUDA-9-0" class="headerlink" title="安装CUDA 9.0"></a>安装CUDA 9.0</h3><p>tensorflow 1.4 使用的 cuda 8.0，在更新至 1.8 之后，tensorflow 1.8 使用的是 cuda 9.0，因此有必要进行 cuda 的更新。</p>
-<ol>
-<li><code>sudo apt-get --purge remove cuda</code><br>An incomplete installation of libglvnd was found. Do you want to install a</li>
-</ol>
-<p>full copy of libglvnd? This will overwrite any existing libglvnd libraries.</p>
-<p>(Answer: Abort installation.)<br>To uninstall the CUDA Toolkit, run the uninstall script in /usr/local/cuda-9.0/bin<br>To uninstall the NVIDIA Driver, run nvidia-uninstall</p>
-<p>Please see CUDA_Installation_Guide_Linux.pdf in /usr/local/cuda-9.0/doc/pdf for detailed information on setting up CUDA.<br>sudo /usr/local/cuda-9.0/bin/uninstall_cuda_9.0.pl </p>
-
-        </div>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
             <a href="/2017/11/05/Python-threads-communication-and-stopping/">
                 Python threads: communication and stopping
             </a>
@@ -337,19 +162,9 @@
 
     
         <div class="content">
-            <h4 id="如何停止-杀死一个线程？如何安全地从一个线程传入传出数据？"><a href="#如何停止-杀死一个线程？如何安全地从一个线程传入传出数据？" class="headerlink" title="如何停止/杀死一个线程？如何安全地从一个线程传入传出数据？"></a>如何停止/杀死一个线程？如何安全地从一个线程传入传出数据？</h4><p>下面是一个 worker 线程实现的例子，可以给它任务，这里的每一个任务就是一个目录名，它就会进行工作，这里的工作就是罗列出给定目录及其子目录下的文件名。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line">import os, time</div><div class="line">import threading, Queue</div><div class="line">class WorkerThread(threading.Thread):</div><div class="line">    &quot;&quot;&quot;</div><div class="line">    A worker thread that takes directory names from a queue, finds all files in them </div><div class="line">    recursively and reports the result. </div><div class="line">    </div><div class="line">    Input is done by placing directory names (as strings) into the Queue passed in dir_q. </div><div class="line">    </div><div class="line">    Output is done by placing tuples into the Queue passed in result_q. Each tuple </div><div class="line">    is (thread name, dirname, [list of files]). </div><div class="line">    </div><div class="line">    Ask the thread to stop by calling its join() method. </div><div class="line">    &quot;&quot;&quot;</div><div class="line">    </div><div class="line">    def __init__(self, dir_q, result_q):</div><div class="line">        super(WorkerThread, self).__init__()</div><div class="line">        self.dir_q = dir_q</div><div class="line">        self.result_q = result_q</div><div class="line">        self.stoprequest = threading.Event()</div><div class="line">    </div><div class="line">    def run(self):</div><div class="line">        &quot;&quot;&quot;</div><div class="line">        As long as we weren&apos;t asked to stop, try to take new tasks from the queue. </div><div class="line">        The tasks are taken with a blocking &apos;get&apos;, so no CPU cycles are wasted </div><div class="line">        while waiting. Also, &apos;get&apos; is given a timeout, so stoprequest is always </div><div class="line">        checked, even if there&apos;s nothing in the queue. </div><div class="line">        &quot;&quot;&quot;</div><div class="line">        while not self.stoprequest.isSet():</div><div class="line">            try:</div><div class="line">                dirname = self.dir_q.get(True, 0.05)</div><div class="line">                filenames = list(self._files_in_dir(dirname))</div><div class="line">                self.result_q.put((self.name, dirname, filenames))</div><div class="line">            except Queue.Empty:</div><div class="line">                continue</div><div class="line"></div><div class="line">    def join(self, timeout=None):</div><div class="line">        self.stoprequest.set()</div><div class="line">        super(WorkerThread, self).join(timeout)</div><div class="line"></div><div class="line"></div><div class="line">    def _files_in_dir(self, dirname):</div><div class="line">        &quot;&quot;&quot;</div><div class="line">        Given a directory name, yields the names of all files (not dirs) </div><div class="line">        contained in this directory and its sub-directories.</div><div class="line">        &quot;&quot;&quot;</div><div class="line">        for path, dirs, files in os.walk(dirname):</div><div class="line">            for file in files:</div><div class="line">                yield os.path.join(path, file)</div></pre></td></tr></table></figure>
-<p>下面让我们依次谈一下如何解决上面提及到的两个问题：</p>
-<ol>
-<li>首先是杀死一个线程，这是通过礼貌地请求线程停止完成的。线程的 <code>join</code> 方法被重写了，在调用父类的 <code>join</code> 之前，首先设置了 <code>self.stoprequest</code> 属性，它是一个线程事件 <code>threading.Event</code>，在线程 <code>run</code> 方法中的主循环中会检查这个 flag，如果这个 flag 被设置了就退出循环。可以把这个 <code>threading.Event</code> 当作一个同步的布尔型 flag 。记住 <code>join</code> 方法是在主线程的上下文中被调用的，而 <code>run</code> 方法的函数体是在 worker 线程的上下文中执行的。</li>
-<li>第二点，从一个线程传入传出数据。最佳实践就是使用 Python Queue 包中的 Queue 对象（在 Python 3 中这个包名是 queue）。当 worker 线程被创建时，输入一个输入队列的引用和一个输出队列的引用。队列对象可以在任意数量的线程间安全地共享，并且提供了一个同步的 FIFO 队列接口。这里的同步要注意和异步区分，异步比如 JS 的 promise 机制。</li>
-</ol>
-<p>代码中最重要的几行是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">while not self.stoprequest.isSet():</div><div class="line">    try:</div><div class="line">        dirname = self.dir_q.get(True, 0.05)</div><div class="line">        filenames = list(self._files_in_dir(dirname))</div><div class="line">        self.result_q.put((self.name, dirname, filenames))</div><div class="line">    except Queue.Empty:</div><div class="line">        continue</div></pre></td></tr></table></figure></p>
-<p>除非我们要求它停止，线程不会停止，即使队列中并没有任务可做了。<br><code>Queue.get</code> 是这样使用的，它的 <code>blocking</code> 参数被设置为 <code>true</code>，因此它会堵塞 worker 线程直到在队列中有了新的任务或者 <code>timeout</code> 过期。<code>timeout</code> 被设置为 0.05s，意味着 <code>get</code> 堵塞 worker 线程最多 0.05s，如果在这段时间内，队列中还没有任务，就会抛出 <code>Queue.Empty</code> 异常。这里可以看出，<code>while not self.stoprequest.isSet()</code> 这条判断当队列中没有任务时，被检查的频率是 0.05s 一次。如果队列中有任务，那么被检查的频率就是任务执行时间，或长于或短于 0.05s。<br>在这里既能够不耗费 CPU 指令周期地等待队列，又能周期性地检查 <code>stoprequest</code> 事件（<code>get</code> 使用特定于操作系统的底层技术来实现不耗费 CPU 指令周期的等待）。这里有一个问题就是，如果 work 需要花费大量的时间，那么下一次对于 <code>stoprequest</code> 的检查就会被相应地推后。如果这一点对你的应用很敏感，可以考虑将长时 work 切成几块，在每一块完成之后对 <code>stoprequest</code> 进行检查。<br>下面是一个使用上面定义的 worker 线程的例子，创建了一个有 4 个线程的线程池，启动每个 work 并等待所有的结果被返回。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">def main(args):</div><div class="line">    # Create a single input and a single output queue for all threads.</div><div class="line">    dir_q = Queue.Queue()</div><div class="line">    result_q = Queue.Queue()</div><div class="line">    # Create the &quot;thread pool&quot;</div><div class="line">    pool = [WorkerThread(dir_q=dir_q, result_q=result_q) for i in range(4)]</div><div class="line">    # Start all threads</div><div class="line">    for thread in pool:</div><div class="line">        thread.start()</div><div class="line">    # Give the workers some work to do</div><div class="line">    work_count = 0</div><div class="line">    for dir in args:</div><div class="line">        if os.path.exists(dir):</div><div class="line">            work_count += 1</div><div class="line">            dir_q.put(dir)</div><div class="line">            print &apos;Assigned %s dirs to workers&apos; % work_count</div><div class="line">    # Now get all the results</div><div class="line">    while work_count &gt; 0:</div><div class="line">        # Blocking &apos;get&apos; from a Queue.</div><div class="line">        result = result_q.get()</div><div class="line">        print &apos;From thread %s: %s files found in dir %s&apos; \</div><div class="line">            % ( result[0], len(result[2]), result[1])</div><div class="line">        work_count -= 1</div><div class="line">    # Ask threads to die and wait for them to do it</div><div class="line">    # the threads will nerver die unless we ask them to stop</div><div class="line">    for thread in pool:</div><div class="line">        thread.join()</div><div class="line">if __name__ == &apos;__main__&apos;:</div><div class="line">    import sys</div><div class="line">    main(sys.argv[1:])</div></pre></td></tr></table></figure></p>
-<p>所有的 worker 线程共享输入和输出队列，这完全没有问题，这使得这样一个简单的线程池功能却很强大。<br>最后需要注意的一点是，在 Python 中这样的 worker 线程只有在 work 不是 CPU 密集型时才有用。上面就是一个很好的例子，罗列出文件夹和文件是一个 I/O 密集型任务。另外的比如 socket I/O，用户交互，以及任何涉及到 web 的任务（从 HTTP 或者 RPC 服务抓取数据），都是很好的应用场景。</p>
-<p>CPU 密集型的任务对于 Python 线程并不太合适，这是因为 GIL（Global Interpreter Lock）。Python 并行计算应该使用多进程而不是多线程，比如可以使用 multiprocessing 模块去管理 worker 进程。</p>
-
+            <h4 id="如何停止-杀死一个线程？如何安全地从一个线程传入传出数据？"><a href="#如何停止-杀死一个线程？如何安全地从一个线程传入传出数据？" class="headerlink" title="如何停止/杀死一个线程？如何安全地从一个线程传入传出数据？"></a>如何停止/杀死一个线程？如何安全地从一个线程传入传出数据？</h4><p>下面是一个 worker 线程实现的例子，可以给它任务，这里的每一个任务就是一个目录名，它就会进行工作，这里的工作就是罗列出给定目录及其子目录下的文件名。<br></p>
         </div>
+        <a href="/2017/11/05/Python-threads-communication-and-stopping/" class="read-more">Read More</a>
     
 
 </div>
@@ -375,77 +190,9 @@
     
         <div class="content">
             <p>在参加数据挖掘的比赛时，遇到了类别不平衡的问题，在着手解决这个问题的过程中发现了来自 <a href="https://www.svds.com/" target="_blank" rel="external">Silicon Valley Data Science(svds)</a> <a href="https://www.svds.com/team/tom-fawcett/" target="_blank" rel="external">TOM FAWCETT</a> 的一篇博客 <a href="https://www.svds.com/learning-imbalanced-classes/" target="_blank" rel="external">Learning from Imbalanced Classes</a> 写的着实精彩，因此决定将其翻译过来。</p>
-<h2 id="Learning-from-Imbalanced-Classes"><a href="#Learning-from-Imbalanced-Classes" class="headerlink" title="Learning from Imbalanced Classes"></a>Learning from Imbalanced Classes</h2><p>如果你刚刚上完一门机器学习的课程，你使用的大部分数据集可能是很简单的。当你拟合分类器时，样本的类别是平衡的，也就是说这些类别的样本量大体相等。导师通常是使用清洗过的数据集进行教学，从而能够集中精力在讲解特定的算法和技术上。通常你看到的样本是下面这样的，点代表样本，不同的颜色或者形状代表不同的类型。<br><img src="http://oytnj8g2y.bkt.clouddn.com/clean.png" alt="clean.png"><br>分类算法的目的是尝试学习出一个分类器能够区分这两者。基于不同的数学、统计或者几何假设，会有很多不同的算法。<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig2.png" alt="ImbalancedClasses_fig2.png"><br>但是当你接触到真实的未清洗的数据时，你会注意到的第一件事情就是数据会含有很多的噪声，并且类别不平衡。真实数据的散点图可能是下面这样的：<br><img src="http://oytnj8g2y.bkt.clouddn.com/messy.png" alt="messy.png"><br>这个数据的主要问题是类别不平衡，红色点几乎被蓝色点淹没了。<br>学术界在研究不平衡类别问题时少数类样本量会占到10%到20%。但是真实数据集会比这更加失衡。下面是几个这样的例子：</p>
-<ol>
-<li>每年有大约2%的信用卡遭到欺诈（大部分的欺诈检测领域是严重失衡的） [1][1] 。</li>
-<li>对疾病进行医学筛查通常是在没有疾病的大规模人群中进行的，检测出的患者是很少的一部分。</li>
-<li>硬盘的坏损率每年大概是~1%。</li>
-<li>在线广告的转化率大约在 $10_-3$ 到 $10_-6$ 之间。</li>
-<li>工厂产品的瑕疵率大约0.1%。</li>
-</ol>
-<p>这些领域都是类别不平衡的，我称之为“稻草堆中的针”问题，在这样的问题中，分类器需要从大量的负样本中找到少量的正样本。当你遇到这样的问题时，使用标准的算法会遇到问题。传统的算法通常会偏向多数类，因为它们的损失函数是为优化像错误率这样的指标而设计的，并没有考虑进数据分布[2][2]。在极坏的情况下，少数类会被当作多数类的异常值而被忽略，学习算法会产生一个将所有样本分类为多数类的没有价值的分类器。</p>
-<p>这看起来是一个病态行为，但是实际上并不是，特别是当你的目标是最大化最简单的指标准确率时，此时忽略少数类就是一个可以被接受的方式。但是如果我们假设分类出少数类样本才是更重要的，我们就必须更加小心地处理这个类别不平衡问题了。</p>
-<h3 id="处理类别不平衡数据"><a href="#处理类别不平衡数据" class="headerlink" title="处理类别不平衡数据"></a>处理类别不平衡数据</h3><p>从类别不平衡数据中学习是一个研究了很久的问题。人们尝试了大量的技术，有或好或坏的结果，并没有一个清晰的答案。第一次遇到这个问题的数据科学家们通常的第一个问题是“数据类别不平衡时我该怎么办？”，但是这就像“哪一个学习算法才是最好的一样”，没有准确的答案，需要根据数据而定。下面大概依据实施的工作量给出了一个提纲：</p>
-<ul>
-<li>什么也不做。有的时候，你很幸运，什么也不用做，直接在原始自然（或者称之为分层）分布的数据上进行训练。</li>
-<li>对训练集进行平衡：<ul>
-<li>过采样少数类样本</li>
-<li>下采样多数类样本</li>
-<li>生成新的少数类样本</li>
-</ul>
-</li>
-<li>丢弃少数类样本，采用异常检测框架</li>
-<li>在算法层面，或者在算法之后：<ul>
-<li>调整类别的权重（错误分类的代价）</li>
-<li>调整决策的门限</li>
-<li>调整算法使其对少数类更加的敏感</li>
-</ul>
-</li>
-<li>构建全新的算法</li>
-</ul>
-<h3 id="离题：评估的-dos-与-don’ts"><a href="#离题：评估的-dos-与-don’ts" class="headerlink" title="离题：评估的 dos 与 don’ts"></a>离题：评估的 dos 与 don’ts</h3><p>在谈论如何使用类别不平衡的数据训练分类器之前，先讨论一下如何正确的评估一个分类器。这一点如何强调也不足为过。只有考核正确的指标你才能取得进步。</p>
-<ol>
-<li>不要使用准确率（或者错误率）去评估你的分类器。因为这有两大缺陷。准确率朴素地应用了一个 0.50 的门限去决定样本到底属于哪一类，这在类别不平衡时通常是错误的。第二点是，分类准确率仅仅是基于错误分类的计数，你应该知道的更多，比如哪些类经常被混淆，在评分曲线的高的一端，低的一端，还是整个曲线上都被混淆着。如果你不懂这些点，你可以去看一下这篇博客 <a href="http://www.svds.com/classifiers2/" target="_blank" rel="external">The Basics of Classifier Evaluation, Part 2</a>。你应该使用 ROC 曲线，precision-recall 曲线，lift 曲线，或者 profit（gain）曲线去可视化分类器的性能。<br><img src="http://oytnj8g2y.bkt.clouddn.com/Sample-ROC.png" alt="Sample-ROC"><br>ROC curve<br><img src="http://oytnj8g2y.bkt.clouddn.com/Sample-PR-1.png" alt="Sample-PR"><br>PR curve</li>
-<li>不要使用<code>score</code>[3][3]或者<code>predict</code>从分类器得到硬的分类标签，而应该使用<code>proba</code>或者<code>predict_proba</code>得到概率估计。</li>
-<li>当你得到概率估计，不要盲目地使用一个 0.50 的决策门限来区分类别。看一下性能曲线来决定一个合适的门限。</li>
-<li>不管你在训练时做了什么，一定要在自然（分层）的分布上测试。看一下<code>sklearn.cross_validation.StratifiedKFold</code>。</li>
-<li>你可以不使用概率估计，但是如果你需要它们，使用校准。看一下<code>sklearn.calibration.CalibratedClassifierCV</code>。</li>
-</ol>
-<p>上面展示的二维图表要比一个准确率数值含有更多的信息。但是如果必须要一个数字度量，下面的指标比准确率更可取。</p>
-<ol>
-<li><a href="https://en.wikipedia.org/wiki/Receiver_operating_characteristic#Area_under_the_curve" target="_blank" rel="external">The Area Under the ROC curve (AUC)</a> is a good general statistic. It is equal to the probability that a random positive example will be ranked above a random negative example.</li>
-<li>The <a href="https://en.wikipedia.org/wiki/F1_score" target="_blank" rel="external">F1 Score</a> is the harmonic mean of precision and recall. It is commonly used in text processing when an aggregate measure is sought.</li>
-<li><a href="https://en.wikipedia.org/wiki/Cohen%27s_kappa" target="_blank" rel="external">Cohen’s Kappa</a> is an evaluation statistic that takes into account how much agreement would be expected by chance.</li>
-</ol>
-<h3 id="过采样或者下采样"><a href="#过采样或者下采样" class="headerlink" title="过采样或者下采样"></a>过采样或者下采样</h3><p>它们是最简单的方式，仅仅需要对处理步骤的很少改变，对样本集合进行调整直到达到平衡。过采样随机地重复少数类样本来增加少数类样本的数目，下采样随机地下采样多数类样本。一些数据科学家幼稚地认为过采样比下采样要好，因为过采样会产生更多的数据样本，而下采样却丢弃了数据样本。但是需要记住的是，重复数据并不是没有后果，重复数据会导致变量的方差变得比其真实方差要小，好的一面是，重复数据也增加了分类器所犯错误的计数，如果一个分类器在原始的数据集上犯了一个 false negative 的错误，并且数据集重复了 5 倍，那么分类器就会在新的数据集上犯 6 个错误。相反地，下采样会导致变量的方差变得比其真实方差要大。就因为如此，机器学习中过采样，下采样和使用自然分布都有应用。<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig5.jpg" alt="ImbalancedClasses_fig5.png"><br>大部分的机器学习包能够进行简单的采样调整。R包<code>unbalanced</code>实现了一些专门用于类别不平衡数据集的采样技术，并且<code>scikit-learn.cross_validation</code>也有基本的采样算法。</p>
-<h3 id="Bayesian-argument-of-Wallace-et-al"><a href="#Bayesian-argument-of-Wallace-et-al" class="headerlink" title="Bayesian argument of Wallace et al."></a>Bayesian argument of Wallace et al.</h3><p>在论文<em>Class Imbalance, Redux</em>, by Wallace, Small, Brodley and Trikalinos[4][4] 中提出了可能是最好的关于类别不平衡的理论证明和实践建议。他们支持下采样多数类。他们提出的证明是数学理论上的，但是在这里我仅会展示一个他们用来表达观点的例子。他们认为两个类别在一些具有解释性的变量分布的尾部必须可分辨的。假设有两个类别只有一个依赖变量<code>x</code>，每一个类别产生自一个标准差为 1 的高斯分布，类别 1 的高斯分布的均值为 1，类别 2 的高斯分布的均值为 2。它们看起来是这样的：<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig6.png" alt="ImbalancedClasses_fig6.png"><br>给定一个 x 值，你会使用哪一个门限来确定这个样本来自于哪一个类别？很明显是中间的点 x=1.5，即图中的垂直线，如果一个新的样本 x 落在了小于 1.5 的一边，那么它可能就是类别 1，否则的话就是类别 2。当从这些样本中进行学习的时候，我们期望学习到的判别线就是 1.5。事实上，如果类别是平衡的话，这确实是我们会得到的结果。在 x 轴上的点是从每个分布得到的样本。<br>但是如果类别 1 是少数类，并假设我们有 10 个类别 1 的样本，50个类别 2 的样本，这种情况下，我们很可能学习到的就是一个发生了偏移的分隔线。<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig7.png" alt="ImbalancedClasses_fig7.png"><br>我们可以通过下采样多数类的方式让其在数量上匹配少数类。问题是在于由于样本量的减少，学习出来的分割线会具有较高的易变性。做了10次采样，会导致10根不同的垂直线。<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig8.png" alt="ImbalancedClasses_fig8.png"><br>因此最后一个步骤就是使用 <a href="https://en.wikipedia.org/wiki/Bootstrap_aggregating" target="_blank" rel="external">bagging</a> 的方式将这些分类器进行组合。整个过程看起来就是下面这样的：<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig9.png" alt="ImbalancedClasses_fig9.png"><br>这个技术在 Scikit-learn 中并没有实现，但是一个叫做 <a href="https://github.com/silicon-valley-data-science/learning-from-imbalanced-classes/blob/master/blagging.py" target="_blank" rel="external"><code>blagging.py</code></a>（balanced bagging）实现了一个 <code>BlaggingClassifier</code>，它在聚合之前平衡了 bootstrap 之后的样本。</p>
-<h3 id="Neighbor-based-approaches"><a href="#Neighbor-based-approaches" class="headerlink" title="Neighbor-based approaches"></a>Neighbor-based approaches</h3><p>上采样或者下采样使用随机选择样本的方式来调整样本的比例。一些其他的方式会仔细地检查样本空间，然后基于近邻关系采取一些行为。<br>例如，Tomek link 是指互为最近邻的分属两类的一对样本。换句话说，就是它们分属不同的类别但是却彼此很邻近。<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig10.png" alt="ImbalancedClasses_fig10.png"><br>Tomek 算法找到这样的样本对，并且从中移除多数类的样本。思想就是让多数类和少数类之间的边界变得更加清晰，让少数类区域更加清楚。上面的图展示了一个简单的 Tomek link 移除的例子。R 包的<code>unbalanced</code>除了一些专门用于类别不平衡数据集的采样技术，也实现了 Tomek link 移除。 Scikit-learn 虽然没有内建的这种功能，但是有一些可用的独立包（比如<a href="https://github.com/ojtwist/TomekLink" target="_blank" rel="external">TomekLink</a>）。</p>
-<h3 id="Synthesizing-new-examples-SMOTE-and-descendants"><a href="#Synthesizing-new-examples-SMOTE-and-descendants" class="headerlink" title="Synthesizing new examples: SMOTE and descendants"></a>Synthesizing new examples: SMOTE and descendants</h3><p>另外一个不涉及重采样样本的方式是合成新的样本。最著名的一个例子就是 Chawla 的<a href="https://www.cs.cmu.edu/afs/cs/project/jair/pub/volume16/chawla02a-html/chawla2002.html" target="_blank" rel="external">SMOTE</a> (Synthetic Minority Oversampling TEchnique)系统。思想就是通过在现存的少数类样本之间内插产生新的少数类样本。基本过程如下：<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig11.png" alt="ImbalancedClasses_fig11.png"><br>SMOTE 很是成功，启发了很多的变种，扩展。在 R 的 <code>unbalanced</code> 和 Python 的 <a href="https://github.com/scikit-learn-contrib/imbalanced-learn" target="_blank" rel="external">UnbalancedDatasete</a> 中可以找到 SMOTE 及其扩展。<br>需要注意的是 SMOTE 的一个本质局限。由于是内插少数类样本，它仅仅能够在少数类样本的内部产生样本，外部是不行的。从形式上说， SMOTE 仅仅能够填充现存少数类样本的凸包，并不能创建新的少数类样本外部区域。</p>
-<h3 id="Adjusting-class-weights"><a href="#Adjusting-class-weights" class="headerlink" title="Adjusting class weights"></a>Adjusting class weights</h3><p>许多机器学习工具包能够调整类别的重要性。例如， Scikit-learn 中的很多分类器有一个额外的参数<code>class_weight</code>，能够让一个类别的重要性高于其他的类别。下面就是一个直接来自 scikit-learn <a href="http://scikit-learn.org/stable/auto_examples/svm/plot_separating_hyperplane_unbalanced.html" target="_blank" rel="external">文档</a>的例子，展示了10倍增加少数类类别权重的作用。实线是使用默认设置（类别权重相同）时的边界，虚线是使用<code>class_weight</code>之后的效果。<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig12.png" alt="ImbalancedClasses_fig12.png"><br>你可以看得到少数类在重要性上获得了增强，在少数类上犯下错误要比在其他类上犯下错误付出的代价更大，分隔超平面会进行调整去减少损失。需要注意的一点是，调整类别的重要性通常只在一种类别错误上具有作用（如果少数类是正例的话，那就是 False Negative 这种错误）。当然，如果分类器在训练集上没有犯下这样的错误，调整类别权重就没有作用。</p>
-<h3 id="And-beyond"><a href="#And-beyond" class="headerlink" title="And beyond"></a>And beyond</h3><p>This post has concentrated on relatively simple, accessible ways to learn classifiers from imbalanced data. Most of them involve adjusting data before or after applying standard learning algorithms. It’s worth briefly mentioning some other approaches.</p>
-<h4 id="New-algorithms"><a href="#New-algorithms" class="headerlink" title="New algorithms"></a>New algorithms</h4><p>Learning from imbalanced classes continues to be an ongoing area of research in machine learning with new algorithms introduced every year. Before concluding I’ll mention a few recent algorithmic advances that are promising.</p>
-<p>In 2014 Goh and Rudin published a paper <em>Box Drawings for Learning with Imbalanced Data</em>[5][5] which introduced two algorithms for learning from data with skewed examples. These algorithms attempt to construct “boxes” (actually axis-parallel hyper-rectangles) around clusters of minority class examples:<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig13.png" alt="ImbalancedClasses_fig13.png"><br>Their goal is to develop a concise, intelligible representation of the minority class. Their equations penalize the number of boxes and the penalties serve as a form of regularization.</p>
-<p>They introduce two algorithms, one of which (Exact Boxes) uses mixed-integer programming to provide an exact but fairly expensive solution; the other (Fast Boxes) uses a faster clustering method to generate the initial boxes, which are subsequently refined. Experimental results show that both algorithms perform very well among a large set of test datasets.</p>
-<p>Earlier I mentioned that one approach to solving the imbalance problem is to discard the minority examples and treat it as a single-class (or anomaly detection) problem. One recent anomaly detection technique has worked surprisingly well for just that purpose. Liu, Ting and Zhou introduced a technique called Isolation Forests[6][6] that attempted to identify anomalies in data by learning random forests and then measuring the average number of decision splits required to isolate each particular data point. The resulting number can be used to calculate each data point’s anomaly score, which can also be interpreted as the likelihood that the example belongs to the minority class. Indeed, the authors tested their system using highly imbalanced data and reported very good results. A follow-up paper by Bandaragoda, Ting, Albrecht, Liu and Wells[7][7] introduced Nearest Neighbor Ensembles as a similar idea that was able to overcome several shortcomings of Isolation Forests.</p>
-<h4 id="Buying-or-creating-more-data"><a href="#Buying-or-creating-more-data" class="headerlink" title="Buying or creating more data"></a>Buying or creating more data</h4><p>As a final note, this blog post has focused on situations of imbalanced classes under the tacit assumption that you’ve been given imbalanced data and you just have to tackle the imbalance. In some cases, as in a Kaggle competition, you’re given a fixed set of data and you can’t ask for more.</p>
-<p>But you may face a related, harder problem: you simply don’t have enough examples of the rare class. None of the techniques above are likely to work. What do you do?</p>
-<p>In some real world domains you may be able to buy or construct examples of the rare class. This is an area of ongoing research in machine learning. If rare data simply needs to be labeled reliably by people, a common approach is to crowdsource it via a service like Mechanical Turk. Reliability of human labels may be an issue, but work has been done in machine learning to combine human labels to optimize reliability. Finally, Claudia Perlich in her Strata talk All The Data and Still Not Enough gives examples of how problems with rare or non-existent data can be finessed by using surrogate variables or problems, essentially using proxies and latent variables to make seemingly impossible problems possible. Related to this is the strategy of using transfer learning to learn one problem and transfer the results to another problem with rare examples, as described here.</p>
-<h4 id="Comments-or-questions"><a href="#Comments-or-questions" class="headerlink" title="Comments or questions?"></a>Comments or questions?</h4><p>Here, I have attempted to distill most of my practical knowledge into a single post. I know it was a lot, and I would value your feedback. Did I miss anything important? Any comments or questions on this blog post are welcome.</p>
-<h4 id="Resources-and-further-reading"><a href="#Resources-and-further-reading" class="headerlink" title="Resources and further reading"></a>Resources and further reading</h4><ol>
-<li><p>Several Jupyter notebooks are available illustrating aspects of imbalanced learning.</p>
-<ul>
-<li>A notebook illustrating sampled Gaussians, above, is at <a href="https://github.com/silicon-valley-data-science/learning-from-imbalanced-classes/blob/master/Gaussians.ipynb" target="_blank" rel="external">Gaussians.ipynb</a>.</li>
-<li>A simple implementation of Wallace’s method is available at <a href="https://github.com/silicon-valley-data-science/learning-from-imbalanced-classes/blob/master/blagging.py" target="_blank" rel="external">blagging.py</a>. It is a simple fork of the existing bagging implementation of sklearn, specifically ./sklearn/ensemble/bagging.py.</li>
-<li>A notebook using this method is available at <a href="https://github.com/silicon-valley-data-science/learning-from-imbalanced-classes/blob/master/ImbalancedClasses.ipynb" target="_blank" rel="external">ImbalancedClasses.ipynb</a>. It loads up several domains and compares blagging with other methods under different distributions.</li>
-</ul>
-</li>
-<li><p>Source code for Box Drawings in MATLAB is available from: <a href="http://web.mit.edu/rudin/www/code/BoxDrawingsCode.zip" target="_blank" rel="external">http://web.mit.edu/rudin/www/code/BoxDrawingsCode.zip</a></p>
-</li>
-<li>Source code for Isolation Forests in R is available at: <a href="https://sourceforge.net/projects/iforest/" target="_blank" rel="external">https://sourceforge.net/projects/iforest/</a></li>
-</ol>
-<p>[1] Natalie Hockham makes this point in her talk Machine learning with imbalanced data sets, which focuses on imbalance in the context of credit card fraud detection.<br>[2] By definition there are fewer instances of the rare class, but the problem comes about because the cost of missing them (a false negative) is much higher.<br>[3] The details in courier are specific to Python’s Scikit-learn.<br>[4] “Class Imbalance, Redux”. Wallace, Small, Brodley and Trikalinos. IEEE Conf on Data Mining. 2011.<br>[5] Box Drawings for Learning with Imbalanced Data.” Siong Thye Goh and Cynthia Rudin. KDD-2014, August 24–27, 2014, New York, NY, USA.<br>[6] “Isolation-Based Anomaly Detection”. Liu, Ting and Zhou. ACM Transactions on Knowledge Discovery from Data, Vol. 6, No. 1. 2012.<br>[7] “Efficient Anomaly Detection by Isolation Using Nearest Neighbour Ensemble.” Bandaragoda, Ting, Albrecht, Liu and Wells. ICDM-2014</p>
-
+<h2 id="Learning-from-Imbalanced-Classes"><a href="#Learning-from-Imbalanced-Classes" class="headerlink" title="Learning from Imbalanced Classes"></a>Learning from Imbalanced Classes</h2><p>如果你刚刚上完一门机器学习的课程，你使用的大部分数据集可能是很简单的。当你拟合分类器时，样本的类别是平衡的，也就是说这些类别的样本量大体相等。导师通常是使用清洗过的数据集进行教学，从而能够集中精力在讲解特定的算法和技术上。通常你看到的样本是下面这样的，点代表样本，不同的颜色或者形状代表不同的类型。<br><img src="http://oytnj8g2y.bkt.clouddn.com/clean.png" alt="clean.png"></p>
         </div>
+        <a href="/2017/11/04/翻译-Learning-from-Imbalanced-Classes/" class="read-more">Read More</a>
     
 
 </div>
@@ -470,32 +217,9 @@
 
     
         <div class="content">
-            <h3 id="两者是否等待子进程退出"><a href="#两者是否等待子进程退出" class="headerlink" title="两者是否等待子进程退出"></a>两者是否等待子进程退出</h3><p>在参加阿里金服《商场中精确定位用户所在店铺》的算法比赛时，使用的是 pandas 和 sklearn ，虽然在数据预处理时使用了 pandas 的 <code>melt</code> 和 <code>pivot</code> 等“批处理”方式，避免了使用循环对每一条记录进行预处理，但是由于数据量较大还是挺费时的，且这个过程是单线程的。在使用 sklearn 的 <code>RandomForestClassifier</code> 时通过指定 <code>n_jobs=-1</code>，可以开启多线程进行训练。在数据预处理和模型拟合是串行的情况下，数据预处理阶段 CPU 的线程（服务器是8核16线程）是没有跑满的，这是一个性能瓶颈。因此想要通过多线程或者多进程的方式充分利用 CPU 的计算能力。达到下面的效果。<br><img src="http://oytnj8g2y.bkt.clouddn.com/multithread.png" alt="multiprocess"><br>由于不同商场记录数目不一，所需的预处理和模型拟合时间不一，期望达到同一时刻有的进程处在预处理阶段，有的进程处于模型拟合阶段，避免 CPU 计算能力的浪费。</p>
-<p>因此尝试了 Python os.system 和 os.popen，发现两者在是否等待子进程退出上存在不同。</p>
-<h4 id="os-system"><a href="#os-system" class="headerlink" title="os.system"></a>os.system</h4><p>main.py<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">import os</div><div class="line">print(&quot;Entering into main.py&quot;)</div><div class="line">os.system(&quot;python slave.py&quot;)</div><div class="line">print(&quot;Exiting from main.py&quot;)</div></pre></td></tr></table></figure></p>
-<p>slave.py<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">import time</div><div class="line">print(&quot;Entering into slave.py&quot;)</div><div class="line">time.sleep(10)</div><div class="line">print(&quot;Exiting from slave.py&quot;)</div></pre></td></tr></table></figure></p>
-<p><code>python main.py</code>结果如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Entering into main.py</div><div class="line">Entering into slave.py</div><div class="line">等待了大约10秒钟...</div><div class="line">Exiting from slave.py</div><div class="line">Exiting from main.py</div></pre></td></tr></table></figure></p>
-<h4 id="os-popen"><a href="#os-popen" class="headerlink" title="os.popen"></a>os.popen</h4><p>main.py<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">import os</div><div class="line">print(&quot;Entering into main.py&quot;)</div><div class="line">ofp = os.popen(python slave.py&quot;)</div><div class="line">print(&quot;Exiting from main.py&quot;)</div></pre></td></tr></table></figure></p>
-<p>slave.py<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">import time</div><div class="line">print(&quot;Entering into slave.py&quot;)</div><div class="line">time.sleep(10)</div><div class="line">print(&quot;Exiting from slave.py&quot;)</div></pre></td></tr></table></figure></p>
-<p><code>python main.py</code>结果如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Entering into main.py</div><div class="line">Exiting from main.py</div><div class="line">等待了大约10秒钟...</div><div class="line">Exception ignored in: &lt;_io.TextIOWrapper name=&apos;&lt;stdout&gt;&apos; mode=&apos;w&apos; encoding=&apos;UTF-8&apos;&gt;</div><div class="line">BrokenPipeError: [Errno 32] Broken pipe</div></pre></td></tr></table></figure></p>
-<p>上面报错是因为<code>os.popen(python slave.py&quot;)</code>：</p>
-<blockquote>
-<p>os.popen: Open a pipe to or from command. The return value is an open file object connected to the pipe, which can be read or written depending on whether mode is ‘r’ (default) or ‘w’. </p>
-</blockquote>
-<p>main.py 建立了 pipe ，但是 main.py 却又提前退出中断了pipe，当 <code>python slave.py</code>运行完之后想要向这个 pipe 的缓冲里面写入时，就会报出<code>BrokenPipeError</code>。<br>修改 main.py 让主进程等待子进程返回，从而允许<code>python slave.py</code>运行完之后向 pipe 的缓冲写入。<br>main.py<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">import os</div><div class="line">print(&quot;Entering into main.py&quot;)</div><div class="line">ofp = os.popen(python slave.py&quot;)</div><div class="line">print(ofp.readlines())</div><div class="line">print(&quot;Exiting from main.py&quot;)</div></pre></td></tr></table></figure></p>
-<p><code>python main.py</code>结果如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Entering into main.py</div><div class="line">等待了大约10秒钟...</div><div class="line">[&apos;Entering into slave.py\n&apos;, &apos;Exiting from slave.py\n&apos;]</div><div class="line">Exiting from main.py</div></pre></td></tr></table></figure></p>
-<p>这次在退出主进程 main.py 之前等待了10秒钟，这是因为<code>print(ofp.readlines())</code>需要读取 pipe 缓冲里的内容，因此堵塞在这一行。</p>
-<h4 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h4><ol>
-<li>os.system 会等待子进程的退出。</li>
-<li>popen 不会等待子进程的退出，但是主进程如果提前退出会 break pipe 从而导致 BrokenPipeError。</li>
-<li>另外  <code>os.system</code> 只会返回子进程 exit 的代号，popen 则会建立一个 pipe 来接收子进程的“print”，可以利用 popen 将一系列具有输入输出依赖关系的命令形成管道（命令1–&gt;命令2–&gt;命令3–&gt;）。</li>
-<li>在不需要利用 pipe 形成命令管道的情况下，使用 os.system 新建一个子进程是比较合适的。 </li>
-</ol>
-<h4 id="最终的解决方案"><a href="#最终的解决方案" class="headerlink" title="最终的解决方案"></a>最终的解决方案</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">import os</div><div class="line">import threading</div><div class="line">import time</div><div class="line">def func(begin, end):</div><div class="line">    print(&quot;Starting mall [&#123;&#125; to &#123;&#125;)&quot;.format(begin, end))</div><div class="line">    os.system(&quot;python train_horizon_cv.py &#123;&#125; &#123;&#125; &gt;&gt; log_&#123;&#125;_&#123;&#125;.txt&quot;.format(begin, end, begin, end))</div><div class="line">if __name__ == &quot;__main__&quot;:</div><div class="line">    threadpool=[]</div><div class="line">    nos = [0, 40, 97]</div><div class="line">    for i in range(2):</div><div class="line">        th = threading.Thread(target=func,args=(nos[i], nos[i+1]))</div><div class="line">        threadpool.append(th)</div><div class="line">    for th in threadpool:</div><div class="line">        th.start()</div><div class="line">    for th in threadpool:</div><div class="line">        threading.Thread.join(th)</div></pre></td></tr></table></figure>
-<p>通过两个线程去启动两个训练进程，每个线程等待其启动的训练进程，主线程等待两个子线程。<br>如果直接像下面这样把 os.system 写在一个循环里面，实际上两个训练进程仍然是串行执行的，这是由于 os.system 的等待子进程返回的性质决定的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">nos = [0, 40, 97]</div><div class="line">for i in range(2):</div><div class="line">    os.system(&quot;python train_horizon_cv.py &#123;&#125; &#123;&#125; &gt;&gt; log_&#123;&#125;_&#123;&#125;.txt&quot;.format(nos[i], nos[i+1], nos[i], nos[i+1]))</div></pre></td></tr></table></figure></p>
-<p><img src="http://oytnj8g2y.bkt.clouddn.com/multithread2.png" alt="multithread2"></p>
-
+            <h3 id="两者是否等待子进程退出"><a href="#两者是否等待子进程退出" class="headerlink" title="两者是否等待子进程退出"></a>两者是否等待子进程退出</h3><p>在参加阿里金服《商场中精确定位用户所在店铺》的算法比赛时，使用的是 pandas 和 sklearn ，虽然在数据预处理时使用了 pandas 的 <code>melt</code> 和 <code>pivot</code> 等“批处理”方式，避免了使用循环对每一条记录进行预处理，但是由于数据量较大还是挺费时的，且这个过程是单线程的。在使用 sklearn 的 <code>RandomForestClassifier</code> 时通过指定 <code>n_jobs=-1</code>，可以开启多线程进行训练。在数据预处理和模型拟合是串行的情况下，数据预处理阶段 CPU 的线程（服务器是8核16线程）是没有跑满的，这是一个性能瓶颈。因此想要通过多线程或者多进程的方式充分利用 CPU 的计算能力。达到下面的效果。<br><img src="http://oytnj8g2y.bkt.clouddn.com/multithread.png" alt="multiprocess"><br>由于不同商场记录数目不一，所需的预处理和模型拟合时间不一，期望达到同一时刻有的进程处在预处理阶段，有的进程处于模型拟合阶段，避免 CPU 计算能力的浪费。<br></p>
         </div>
+        <a href="/2017/11/03/Python-os-system-与-os-popen-的不同/" class="read-more">Read More</a>
     
 
 </div>
@@ -520,7 +244,8 @@
 
     
         <div class="content">
-            <h3 id="修改-hexo-中引用（blockquote）的样式"><a href="#修改-hexo-中引用（blockquote）的样式" class="headerlink" title="修改 hexo 中引用（blockquote）的样式"></a>修改 hexo 中引用（blockquote）的样式</h3><p>在 clean blog 中使用引用<code>&gt;</code>时，渲染后引用会字体变大文本居中，十分不美观。因此需要修改样式。<br>找到文件<code>\themes\clean-blog\source\css\article.styl</code>，在其中搜索关键字<code>blockquote</code>:<br>change<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">blockquote</div><div class="line">  font-style italic</div><div class="line">  font-family font-serif</div><div class="line">  font-size 1.2em</div><div class="line">  padding 0 30px 15px</div><div class="line">  text-align center</div><div class="line">  footer....</div></pre></td></tr></table></figure></p>
+            <a id="more"></a>
+<h3 id="修改-hexo-中引用（blockquote）的样式"><a href="#修改-hexo-中引用（blockquote）的样式" class="headerlink" title="修改 hexo 中引用（blockquote）的样式"></a>修改 hexo 中引用（blockquote）的样式</h3><p>在 clean blog 中使用引用<code>&gt;</code>时，渲染后引用会字体变大文本居中，十分不美观。因此需要修改样式。<br>找到文件<code>\themes\clean-blog\source\css\article.styl</code>，在其中搜索关键字<code>blockquote</code>:<br>change<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">blockquote</div><div class="line">  font-style italic</div><div class="line">  font-family font-serif</div><div class="line">  font-size 1.2em</div><div class="line">  padding 0 30px 15px</div><div class="line">  text-align center</div><div class="line">  footer....</div></pre></td></tr></table></figure></p>
 <p>to<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">blockquote</div><div class="line">  font-style italic</div><div class="line">  font-family font-serif</div><div class="line">  font-size 0.95em</div><div class="line">  padding 0 30px 15px</div><div class="line">  text-align left</div><div class="line">  footer....</div></pre></td></tr></table></figure></p>
 <p>效果就是：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/11/before_fixing.png" alt="before_fixing"><br>to<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/11/after_fixing.png" alt="after_fixing"></p>
 <h3 id="Hexo-下-Mathjax-的转义问题"><a href="#Hexo-下-Mathjax-的转义问题" class="headerlink" title="Hexo 下 Mathjax 的转义问题"></a>Hexo 下 Mathjax 的转义问题</h3><p>Q(s_{t}) 会被转义成 Q(s&lt;/em&gt;{t}) 导致 Mathjax 不能正确渲染出公式。</p>
@@ -604,39 +329,9 @@ provide shell access.</code></li>
         <div class="content">
             <h3 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h3><ol>
 <li>Ubuntu 16.04.2</li>
-<li>Anaconda 3-4.4.0</li>
-</ol>
-<h3 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h3><ol>
-<li><p>下载编译</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">git clone --recursive https://github.com/dmlc/xgboost</div><div class="line">cd xgboost/</div><div class="line">make -j4</div><div class="line">cd ..</div><div class="line">sudo mv xgboost/ /opt/</div></pre></td></tr></table></figure>
-<p>若是需要安装 GPU 支持：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">git clone --recursive https://github.com/dmlc/xgboost</div><div class="line">cd xgboost/</div><div class="line">mkdir build</div><div class="line">cd build</div><div class="line">cmake .. -DUSE_CUDA=ON</div><div class="line">make -j</div></pre></td></tr></table></figure>
-</li>
-<li><p>安装 Python binding<br>在<code>~/.bashrc</code>的最后添加<code>export PYTHONPATH=/opt/xgboost/python-package</code>，然后<code>source ~/.bashrc</code>并重启终端。</p>
-</li>
-<li><p>Troubleshooting<br><code>import xgboost</code>时会报出以下的错误：</p>
-<ul>
-<li><blockquote>
-<p>/opt/anaconda3/bin/../lib/libgomp.so.1: version GOMP_4.0 not found (required by /opt/xgboost/python-package/xgboost/../../lib/libxgboost.so)</p>
-</blockquote>
-<p><code>strings /opt/anaconda3/lib/libgomp.so.1 | grep GOMP</code>        </p>
-<blockquote>
-<p><code>strings</code> 命令在对象文件或二进制文件中查找可打印的字符串   字符串是4个或更多可打印字符的任意序列，以换行符或空字符结束。</p>
-</blockquote>
-<p>输出</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">GOMP_1.0</div><div class="line">GOMP_2.0</div><div class="line">GOMP_3.0</div><div class="line">GOMP_CPU_AFFINITY</div></pre></td></tr></table></figure>
-<p>可以看出确实是只到<code>GOMP_3.0</code>。<br>使用<code>locate</code>命令搜系统中所有的<code>libgomp.so.1</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">/opt/anaconda3/lib/libgomp.so.1</div><div class="line">/opt/anaconda3/lib/libgomp.so.1.0.0</div><div class="line">/opt/anaconda3/pkgs/libgcc-4.8.5-2/lib/libgomp.so.1</div><div class="line">/opt/anaconda3/pkgs/libgcc-4.8.5-2/lib/libgomp.so.1.0.0</div><div class="line">/usr/lib/x86_64-linux-gnu/libgomp.so.1</div><div class="line">/usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0</div></pre></td></tr></table></figure>
-<p>使用<code>strings</code>命令查看上面结果中哪一个文件包含<code>GOMP_4.0</code>，在本机中<code>/usr/lib/x86    64-linux-gnulibgomp.so.1</code>包含了该字符串(说明它包含GOMP_4.0)。<br>备份<code>/opt/anaconda3/lib/libgomp.so.1</code>，重新做一个新的链接</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mv /opt/anaconda3/lib/libgomp.so.1 /opt/anaconda3/lib/libgomp.so.1.bak</div><div class="line">ln -s /usr/lib/x86_64-linux-gnu/libgomp.so.1 /opt/anaconda3/lib/libgomp.so.1</div></pre></td></tr></table></figure>
-</li>
-<li><p>libstdc++.so.6 同 1 的解决方式。</p>
-</li>
-</ul>
-</li>
-</ol>
-
+<li>Anaconda 3-4.4.0</li></ol>
         </div>
+        <a href="/2017/11/02/Install-XGBoost/" class="read-more">Read More</a>
     
 
 </div>
@@ -663,43 +358,9 @@ provide shell access.</code></li>
         <div class="content">
             <h3 id="安装-Ubuntu"><a href="#安装-Ubuntu" class="headerlink" title="安装 Ubuntu"></a>安装 Ubuntu</h3><ol>
 <li>利用 <a href="https://www.pendrivelinux.com/universal-usb-installer-easy-as-1-2-3/" target="_blank" rel="external">Universal-USB-Installer</a> 制作一个 Ubuntu 16.04.2 的U盘启动盘。</li>
-<li>F11 从U盘启动并进行安装。</li>
-</ol>
-<h3 id="安装-openssh-server"><a href="#安装-openssh-server" class="headerlink" title="安装 openssh-server"></a>安装 openssh-server</h3><ol>
-<li><code>sudo apt-get install openssh-server</code></li>
-<li>Ubuntu 默认是不启用 root 用户，也不允许 root 远程登陆的，下面启用 root 用户并允许通过 ssh 远程登陆。<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">sudo passwd root</div><div class="line">sudo vi /etc/ssh/sshd_config</div><div class="line">change &apos;PermitRootLogin no&apos; to &apos;PermitRootLogin yes&apos;</div><div class="line">sudo service ssh restart</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<h3 id="安装-git"><a href="#安装-git" class="headerlink" title="安装 git"></a>安装 git</h3><ol>
-<li><code>sudo apt-get install git</code> 报错：<blockquote>
-<p>下列软件包有未满足的依赖关系：<br>git : 依赖: liberror-perl 但无法安装它<br>E: 无法修正错误，因为您要求某些软件包保持现状，就是它们破坏了软件包间的依赖关系。</p>
-</blockquote>
-</li>
-<li>下载<code>liberror-perl_0.17-1.2_all.deb</code>并通过<code>dpkg -i liberror-perl_0.17-1.2_all.deb</code>安装。</li>
-<li><code>sudo apt-get install git</code></li>
-</ol>
-<h3 id="修改-DNS"><a href="#修改-DNS" class="headerlink" title="修改 DNS"></a>修改 DNS</h3><ol>
-<li>使用 git clone 时发现无法解析 <code>Could not resolve host: github.com</code>。因此需要配置域名服务器。</li>
-<li>通过查询得知北邮校内的 DNS 地址为<code>10.3.9.4</code>和<code>10.3.9.6</code>。</li>
-<li><code>sudo vim /etc/resolvconf/resolv.conf.d/base</code>，输入<code>nameserver 10.3.9.4</code>。不要直接修改<code>/etc/resolv.conf</code>，后者重启会失效。</li>
-<li><code>sudo resolvconf -u</code></li>
-</ol>
-<h3 id="新建用户并自动创建家目录（登入目录）"><a href="#新建用户并自动创建家目录（登入目录）" class="headerlink" title="新建用户并自动创建家目录（登入目录）"></a>新建用户并自动创建家目录（登入目录）</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo useradd -d /home/wjx -m -s /bin/bash wjx</div></pre></td></tr></table></figure>
-<blockquote>
-<p>-c&lt;备注&gt;：加上备注文字。备注文字会保存在passwd的备注栏位中<br>-d&lt;登入目录&gt;：指定用户登入时的起始目录<br>-D：变更预设值<br>-e&lt;有效期限&gt;：指定帐号的有效期限<br>-f&lt;缓冲天数&gt;：指定在密码过期后多少天即关闭该帐号<br>-g&lt;群组&gt;：指定用户所属的群组<br>-G&lt;群组&gt;：指定用户所属的附加群组<br>-m：自动建立用户的登入目录<br>-M：不要自动建立用户的登入目录<br>-n：取消建立以用户名称为名的群组<br>-r：建立系统帐号<br>-s：指定用户登入后所使用的shell<br>-u：指定用户id</p>
-</blockquote>
-<h3 id="Jupyter-Notebook-远程访问"><a href="#Jupyter-Notebook-远程访问" class="headerlink" title="Jupyter Notebook 远程访问"></a>Jupyter Notebook 远程访问</h3><ol>
-<li>密码加密，打开 ipython，<code>from notebook.auth import passwd; passwd()</code> 得到形式为 <code>sha1:-----------------------</code> 的密码加密结果。</li>
-<li>生成 jupyter 的配置文件，<code>$ jupyter notebook --generate-config</code>，将会在 home 目录下生成一个隐藏文件夹 .jupyter，该文件夹中有一个 jupyter 的配置文件；</li>
-<li><p>修改 jupyter 的配置文件 <code>$ vim ~/.jupyter/jupyter_notebook_config.py</code>，去掉下面对应行前的注释符号<code>#</code>并修改为下面的样子。</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">c.NotebookApp.ip = &apos;*&apos;</div><div class="line">c.NotebookApp.password = &apos;sha1:-----&apos; #这里就是上面的密码加密结果</div><div class="line">c.NotebookApp.port = 8000</div></pre></td></tr></table></figure>
-</li>
-<li><p><code>jupyter notebook</code> 启动 notebook。 </p>
-</li>
-<li>此时通过 <a href="http://10.108.101.111:8000" target="_blank" rel="external">http://10.108.101.111:8000</a> 就可以访问 jupyter notebook 了。</li>
-</ol>
-
+<li>F11 从U盘启动并进行安装。</li></ol>
         </div>
+        <a href="/2017/11/02/在Dell-PowerEdge-R430上打造一个科学计算环境/" class="read-more">Read More</a>
     
 
 </div>
@@ -759,7 +420,8 @@ provide shell access.</code></li>
 
     
         <div class="content">
-            <h3 id="环境及版本"><a href="#环境及版本" class="headerlink" title="环境及版本"></a>环境及版本</h3><ul>
+            <a id="more"></a>
+<h3 id="环境及版本"><a href="#环境及版本" class="headerlink" title="环境及版本"></a>环境及版本</h3><ul>
 <li>window 10</li>
 <li>hexo 3.4.0</li>
 </ul>
@@ -828,32 +490,6 @@ provide shell access.</code></li>
 <li>访问<code>https://RobertLexis.github.io</code>就可以看到自己的博客了。</li>
 </ol>
 
-        </div>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2017/06/13/编程范式-1/">
-                编程范式 1
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2017-06-13</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            
         </div>
     
 

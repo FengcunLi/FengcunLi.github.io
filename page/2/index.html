@@ -353,36 +353,9 @@
 
     
         <div class="content">
-            <p>本博文主要是在阅读 scikit-learn 官方文档<a href="http://scikit-learn.org/stable/modules/model_evaluation.html" target="_blank" rel="external">3.3. Model evaluation: quantifying the quality of predictions</a> 之后的总结。<br>首先看一下根据 label 特点的不同做出的分类任务类型的划分：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/metrics/1.PNG" alt="不同的分类任务"><br>scikit-learn 提供了三种不同的 API 来评估模型的预测质量。</p>
-<ul>
-<li>Estimator score method（学习器的score 方法）</li>
-<li>Scoring parameter （评分策略参数） 基于交叉验证的模型评估工具（比如 <code>model_selection.cross_val_score</code> and <code>model_selection.GridSearchCV</code>) 依赖于一个内部的评分策略 ）</li>
-<li>Metric functions（评价函数），metrics 模块提供了很多这样的函数。</li>
-</ul>
-<p>另外一点值得指出的是，可以使用 <code>Dummy estimators</code> 获得评价指标的基准值。</p>
-<h2 id="使用-scoring-参数来定义模型评估的规则"><a href="#使用-scoring-参数来定义模型评估的规则" class="headerlink" title="使用 scoring 参数来定义模型评估的规则"></a>使用 scoring 参数来定义模型评估的规则</h2><p>Model selection and evaluation using tools, such as <code>model_selection.GridSearchCV</code> and <code>model_selection.cross_val_score</code>, take a scoring parameter that controls what metric they apply to the estimators evaluated.<br>值得注意的是，所有的评分指标都遵循“大值优于小值”的约定。因此对于一些基于“距离”的度量，像 <code>metrics.mean_squared_error</code>，在此使用的是其相反数 <code>neg_mean_squared_error</code>。<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/metrics/scoring_parameters.PNG" alt="scoring_parameters"></p>
-<h2 id="分类问题的评估指标"><a href="#分类问题的评估指标" class="headerlink" title="分类问题的评估指标"></a>分类问题的评估指标</h2><p><code>sklearn.metrics</code> 模块提供了很多的损失（loss），评分（score）和辅助函数（utility）来度量分类器的性能。<br>一些指标函数需要分类器能够给出概率估计、confidence values, 和 binary decisions values。并且大部分的实现也允许通过提供 <code>sample_weights</code> 参数来计算指标的一个加权值。<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/metrics/classification_metrics.PNG" alt="classification_metrics"></p>
-<p>下面关注一下一些常见的指标。</p>
-<h4 id="Accuracy-score"><a href="#Accuracy-score" class="headerlink" title="Accuracy score"></a>Accuracy score</h4><p>\(\hat{y_i}\) 是第 i 个样本的预测值，\(y_i\) 是第 i 个样本的真实值。<br>$$\texttt{accuracy}(y, \hat{y}) = \frac{1}{n_\text{samples}} \sum_{i=0}^{n_\text{samples}-1} 1(\hat{y}_i = y_i)$$<br>其中 \(1(x)\) 是示性函数。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">import numpy as np</div><div class="line">from sklearn.metrics import accuracy_score</div><div class="line">y_pred = [0, 2, 1, 3]</div><div class="line">y_true = [0, 1, 2, 3]</div><div class="line">accuracy_score(y_true, y_pred)</div><div class="line">0.5</div><div class="line">accuracy_score(y_true, y_pred, normalize=False)</div><div class="line">2</div></pre></td></tr></table></figure></p>
-<p>在多标签（multilabel）任务下，使用二进制标签矩阵（binary label indicators），示性函数需要\(\hat{y}_i\) 和 \(y_i\) 完全匹配才取 1 值。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">accuracy_score(np.array([[0, 1], [1, 1]]), np.ones((2, 2)))</div><div class="line">0.5</div></pre></td></tr></table></figure></p>
-<h4 id="Classification-report"><a href="#Classification-report" class="headerlink" title="Classification report"></a>Classification report</h4><p>这个函数会构建一个展示常见分类度量指标的文本报告（text report）。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">from sklearn.metrics import classification_report</div><div class="line">y_true = [0, 1, 2, 2, 0]</div><div class="line">y_pred = [0, 0, 2, 1, 0]</div><div class="line">target_names = [&apos;class 0&apos;, &apos;class 1&apos;, &apos;class 2&apos;]</div><div class="line">print(classification_report(y_true, y_pred, target_names=target_names))</div><div class="line">             precision    recall  f1-score   support</div><div class="line"></div><div class="line">    class 0       0.67      1.00      0.80         2</div><div class="line">    class 1       0.00      0.00      0.00         1</div><div class="line">    class 2       1.00      0.50      0.67         2</div><div class="line"></div><div class="line">avg / total       0.67      0.60      0.59         5</div></pre></td></tr></table></figure></p>
-<h4 id="Precision-recall-and-F-measures"><a href="#Precision-recall-and-F-measures" class="headerlink" title="Precision, recall and F-measures"></a>Precision, recall and F-measures</h4><p>对二分类问题而言，<br>$$<br>\text{precision} = \frac{tp}{tp + fp},<br>$$<br>$$<br>\text{recall} = \frac{tp}{tp + fn},<br>$$<br>$$<br>F_\beta = (1 + \beta^2) \frac{\text{precision} \times \text{recall}}{\beta^2 \text{precision} + \text{recall}}.<br>$$<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/metrics/recall_precision_f_beta.PNG" alt="recall_precision_f_beta"><br>对多类别和多标签分类而言，precision, recall, and F-measures 可以独立地应用于各个标签，然后可以通过 <code>average</code> 参数指定的方式将各个标签上的结果进行综合。 <code>average</code> 参数可以应用于 <code>average_precision_score</code> (multilabel only), <code>f1_score</code>, <code>fbeta_score</code>, <code>precision_recall_fscore_support</code>, <code>precision_score</code> and <code>recall_score</code> 这些函数。<br><em>Note that for “micro”-averaging in a multiclass setting with all labels included will produce equal precision, recall and F, while “weighted” averaging may produce an F-score that is not between precision and recall.</em></p>
-<ul>
-<li>\(y\) the set of predicted (sample, label) pairs</li>
-<li>\(\hat{y}\) the set of true (sample, label) pairs</li>
-<li>\(L\) the set of labels</li>
-<li>\(S\) the set of samples</li>
-<li>\(y_s\) the subset of \(y\) with sample \(s\), i.e. \( y_s := \lbrace (s’, l) \in y | s = s’ \rbrace \)</li>
-<li>\(y_l\) the subset of \(y\) with label \(l\)</li>
-<li>similarly, \(\hat{y_s}\) and \(\hat{y_l}\) are subsets of \(\hat{y}\)</li>
-<li>\(P(A, B) := \frac{\left| A \cap B \right|}{\left|A\right|}\)</li>
-<li>\(R(A, B) := \frac{\left| A \cap B \right|}{\left|B\right|}\) (Conventions vary on handling \(B = \emptyset\); this implementation uses \(R(A, B):=0\), and similar for \(P\).)</li>
-<li>\(F_\beta(A, B) := \left(1 + \beta^2\right) \frac{P(A, B) \times R(A, B)}{\beta^2 P(A, B) + R(A, B)}\)<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/metrics/2.PNG" alt="多标签任务的真实标签"><br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/metrics/3.PNG" alt="多标签任务的预测标签"><br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/metrics/4.PNG" alt="多标签任务指标的计算图示"><br>Then the metrics are defined as:<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/metrics/recall_precision_f_beta_formulations.PNG" alt="recall_precision_f_beta_formulations"></li>
-</ul>
-<h4 id="precision-recall-curve"><a href="#precision-recall-curve" class="headerlink" title="precision_recall_curve"></a>precision_recall_curve</h4><p>The <code>precision_recall_curve</code> computes a precision-recall curve from the ground truth label and a score given by the classifier by varying a decision threshold.<br><strong>仅仅能够应用在二分类问题中。</strong></p>
-<h4 id="average-precision-score"><a href="#average-precision-score" class="headerlink" title="average_precision_score"></a>average_precision_score</h4><p>The <code>average_precision_score</code> function computes the average precision (AP) from prediction scores. The value is between 0 and 1 and higher is better. AP is defined as<br>$$AP = \sum_n (R_n - R_{n-1}) P_n$$<br>where \(P_n\) and \(R_n\) are the precision and recall at the nth threshold. With random predictions, the AP is the fraction of positive samples.<br><strong>仅能够应用在二分类问题和多标签问题中。</strong></p>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+            <p>本博文主要是在阅读 scikit-learn 官方文档<a href="http://scikit-learn.org/stable/modules/model_evaluation.html" target="_blank" rel="external">3.3. Model evaluation: quantifying the quality of predictions</a> 之后的总结。<br>首先看一下根据 label 特点的不同做出的分类任务类型的划分：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/metrics/1.PNG" alt="不同的分类任务"><br></p>
         </div>
+        <a href="/2018/07/01/模型评估-量化预测质量/" class="read-more">Read More</a>
     
 
 </div>
@@ -408,79 +381,9 @@
     
         <div class="content">
             <p>这篇博文是 Emmanuelle Gouillart (scikit-image 开发者) 在 PyData 2015 上演讲 Introduction to scikit-image 的笔记。</p>
-<h3 id="scikit-image"><a href="#scikit-image" class="headerlink" title="scikit-image"></a>scikit-image</h3><p>scikit-image is a general-purpose image processing module for the Python programming language. It is designed to interact efficiently with other popular scientific Python libraries, such as NumPy and SciPy. In particular, scikit-image leverages the powerful data array container of NumPy, that can store images of various dimensions (2-D, 2D RGB, 3D, 4D…).</p>
-<h3 id="Foundation"><a href="#Foundation" class="headerlink" title="Foundation"></a>Foundation</h3><p>NumPy-native: images as NumPy arrays</p>
-<h3 id="Filtering：-transforming-image-data"><a href="#Filtering：-transforming-image-data" class="headerlink" title="Filtering： transforming image data"></a>Filtering： transforming image data</h3><p>modules:</p>
-<ul>
-<li>skimage.filter</li>
-<li>skimage.exposure</li>
-<li>skimage.restoration</li>
-</ul>
-<p>word cloud:</p>
-<ul>
-<li>median</li>
-<li>gaussian</li>
-<li>canny</li>
-<li>sobel</li>
-<li>wiener</li>
-<li>equalize</li>
-<li>denoising</li>
-<li>enhance_contrast</li>
-<li>total_variation</li>
-</ul>
-<h3 id="Extracting-features"><a href="#Extracting-features" class="headerlink" title="Extracting features"></a>Extracting features</h3><p>Feature detection: extracting features from images to feed into classifiers or estimators.<br>modules:</p>
-<ul>
-<li>skimage.feature</li>
-<li>skimage.filter</li>
-</ul>
-<p>word cloud:</p>
-<ul>
-<li>corners</li>
-<li>daisy</li>
-<li>local_maxima</li>
-<li>gabor</li>
-<li>harris</li>
-<li>hog</li>
-<li>hough</li>
-<li>cooccurance</li>
-<li>canny</li>
-</ul>
-<h3 id="Geometrical-transformations"><a href="#Geometrical-transformations" class="headerlink" title="Geometrical transformations"></a>Geometrical transformations</h3><p>modules:</p>
-<ul>
-<li>skimage.transform</li>
-</ul>
-<p>word cloud</p>
-<ul>
-<li>scale</li>
-<li>zoom</li>
-<li>rotate</li>
-<li>swirl</li>
-<li>wrap</li>
-</ul>
-<h3 id="Segmentation-labelling-regions"><a href="#Segmentation-labelling-regions" class="headerlink" title="Segmentation: labelling regions"></a>Segmentation: labelling regions</h3><p>label different pixels to separate objects.<br>modules:</p>
-<ul>
-<li>skimage.segmentation</li>
-</ul>
-<p>word cloud:</p>
-<ul>
-<li>thresholding: histogram based</li>
-<li>otsu</li>
-<li>randomwalker</li>
-<li>superpixel: separating connected objects</li>
-<li>watershed</li>
-</ul>
-<h3 id="Measures-on-images"><a href="#Measures-on-images" class="headerlink" title="Measures on images"></a>Measures on images</h3><p>After image segmentation, you have some regions, you may want to compute statistics and label each regions.<br>modules:<br>skimage.measure</p>
-<p>word cloud:</p>
-<ul>
-<li>measure</li>
-<li>label: very useful, give different labels to different connected components.</li>
-<li>size</li>
-<li>histogram</li>
-<li>regionprops</li>
-</ul>
-<p><img src="http://oytnj8g2y.bkt.clouddn.com/skimage/skimage_label.png" alt="skimage.measure.label"></p>
-
+<h3 id="scikit-image"><a href="#scikit-image" class="headerlink" title="scikit-image"></a>scikit-image</h3><p>scikit-image is a general-purpose image processing module for the Python programming language. It is designed to interact efficiently with other popular scientific Python libraries, such as NumPy and SciPy. In particular, scikit-image leverages the powerful data array container of NumPy, that can store images of various dimensions (2-D, 2D RGB, 3D, 4D…).<br></p>
         </div>
+        <a href="/2018/06/08/笔记-for-PyData-2015-Introduction-to-scikit-image/" class="read-more">Read More</a>
     
 
 </div>

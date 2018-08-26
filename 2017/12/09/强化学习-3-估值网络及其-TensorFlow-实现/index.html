@@ -11,7 +11,13 @@
     <!--Description-->
     
         <meta name="description" content="强化学习 3 估值网络及其 TensorFlow 实现估值网络概念：
-Q-learning 中的期望价值指从当前的这一步到后续的所有步骤，总共可以期望获得的最大价值。也就说是对未来进行了断言，这一步采取这样的动作，不管未来采取什么样的动作，可以期望获得的价值不会超过这个Q值。Q值的意义就是最大价值，">
+Q-learning 中的期望价值指从当前的这一步到后续的所有步骤，总共可以期望获得的最大价值。也就说是对未来进行了断言，这一步采取这样的动作，不管未来采取什么样的动作，可以期望获得的价值不会超过这个Q值。Q值的意义就是最大价值，当前最大 = 当前 + gamma * 以后续一步为当前的最大。
+Q-learning 的目的就是求解 \(Q(s_t, a_t)\)，可以将其看作一个表格，每一行是不同的状态，每一列是不同的动作，学习的过程就是把这个表用合适的值填充起来。
+Q-learning 的训练思路也很简单，以（状态，动作，奖励，下一状态）四元组（\((s_t, a_t, r_{t+1}, s_{t+1})\)）作为样本进行训练。
+学习目标 \(r_{t+1} + \gamma \cdot \max\limits_{a} Q(s_{t+1}, a)\)，即相当于 label。
+学习过程 \(Q_{new}(s_t, a_t) \gets (1-\alpha) \cdot Q_{old}(s_t, a_t) + \alpha \cdot (r_{t+1} + \gamma \cdot \max\limits_{a} Q_{old}(s_{t+1}, a))\)
+Q-learning 的模型是神经网络时，即将\(Q(s_t, a_t)\)表达为神经网络，就是估值网络。
+DQN 是 DeepMind 在 Human-level control through deep reinforcement learning 中提出的。">
     
 
     <!--Author-->
@@ -173,7 +179,8 @@ Q-learning 中的期望价值指从当前的这一步到后续的所有步骤，
 <li>学习目标 \(r_{t+1} + \gamma \cdot \max\limits_{a} Q(s_{t+1}, a)\)，即相当于 label。</li>
 <li>学习过程 \(Q_{new}(s_t, a_t) \gets (1-\alpha) \cdot Q_{old}(s_t, a_t) + \alpha \cdot (r_{t+1} + \gamma \cdot \max\limits_{a} Q_{old}(s_{t+1}, a))\)</li>
 <li>Q-learning 的模型是神经网络时，即将\(Q(s_t, a_t)\)表达为神经网络，就是估值网络。</li>
-<li>DQN 是 DeepMind 在 Human-level control through deep reinforcement learning 中提出的。</li>
+<li>DQN 是 DeepMind 在 Human-level control through deep reinforcement learning 中提出的。<a id="more"></a>
+</li>
 </ol>
 <h4 id="Tricks："><a href="#Tricks：" class="headerlink" title="Tricks："></a>Tricks：</h4><ol>
 <li>Experience Replay，因为深度学习需要大量的样本，所以传统的Q-learning 的 online update 的方法不太适合于 DQN，可以像训练CNN 那样进行多个 epoch 的训练，主要思想就是存储 Agent 的 Experience，并且每次训练时随机抽取一部分样本训练网络。这样就能比较稳定的完成学习任务，避免只短视地学习新接触地样本，而是综合地反复利用过往的大量样本进行学习。可以创建一个用来存储Experience的缓存buffer，缓存满了之后就使用新的样本进行替换，如此就可以保证样本都有相近的概率被抽到，如果不替换，那么一开始就有的老样本在整个训练过程中被抽中的概率就会比新样本大得多。</li>

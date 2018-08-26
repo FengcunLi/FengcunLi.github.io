@@ -13,7 +13,7 @@
         <meta name="description" content="C/C++ 中的 const 关键字const 可以用来修饰变量，指针，函数参数，函数返回值，成员函数本身。而后三者是 const 最具威力的用法。const 成员函数有两个语义：
 
 使得 class 的接口更加容易被理解，方便的知道哪个函数可以修改调用对象的内容，哪个函数不行。
-使得区别对待常量调">
+使得区别对待常量调用对象与非常量调用对象成为可能。（两个成员函数仅仅是常量性不同是可以被重载的）改善 C++ 程序效率的一个根本办法是 pass-by-reference-to-const">
     
 
     <!--Author-->
@@ -171,11 +171,14 @@
         <h2 id="C-C-中的-const-关键字"><a href="#C-C-中的-const-关键字" class="headerlink" title="C/C++ 中的 const 关键字"></a>C/C++ 中的 const 关键字</h2><p>const 可以用来修饰变量，指针，函数参数，函数返回值，成员函数本身。而后三者是 const 最具威力的用法。<br>const 成员函数有两个语义：</p>
 <ol>
 <li>使得 class 的接口更加容易被理解，方便的知道哪个函数可以修改调用对象的内容，哪个函数不行。</li>
-<li>使得区别对待常量调用对象与非常量调用对象成为可能。（两个成员函数仅仅是常量性不同是可以被重载的）<br>改善 C++ 程序效率的一个根本办法是 pass-by-reference-to-const</li>
+<li>使得区别对待常量调用对象与非常量调用对象成为可能。（两个成员函数仅仅是常量性不同是可以被重载的）<br>改善 C++ 程序效率的一个根本办法是 pass-by-reference-to-const<a id="more"></a>
+</li>
 </ol>
-<h2 id="C-C-中extern关键字详解"><a href="#C-C-中extern关键字详解" class="headerlink" title="C/C++中extern关键字详解"></a>C/C++中extern关键字详解</h2><h3 id="基本解释"><a href="#基本解释" class="headerlink" title="基本解释"></a>基本解释</h3><pre><code>+ extern 暗示这个变量/函数的定义存在于别的源文件中
-+ 用来进行链接指定，当它与&quot;C&quot;一起连用时，如: extern &quot;C&quot; void fun(int a, int b);则告诉编译器在编译fun这个函数名时按着C的规则去翻译，而不是C++的，因为C++支持函数重载。
-</code></pre><h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><ol>
+<h2 id="C-C-中extern关键字详解"><a href="#C-C-中extern关键字详解" class="headerlink" title="C/C++中extern关键字详解"></a>C/C++中extern关键字详解</h2><h3 id="基本解释"><a href="#基本解释" class="headerlink" title="基本解释"></a>基本解释</h3><ul>
+<li>extern 暗示这个变量/函数的定义存在于别的源文件中</li>
+<li>用来进行链接指定，当它与”C”一起连用时，如: extern “C” void fun(int a, int b);则告诉编译器在编译fun这个函数名时按着C的规则去翻译，而不是C++的，因为C++支持函数重载。</li>
+</ul>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><ol>
 <li>extern 变量<br>在一个源文件里定义了一个数组：char a[6];在另外一个文件里用下列语句进行了声明：extern char *a；<br>请问，这样可以吗？<br>答案与分析：<ol>
 <li>不可以，程序运行时会告诉你非法访问。原因在于，类型T的指针并不等价于类型T的数组。extern char *a声明的是一个字符指针而不是字符数组，因此与实际的定义不同，从而造成运行时非法访问。应该将声明改为extern char a[]。</li>
 <li>在使用extern时候要严格对应声明时的格式，在实际编程中，这样的错误屡见不鲜。你在* .c文件中声明了一个全局的变量，这个全局的变量如果要被其他*.c引用，就放在*.h中并用 extern 来声明。</li>

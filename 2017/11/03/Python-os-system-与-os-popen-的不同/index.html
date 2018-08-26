@@ -10,7 +10,7 @@
 
     <!--Description-->
     
-        <meta name="description" content="两者是否等待子进程退出在参加阿里金服《商场中精确定位用户所在店铺》的算法比赛时，使用的是 pandas 和 sklearn ，虽然在数据预处理时使用了 pandas 的 melt 和 pivot 等“批处理”方式，避免了使用循环对每一条记录进行预处理，但是由于数据量较大还是挺费时的，且这个过程是单线">
+        <meta name="description" content="两者是否等待子进程退出在参加阿里金服《商场中精确定位用户所在店铺》的算法比赛时，使用的是 pandas 和 sklearn ，虽然在数据预处理时使用了 pandas 的 melt 和 pivot 等“批处理”方式，避免了使用循环对每一条记录进行预处理，但是由于数据量较大还是挺费时的，且这个过程是单线程的。在使用 sklearn 的 RandomForestClassifier 时通过指定 n_jobs=-1，可以开启多线程进行训练。在数据预处理和模型拟合是串行的情况下，数据预处理阶段 CPU 的线程（服务器是8核16线程）是没有跑满的，这是一个性能瓶颈。因此想要通过多线程或者多进程的方式充分利用 CPU 的计算能力。达到下面的效果。由于不同商场记录数目不一，所需的预处理和模型拟合时间不一，期望达到同一时刻有的进程处在预处理阶段，有的进程处于模型拟合阶段，避免 CPU 计算能力的浪费。">
     
 
     <!--Author-->
@@ -165,7 +165,7 @@
         
 
         <!-- Post Content -->
-        <h3 id="两者是否等待子进程退出"><a href="#两者是否等待子进程退出" class="headerlink" title="两者是否等待子进程退出"></a>两者是否等待子进程退出</h3><p>在参加阿里金服《商场中精确定位用户所在店铺》的算法比赛时，使用的是 pandas 和 sklearn ，虽然在数据预处理时使用了 pandas 的 <code>melt</code> 和 <code>pivot</code> 等“批处理”方式，避免了使用循环对每一条记录进行预处理，但是由于数据量较大还是挺费时的，且这个过程是单线程的。在使用 sklearn 的 <code>RandomForestClassifier</code> 时通过指定 <code>n_jobs=-1</code>，可以开启多线程进行训练。在数据预处理和模型拟合是串行的情况下，数据预处理阶段 CPU 的线程（服务器是8核16线程）是没有跑满的，这是一个性能瓶颈。因此想要通过多线程或者多进程的方式充分利用 CPU 的计算能力。达到下面的效果。<br><img src="http://oytnj8g2y.bkt.clouddn.com/multithread.png" alt="multiprocess"><br>由于不同商场记录数目不一，所需的预处理和模型拟合时间不一，期望达到同一时刻有的进程处在预处理阶段，有的进程处于模型拟合阶段，避免 CPU 计算能力的浪费。</p>
+        <h3 id="两者是否等待子进程退出"><a href="#两者是否等待子进程退出" class="headerlink" title="两者是否等待子进程退出"></a>两者是否等待子进程退出</h3><p>在参加阿里金服《商场中精确定位用户所在店铺》的算法比赛时，使用的是 pandas 和 sklearn ，虽然在数据预处理时使用了 pandas 的 <code>melt</code> 和 <code>pivot</code> 等“批处理”方式，避免了使用循环对每一条记录进行预处理，但是由于数据量较大还是挺费时的，且这个过程是单线程的。在使用 sklearn 的 <code>RandomForestClassifier</code> 时通过指定 <code>n_jobs=-1</code>，可以开启多线程进行训练。在数据预处理和模型拟合是串行的情况下，数据预处理阶段 CPU 的线程（服务器是8核16线程）是没有跑满的，这是一个性能瓶颈。因此想要通过多线程或者多进程的方式充分利用 CPU 的计算能力。达到下面的效果。<br><img src="http://oytnj8g2y.bkt.clouddn.com/multithread.png" alt="multiprocess"><br>由于不同商场记录数目不一，所需的预处理和模型拟合时间不一，期望达到同一时刻有的进程处在预处理阶段，有的进程处于模型拟合阶段，避免 CPU 计算能力的浪费。<br><a id="more"></a></p>
 <p>因此尝试了 Python os.system 和 os.popen，发现两者在是否等待子进程退出上存在不同。</p>
 <h4 id="os-system"><a href="#os-system" class="headerlink" title="os.system"></a>os.system</h4><p>main.py<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">import os</div><div class="line">print(&quot;Entering into main.py&quot;)</div><div class="line">os.system(&quot;python slave.py&quot;)</div><div class="line">print(&quot;Exiting from main.py&quot;)</div></pre></td></tr></table></figure></p>
 <p>slave.py<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">import time</div><div class="line">print(&quot;Entering into slave.py&quot;)</div><div class="line">time.sleep(10)</div><div class="line">print(&quot;Exiting from slave.py&quot;)</div></pre></td></tr></table></figure></p>

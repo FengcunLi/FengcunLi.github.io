@@ -10,7 +10,7 @@
 
     <!--Description-->
     
-        <meta name="description" content="本文主要讲解 Annotations 中的 label 和 bboxes 是如何在 SSD 中使用的。网络的输入 glabels 和 gbboxes 是无法直接和网络的输出进行比较并计算 losses 的。因此需要首先通过 bboxes_encode 进行编码，得到对应于不同特征层（block）的 ">
+        <meta name="description" content="本文主要讲解 Annotations 中的 label 和 bboxes 是如何在 SSD 中使用的。网络的输入 glabels 和 gbboxes 是无法直接和网络的输出进行比较并计算 losses 的。因此需要首先通过 bboxes_encode 进行编码，得到对应于不同特征层（block）的 feat_labels，feat_localizations，feat_scores(杰卡德系数)，再通过feat_labels，feat_localizations 与网络不同特征层（block）的输出进行比较并计算 losses。">
     
 
     <!--Author-->
@@ -165,7 +165,7 @@
         
 
         <!-- Post Content -->
-        <p>本文主要讲解 Annotations 中的 label 和 bboxes 是如何在 SSD 中使用的。<br>网络的输入 <code>glabels</code> 和 <code>gbboxes</code> 是无法直接和网络的输出进行比较并计算 losses 的。因此需要首先通过 <code>bboxes_encode</code> 进行编码，得到对应于不同特征层（block）的 <code>feat_labels</code>，<code>feat_localizations</code>，<code>feat_scores</code>(杰卡德系数)，再通过<br><code>feat_labels</code>，<code>feat_localizations</code> 与网络不同特征层（block）的输出进行比较并计算 losses。</p>
+        <p>本文主要讲解 Annotations 中的 label 和 bboxes 是如何在 SSD 中使用的。<br>网络的输入 <code>glabels</code> 和 <code>gbboxes</code> 是无法直接和网络的输出进行比较并计算 losses 的。因此需要首先通过 <code>bboxes_encode</code> 进行编码，得到对应于不同特征层（block）的 <code>feat_labels</code>，<code>feat_localizations</code>，<code>feat_scores</code>(杰卡德系数)，再通过<br><code>feat_labels</code>，<code>feat_localizations</code> 与网络不同特征层（block）的输出进行比较并计算 losses。<br><a id="more"></a></p>
 <h3 id="anchors-的生成"><a href="#anchors-的生成" class="headerlink" title="anchors 的生成"></a>anchors 的生成</h3><h5 id="维度："><a href="#维度：" class="headerlink" title="维度："></a>维度：</h5><p>anchors type: list A of list B<br>len(A): num_of_blocks, for 300 it’s 6, for 512 it’s 7.<br>B: [y, x, h, w]<br>shape of y, x: for block 4 of 300 is 38 <em> 38 </em> 1(1 is an expanded dim)<br>shape of h, w: for block 4 of 300 is (len(sizes) + len(ratios) = 4, )</p>
 <h5 id="生成过程-of-300"><a href="#生成过程-of-300" class="headerlink" title="生成过程 of 300"></a>生成过程 of 300</h5><ol>
 <li>feat_shapes: [(38, 38), (19, 19), (10, 10), (5, 5), (3, 3), (1, 1)]<br>分别对应 blocks: [‘block4’, ‘block7’, ‘block8’, ‘block9’, ‘block10’, ‘block11’]</li>

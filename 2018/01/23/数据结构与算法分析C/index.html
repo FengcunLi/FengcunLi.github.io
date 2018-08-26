@@ -13,7 +13,9 @@
         <meta name="description" content="递归的前两个基本法则：
 
 基准情形（base cases），必须总有某些基准情形，它们不用递归就能求解。
-不断推进（making progress），对于那些要被递归求解的情形，递归调用必须总能够朝着一个基准情形推进。递归程序不仅简化了算法设计而且有助于给出更加简洁的代码，但是递归绝不应该作为简单f">
+不断推进（making progress），对于那些要被递归求解的情形，递归调用必须总能够朝着一个基准情形推进。递归程序不仅简化了算法设计而且有助于给出更加简洁的代码，但是递归绝不应该作为简单for循环的代替物。另外的两个法则是：
+设计法则。假设所有的递归调用都能运行。
+合成效益法则，在求解一个问题的同一实例时，切勿在不同的递归调用中做重复性的工作。">
     
 
     <!--Author-->
@@ -173,7 +175,8 @@
 <li>基准情形（base cases），必须总有某些基准情形，它们不用递归就能求解。</li>
 <li>不断推进（making progress），对于那些要被递归求解的情形，递归调用必须总能够朝着一个基准情形推进。<br>递归程序不仅简化了算法设计而且有助于给出更加简洁的代码，但是递归绝不应该作为简单for循环的代替物。<br>另外的两个法则是：</li>
 <li>设计法则。假设所有的递归调用都能运行。</li>
-<li>合成效益法则，在求解一个问题的同一实例时，切勿在不同的递归调用中做重复性的工作。</li>
+<li>合成效益法则，在求解一个问题的同一实例时，切勿在不同的递归调用中做重复性的工作。<a id="more"></a>
+</li>
 </ol>
 <h4 id="接口与实现的分离"><a href="#接口与实现的分离" class="headerlink" title="接口与实现的分离"></a>接口与实现的分离</h4><p>接口列出了类及其成员（属性和方法），而实现则提供了函数的具体实现。<br>接口通常都放在以 .h 结尾的文件中，需要接口信息的源代码必须 #include 接口文件。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">#ifndef IntCell_H</div><div class="line">#define IntCell_H</div><div class="line"></div><div class="line">class IntCell &#123;</div><div class="line">    public:</div><div class="line">        explicit IntCell(int initialValue = 0);</div><div class="line">        int read() const;</div><div class="line">        void write(int x);</div><div class="line">    private:</div><div class="line">        int storedValue;</div><div class="line">&#125;;</div><div class="line">#endif</div></pre></td></tr></table></figure></p>
 <p>注意的一点是：默认参数仅在接口中被定义，在实现中则被忽略。<br>在 C++ 中有两种使用零参数构造函数创建对象的方式，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">m = new IntCell();</div><div class="line">m = new IntCell;</div></pre></td></tr></table></figure></p>

@@ -10,7 +10,13 @@
 
     <!--Description-->
     
-        <meta name="description" content="在训练卷积神经网络时，为了充分利用GPU的计算能力，让GPU充分运转，减少GPU等待批次（batch）数据的时间，需要进行图像数据加载的并行编程。可以进行多进程或者多线程编程，需要注意的是，由于 Python GIL 的存在，基于多线程的并行编程仅适用于 I/O 密集型的并发，并不适用于 CPU 计">
+        <meta name="description" content="在训练卷积神经网络时，为了充分利用GPU的计算能力，让GPU充分运转，减少GPU等待批次（batch）数据的时间，需要进行图像数据加载的并行编程。可以进行多进程或者多线程编程，需要注意的是，由于 Python GIL 的存在，基于多线程的并行编程仅适用于 I/O 密集型的并发，并不适用于 CPU 计算密集型的并发。因此，如果图像数据加载（I/O密集型）后，需要进行图像数据的预处理（CPU 计算密集型），推荐使用多进程编程，关于多进程编程我后续会写一篇博客进行介绍，本文主要介绍我在使用使用多线程加载图像数据时遇到的一些知识点，主要包括：
+
+加锁：关键代码区访问控制
+双重锁验证
+长时代码移出关键代码区
+
+另外如果想了解关于线程之间通信的相关知识，可以查看我的另一篇博文Python threads: communication and stopping。">
     
 
     <!--Author-->
@@ -171,7 +177,7 @@
 <li>双重锁验证</li>
 <li>长时代码移出关键代码区</li>
 </ul>
-<p>另外如果想了解关于线程之间通信的相关知识，可以查看我的另一篇博文<a href="https://robertlexis.github.io/2017/11/05/Python-threads-communication-and-stopping/" target="_blank" rel="external">Python threads: communication and stopping</a>。</p>
+<p>另外如果想了解关于线程之间通信的相关知识，可以查看我的另一篇博文<a href="https://robertlexis.github.io/2017/11/05/Python-threads-communication-and-stopping/" target="_blank" rel="external">Python threads: communication and stopping</a>。<br><a id="more"></a></p>
 <h3 id="加锁，关键代码区访问控制"><a href="#加锁，关键代码区访问控制" class="headerlink" title="加锁，关键代码区访问控制"></a>加锁，关键代码区访问控制</h3><p>利用锁划定关键代码区，使得同一时刻只能有一个线程在执行该关键代码区的代码，之所以要进行如此的访问控制，是因为在多线程中，“全局”变量是由线程共享的，进行访问控制可以防止多个线程同时修改同一个“全局”变量造成变量的值的错乱。</p>
 <p>在 Python 中利用锁划定关键代码区有两种方式，<strong>手动方式</strong>和<strong>上下文管理器方式</strong>，无论使用哪种方式，都要求即使在关键代码区的代码发生异常时，依然可以正常的释放锁，不然该异常线程一直持有锁会导致其他线程一直处于等待锁被释放的状态，不能正常的处理工作和退出。</p>
 <p>手动方式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">import threading</div><div class="line">lock = threading.Lock()</div><div class="line">def thread_function():</div><div class="line">    ...</div><div class="line">    lock.acquire()</div><div class="line">    ~~~~~~~~~~~~~~~~~~~~~~ begin of critical code region</div><div class="line">    try:</div><div class="line">        ...</div><div class="line">    finally:</div><div class="line">    ~~~~~~~~~~~~~~~~~~~~~~ end of critical code region</div><div class="line">        lock.release()</div><div class="line">    ...</div></pre></td></tr></table></figure></p>

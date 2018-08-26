@@ -10,7 +10,10 @@
 
     <!--Description-->
     
-        <meta name="description" content="Chapter 5Monte Carlo Methods 一种估计值函数和发现最优策略的方法不需知道环境的完整信息，MC方法只需要 experience，也就是来自真实或者仿真环境下的状态、动作、奖励的序列。尽管需要环境模型，但是仅仅需要这个模型产生样本，而不是像动态规划那样需要完整的转移概率分布。">
+        <meta name="description" content="Chapter 5Monte Carlo Methods 一种估计值函数和发现最优策略的方法不需知道环境的完整信息，MC方法只需要 experience，也就是来自真实或者仿真环境下的状态、动作、奖励的序列。尽管需要环境模型，但是仅仅需要这个模型产生样本，而不是像动态规划那样需要完整的转移概率分布。在很多情况下，获得样本是容易的，而给出具体形式的分布确实困难的，这就使得MC方法十分的有用。
+MC 方法基于采样与平均。experience 分为不同的 episode，只有在一个 episode 完成之后才会进行值估计和策略提升。MC 方法是 episode-by-episode （offline）的形式，而不是 step-by-step （online）的方式。
+Monte Carlo Prediction一个状态的 value 是一个期望回报，即从该状态出发遵循一定的策略可以期望获得的累积未来折扣奖励。
+MC 方法内在的想法就是，从 experience 中估计状态值函数，对访问一个状态之后获得的回报进行平均，随着 episode 次数的增多，这个平均值会收敛到期望值。\(v_{\pi}(s)\) 是在策略 \(\pi\) 下，状态 \(s\) 的 value，我们要做的就是在给定一些遵循策略 \(\pi\) 经历了状态 \(s\) 的 episode 时，对 \(v_{\pi}(s)\) 进行估计。在 episode 中的 \(s\) 每一次出现就称之为对状态 \(s\) 的一次访问。根据进行估计时使用 \(s\) 的第一访问还是每一次访问，MC 方法可以分为 First-visit MC 和 Every-visit MC。">
     
 
     <!--Author-->
@@ -168,7 +171,7 @@
         <h2 id="Chapter-5"><a href="#Chapter-5" class="headerlink" title="Chapter 5"></a>Chapter 5</h2><h2 id="Monte-Carlo-Methods-一种估计值函数和发现最优策略的方法"><a href="#Monte-Carlo-Methods-一种估计值函数和发现最优策略的方法" class="headerlink" title="Monte Carlo Methods 一种估计值函数和发现最优策略的方法"></a>Monte Carlo Methods 一种估计值函数和发现最优策略的方法</h2><p>不需知道环境的完整信息，MC方法只需要 experience，也就是来自真实或者仿真环境下的状态、动作、奖励的序列。尽管需要环境模型，但是仅仅需要这个模型产生样本，而不是像动态规划那样需要完整的转移概率分布。在很多情况下，获得样本是容易的，而给出具体形式的分布确实困难的，这就使得MC方法十分的有用。</p>
 <p>MC 方法基于采样与平均。experience 分为不同的 episode，只有在一个 episode 完成之后才会进行值估计和策略提升。MC 方法是 episode-by-episode （offline）的形式，而不是 step-by-step （online）的方式。</p>
 <h3 id="Monte-Carlo-Prediction"><a href="#Monte-Carlo-Prediction" class="headerlink" title="Monte Carlo Prediction"></a>Monte Carlo Prediction</h3><p>一个状态的 value 是一个期望回报，即从该状态出发遵循一定的策略可以期望获得的累积未来折扣奖励。</p>
-<p>MC 方法内在的想法就是，从 experience 中估计状态值函数，对访问一个状态之后获得的回报进行平均，随着 episode 次数的增多，这个平均值会收敛到期望值。\(v_{\pi}(s)\) 是在策略 \(\pi\) 下，状态 \(s\) 的 value，我们要做的就是在给定一些遵循策略 \(\pi\) 经历了状态 \(s\) 的 episode 时，对 \(v_{\pi}(s)\) 进行估计。在 episode 中的 \(s\) 每一次出现就称之为对状态 \(s\) 的一次访问。根据进行估计时使用 \(s\) 的第一访问还是每一次访问，MC 方法可以分为 First-visit MC 和 Every-visit MC。<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/first-visit-mc-prediction.png" alt="first-visit-mc-prediction"></p>
+<p>MC 方法内在的想法就是，从 experience 中估计状态值函数，对访问一个状态之后获得的回报进行平均，随着 episode 次数的增多，这个平均值会收敛到期望值。\(v_{\pi}(s)\) 是在策略 \(\pi\) 下，状态 \(s\) 的 value，我们要做的就是在给定一些遵循策略 \(\pi\) 经历了状态 \(s\) 的 episode 时，对 \(v_{\pi}(s)\) 进行估计。在 episode 中的 \(s\) 每一次出现就称之为对状态 \(s\) 的一次访问。根据进行估计时使用 \(s\) 的第一访问还是每一次访问，MC 方法可以分为 First-visit MC 和 Every-visit MC。<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/first-visit-mc-prediction.png" alt="first-visit-mc-prediction"><br><a id="more"></a></p>
 <h3 id="Monte-Carlo-Estimation-of-Action-Values"><a href="#Monte-Carlo-Estimation-of-Action-Values" class="headerlink" title="Monte Carlo Estimation of Action Values"></a>Monte Carlo Estimation of Action Values</h3><p>上面讲了在给定策略的条件下使用 MC 对状态值函数进行估计。</p>
 <p>当环境模型未知时，对状态-动作值函数进行估计就比对状态值函数进行估计要有用了，这是因为在环境模型已知时，状态值函数对于确定（给出）一个策略就足够了，即在根据当前状态选择动作时，仅仅需要选择立即奖励和下一状态的 value 之和最大的那个动作。这样可行是因为，当环境模型已知时，一个动作带来的奖励是已知的，状态转移概率是已知的，即在当前状态下采取一个动作转移到下一状态及由下一状态带来的期望回报都是已知的。但是在没有环境模型时，状态值函数不足以给出一个策略，为了可以得到一个策略，就需要更加显式直接的状态-动作对值函数。</p>
 <p>\(q_{\pi}(s,a)\) the expected return when starting in state \(s\), taking action \(a\), and thereafter following policy \(\pi\)（从状态 \(s\) 出发，采取动作 \(a\) 并在后续遵循策略 \(\pi\) 可以得到的期望回报）。在使用 MC 进行估计时，和状态值函数的估计很像，不做在这里我们考虑的不再是对状态 \(s\) 的访问而是对状态-动作对 \(s\)-\(a\) 的访问。</p>

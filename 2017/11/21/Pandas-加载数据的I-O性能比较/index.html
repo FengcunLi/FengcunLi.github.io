@@ -10,7 +10,7 @@
 
     <!--Description-->
     
-        <meta name="description" content="Pandas 加载数据的I/O性能比较在使用阿里巴巴集群数据时，由于数据量比较大，对数据进行分析前加载数据需要花费较长的时间，因此测试了 Pandas 读取数据不同方法的 I/O 性能。测试数据:1234batch_instance.csv 819Mwc -l batch_instance.csv ">
+        <meta name="description" content="Pandas 加载数据的I/O性能比较在使用阿里巴巴集群数据时，由于数据量比较大，对数据进行分析前加载数据需要花费较长的时间，因此测试了 Pandas 读取数据不同方法的 I/O 性能。测试数据:1234batch_instance.csv 819Mwc -l batch_instance.csv 16094656 batch_instance.csv">
     
 
     <!--Author-->
@@ -166,6 +166,7 @@
 
         <!-- Post Content -->
         <h3 id="Pandas-加载数据的I-O性能比较"><a href="#Pandas-加载数据的I-O性能比较" class="headerlink" title="Pandas 加载数据的I/O性能比较"></a>Pandas 加载数据的I/O性能比较</h3><p>在使用阿里巴巴集群数据时，由于数据量比较大，对数据进行分析前加载数据需要花费较长的时间，因此测试了 Pandas 读取数据不同方法的 I/O 性能。<br>测试数据:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">batch_instance.csv 819M</div><div class="line"></div><div class="line">wc -l batch_instance.csv </div><div class="line">16094656 batch_instance.csv</div></pre></td></tr></table></figure></p>
+<a id="more"></a>
 <p>首先测试了 read_csv 和 read_sql_query (mysql) 的读取性能：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">import pandas as pd </div><div class="line">from sqlalchemy import create_engine</div><div class="line">import time</div><div class="line"></div><div class="line">tic = time.time()</div><div class="line">df = pd.read_csv(&quot;/home/shark/Codes/Sigma/batch_instance.csv&quot;)</div><div class="line">toc = time.time()</div><div class="line">print(&quot;read_csv costed &#123;:.3f&#125;s&quot;.format(toc - tic))</div><div class="line"></div><div class="line">engine = create_engine(&quot;mysql://root:lexis@localhost:3306/Alibaba&quot;)</div><div class="line">query = &quot;select * from batch_instance&quot;</div><div class="line">tic = time.time()</div><div class="line">df = pd.read_sql_query(query, engine)</div><div class="line">toc = time.time()</div><div class="line">print(&quot;read_sql_query costed &#123;:.3f&#125;s&quot;.format(toc - tic))</div></pre></td></tr></table></figure></p>
 <p>结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">read_csv costed 12.897s</div><div class="line">read_sql_query costed 134.118s</div></pre></td></tr></table></figure></p>
 <p>相比 read_csv ，read_sql_query 的速度要慢的很，这是因为此处做的是表扫描的工作，并不能充分发挥数据库的索引查询的强大功能。CSV 和 SQL 本来就不是用来做相同的工作的。<br>想象有一个从 1920 到 2017的时间序列，而你只需要从 2010 到 2017 的数据，CSV 的方式是将数据全部加载然后选择 2010 到 2017 年的数据，而SQL 是事先筛选数据然后再返回，如果将时间这一列设置为 index，会获得<strong>极大</strong>的性能提升。</p>
