@@ -10,7 +10,7 @@
 
     <!--Description-->
     
-        <meta name="description" content="非最大值抑制 Non-max Suppression 是目标检测（object detection）中常用的后处理（post processing）技术。（Fast-， Faster-）RCNN，SSD，YOLO 等目标检测框架会对一个目标产生多个 bounding box 的预测结果，而我们最终需">
+        <meta name="description" content="非最大值抑制 Non-max Suppression 是目标检测（object detection）中常用的后处理（post processing）技术。（Fast-， Faster-）RCNN，SSD，YOLO 等目标检测框架会对一个目标产生多个 bounding box 的预测结果，而我们最终需要的仅仅是最“合适”的那一个。非最大值抑制就是用来去除（clean up）多余的 bounding box 的预测结果，确保对一个目标只输出一个检测结果。概率最大的 bounding box 被保留，且该 bounding box 周围的与它有较大交并比的 bounding box 会被抑制。Each output prediction is:\[    \left[    \begin{matrix}    p_c \\\\    b_x \\\\    b_y \\\\    b_w \\\\    b_h    \end{matrix}    \right]\]">
     
 
     <!--Author-->
@@ -165,7 +165,7 @@
         
 
         <!-- Post Content -->
-        <p>非最大值抑制 Non-max Suppression 是目标检测（object detection）中常用的后处理（post processing）技术。<br>（Fast-， Faster-）RCNN，SSD，YOLO 等目标检测框架会对一个目标产生多个 bounding box 的预测结果，而我们最终需要的仅仅是最“合适”的那一个。<br>非最大值抑制就是用来去除（clean up）多余的 bounding box 的预测结果，确保对一个目标只输出一个检测结果。<br>概率最大的 bounding box 被保留，且该 bounding box 周围的与它有较大交并比的 bounding box 会被抑制。<br><img src="/2018/08/26/非最大值抑制/grid.jpg" alt="grid"><br>Each output prediction is:<br>\[<br>    \left[<br>    \begin{matrix}<br>    p_c \\\\<br>    b_x \\\\<br>    b_y \\\\<br>    b_w \\\\<br>    b_h<br>    \end{matrix}<br>    \right]<br>\]<br>Algorithm:<br>Discard all boxes with \( p_c \leq 0.5\)<br>While there are any remaining boxes:</p>
+        <p>非最大值抑制 Non-max Suppression 是目标检测（object detection）中常用的后处理（post processing）技术。<br>（Fast-， Faster-）RCNN，SSD，YOLO 等目标检测框架会对一个目标产生多个 bounding box 的预测结果，而我们最终需要的仅仅是最“合适”的那一个。<br>非最大值抑制就是用来去除（clean up）多余的 bounding box 的预测结果，确保对一个目标只输出一个检测结果。<br>概率最大的 bounding box 被保留，且该 bounding box 周围的与它有较大交并比的 bounding box 会被抑制。<br>Each output prediction is:<br>\[<br>    \left[<br>    \begin{matrix}<br>    p_c \\\\<br>    b_x \\\\<br>    b_y \\\\<br>    b_w \\\\<br>    b_h<br>    \end{matrix}<br>    \right]<br>\]<br><a id="more"></a><br><img src="/2018/08/26/非最大值抑制/grid.jpg" alt="grid"><br>Algorithm:<br>Discard all boxes with \( p_c \leq 0.5\)<br>While there are any remaining boxes:</p>
 <ul>
 <li>Pick the box with the largest \( p_c \), output that as a prediction.</li>
 <li>Discard any remaining box with \(IOU \geq 0.5 \) with the box output in the previous step.<br><img src="/2018/08/26/非最大值抑制/non_max_suppression.jpg" alt="non_max_suppression"></li>
