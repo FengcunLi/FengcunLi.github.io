@@ -14,7 +14,9 @@
 卷积4x4 的输入（蓝色），3x3 的卷积核, 2x2 的输出为（绿色）。
 
 卷积操作过程可以如下计算： 
-输入矩阵">
+输入矩阵展开为 \( 4 \times 4 = 16 \) 维（列）向量，记作 \( \mathbf{x} \)。 
+输出矩阵展开为 \( 2 \times 2 = 4 \) 维（列）向量，记作 \( \mathbf{y} \)。 
+卷积核扩展为如下的形式 \( \mathbf{C} \)，注意这个矩阵并不是托普利兹矩阵（Toeplitz matrix）：">
     
 
     <!--Author-->
@@ -176,7 +178,7 @@
 <p>输入矩阵展开为 \( 4 \times 4 = 16 \) 维（列）向量，记作 \( \mathbf{x} \)。 </p>
 <p>输出矩阵展开为 \( 2 \times 2 = 4 \) 维（列）向量，记作 \( \mathbf{y} \)。 </p>
 <p>卷积核扩展为如下的形式 \( \mathbf{C} \)，注意这个矩阵并不是<a href="https://en.wikipedia.org/wiki/Toeplitz_matrix" target="_blank" rel="external">托普利兹矩阵（Toeplitz matrix）</a>：</p>
-<p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/kernel.png" alt="kernel"> </p>
+<p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/kernel.png" alt="kernel"><br><a id="more"></a></p>
 <h5 id="正向传播"><a href="#正向传播" class="headerlink" title="正向传播"></a>正向传播</h5><p>卷积神经网络的正向传播就转换为：<br>\[ \mathbf{y} = \mathbf{C} \mathbf{x} \]<br>左乘 \( \mathbf{C} \)。</p>
 <h5 id="反向传播"><a href="#反向传播" class="headerlink" title="反向传播"></a>反向传播</h5><p>\[<br>\begin{split}<br>\frac{\partial loss}{\partial x_i} &amp; = \sum_{j}\frac{\partial loss}{\partial y_j}\frac{\partial y_j}{\partial x_i} \\\\<br>&amp; = \sum_{j}\frac{\partial loss}{\partial y_j}C_{j, i} \\\\<br>&amp; = C_{*, i}^{T}\frac{\partial loss}{\partial y}<br>\end{split}<br>\]<br>即<br>\[<br>\frac{\partial loss}{\partial x} = C^T\frac{\partial loss}{\partial y}<br>\]</p>
 <p>左乘 \( C^T \)。</p>

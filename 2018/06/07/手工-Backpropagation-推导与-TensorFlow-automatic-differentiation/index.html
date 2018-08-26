@@ -10,7 +10,16 @@
 
     <!--Description-->
     
-        <meta name="description" content="主要对比梯度反向传播手工推导与TensorFLow 自动差分关于梯度反向传播手工推导的学习可以参考斯坦福大学的 CS231n: Convolutional Neural Networks for Visual Recognition 的 Lecture 4。下面通过代码对这两者进行对比，代码的Jup">
+        <meta name="description" content="主要对比梯度反向传播手工推导与TensorFLow 自动差分关于梯度反向传播手工推导的学习可以参考斯坦福大学的 CS231n: Convolutional Neural Networks for Visual Recognition 的 Lecture 4。下面通过代码对这两者进行对比，代码的Jupyter NoteBook 可以在我的 GitHub 仓库中找到。
+imports123import osos.environ[&amp;apos;TF_CPP_MIN_LOG_LEVEL&amp;apos;]=&amp;apos;3&amp;apos;import tensorflow as tf
+定义变量123with tf.variable_scope(&amp;quot;params&amp;quot;, reuse=tf.AUTO_REUSE):    w = tf.get_variable(&amp;quot;w&amp;quot;, initializer=tf.constant([2.0]))    b = tf.get_variable(&amp;quot;b&amp;quot;, initializer=tf.constant([0.0]))
+定义占位符12x = tf.placeholder(tf.float32, shape=[None], name=&amp;quot;x&amp;quot;)y = tf.placeholder(tf.float32, shape=[None], name=&amp;quot;y&amp;quot;)
+定义表达式1y_pred = w*x + b
+定义代价函数1loss = tf.reduce_mean(tf.square(y_pred - y))
+定义优化器123optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.001)grads_and_vars = optimizer.compute_gradients(loss)train_op = optimizer.apply_gradients(grads_and_vars)
+创建会话并初始化变量1234init_op = tf.global_variables_initializer()sess = tf.InteractiveSession()sess.run(init_op)
+根据函数 y = 4x + 3 给出训练数据对于单个数据点输入，对比 TensorFlow automatic differentiation 与手工推导123# y_ = 4 * 2 + 3x_ = [2]y_ = [11] # y_ = 4 * 2 + 3
+手工推导 Backpropagation 过程">
     
 
     <!--Author-->
@@ -174,7 +183,7 @@
 <h4 id="定义优化器"><a href="#定义优化器" class="headerlink" title="定义优化器"></a>定义优化器</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.001)</div><div class="line">grads_and_vars = optimizer.compute_gradients(loss)</div><div class="line">train_op = optimizer.apply_gradients(grads_and_vars)</div></pre></td></tr></table></figure>
 <h4 id="创建会话并初始化变量"><a href="#创建会话并初始化变量" class="headerlink" title="创建会话并初始化变量"></a>创建会话并初始化变量</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">init_op = tf.global_variables_initializer()</div><div class="line"></div><div class="line">sess = tf.InteractiveSession()</div><div class="line">sess.run(init_op)</div></pre></td></tr></table></figure>
 <h4 id="根据函数-y-4x-3-给出训练数据"><a href="#根据函数-y-4x-3-给出训练数据" class="headerlink" title="根据函数 y = 4x + 3 给出训练数据"></a>根据函数 y = 4x + 3 给出训练数据</h4><h4 id="对于单个数据点输入，对比-TensorFlow-automatic-differentiation-与手工推导"><a href="#对于单个数据点输入，对比-TensorFlow-automatic-differentiation-与手工推导" class="headerlink" title="对于单个数据点输入，对比 TensorFlow automatic differentiation 与手工推导"></a>对于单个数据点输入，对比 TensorFlow automatic differentiation 与手工推导</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"># y_ = 4 * 2 + 3</div><div class="line">x_ = [2]</div><div class="line">y_ = [11] # y_ = 4 * 2 + 3</div></pre></td></tr></table></figure>
-<h6 id="手工推导-Backpropagation-过程"><a href="#手工推导-Backpropagation-过程" class="headerlink" title="手工推导 Backpropagation 过程"></a>手工推导 Backpropagation 过程</h6><p><img src="http://oytnj8g2y.bkt.clouddn.com/backwards/backward_1.png" alt="backward_1"></p>
+<h6 id="手工推导-Backpropagation-过程"><a href="#手工推导-Backpropagation-过程" class="headerlink" title="手工推导 Backpropagation 过程"></a>手工推导 Backpropagation 过程</h6><p><img src="http://oytnj8g2y.bkt.clouddn.com/backwards/backward_1.png" alt="backward_1"><br><a id="more"></a></p>
 <h6 id="用-TensorFlow-计算-loss-及梯度"><a href="#用-TensorFlow-计算-loss-及梯度" class="headerlink" title="用 TensorFlow 计算 loss 及梯度"></a>用 TensorFlow 计算 loss 及梯度</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sess.run([loss, grads_and_vars], feed_dict=&#123;x: x_, y: y_&#125;)</div></pre></td></tr></table></figure>
 <p>Output:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[49.0,</div><div class="line"> [(array([-28.], dtype=float32), array([2.], dtype=float32)),</div><div class="line">  (array([-14.], dtype=float32), array([0.], dtype=float32))]]</div></pre></td></tr></table></figure></p>
 <h4 id="对于-batch-输入，对比-TensorFlow-automatic-differentiation-与手工推导"><a href="#对于-batch-输入，对比-TensorFlow-automatic-differentiation-与手工推导" class="headerlink" title="对于 batch 输入，对比 TensorFlow automatic differentiation 与手工推导"></a>对于 batch 输入，对比 TensorFlow automatic differentiation 与手工推导</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">x_ = [2, 3]</div><div class="line">y_ = [11, 15]</div></pre></td></tr></table></figure>

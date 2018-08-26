@@ -10,7 +10,9 @@
 
     <!--Description-->
     
-        <meta name="description" content="将主机 Python 环境下训练的卷积神经网络模型移植到 Jetson TX2 的 TensorRT 加速环境（C++）下时，遇到了模型精度损失的问题，发现是由于 Python Scikit-image 中函数 color.rgb2gray 与 C++ OpenCV 中函数 cv::cvtColor">
+        <meta name="description" content="将主机 Python 环境下训练的卷积神经网络模型移植到 Jetson TX2 的 TensorRT 加速环境（C++）下时，遇到了模型精度损失的问题，发现是由于 Python Scikit-image 中函数 color.rgb2gray 与 C++ OpenCV 中函数 cv::cvtColor(cv::InputArray src, cv::OutputArray dst, cv::COLOR_BGR2GRAY) 的彩色图转灰度图的转换函数定义不同，分别如下：
+OpenCV\[ Y = 0.299 \times R + 0.587 \times G + 0.114 \times B \]
+Scikit-image\[ Y = 0.2125 \times R + 0.7154 \times G + 0.0721 \times B \]">
     
 
     <!--Author-->
@@ -167,7 +169,7 @@
         <!-- Post Content -->
         <p>将主机 Python 环境下训练的卷积神经网络模型移植到 Jetson TX2 的 TensorRT 加速环境（C++）下时，遇到了模型精度损失的问题，发现是由于 Python Scikit-image 中函数 <code>color.rgb2gray</code> 与 C++ OpenCV 中函数 <code>cv::cvtColor(cv::InputArray src, cv::OutputArray dst, cv::COLOR_BGR2GRAY)</code> 的彩色图转灰度图的转换函数定义不同，分别如下：</p>
 <h3 id="OpenCV"><a href="#OpenCV" class="headerlink" title="OpenCV"></a>OpenCV</h3><p>\[ Y = 0.299 \times R + 0.587 \times G + 0.114 \times B \]</p>
-<h3 id="Scikit-image"><a href="#Scikit-image" class="headerlink" title="Scikit-image"></a>Scikit-image</h3><p>\[ Y = 0.2125 \times R + 0.7154 \times G + 0.0721 \times B \]</p>
+<h3 id="Scikit-image"><a href="#Scikit-image" class="headerlink" title="Scikit-image"></a>Scikit-image</h3><p>\[ Y = 0.2125 \times R + 0.7154 \times G + 0.0721 \times B \]<br><a id="more"></a></p>
 <h3 id="解决方式"><a href="#解决方式" class="headerlink" title="解决方式"></a>解决方式</h3><p>由于模型训练时，RGB 转灰度图的预处理是由 Scikit-image  <code>color.rgb2gray</code> 完成的，因此在将模型部署到 Jetson TX2 时使用 C++ OpenCV 时，需要按照 Scikit-image <code>color.rgb2gray</code> 的公式自主实现 RGB 转灰度图，而不是直接使用 OpenCV 的 <code>cv::cvtColor(cv::InputArray src, cv::OutputArray dst, cv::COLOR_BGR2GRAY)</code>。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">cv::Mat skimageBGR2GRAY(const cv::Mat &amp; img) &#123;</div><div class="line">    cv::Mat image;</div><div class="line">    if (img.type() != CV_32FC3) &#123;</div><div class="line">        img.convertTo(image, CV_32FC3);</div><div class="line">    &#125;</div><div class="line">    else &#123;</div><div class="line">        image = img;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    std::vector&lt;cv::Mat&gt; channels;</div><div class="line">    cv::split(image, channels);</div><div class="line">    cv::Mat B = channels.at(0);</div><div class="line">    cv::Mat G = channels.at(1);</div><div class="line">    cv::Mat R = channels.at(2);</div><div class="line">    cv::Mat grayImage = (0.0721 * B + 0.7154 * G + 0.2125 * R) / 255;</div><div class="line">    </div><div class="line">    return grayImage;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>上面的代码首先进行了 <code>cv::Mat</code> 元素数据类型转换，将由 <code>cv::imread(imageFilename, CV_LOAD_IMAGE_COLOR)</code> 读取到的 <code>CV_8UC3</code> 矩阵转换为 <code>CV_32FC3</code>，避免在计算过程中由于数据类型的截断造成精度的损失，由此得到的 <code>grayImage</code> 的元素数据类型为 <code>CV_32FC1</code>，取值范围<code>[0, 1]</code>。</p>
