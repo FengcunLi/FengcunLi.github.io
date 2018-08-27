@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="It’s a bird… it’s a plane… it depends on your classifier’s threshold.
+
+Precision and recall\[precision = \frac{ TP }{ TP + FP } \\\\recall = \frac{ TP }{ TP + FN }\]
+上图是飞机检索任务中的一次检索结果，\( TP = 3, FP = 1\)。\[precision = 0.75 \\\\recall = 0.6\]">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Robert Lexis">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="AP and mAP (in object detection)"/>
+    
+
+    <!--Open Graph Description-->
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="This is Robert Lexis."/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+    <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>AP and mAP (in object detection) - This is Robert Lexis.</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Google Analytics -->
+    
+
+
+</head>
+
+
+<body>
+
+<div class="bg-gradient"></div>
+<div class="bg-pattern"></div>
+
+<!-- Menu -->
+<!--Menu Links and Overlay-->
+<div class="menu-bg">
+    <div class="menu-container">
+        <ul>
+            
+            <li class="menu-item">
+                <a href="/">
+                    Home
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/archives">
+                    Archives
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/about">
+                    About
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/tags">
+                    Tags
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/categories">
+                    Categories
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/contact">
+                    Contact
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+<!--Hamburger Icon-->
+<nav>
+    <a href="#menu"></a>
+</nav>
+
+<div class="container">
+
+    <!-- Main Content -->
+    <div class="row">
+    <div class="col-sm-12">
+
+        <!--Title and Logo-->
+        <header>
+    <div class="logo">
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
+        
+    </div>
+</header>
+
+        <section class="main">
+            
+<div class="post">
+
+    <div class="post-header">
+        <h1 class="title">
+            <a href="/2018/07/26/AP-and-mAP-in-object-detection/">
+                AP and mAP (in object detection)
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-07-26</span>
+            
+            
+            
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- Gallery -->
+        
+
+        <!-- Post Content -->
+        <blockquote>
+<p>It’s a bird… it’s a plane… it depends on your classifier’s threshold.</p>
+</blockquote>
+<h3 id="Precision-and-recall"><a href="#Precision-and-recall" class="headerlink" title="Precision and recall"></a>Precision and recall</h3><p>\[<br>precision = \frac{ TP }{ TP + FP } \\\\<br>recall = \frac{ TP }{ TP + FN }<br>\]</p>
+<p><img src="/2018/07/26/AP-and-mAP-in-object-detection/fptp.png" alt="fptp"><br>上图是飞机检索任务中的一次检索结果，\( TP = 3, FP = 1\)。<br>\[<br>precision = 0.75 \\\\<br>recall = 0.6<br>\]<br><a id="more"></a></p>
+<h3 id="调整门限"><a href="#调整门限" class="headerlink" title="调整门限"></a>调整门限</h3><p>假设下图是飞机检索系统给出的 score 排序，列表的上部是检索系统认为与飞机更加相像的图片。蓝色线是给出上面的检索结果的对应门限值。<br><img src="/2018/07/26/AP-and-mAP-in-object-detection/ordering-wide.png" alt="order"><br>通过上下调整门限，我们可以得到不同的检索结果（即不同的检索集合），在不同的门限处我们可以达到不同的 precision 和 recall。</p>
+<table>
+<thead>
+<tr>
+<th>Retrieval cutoff</th>
+<th>Precision</th>
+<th>Recall</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Top 1 image</td>
+<td>100%</td>
+<td>20%</td>
+</tr>
+<tr>
+<td>Top 2 images</td>
+<td>100%</td>
+<td>40%</td>
+</tr>
+<tr>
+<td>Top 3 images</td>
+<td>66%</td>
+<td>40%</td>
+</tr>
+<tr>
+<td>Top 4 images</td>
+<td>75%</td>
+<td>60%</td>
+</tr>
+<tr>
+<td>Top 5 images</td>
+<td>60%</td>
+<td>60%</td>
+</tr>
+<tr>
+<td>Top 6 images</td>
+<td>66%</td>
+<td>80%</td>
+</tr>
+<tr>
+<td>Top 7 images</td>
+<td>57%</td>
+<td>80%</td>
+</tr>
+<tr>
+<td>Top 8 images</td>
+<td>50%</td>
+<td>80%</td>
+</tr>
+<tr>
+<td>Top 9 images</td>
+<td>44%</td>
+<td>80%</td>
+</tr>
+<tr>
+<td>Top 10 images</td>
+<td>50%</td>
+<td>100%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="Precision-recall-curves"><a href="#Precision-recall-curves" class="headerlink" title="Precision-recall curves"></a>Precision-recall curves</h3><p>分类器就是一个检索系统，分类器输出图片为飞机的 score，并按照上面的方式将图片按照 score 进行降序排列，划定一个分类门限，即可完成分类的功能，也就完成了从所有的输入图片中检索出飞机的任务。<br>一个好的分类器应该将飞机图片排在列表的顶部，在检索到鹅的图片之前尽可能多的检索到飞机的图片，即随着 recall 的增加 仍然可以保持较高的 precision。而一个不好的分类器，为了达到较高的 recall，会在检索结果中夹杂很多的鹅的图片，使得 precision 损失很大。<br><img src="/2018/07/26/AP-and-mAP-in-object-detection/pr-example.png" alt="pr-curve"><br>It can achieve 40% recall without sacrificing any precision, but to get 100% recall, its precision drops to 50%.<br>理想的分类器，随着门限降低、recall 增加，precision 保持在 100%，直到 recall 到达 100%。</p>
+<h3 id="Average-precision-AP"><a href="#Average-precision-AP" class="headerlink" title="Average precision (AP)"></a>Average precision (AP)</h3><p>相较于比较曲线，通过单个数字来描述分类器的性能通常更加具有可比性。</p>
+<h5 id="Average-precision"><a href="#Average-precision" class="headerlink" title="Average precision"></a>Average precision</h5><p>\[<br>ap = \int_{0}^{1}p(r)dr<br>\]<br>在实际中，积分是用在各个可取到的 score 门限值处对 precision 与 \( \Delta recall \) 的乘积加和进行近似。<br>\[<br>ap = \sum_{k=1}^{N}P(k)\Delta r(k)<br>\]<br>where N is the total number of images in the collection, \( P(k) \) is the precision at a cutoff of k images, and \( \Delta r(k) \) is the change in recall that happened between cutoff k-1 and cutoff k.<br>In this example, this is<br>\[<br>(1 \times 0.2) + (1 \times 0.2) + (0.66 \times 0) + (0.75 \times 0.2) + (0.6 \times 0) + (0.66 \times 0.2) + (0.57 \times 0) + (0.5 \times 0) + (0.44 \times 0) + (0.5 \times 0.2) = 0.782.<br>\]<br>Notice that the points at which the recall doesn’t change don’t contribute to this sum (in the graph, these points are on the vertical sections of the plot, where it’s dropping straight down). This makes sense, because since we’re computing the area under the curve, those sections of the curve aren’t adding any area.</p>
+<h5 id="Interpolated-average-precision"><a href="#Interpolated-average-precision" class="headerlink" title="Interpolated average precision"></a>Interpolated average precision</h5><p>Instead of using P(k), the precision at a retrieval cutoff of k images, the interpolated average precision uses:<br>\[<br>max_{\tilde{k} \geq k}P(\tilde{k})<br>\]<br>In other words, instead of using the precision that was actually observed at cutoff k, the interpolated average precision uses the maximum precision observed across all cutoffs with higher recall. The full equation for computing the interpolated average precision is:<br>\[<br>\sum_{k=1}^{N} max_{\tilde{k} \geq k} P(\tilde{k}) \Delta r(k)<br>\]<br>In order to ignore ‘wiggles’ effects, interpolated average precision treats those regions as if they had constant precision equal to the highest precision observed at higher recalls.<br><img src="/2018/07/26/AP-and-mAP-in-object-detection/interpolated-vs-approximated.png" alt="interpolated-vs-approximated"><br>The approximated average precision closely hugs the actually observed curve. The interpolated average precision <strong>over estimates</strong> the precision at many points and produces a higher average precision value than the approximated average precision.</p>
+<h5 id="Interpolated-average-precision-variation-11-points-AP"><a href="#Interpolated-average-precision-variation-11-points-AP" class="headerlink" title="Interpolated average precision variation 11-points AP"></a>Interpolated average precision variation 11-points AP</h5><p>Take samples at a fixed 11 points (recall range from 0 to 1: {0, 0.1, 0.2, …, 0.9, 1.0}). This is called the 11-point interpolated average precision. Others sample at every k where the recall changes.</p>
+<p>The PASCAL Visual Objects Challenge has used  interpolated average precision as their evaluation metric since 2007. </p>
+<p>In early years, they took an 11-point sample to get the interpolated average precision. In later years, they evaluated the area under Interpolated  precision recall curve exactly.</p>
+<p>Everyone compares against each other on this metric, so within the competition, this is not an issue. However, the rest of us need to be careful when comparing “average precision” values against other published results. Are we using the VOC’s interpolated average precision, while previous work had used the non-interpolated average precision? This would incorrectly show improvement of a new method when compared to the previous work.</p>
+<h3 id="mAP"><a href="#mAP" class="headerlink" title="mAP"></a>mAP</h3><p>Mean Average Precision is used when you have several retrieval tasks（several classifiers） and want to find a score that summarizes your performance across all of them. For example, you might have a large collection of images, but you’re interested in retrieving the cars, chairs, people, and lamps, each as a separate query. You would compute the average precision for your car classifier, average precision for your chair classifier, average precision for your people classifier, and average precision for your lamp classifier. Take the mean of these average precisions to get the Mean Average Precision.</p>
+<h3 id="mAP-in-object-detection"><a href="#mAP-in-object-detection" class="headerlink" title="mAP in object detection"></a>mAP in object detection</h3><p>在目标检测中经过非最大值抑制之后的结果是：<br><img src="/2018/07/26/AP-and-mAP-in-object-detection/output_after_nms.png" alt="output_after_nms"></p>
+<h5 id="mAP-在目标检测中的计算过程："><a href="#mAP-在目标检测中的计算过程：" class="headerlink" title="mAP 在目标检测中的计算过程："></a>mAP 在目标检测中的计算过程：</h5><ol>
+<li><p>TP、FP<br><img src="/2018/07/26/AP-and-mAP-in-object-detection/AP.png" alt="AP"></p>
+</li>
+<li><p>recall、precision for one class:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">accumulate_FP = np.cumsum(FP)</div><div class="line">accumulate_TP = np.cumsum(TP)</div><div class="line">recall = accumulate_TP / npos</div><div class="line">precision = np.divide(accumulate_TP, (accumulate_TP + accumulate_FP))</div></pre></td></tr></table></figure>
+</li>
+<li><p>AP for one class:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">calculate_average_precision</span><span class="params">(rec, prec)</span>:</span></div><div class="line">    <span class="comment"># 对 rec 进行前后扩展，使得 rec 能够覆盖 [0, 1] 整个范围，不然求出的面积会偏小</span></div><div class="line">    rec.insert(<span class="number">0</span>, <span class="number">0</span>)</div><div class="line">    rec.append(<span class="number">1</span>)</div><div class="line"></div><div class="line">    <span class="comment"># 对 prec 进行前后扩展，通过 append 0 和变为阶梯状的操作，使得 prec 进行了合理的扩展，</span></div><div class="line">    <span class="comment"># prec 能够和 rec 一一对应了</span></div><div class="line">    prec.insert(<span class="number">0</span>, <span class="number">0</span>)</div><div class="line">    prec.append(<span class="number">0</span>)</div><div class="line">    <span class="comment"># 变为阶梯状</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> reversed(range(<span class="number">1</span>, len(prec))):</div><div class="line">        prec[i<span class="number">-1</span>] = max(prec[i<span class="number">-1</span>], prec[i])</div><div class="line">    </div><div class="line">    <span class="comment"># 找到 recall 值发生变化的地方</span></div><div class="line">    ii = []</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(rec)<span class="number">-1</span>):</div><div class="line">        <span class="keyword">if</span> rec[i] != rec[i+<span class="number">1</span>]:</div><div class="line">            ii.append(i + <span class="number">1</span>)</div><div class="line"></div><div class="line">    <span class="comment"># 对面积进行累加</span></div><div class="line">    ap = <span class="number">0</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> ii:</div><div class="line">        ap = ap + np.sum((rec[i] - rec[i<span class="number">-1</span>]) * prec[i])</div><div class="line">    <span class="keyword">return</span> ap</div></pre></td></tr></table></figure>
+</li>
+</ol>
+
+    </div>
+
+    
+
+    
+        <div class="post-tags">
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <a href="/tags/DL/">#DL</a>
+        </div>
+    
+
+    <!-- Comments -->
+    
+
+</div>
+        </section>
+
+    </div>
+</div>
+
+
+</div>
+
+<!-- Footer -->
+<div class="push"></div>
+
+<footer class="footer-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
+                <h2>About</h2>
+                <p>
+                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
+                </p>
+            </div>
+            
+    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/26/YOLO/">YOLO</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/26/非最大值抑制/">非最大值抑制</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/26/目标定位-vs-目标检测/">目标定位 vs 目标检测</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/13/消失的梯度/">消失的梯度</a>
+            </li>
+            
+        </ul>
+    </div>
+
+
+
+            
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="list-inline footer-social-icons">
+                    
+                    <li class="list-inline-item">
+                        <a href="https://github.com/RobertLexis">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-github"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="mailto:robert_lexis@163.com">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-envelope-o"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="footer-copyright">
+                    @Untitled. All right reserved | Robert Lexis Loves Wenny
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- After footer scripts -->
+
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Tween Max -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/main.js"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>

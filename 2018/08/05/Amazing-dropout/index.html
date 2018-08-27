@@ -10,6 +10,9 @@
 
     <!--Description-->
     
+        <meta name="description" content="本文主要采摘、翻译、修改自 P. Galeone’s blog Analysis of Dropout。
+Overfitting is a problem in Deep Neural Networks (DNN): the model learns to classify only the tra">
+    
 
     <!--Author-->
     
@@ -18,7 +21,7 @@
 
     <!--Open Graph Title-->
     
-        <meta property="og:title" content="This is Robert Lexis."/>
+        <meta property="og:title" content="Amazing dropout"/>
     
 
     <!--Open Graph Description-->
@@ -29,7 +32,7 @@
 
     <!--Type page-->
     
-        <meta property="og:type" content="website" />
+        <meta property="og:type" content="article" />
     
 
     <!--Page Cover-->
@@ -40,7 +43,7 @@
 
     <!-- Title -->
     
-    <title>This is Robert Lexis.</title>
+    <title>Amazing dropout - This is Robert Lexis.</title>
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
@@ -135,284 +138,14 @@
     <div class="logo">
         <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
         
-            <h1 id="main-title" class="title">This is Robert Lexis.</h1>
-        
     </div>
 </header>
 
         <section class="main">
             
-                
 <div class="post">
 
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/08/26/YOLO/">
-                YOLO
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-08-26</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <h3 id="Sliding-Windows-滑动窗口"><a href="#Sliding-Windows-滑动窗口" class="headerlink" title="Sliding Windows 滑动窗口"></a>Sliding Windows 滑动窗口</h3><p>通过滑动窗口的方式在图像上生成一系列的 box，然后利用分类器对每个 box 进行分类，即可完成对图像中目标的检测。<br>基于滑动窗口的目标检测效率很低，因为我们需要对每个区域都进行预测，而且为了获得更加准确的结果，我们需要尝试各种不同尺寸的 box。</p>
-<h3 id="Convolutional-Implementation-of-Sliding-Windows"><a href="#Convolutional-Implementation-of-Sliding-Windows" class="headerlink" title="Convolutional Implementation of Sliding Windows"></a>Convolutional Implementation of Sliding Windows</h3><p>这是一个加速的方法，共享计算。<br><img src="/2018/08/26/YOLO/cnn-slide.jpg" alt="cnn-slide"><br></p>
-        </div>
-        <a href="/2018/08/26/YOLO/" class="read-more">Read More</a>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/08/26/非最大值抑制/">
-                非最大值抑制
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-08-26</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <p>非最大值抑制 Non-max Suppression 是目标检测（object detection）中常用的后处理（post processing）技术。<br>（Fast-， Faster-）RCNN，SSD，YOLO 等目标检测框架会对一个目标产生多个 bounding box 的预测结果，而我们最终需要的仅仅是最“合适”的那一个。<br>非最大值抑制就是用来去除（clean up）多余的 bounding box 的预测结果，确保对一个目标只输出一个检测结果。<br>概率最大的 bounding box 被保留，且该 bounding box 周围的与它有较大交并比的 bounding box 会被抑制。<br>Each output prediction is:<br>\[<br>    \left[<br>    \begin{matrix}<br>    p_c \\\\<br>    b_x \\\\<br>    b_y \\\\<br>    b_w \\\\<br>    b_h<br>    \end{matrix}<br>    \right]<br>\]<br></p>
-        </div>
-        <a href="/2018/08/26/非最大值抑制/" class="read-more">Read More</a>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/08/26/目标定位-vs-目标检测/">
-                目标定位 vs 目标检测
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-08-26</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <p>计算机视觉领域的不同任务：<br><img src="/2018/08/26/目标定位-vs-目标检测/cls.jpg" alt="classification"><br><img src="/2018/08/26/目标定位-vs-目标检测/other.jpg" alt="other task"><br></p>
-        </div>
-        <a href="/2018/08/26/目标定位-vs-目标检测/" class="read-more">Read More</a>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/08/13/消失的梯度/">
-                消失的梯度
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-08-13</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <p>这篇博文的主要灵感是来自 sleebapaul 的 <a href="https://github.com/sleebapaul/vanishing_gradients" target="_blank" rel="external">vanishing gradients</a>，但是他的那篇博文存在大量的公式推导错误，因此主要借鉴了他的一些图片。</p>
-<p>This is a discussion on an old problem that hindered the Machine Learning research for decades, now partially solved using various methods discovered in last 10 years. </p>
-<center><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/vanishing_grad/neural_network_shallow.png" alt="neural_network_shallow"></center><br>
-        </div>
-        <a href="/2018/08/13/消失的梯度/" class="read-more">Read More</a>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/08/11/MobileNet-V1-and-V2-带来的卷积结构革命/">
-                MobileNet V1 and V2 带来的卷积结构革命
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-08-11</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <p>主要总结了轻量级深度卷积神经网络 MobileNet V1 &amp; V2 的关键贡献 separable convolution 和 inverted resisual &amp; linear bottlenecks。</p>
-<h3 id="MobileNet-V1"><a href="#MobileNet-V1" class="headerlink" title="MobileNet V1"></a>MobileNet V1</h3><p><a href="https://arxiv.org/abs/1704.04861" target="_blank" rel="external">MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications</a><br>提出了<strong>可分离卷积结构（separable convolution）</strong>来代替传统的卷积结构，可以在很小的精度损失下有效地减少网络参数，适合于在移动端和嵌入式环境下构建轻量级深度卷积神经网络。</p>
-<blockquote>
-<p>A standard convolution both filters and combines inputs into a new set of outputs in one step. The depthwise separable convolution splits this into two layers, a separate layer for filtering and a separate layer for combining.</p>
-<p>Depthwise separable convolution are made up of two layers: depthwise convolutions and pointwise convolutions. We use depthwise convolutions to apply a single filter per each input channel (input depth). Pointwise convolution, a simple 1×1 convolution, is then used to create a linear combination of the output of the depthwise layer. MobileNets use both batchnorm and ReLU nonlinearities for both layers.</p>
-<p>MobileNet uses 3 × 3 depthwise separable convolutions which uses between 8 to 9 times less computation than standard convolutions at only a small reduction in accuracy.</p>
-</blockquote>
-<p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/mobilenet/separable_convolution.png" alt="separable_convolution"><br></p>
-        </div>
-        <a href="/2018/08/11/MobileNet-V1-and-V2-带来的卷积结构革命/" class="read-more">Read More</a>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/08/09/卷积转置卷积关系在-TensorFLow-中的验证/">
-                卷积转置卷积关系在 TensorFLow 中的验证
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-08-09</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <p>本文分别在 Numpy 和 TensorFlow 下实现了卷积和转置卷积的计算，并对卷积和转置卷积的参数关系进行了探讨。<br>本文代码的 Jupyter Notebook 可以在我的 <a href="https://github.com/RobertLexis/convolution_vs_transpose_convolution" target="_blank" rel="external">github 仓库</a>中找到。</p>
-<h3 id="卷积"><a href="#卷积" class="headerlink" title="卷积"></a>卷积</h3><p>正向传播：<br>\[<br>\mathbf{y} = \mathbf{C}\mathbf{x}<br>\]</p>
-<h5 id="核及输入"><a href="#核及输入" class="headerlink" title="核及输入"></a>核及输入</h5><p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/convolution.gif" alt="convolution"><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">kernel = np.arange(1, 10).reshape((3, 3))</div></pre></td></tr></table></figure></p>
-<p>\[<br>kernel =<br>\left[<br>    \begin{matrix}<br>    1 &amp; 2 &amp; 3 \\\\<br>    4 &amp; 5 &amp; 6 \\\\<br>    7 &amp; 8 &amp; 9<br>    \end{matrix}<br>\right]<br>\]<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">C = np.array([[1, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9, 0, 0, 0, 0, 0],</div><div class="line">              [0, 1, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9, 0, 0, 0, 0],</div><div class="line">              [0, 0, 0, 0, 1, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9, 0],</div><div class="line">              [0,  0, 0, 0, 0, 1, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9]])</div></pre></td></tr></table></figure></p>
-<p>\[<br>\mathbf{C} =<br>\left[<br>    \begin{matrix}<br>    1 &amp; 2 &amp; 3 &amp; 0 &amp; 4 &amp; 5 &amp; 6 &amp; 0 &amp; 7 &amp; 8 &amp; 9 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\\\<br>    0 &amp; 1 &amp; 2 &amp; 3 &amp; 0 &amp; 4 &amp; 5 &amp; 6 &amp; 0 &amp; 7 &amp; 8 &amp; 9 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\\\<br>    0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 0 &amp; 4 &amp; 5 &amp; 6 &amp; 0 &amp; 7 &amp; 8 &amp; 9 &amp; 0 \\\\<br>    0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 0 &amp; 4 &amp; 5 &amp; 6 &amp; 0 &amp; 7 &amp; 8 &amp; 9<br>    \end{matrix}<br>\right]<br>\]<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">input_ = np.arange(1, 17).reshape((4, 4))</div></pre></td></tr></table></figure></p>
-<p>\[<br>input\_ =<br>\left[<br>    \begin{matrix}<br>    1 &amp; 2 &amp; 3 &amp; 4 \\\\<br>    5 &amp; 6 &amp; 7 &amp; 8 \\\\<br>    9 &amp; 10 &amp; 11 &amp; 12 \\\\<br>    13 &amp; 14 &amp; 15 &amp; 16<br>    \end{matrix}<br>\right]<br>\]<br></p>
-        </div>
-        <a href="/2018/08/09/卷积转置卷积关系在-TensorFLow-中的验证/" class="read-more">Read More</a>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/08/08/转置卷积-Transposed-Convolution/">
-                转置卷积 Transposed Convolution
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-08-08</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <p>转置卷积在 Fully Convolutional Network (FCN) 结构的卷积神经网络中完成“上采样”。<br><strong>转置卷积</strong>与<strong>卷积</strong>在神经网络结构的正向和反向传播中正好做着相反的运算。</p>
-<h3 id="卷积"><a href="#卷积" class="headerlink" title="卷积"></a>卷积</h3><p>4x4 的输入（蓝色），3x3 的卷积核, 2x2 的输出为（绿色）。</p>
-<p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/convolution.gif" alt="convolution"></p>
-<p>卷积操作过程可以如下计算： </p>
-<p>输入矩阵展开为 \( 4 \times 4 = 16 \) 维（列）向量，记作 \( \mathbf{x} \)。 </p>
-<p>输出矩阵展开为 \( 2 \times 2 = 4 \) 维（列）向量，记作 \( \mathbf{y} \)。 </p>
-<p>卷积核扩展为如下的形式 \( \mathbf{C} \)，注意这个矩阵并不是<a href="https://en.wikipedia.org/wiki/Toeplitz_matrix" target="_blank" rel="external">托普利兹矩阵（Toeplitz matrix）</a>：</p>
-<p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/kernel.png" alt="kernel"><br></p>
-        </div>
-        <a href="/2018/08/08/转置卷积-Transposed-Convolution/" class="read-more">Read More</a>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/08/08/Nvidia-TensorRT-推理加速引擎支持的Layers/">
-                Nvidia TensorRT 推理加速引擎支持的Layers
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-08-08</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <h3 id="Supported-Operations-By-Framework"><a href="#Supported-Operations-By-Framework" class="headerlink" title="Supported Operations By Framework"></a>Supported Operations By Framework</h3><p>由<a href="https://docs.nvidia.com/deeplearning/sdk/tensorrt-developer-guide/index.html#support_op" target="_blank" rel="external">TensorRT 开发者指南</a>可以得知，并不是 Keras 或者 TensorFlow 支持的操作都被 TensorRT 所支持。<br></p>
-        </div>
-        <a href="/2018/08/08/Nvidia-TensorRT-推理加速引擎支持的Layers/" class="read-more">Read More</a>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/08/08/OpenCV-Python-C-与Scikit-image在BGR-RGB转灰度图上的不同/">
-                OpenCV(Python & C++)与Scikit-image在BGR/RGB转灰度图上的不同
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-08-08</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <p>将主机 Python 环境下训练的卷积神经网络模型移植到 Jetson TX2 的 TensorRT 加速环境（C++）下时，遇到了模型精度损失的问题，发现是由于 Python Scikit-image 中函数 <code>color.rgb2gray</code> 与 C++ OpenCV 中函数 <code>cv::cvtColor(cv::InputArray src, cv::OutputArray dst, cv::COLOR_BGR2GRAY)</code> 的彩色图转灰度图的转换函数定义不同，分别如下：</p>
-<h3 id="OpenCV"><a href="#OpenCV" class="headerlink" title="OpenCV"></a>OpenCV</h3><p>\[ Y = 0.299 \times R + 0.587 \times G + 0.114 \times B \]</p>
-<h3 id="Scikit-image"><a href="#Scikit-image" class="headerlink" title="Scikit-image"></a>Scikit-image</h3><p>\[ Y = 0.2125 \times R + 0.7154 \times G + 0.0721 \times B \]<br></p>
-        </div>
-        <a href="/2018/08/08/OpenCV-Python-C-与Scikit-image在BGR-RGB转灰度图上的不同/" class="read-more">Read More</a>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
+    <div class="post-header">
         <h1 class="title">
             <a href="/2018/08/05/Amazing-dropout/">
                 Amazing dropout
@@ -427,9 +160,13 @@
         </div>
     </div>
 
-    
-        <div class="content">
-            <p>本文主要采摘、翻译、修改自 P. Galeone’s blog <a href="https://pgaleone.eu/deep-learning/regularization/2017/01/10/anaysis-of-dropout/" target="_blank" rel="external">Analysis of Dropout</a>。</p>
+    <div class="content">
+
+        <!-- Gallery -->
+        
+
+        <!-- Post Content -->
+        <p>本文主要采摘、翻译、修改自 P. Galeone’s blog <a href="https://pgaleone.eu/deep-learning/regularization/2017/01/10/anaysis-of-dropout/" target="_blank" rel="external">Analysis of Dropout</a>。</p>
 <p>Overfitting is a problem in Deep Neural Networks (DNN): the model learns to classify only the training set, adapting itself to the training examples instead of learning decision boundaries capable of classifying generic instances. Many solutions to the overfitting problem have been presented during these years; one of them have overwhelmed the others due to its simplicity and its empirical good results: Dropout.</p>
 <p><img src="/2018/08/05/Amazing-dropout/dropout.jpg" alt="dropout"><br>Visual representation of Dropout, right from the paper. On the left there’s the network before applying Dropout, on the right the same network with Dropout applied.<br>The network on the left it’s the same network used at test time, once the parameters have been learned.</p>
 <p>The idea behind Dropout is to train an ensemble of DNNs and average the results of the whole ensemble instead of train a single DNN.<strong>(Dropout 背后的思想是训练一个含有多个 DNN 的集成学习器。)</strong></p>
@@ -487,31 +224,25 @@
 <li>Max Norm impose a constraint to the parameters size. Chosen a value for the hyper-parameter \( c \). it impose the constraint \( |w| \leq c \).<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script></li>
 </ul>
 
+    </div>
+
+    
+
+    
+        <div class="post-tags">
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <a href="/tags/DL/">#DL</a>
         </div>
     
 
+    <!-- Comments -->
+    
+
 </div>
-            
         </section>
+
     </div>
 </div>
-
-
-
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="wrap-pagination">
-                <a class="disabled" href="/">
-                    <i class="fa fa-chevron-left" aria-hidden="true"></i>
-                </a>
-                <a class="" href="/page/2/">
-                    <i class="fa fa-chevron-right" aria-hidden="true"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-
-
 
 
 </div>

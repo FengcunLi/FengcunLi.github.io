@@ -147,6 +147,67 @@
 
     <div class="post-header index">
         <h1 class="title">
+            <a href="/2017/12/09/强化学习-3-估值网络及其-TensorFlow-实现/">
+                强化学习 3 估值网络及其 TensorFlow 实现
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2017-12-09</span>
+            
+            
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <h1 id="强化学习-3-估值网络及其-TensorFlow-实现"><a href="#强化学习-3-估值网络及其-TensorFlow-实现" class="headerlink" title="强化学习 3 估值网络及其 TensorFlow 实现"></a>强化学习 3 估值网络及其 TensorFlow 实现</h1><h2 id="估值网络"><a href="#估值网络" class="headerlink" title="估值网络"></a>估值网络</h2><h4 id="概念："><a href="#概念：" class="headerlink" title="概念："></a>概念：</h4><ol>
+<li>Q-learning 中的期望价值指从当前的这一步到后续的所有步骤，总共可以期望获得的最大价值。也就说是对未来进行了断言，这一步采取这样的动作，不管未来采取什么样的动作，可以期望获得的价值不会超过这个Q值。Q值的意义就是最大价值，当前最大 = 当前 + gamma * 以后续一步为当前的最大。</li>
+<li>Q-learning 的目的就是求解 \(Q(s_t, a_t)\)，可以将其看作一个表格，每一行是不同的状态，每一列是不同的动作，学习的过程就是把这个表用合适的值填充起来。</li>
+<li>Q-learning 的训练思路也很简单，以（状态，动作，奖励，下一状态）四元组（\((s_t, a_t, r_{t+1}, s_{t+1})\)）作为样本进行训练。</li>
+<li>学习目标 \(r_{t+1} + \gamma \cdot \max\limits_{a} Q(s_{t+1}, a)\)，即相当于 label。</li>
+<li>学习过程 \(Q_{new}(s_t, a_t) \gets (1-\alpha) \cdot Q_{old}(s_t, a_t) + \alpha \cdot (r_{t+1} + \gamma \cdot \max\limits_{a} Q_{old}(s_{t+1}, a))\)</li>
+<li>Q-learning 的模型是神经网络时，即将\(Q(s_t, a_t)\)表达为神经网络，就是估值网络。</li>
+<li>DQN 是 DeepMind 在 Human-level control through deep reinforcement learning 中提出的。</li></ol>
+        </div>
+        <a href="/2017/12/09/强化学习-3-估值网络及其-TensorFlow-实现/" class="read-more">Read More</a>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
+            <a href="/2017/12/09/强化学习-2-策略网络及其-TensorFlow-实现/">
+                强化学习 2 策略网络及其 TensorFlow 实现
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2017-12-09</span>
+            
+            
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <h1 id="强化学习-2-策略网络及其-TensorFlow-实现"><a href="#强化学习-2-策略网络及其-TensorFlow-实现" class="headerlink" title="强化学习 2 策略网络及其 TensorFlow 实现"></a>强化学习 2 策略网络及其 TensorFlow 实现</h1><h2 id="策略网络"><a href="#策略网络" class="headerlink" title="策略网络"></a>策略网络</h2><p>在强化学习中，我们并不知道标签，对于某一个特定的环境状态，我们并不知道它对应的最好的动作是什么，只知道当前动作获得的奖励和试验后获得的未来奖励。我们需要让模型通过试验自己学习什么动作才是某一个特定环境状态下的较优动作，而不是告诉模型较优动作是什么，因为我们也不知道正确的答案。<br>为了让策略网络更好的理解未来，不仅仅要考虑动作的当前奖励，还要动作的考虑未来的、潜在的奖励，即奖励为 Discounted Reward。在训练过程中，模型会接触到好的动作以及它们带来的高奖励，差的动作以及它们带来的低奖励，通过学习，模型会逐渐增加选择好的动作的概率，降低选择差动作的概率，这样就逐渐完成了策略的学习。策略网络是一个End-to-End（端到端）的方法，直接产生动作。<br></p>
+        </div>
+        <a href="/2017/12/09/强化学习-2-策略网络及其-TensorFlow-实现/" class="read-more">Read More</a>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
             <a href="/2017/12/07/强化学习-1-Basic/">
                 强化学习 1 Basic
             </a>
@@ -376,133 +437,6 @@
 </ol>
         </div>
         <a href="/2017/11/20/Learning-Simpy-2/" class="read-more">Read More</a>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2017/11/16/Learning-Simpy/">
-                Learning Simpy
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2017-11-16</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <h3 id="SimPy-基础"><a href="#SimPy-基础" class="headerlink" title="SimPy 基础"></a>SimPy 基础</h3><h4 id="How-SimPy-works"><a href="#How-SimPy-works" class="headerlink" title="How SimPy works"></a>How SimPy works</h4><p>SimPy 就是一个异步事件调度器，使用者要做的就是生成事件并指定事件在什么情况下触发及调度。<br><strong>事件</strong>按照优先级和仿真时间排序，拥有递增的事件id。一个事件有一个回调列表，这些回调会在事件触发时被执行。事件可以有返回值。<br>另一个概念就是<strong>进程函数</strong>，进程函数就是一个 <code>yield</code> 出 <code>Event</code> 实例的 Python 生成器函数。<br><strong>环境</strong>将事件存储在事件列表中，并 keeps track of 当前的仿真时间。<br>关键流程：当一个进程函数 yield 出一个事件时，SimPy 会将进程函数加入事件的回调列表，并挂起进程函数直到事件触发。当等待事件触发的进程函数恢复执行时就会得到事件的返回值。<br></p>
-        </div>
-        <a href="/2017/11/16/Learning-Simpy/" class="read-more">Read More</a>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2017/11/13/Ubuntu-2-1080Ti-深度学习环境配置/">
-                Ubuntu + 2*1080Ti 深度学习环境配置
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2017-11-13</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <h2 id="Ubuntu-2-1080Ti-深度学习环境配置"><a href="#Ubuntu-2-1080Ti-深度学习环境配置" class="headerlink" title="Ubuntu + 2*1080Ti 深度学习环境配置"></a>Ubuntu + 2*1080Ti 深度学习环境配置</h2><h3 id="配置及环境"><a href="#配置及环境" class="headerlink" title="配置及环境"></a>配置及环境</h3><table>
-<thead>
-<tr>
-<th>配件</th>
-<th>型号</th>
-<th>数量</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>机箱</td>
-<td>美商海盗船 AIR740 中塔机箱</td>
-<td>1</td>
-</tr>
-<tr>
-<td>电源</td>
-<td>美商海盗船 HX1000 80plus 1000W</td>
-<td>1</td>
-</tr>
-<tr>
-<td>主板</td>
-<td>华硕（ASUS） X99-M WS (Intel X99/LGA 2011-V3)</td>
-<td>1</td>
-</tr>
-<tr>
-<td>CPU</td>
-<td>英特尔 至强 E5-2620</td>
-<td>1</td>
-</tr>
-<tr>
-<td>散热</td>
-<td>猫头鹰NH-U9S CPU散热器</td>
-<td>1</td>
-</tr>
-<tr>
-<td>硬盘</td>
-<td>西部数据 红盘 3T</td>
-<td>2</td>
-</tr>
-<tr>
-<td>SSD</td>
-<td>英特尔 600P 256G M.2</td>
-<td>1</td>
-</tr>
-<tr>
-<td>内存</td>
-<td>美商海盗船 DDR4 3000 16G</td>
-<td>2</td>
-</tr>
-<tr>
-<td>GPU</td>
-<td>技嘉 AORUS GTX 1080Ti Xtreme Edition</td>
-<td>2</td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>版本</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Ubuntu</td>
-<td>16.04.1</td>
-</tr>
-<tr>
-<td>Nvidia driver</td>
-<td>384.98</td>
-</tr>
-</tbody>
-</table>
-        </div>
-        <a href="/2017/11/13/Ubuntu-2-1080Ti-深度学习环境配置/" class="read-more">Read More</a>
     
 
 </div>
