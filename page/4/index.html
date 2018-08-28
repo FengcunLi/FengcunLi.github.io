@@ -147,6 +147,36 @@
 
     <div class="post-header index">
         <h1 class="title">
+            <a href="/2018/03/25/STL-内存池实现/">
+                STL 内存池实现
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-03-25</span>
+            
+            
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <h3 id="STL-里的内存池实现"><a href="#STL-里的内存池实现" class="headerlink" title="STL 里的内存池实现"></a>STL 里的内存池实现</h3><h4 id="内存池的目的是什么？"><a href="#内存池的目的是什么？" class="headerlink" title="内存池的目的是什么？"></a>内存池的目的是什么？</h4><ol>
+<li>通过 new 表达式动态分配一个对象时，会调用 operator new 进行内存分配，这一步是直接和操作系统打交道的, 操作系统可能需要经过相对繁琐的过程才能将一块指向空闲内存的指针返回给用户, 所以这也是 new 比较耗时的一部分, 而第二步就是使用构造函数进行初始化。既然内存分配耗时, 那我们很容易想到的就是一次性分配一大块内存, 然后在用户需要的时候再划分其中一部分给用户, 这样的话, 一次分配, 多次使用, 自然而然提高了效率, 而用来管理这所谓的一大块内存的内存结构, 也就是今天我们要说的内存池。</li>
+<li>内存池带来的另外一个好处在于，频繁地使用new将导致系统内存空间碎片化严重， 容易导致的后果就是很难找到一块连续的大块内存, 空间利用率低，而内存池是一次性分配一大块内存空间，就缓解了内存碎片的问题。</li>
+</ol>
+        </div>
+        <a href="/2018/03/25/STL-内存池实现/" class="read-more">Read More</a>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
             <a href="/2018/03/16/计算机概念的英文表述/">
                 计算机概念的英文表述
             </a>
@@ -408,36 +438,6 @@
 
 </div>
             
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2017/12/12/RLAI-Monte-Carlo-Methods-学习笔记/">
-                RLAI Monte Carlo Methods 学习笔记
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2017-12-12</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <h2 id="Chapter-5"><a href="#Chapter-5" class="headerlink" title="Chapter 5"></a>Chapter 5</h2><h2 id="Monte-Carlo-Methods-一种估计值函数和发现最优策略的方法"><a href="#Monte-Carlo-Methods-一种估计值函数和发现最优策略的方法" class="headerlink" title="Monte Carlo Methods 一种估计值函数和发现最优策略的方法"></a>Monte Carlo Methods 一种估计值函数和发现最优策略的方法</h2><p>不需知道环境的完整信息，MC方法只需要 experience，也就是来自真实或者仿真环境下的状态、动作、奖励的序列。尽管需要环境模型，但是仅仅需要这个模型产生样本，而不是像动态规划那样需要完整的转移概率分布。在很多情况下，获得样本是容易的，而给出具体形式的分布确实困难的，这就使得MC方法十分的有用。</p>
-<p>MC 方法基于采样与平均。experience 分为不同的 episode，只有在一个 episode 完成之后才会进行值估计和策略提升。MC 方法是 episode-by-episode （offline）的形式，而不是 step-by-step （online）的方式。</p>
-<h3 id="Monte-Carlo-Prediction"><a href="#Monte-Carlo-Prediction" class="headerlink" title="Monte Carlo Prediction"></a>Monte Carlo Prediction</h3><p>一个状态的 value 是一个期望回报，即从该状态出发遵循一定的策略可以期望获得的累积未来折扣奖励。</p>
-<p>MC 方法内在的想法就是，从 experience 中估计状态值函数，对访问一个状态之后获得的回报进行平均，随着 episode 次数的增多，这个平均值会收敛到期望值。\(v_{\pi}(s)\) 是在策略 \(\pi\) 下，状态 \(s\) 的 value，我们要做的就是在给定一些遵循策略 \(\pi\) 经历了状态 \(s\) 的 episode 时，对 \(v_{\pi}(s)\) 进行估计。在 episode 中的 \(s\) 每一次出现就称之为对状态 \(s\) 的一次访问。根据进行估计时使用 \(s\) 的第一访问还是每一次访问，MC 方法可以分为 First-visit MC 和 Every-visit MC。<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/first-visit-mc-prediction.png" alt="first-visit-mc-prediction"><br></p>
-        </div>
-        <a href="/2017/12/12/RLAI-Monte-Carlo-Methods-学习笔记/" class="read-more">Read More</a>
-    
-
-</div>
-            
         </section>
     </div>
 </div>
@@ -480,6 +480,10 @@
         <ul>
             
             <li>
+                <a class="footer-post" href="/2018/08/28/Tensorflow-模型浮点数计算量和参数量统计/">TensorFlow 模型浮点数计算量和参数量统计</a>
+            </li>
+            
+            <li>
                 <a class="footer-post" href="/2018/08/26/YOLO/">YOLO</a>
             </li>
             
@@ -489,10 +493,6 @@
             
             <li>
                 <a class="footer-post" href="/2018/08/26/目标定位-vs-目标检测/">目标定位 vs 目标检测</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2018/08/13/消失的梯度/">消失的梯度</a>
             </li>
             
         </ul>

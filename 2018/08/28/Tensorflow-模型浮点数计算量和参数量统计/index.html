@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="本博文整理了如何对一个 TensorFlow 模型的浮点数计算量（FLOPs）和参数量进行统计。stats_graph.py12345import tensorflow as tfdef stats_graph(graph):    flops = tf.profiler.profile(graph, options=tf.profiler.ProfileOptionBuilder.float_operation())    params = tf.profiler.profile(graph, options=tf.profiler.ProfileOptionBuilder.trainable_variables_parameter())    print(&#39;FLOPs: &amp;#123;&amp;#125;;    Trainable params: &amp;#123;&amp;#125;&#39;.format(flops.total_float_ops, params.total_parameters))">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Robert Lexis">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="TensorFlow 模型浮点数计算量和参数量统计"/>
+    
+
+    <!--Open Graph Description-->
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="This is Robert Lexis."/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+    <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>TensorFlow 模型浮点数计算量和参数量统计 - This is Robert Lexis.</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Google Analytics -->
+    
+
+
+</head>
+
+
+<body>
+
+<div class="bg-gradient"></div>
+<div class="bg-pattern"></div>
+
+<!-- Menu -->
+<!--Menu Links and Overlay-->
+<div class="menu-bg">
+    <div class="menu-container">
+        <ul>
+            
+            <li class="menu-item">
+                <a href="/">
+                    Home
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/archives">
+                    Archives
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/about">
+                    About
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/tags">
+                    Tags
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/categories">
+                    Categories
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/contact">
+                    Contact
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+<!--Hamburger Icon-->
+<nav>
+    <a href="#menu"></a>
+</nav>
+
+<div class="container">
+
+    <!-- Main Content -->
+    <div class="row">
+    <div class="col-sm-12">
+
+        <!--Title and Logo-->
+        <header>
+    <div class="logo">
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
+        
+    </div>
+</header>
+
+        <section class="main">
+            
+<div class="post">
+
+    <div class="post-header">
+        <h1 class="title">
+            <a href="/2018/08/28/Tensorflow-模型浮点数计算量和参数量统计/">
+                TensorFlow 模型浮点数计算量和参数量统计
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-08-28</span>
+            
+            
+            
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- Gallery -->
+        
+
+        <!-- Post Content -->
+        <p>本博文整理了如何对一个 TensorFlow 模型的浮点数计算量（FLOPs）和参数量进行统计。<br>stats_graph.py<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">stats_graph</span><span class="params">(graph)</span>:</span></div><div class="line">    flops = tf.profiler.profile(graph, options=tf.profiler.ProfileOptionBuilder.float_operation())</div><div class="line">    params = tf.profiler.profile(graph, options=tf.profiler.ProfileOptionBuilder.trainable_variables_parameter())</div><div class="line">    print(<span class="string">'FLOPs: &#123;&#125;;    Trainable params: &#123;&#125;'</span>.format(flops.total_float_ops, params.total_parameters))</div></pre></td></tr></table></figure></p>
+<a id="more"></a>
+<h3 id="利用高斯分布对变量进行初始化会耗费一定的-FLOP"><a href="#利用高斯分布对变量进行初始化会耗费一定的-FLOP" class="headerlink" title="利用高斯分布对变量进行初始化会耗费一定的 FLOP"></a>利用高斯分布对变量进行初始化会耗费一定的 FLOP</h3><p>\[<br>C_{[25, 9]} = A_{[25, 16]}B_{[16, 9]} \\\<br>FLOPs = ( 16 + 15 ) \times (25 \times 9) = 6975 \\\\<br>FLOPs(in TF style) = ( 16 + 16 ) \times (25 \times 9) = 7200 \\\\<br>total\_parameters = 25 \times 16 + 16 \times 9 = 544<br>\]</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">with</span> tf.Graph().as_default() <span class="keyword">as</span> graph:</div><div class="line">    A = tf.get_variable(initializer=tf.random_normal_initializer(dtype=tf.float32), shape=(<span class="number">25</span>, <span class="number">16</span>), name=<span class="string">'A'</span>)</div><div class="line">    B = tf.get_variable(initializer=tf.random_normal_initializer(dtype=tf.float32), shape=(<span class="number">16</span>, <span class="number">9</span>), name=<span class="string">'B'</span>)</div><div class="line">    C = tf.matmul(A, B, name=<span class="string">'ouput'</span>)</div><div class="line">    </div><div class="line">    stats_graph(graph)</div></pre></td></tr></table></figure>
+<p>输出为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">FLOPs: 8288;    Trainable params: 544</div></pre></td></tr></table></figure></p>
+<h3 id="利用常量初始化器对变量进行初始化不会耗费-FLOP"><a href="#利用常量初始化器对变量进行初始化不会耗费-FLOP" class="headerlink" title="利用常量初始化器对变量进行初始化不会耗费 FLOP"></a>利用常量初始化器对变量进行初始化不会耗费 FLOP</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">with</span> tf.Graph().as_default() <span class="keyword">as</span> graph:</div><div class="line">    A = tf.get_variable(initializer=tf.constant_initializer(value=<span class="number">1</span>, dtype=tf.float32), shape=(<span class="number">25</span>, <span class="number">16</span>), name=<span class="string">'A'</span>)</div><div class="line">    B = tf.get_variable(initializer=tf.zeros_initializer(dtype=tf.float32), shape=(<span class="number">16</span>, <span class="number">9</span>), name=<span class="string">'B'</span>)</div><div class="line">    C = tf.matmul(A, B, name=<span class="string">'ouput'</span>)</div><div class="line">    </div><div class="line">    stats_graph(graph)</div></pre></td></tr></table></figure>
+<p>输出为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">FLOPs: 7200;    Trainable params: 544</div></pre></td></tr></table></figure></p>
+<h3 id="Frozen-graph"><a href="#Frozen-graph" class="headerlink" title="Frozen graph"></a>Frozen graph</h3><p>通常我们对耗费在初始化上的 FLOPs 并不感兴趣，因为它是发生在训练过程之前且是一次性的，我们感兴趣的是模型部署之后在生产环境下的 FLOPs。我们可以通过 Freeze 计算图的方式得到除去初始化 FLOPs 的、模型部署后推断过程中耗费的 FLOPs。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> tensorflow.python.framework <span class="keyword">import</span> graph_util</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">load_pb</span><span class="params">(pb)</span>:</span></div><div class="line">    <span class="keyword">with</span> tf.gfile.GFile(pb, <span class="string">"rb"</span>) <span class="keyword">as</span> f:</div><div class="line">        graph_def = tf.GraphDef()</div><div class="line">        graph_def.ParseFromString(f.read())</div><div class="line">    <span class="keyword">with</span> tf.Graph().as_default() <span class="keyword">as</span> graph:</div><div class="line">        tf.import_graph_def(graph_def, name=<span class="string">''</span>)</div><div class="line">        <span class="keyword">return</span> graph</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">with</span> tf.Graph().as_default() <span class="keyword">as</span> graph:</div><div class="line">    <span class="comment"># ***** (1) Create Graph *****</span></div><div class="line">    A = tf.Variable(initial_value=tf.random_normal([<span class="number">25</span>, <span class="number">16</span>]))</div><div class="line">    B = tf.Variable(initial_value=tf.random_normal([<span class="number">16</span>, <span class="number">9</span>]))</div><div class="line">    C = tf.matmul(A, B, name=<span class="string">'output'</span>)</div><div class="line">    </div><div class="line">    print(<span class="string">'stats before freezing'</span>)</div><div class="line">    stats_graph(graph)</div><div class="line">    <span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</div><div class="line">        sess.run(tf.global_variables_initializer())</div><div class="line">        <span class="comment"># ***** (2) freeze graph *****</span></div><div class="line">        output_graph = graph_util.convert_variables_to_constants(sess, graph.as_graph_def(), [<span class="string">'output'</span>])</div><div class="line">        <span class="keyword">with</span> tf.gfile.GFile(<span class="string">'graph.pb'</span>, <span class="string">"wb"</span>) <span class="keyword">as</span> f:</div><div class="line">            f.write(output_graph.SerializeToString())</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment"># ***** (3) Load frozen graph *****</span></div><div class="line">graph = load_pb(<span class="string">'./graph.pb'</span>)</div><div class="line">print(<span class="string">'stats after freezing'</span>)</div><div class="line">stats_graph(graph)</div></pre></td></tr></table></figure></p>
+<p>输出为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">stats before freezing</div><div class="line">FLOPs: 8288;    Trainable params: 544</div><div class="line">INFO:tensorflow:Froze 2 variables.</div><div class="line">INFO:tensorflow:Converted 2 variables to const ops.</div><div class="line">stats after freezing</div><div class="line">FLOPs: 7200;    Trainable params: 0</div></pre></td></tr></table></figure></p>
+<h3 id="与-Keras-的结合"><a href="#与-Keras-的结合" class="headerlink" title="与 Keras 的结合"></a>与 Keras 的结合</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> backend <span class="keyword">as</span> K</div><div class="line"><span class="keyword">from</span> keras.layers <span class="keyword">import</span> Dense</div><div class="line"><span class="keyword">from</span> keras.models <span class="keyword">import</span> Sequential</div><div class="line"><span class="keyword">from</span> keras.initializers <span class="keyword">import</span> Constant</div><div class="line"></div><div class="line">model = Sequential()</div><div class="line">model.add(Dense(<span class="number">32</span>, input_dim=<span class="number">4</span>, bias_initializer=Constant(value=<span class="number">0</span>), kernel_initializer=Constant(value=<span class="number">1</span>)))</div><div class="line">sess = K.get_session()</div><div class="line">graph = sess.graph</div><div class="line">stats_graph(graph)</div></pre></td></tr></table></figure>
+<p>输出为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">FLOPs: 0;    Trainable params: 160</div><div class="line">Using TensorFlow backend.</div><div class="line">2 ops no flops stats due to incomplete shapes.</div><div class="line">2 ops no flops stats due to incomplete shapes.</div></pre></td></tr></table></figure></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">model.summary()</div><div class="line">_________________________________________________________________</div><div class="line">Layer (type)                 Output Shape              Param <span class="comment">#   </span></div><div class="line">=================================================================</div><div class="line">dense_1 (Dense)              (<span class="keyword">None</span>, <span class="number">32</span>)                <span class="number">160</span>       </div><div class="line">=================================================================</div><div class="line">Total params: <span class="number">160</span></div><div class="line">Trainable params: <span class="number">160</span></div><div class="line">Non-trainable params: <span class="number">0</span></div><div class="line">_________________________________________________________________</div></pre></td></tr></table></figure>
+    </div>
+
+    
+
+    
+        <div class="post-tags">
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <a href="/tags/DL/">#DL</a>
+        </div>
+    
+
+    <!-- Comments -->
+    
+
+</div>
+        </section>
+
+    </div>
+</div>
+
+
+</div>
+
+<!-- Footer -->
+<div class="push"></div>
+
+<footer class="footer-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
+                <h2>About</h2>
+                <p>
+                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
+                </p>
+            </div>
+            
+    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/28/Tensorflow-模型浮点数计算量和参数量统计/">TensorFlow 模型浮点数计算量和参数量统计</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/26/YOLO/">YOLO</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/26/非最大值抑制/">非最大值抑制</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/26/目标定位-vs-目标检测/">目标定位 vs 目标检测</a>
+            </li>
+            
+        </ul>
+    </div>
+
+
+
+            
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="list-inline footer-social-icons">
+                    
+                    <li class="list-inline-item">
+                        <a href="https://github.com/RobertLexis">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-github"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="mailto:robert_lexis@163.com">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-envelope-o"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="footer-copyright">
+                    @Untitled. All right reserved | Robert Lexis Loves Wenny
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- After footer scripts -->
+
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Tween Max -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/main.js"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>
