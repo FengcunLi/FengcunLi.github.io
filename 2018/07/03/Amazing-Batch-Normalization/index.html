@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="这篇博文主要总结了 batch normalization 的公式、为什么有效的直观解释。在博文的最后，验证了通过使用 batch normalization 可以在更少的 epoch 下获得精度上的显著提升。">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Robert Lexis">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="Amazing Batch Normalization"/>
+    
+
+    <!--Open Graph Description-->
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="This is Robert Lexis."/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+    <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>Amazing Batch Normalization - This is Robert Lexis.</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Google Analytics -->
+    
+
+
+</head>
+
+
+<body>
+
+<div class="bg-gradient"></div>
+<div class="bg-pattern"></div>
+
+<!-- Menu -->
+<!--Menu Links and Overlay-->
+<div class="menu-bg">
+    <div class="menu-container">
+        <ul>
+            
+            <li class="menu-item">
+                <a href="/">
+                    Home
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/archives">
+                    Archives
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/about">
+                    About
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/tags">
+                    Tags
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/categories">
+                    Categories
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/contact">
+                    Contact
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+<!--Hamburger Icon-->
+<nav>
+    <a href="#menu"></a>
+</nav>
+
+<div class="container">
+
+    <!-- Main Content -->
+    <div class="row">
+    <div class="col-sm-12">
+
+        <!--Title and Logo-->
+        <header>
+    <div class="logo">
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
+        
+    </div>
+</header>
+
+        <section class="main">
+            
+<div class="post">
+
+    <div class="post-header">
+        <h1 class="title">
+            <a href="/2018/07/03/Amazing-Batch-Normalization/">
+                Amazing Batch Normalization
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-07-03</span>
+            
+            
+            
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- Gallery -->
+        
+
+        <!-- Post Content -->
+        <p>这篇博文主要总结了 batch normalization 的公式、为什么有效的直观解释。<br>在博文的最后，验证了通过使用 batch normalization 可以在更少的 epoch 下获得精度上的显著提升。<br><a id="more"></a></p>
+<blockquote>
+<p>Batch Normalization was first introduced by two researchers at Google, Sergey Ioffe and Christian Szegedy in their paper “Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift” in 2015. The authors showed that batch normalization improved the top result of ImageNet (2014) by a significant margin using only 7% of the training steps. Today, Batch Normalization is used in almost all CNN architectures.</p>
+</blockquote>
+<p>对输入特征做归一化能够帮助神经网络的训练，Batch Normalization 就是在隐藏层上做归一化。但是输入层和隐藏层上的归一化还是有所不同的，对隐藏层 Batch Norm 之后并不要求一定是零均值和单位方差，而是通过 learnable parameters \( \gamma \) 和 \( \beta \) 使得隐藏层具有可控的、修正的均值和方差，这个均值和方差可以是 0 和 1，也可以是由 \( \beta \) 和 \( \gamma \) 控制的其他值。<br>Batch Norm 可以让神经网络的训练对于超参数的选择不那么敏感，也让很深的神经网络的训练变的更加容易。</p>
+<h5 id="Notations"><a href="#Notations" class="headerlink" title="Notations"></a>Notations</h5><p>\(a_{n}^{[l](m)}\) 是 第 \( l \) 层上的第 \( n \) 个神经元在第 \( m \) 个样本上的激活值。</p>
+<h3 id="对输入进行归一化"><a href="#对输入进行归一化" class="headerlink" title="对输入进行归一化"></a>对输入进行归一化</h3><p>\[<br>\mu = \frac{1}{m} \sum_{i}X^{(i)} \\\\<br>X = X - \mu \\\\<br>\sigma^2 = \frac{1}{m} \sum_{i} (X^{(i)})^2 \\\\<br>X = \frac{X}{\sigma}<br>\]</p>
+<h3 id="Can-we-normalize-z-2-so-we-can-train-w-3-and-b-3-more-efficiently-and-faster"><a href="#Can-we-normalize-z-2-so-we-can-train-w-3-and-b-3-more-efficiently-and-faster" class="headerlink" title="Can we normalize \( z^{[2]} \) so we can train \(w^{[3]}\) and \( b^{[3]} \) more efficiently and faster ?"></a>Can we normalize \( z^{[2]} \) so we can train \(w^{[3]}\) and \( b^{[3]} \) more efficiently and faster ?</h3><p>Do normalization before activation.<br>Given some intermediate values in NN \( z^{[l](i)} \)，shape 是 \( (n^{[l]}, 1) \)，\( n^{[l]} \) 是 layer \( l \) 的神经元个数，简写 \( z^{[l](i)} \) 为 \(z^{(i)}\)。<br><img src="/2018/07/03/Amazing-Batch-Normalization/BN.png" alt="BN"><br>加偏置会被减均值所抵消，因此就没有加偏置的必要了。<br>\[<br>z^{[l]} = W^{[l]}a^{[l-1]} + b^{[l]}  \longrightarrow z^{[l]} = W^{[l]}a^{[l-1]}<br>\]<br>parameters for layer \( l \): </p>
+<ul>
+<li>\( W^{[l]} \), \( \beta^{[l]} \), \( \gamma^{[l]} \).</li>
+<li>\( \beta^{[l]} \), \( \gamma^{[l]} \) 的 shape 均为 \( (n^{[l]}, 1) \)。</li>
+</ul>
+<p>在神经网络的前向传播中 replace \( z^{[l]} \) with \( \tilde{z}^{[l]} \).</p>
+<h3 id="Why-does-Batch-Norm-work"><a href="#Why-does-Batch-Norm-work" class="headerlink" title="Why does Batch Norm work ?"></a>Why does Batch Norm work ?</h3><p>在深度学习模型的训练中，与让输入的不同特征具有不同的尺度相比较，让输入的不同特征在相同的 range 内可以极大的加速训练过程。</p>
+<h5 id="learning-on-shifting-input-distribution"><a href="#learning-on-shifting-input-distribution" class="headerlink" title="learning on shifting input distribution"></a>learning on shifting input distribution</h5><p><img src="/2018/07/03/Amazing-Batch-Normalization/covariate_shift.png" alt="covariate_shift"><br>在上图中左侧数据集上训练得到的神经网络模型很难在右侧的数据集上得到好的结果，这是因为数据集的分布发生了改变。<br>当数据分布随着某种东西在变（在上面的例子中就是数据分布随着样本集合的不同而变化），我们必须重新训练模型，这就叫做 covariate shift。<br>\( X \longrightarrow y \)，if the distribution of \( X \) changes，we must retrain the model.</p>
+<h5 id="covariate-shift-是如何影响神经网络的"><a href="#covariate-shift-是如何影响神经网络的" class="headerlink" title="covariate shift 是如何影响神经网络的?"></a>covariate shift 是如何影响神经网络的?</h5><p><img src="/2018/07/03/Amazing-Batch-Normalization/why_BN_works.png" alt="why_BN_works"><br>第二层激活值的分布随着训练过程会发生变化，这使得第三层的模型参数需要重新训练。</p>
+<blockquote>
+<p>In a neural network, each hidden unit’s input distribution changes every time there is a parameter update in the previous layer. This is called <strong>internal covariate shift</strong>. This makes training slow and requires a very small learning rate and a good parameter initialization. This problem can be solved by normalizing the layer’s inputs over a mini-batch.<br>假设在一定的 \( [a_{1}^{[2]}, a_{2}^{[2]}, a_{3}^{[2]}, a_{4}^{[2]}] \) 的输入上，\(<br>W^{[3]}, b^{[3]}, W^{[4]}, b^{[4]}, W^{[5]}, b^{[5]} \) 很好地完成了任务（得到了正确的标签 \( \hat{y} \)），但是当 \(<br>W^{[1]}, b^{[1]}, W^{[2]}, b^{[2]} \) 改变了，\( [a_{1}^{[2]}, a_{2}^{[2]}, a_{3}^{[2]}, a_{4}^{[2]}] \) 也会发生变化，因此从第三层的角度看，第二层的输出的分布一直在变，因此会受到 covariate shift 的影响使得之前迭代步骤训练得到的 \(<br>W^{[3]}, b^{[3]}, W^{[4]}, b^{[4]}, W^{[5]}, b^{[5]} \) 不再有效。<br>Batch Normalization 可以减少隐藏单元值的分布的不稳定性。<br>\( z^{[2]} \) 可以发生变化，实际上随着神经网络更新前几层的参数，它们确实会发生变化，但是 BN 保证它们的均值和方差是稳定的、可控的，由 \( \beta^{[2]} \) 和 \( \gamma^{[2]} \) 控制。<br>BN 限制了先前层参数更新对第三层的输入的分布的影响，使得数据分布更加稳定，让神经网络后继层在更加稳固的基础上进行学习，削弱了各个层次参数学习过程的耦合，让每一层参数的学习更加独立，有效提高整个神经网络的训练效率。</p>
+</blockquote>
+<h3 id="Other-benefits-of-Batch-Normalization"><a href="#Other-benefits-of-Batch-Normalization" class="headerlink" title="Other benefits of Batch Normalization"></a>Other benefits of Batch Normalization</h3><h5 id="Batch-Norm-as-regularization"><a href="#Batch-Norm-as-regularization" class="headerlink" title="Batch Norm as regularization"></a>Batch Norm as regularization</h5><ul>
+<li>Each mini-batch is scaled by the mean/variance computed on just that mini-batch.</li>
+<li>This adds some noise to the values \( z^{[𝑙]} \) within that minibatch. So similar to dropout, it adds some noise to each hidden layer’s activations. </li>
+<li>This has a slight regularization effect. </li>
+</ul>
+<h5 id="Higher-learning-rate"><a href="#Higher-learning-rate" class="headerlink" title="Higher learning rate"></a>Higher learning rate</h5><p>If we use a high learning rate in a traditional neural network, then the gradients could explode or vanish. Large learning rates can scale the parameters which could amplify the gradients, thus leading to an explosion. But if we do batch normalization, small changes in parameter to one layer do not get propagated to other layers. This makes it possible to use higher learning rates for the optimizers, which otherwise would not have been possible. It also makes gradient propagation in the network more stable.</p>
+<h3 id="Batch-Norm-at-test-time"><a href="#Batch-Norm-at-test-time" class="headerlink" title="Batch Norm at test time"></a>Batch Norm at test time</h3><p>在推理/测试的时候，使用 across mini-batches 的指数加权滑动平均估计 \( \mu \)，\( \sigma^{2} \)。</p>
+<h3 id="Batch-Normalization-in-Keras"><a href="#Batch-Normalization-in-Keras" class="headerlink" title="Batch Normalization in Keras"></a>Batch Normalization in Keras</h3><p>Use the Keras code provided here as a baseline for showing how batch normalizations can improve the accuracy by a large margin. The baseline code does not use batch normalization and the following changes were made to it to add on batch normalization.</p>
+<ul>
+<li><p>Import the BatchNormalization modules from keras.layers</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">from keras.layers import BatchNormalization</div></pre></td></tr></table></figure>
+</li>
+<li><p>Batch Normalization calls were added in keras after the Conv2D or Dense function calls, but before the following Activation function calls. Here are some examples.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">model.add(Conv2D(32, (3, 3)))</div><div class="line">model.add(BatchNormalization())</div><div class="line">model.add(Activation(&apos;relu&apos;))</div><div class="line"></div><div class="line">model.add(Dense(32, (3, 3)))</div><div class="line">model.add(BatchNormalization())</div><div class="line">model.add(Activation(&apos;relu&apos;))</div></pre></td></tr></table></figure>
+</li>
+<li><p>Dropout calls were removed. Batch Normalization itself has some regularization effect. So usually dropout can be reduced. In our case removing it altogether also did not reduce accuracy.</p>
+</li>
+<li>Learning rate of the optimizer was increased 10 times from 0.0001 to 0.001. RMSprop optimizer was used as in the baseline code, but this would be true for other optimizers too.</li>
+<li>We used the same numpy seed to both the baseline and batch normalization versions in order to make a fair comparison between the two output versions. Since most of the deep learning algorithms are stochastic, their outputs are not exactly same in different runs, but the batch normalization version outperformed the baseline version by large margins in all the runs, with the same numpy seed as well as without giving the same numpy seed.<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">from numpy.random import seed</div><div class="line">seed(7)</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><img src="/2018/07/03/Amazing-Batch-Normalization/ModelAccuracy.png" alt="ModelAccuracy"><br>Both the versions have roughly the same run time needed for each epoch (24-25 s), but as we see in the above plot, the accuracy attains a much higher value much faster if we use the batch normalization. The keras team reports an accuracy of  79% after 50 epochs, as seen in their Github code. Our run of the same code gave a maximum accuracy of 77%, which seems fair, given it is in the same range as theirs and the stochastic nature of the keras runs. But with batch normalization, it increases to 87%. All these runs were done on a GeForce GTX 1080.</p>
+<p><img src="/2018/07/03/Amazing-Batch-Normalization/val_loss.png" alt="val_loss"><br>Above is the plot of the validation vs training losses for both the versions. As we can see the validation loss reduces substantially with batch normalization.</p>
+<p><a href="https://github.com/spmallick/learnopencv/tree/master/BatchNormalization" target="_blank" rel="external">代码链接</a></p>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    </div>
+
+    
+
+    
+        <div class="post-tags">
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <a href="/tags/DL/">#DL</a>
+        </div>
+    
+
+    <!-- Comments -->
+    
+
+</div>
+        </section>
+
+    </div>
+</div>
+
+
+</div>
+
+<!-- Footer -->
+<div class="push"></div>
+
+<footer class="footer-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
+                <h2>About</h2>
+                <p>
+                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
+                </p>
+            </div>
+            
+    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+            
+            <li>
+                <a class="footer-post" href="/2018/09/03/Optimizers/">Optimizers</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/31/Train-Faster-R-CNN-s-RPN-as-a-standalone-app-using-TF-Object-Detecion-APIs/">Train Faster R-CNN&#39;s RPN </a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/28/Tensorflow-模型浮点数计算量和参数量统计/">TensorFlow 模型浮点数计算量和参数量统计</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/26/YOLO/">YOLO</a>
+            </li>
+            
+        </ul>
+    </div>
+
+
+
+            
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="list-inline footer-social-icons">
+                    
+                    <li class="list-inline-item">
+                        <a href="https://github.com/RobertLexis">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-github"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="mailto:robert_lexis@163.com">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-envelope-o"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="footer-copyright">
+                    @Untitled. All right reserved | Robert Lexis Loves Wenny
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- After footer scripts -->
+
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Tween Max -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/main.js"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>

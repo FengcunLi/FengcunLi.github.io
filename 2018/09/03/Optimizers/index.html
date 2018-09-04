@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="Batch vs. mini-batch gradient descentmini-batch gradient descent 可以加快训练过程，Batch gradient descent 是过一次整个训练集才更新一次参数。Too long per iteration（一次更新就是一次迭代，一次迭代就是一次更新）.one epoch: single pass through training set.
+Understanding mini-batch gradient descent
+Batch gradient descent cost 一定是单调递减的，如果不是，有可能是学习率太大了，导致发散了。
+mini-batch gradient descent noisy">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Robert Lexis">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="Optimizers"/>
+    
+
+    <!--Open Graph Description-->
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="This is Robert Lexis."/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+    <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>Optimizers - This is Robert Lexis.</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Google Analytics -->
+    
+
+
+</head>
+
+
+<body>
+
+<div class="bg-gradient"></div>
+<div class="bg-pattern"></div>
+
+<!-- Menu -->
+<!--Menu Links and Overlay-->
+<div class="menu-bg">
+    <div class="menu-container">
+        <ul>
+            
+            <li class="menu-item">
+                <a href="/">
+                    Home
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/archives">
+                    Archives
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/about">
+                    About
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/tags">
+                    Tags
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/categories">
+                    Categories
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/contact">
+                    Contact
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+<!--Hamburger Icon-->
+<nav>
+    <a href="#menu"></a>
+</nav>
+
+<div class="container">
+
+    <!-- Main Content -->
+    <div class="row">
+    <div class="col-sm-12">
+
+        <!--Title and Logo-->
+        <header>
+    <div class="logo">
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
+        
+    </div>
+</header>
+
+        <section class="main">
+            
+<div class="post">
+
+    <div class="post-header">
+        <h1 class="title">
+            <a href="/2018/09/03/Optimizers/">
+                Optimizers
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-09-03</span>
+            
+            
+            
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- Gallery -->
+        
+
+        <!-- Post Content -->
+        <h3 id="Batch-vs-mini-batch-gradient-descent"><a href="#Batch-vs-mini-batch-gradient-descent" class="headerlink" title="Batch vs. mini-batch gradient descent"></a>Batch vs. mini-batch gradient descent</h3><p>mini-batch gradient descent 可以加快训练过程，Batch gradient descent 是过一次整个训练集才更新一次参数。Too long per iteration（<br>一次更新就是一次迭代，一次迭代就是一次更新）.<br>one epoch: single pass through training set.</p>
+<h5 id="Understanding-mini-batch-gradient-descent"><a href="#Understanding-mini-batch-gradient-descent" class="headerlink" title="Understanding mini-batch gradient descent"></a>Understanding mini-batch gradient descent</h5><ul>
+<li>Batch gradient descent cost 一定是单调递减的，如果不是，有可能是学习率太大了，导致发散了。</li>
+<li>mini-batch gradient descent noisy<a id="more"></a>
+<h5 id="choosing-your-mini-batch-size"><a href="#choosing-your-mini-batch-size" class="headerlink" title="choosing your mini-batch size:"></a>choosing your mini-batch size:</h5>cost-parameters 图是一个等高线图。</li>
+<li>mini-batch 可以通过选择较小的学习率来减少噪声。</li>
+<li>small training set: use batch gradient descent</li>
+<li>出于计算机内存布局和访问方式的原因，设置 mini-batch 为 2 的幂代码会运行的快一点。<br>make mini-batch fit in CPU/GPU memory.<br>mini-batch is a hyper parameter.</li>
+</ul>
+<h3 id="Exponentially-weighted-averages"><a href="#Exponentially-weighted-averages" class="headerlink" title="Exponentially weighted averages"></a>Exponentially weighted averages</h3><p>\( V_n = \beta V_{n-1} + (1 - \beta) x_n \)<br>\( V_n \) an approximately average over last \( \frac{ 1 }{ 1 - \beta} \) values.</p>
+<h5 id="证明"><a href="#证明" class="headerlink" title="证明"></a>证明</h5><p>\[<br>\epsilon^{\frac{1}{1 - \epsilon}} = \frac{1}{e} \\\\<br>\epsilon = 0.9 \\\\<br>{0.9}^{\frac{1}{0.1}} = \frac{1}{e}<br>\]<br>\[<br>V_n = 0.1 \times x_n + 0.1 \times 0.9 \times x_{n-1} + 0.1 \times 0.9^{2} \times x_{n-2} + 0.1 \times 0.9^{3} \times x_{n-3} + …<br>\]</p>
+<ul>
+<li>when \( \beta=0.9 \), focus on just the last 10 values, because after 10 value’s weight decay to \( \frac{1}{e} \).</li>
+<li>when \( \beta=0.98 \), focus on just the last 50 values, because after 50 value’s weight decay to \( \frac{1}{e} \).</li>
+<li>So \( V_n \) an approximately average over last \frac{ 1 }{ 1 - \beta} values.</li>
+</ul>
+<p>指数加权滑动平均仅需要保存当前的 \( V_n \) 和当前的 \( x_n \)，是一种近似均值，而精确的滑动均值计算方法需要保存过去的（the last）\( window size \) 个数值。 Exponentially weighted average 的存储效率和计算效率都很高，只需要一两行代码即可。</p>
+<h3 id="Bias-correction-in-exponentially-weighted-averages"><a href="#Bias-correction-in-exponentially-weighted-averages" class="headerlink" title="Bias correction in exponentially weighted averages"></a>Bias correction in exponentially weighted averages</h3><h3 id="Gradient-descent-with-momentum"><a href="#Gradient-descent-with-momentum" class="headerlink" title="Gradient descent with momentum"></a>Gradient descent with momentum</h3><p>它几乎总是比标准的梯度下降算法更快，in one sentence 算法的主要思想就是计算梯度的指数加权滑动平均（exponentially weigthed average of gradient）。<br>梯度下降时的震荡会减慢学习的过程，使我们没法使用较大的学习率。我们希望在纵轴上 slower learning rate，在横轴上 faster learning rate。<br><img src="/2018/09/03/Optimizers/GD_vs_momentum.png" alt="GD_vs_momentum"><br>如果把这些梯度滑动平均一下，会发现这些震荡在纵轴上的平均值趋近于 0，在纵轴的方向上会获得较小的速度，在横轴方向，所有的梯度的方向一致，所以横轴方向的平均值仍然较大，在横轴的方向上会获得较大的速度。</p>
+<p>Momentum：<br>\( V_{dw} = 0, V_{db} = 0 \)<br>on iteration t:</p>
+<ul>
+<li>compute dw, db on current mini-batch</li>
+<li>\( V_{dw} = \beta V_{dw} + (1 - \beta) dw \)</li>
+<li>\( V_{db} = \beta V_{db} + (1 - \beta) db \)</li>
+<li>\( w = w - \alpha V_{dw} \)</li>
+<li>\( b = b - \alpha V_{db} \)<br>Hyperparameters: \( \alpha \), \( \beta  = 0.9 \)<br>Momentum 一般不做 Bias Correction。Momentum 通过指数加权滑动平均让梯度下降过程更加平滑。</li>
+</ul>
+<h3 id="RMSprop"><a href="#RMSprop" class="headerlink" title="RMSprop"></a>RMSprop</h3><p>Root Mean Square prop 均方根传递。RMSprop 可以减少震荡，允许使用较大的 learning rate。</p>
+<h3 id="Adam-optimization-algorithm"><a href="#Adam-optimization-algorithm" class="headerlink" title="Adam optimization algorithm"></a>Adam optimization algorithm</h3><p>Adaptive moment estimation 自适应矩估计，将 Momentum 与 RMSprop 结合起来。<br>Adam 优化算法通常需要进行 Bias correction。</p>
+<ul>
+<li>\( \alpha \): needs to be tuned</li>
+<li>\( \beta_1 \): 0.9 用于计算 \( dw \) 的滑动平均的近似，一阶矩指数加权滑动平均。</li>
+<li>\( \beta_2 \): 0.999 用于计算 \( (dw)^2 \) 的滑动平均的近似，二阶矩指数加权滑动平均。</li>
+<li>\( \epsilon \): 10^{-8}</li>
+<li>\( V_{dw}, V_{db}, S_{dw}, S_{db} = 0 \)</li>
+</ul>
+<p>On iteration t:</p>
+<ul>
+<li>compute dw, db on current mini-batch </li>
+<li>\( V_{dw} = \beta_1 V_{dw} + (1 - \beta_1) dw \)</li>
+<li>\( V_{db} = \beta_1 V_{db} + (1 - \beta_1) db \)</li>
+<li>\( S_{dw} = \beta_2 S_{dw} + (1 - \beta_2) (dw)^2 \)</li>
+<li>\( S_{db} = \beta_2 S_{db} + (1 - \beta_2) (db)^2 \)</li>
+<li>\( V_{dw}^{corrected} = \frac{V_{dw}}{1-{\beta_1}^t} \)</li>
+<li>\( V_{db}^{corrected} = \frac{V_{db}}{1-{\beta_1}^t} \)</li>
+<li>\( S_{dw}^{corrected} = \frac{S_{dw}}{1-{\beta_2}^t} \)</li>
+<li>\( S_{dw}^{corrected} = \frac{S_{dw}}{1-{\beta_2}^t} \)</li>
+<li>\( w := w - \alpha \frac{V_{dw}^{corrected}}{\sqrt{S_{dw}^{corrected}} + \epsilon} \)</li>
+<li>\( b := b - \alpha \frac{V_{db}^{corrected}}{\sqrt{S_{db}^{corrected}} + \epsilon} \)</li>
+</ul>
+<h3 id="Learning-rate-decay"><a href="#Learning-rate-decay" class="headerlink" title="Learning rate decay"></a>Learning rate decay</h3><p>one epoch = one pass through training set.</p>
+<ul>
+<li>\( \alpha = \frac{1}{1 + decay-rate * epoch-num} \alpha_0 \)</li>
+<li>\( \alpha = 0.95^{epoch-num} \alpha_0 \)</li>
+<li>\( \alpha = \frac{k}{\sqrt{2}{epoch-num}} \alpha_0 or \frac{k}{\sqrt{2}{t}} \alpha_0 \)</li>
+<li>discrete staircase</li>
+<li>manually control</li>
+</ul>
+<h3 id="The-problem-of-local-optima"><a href="#The-problem-of-local-optima" class="headerlink" title="The problem of local optima"></a>The problem of local optima</h3><p><img src="/2018/09/03/Optimizers/local_optima.png" alt="local_optima"><br>以前人们通常会担心优化算法会陷入局部最优。从上图可以看出存在很多的局部最优，会导致优化算法陷入这些局部最优，而找不到全局最优，但是这种直观是并不准确的，实际上在代价函数中大部分梯度为零的点并不是像这样的 局部最优，而是鞍点（Saddle Point），如下图所示。<br><img src="/2018/09/03/Optimizers/saddle.png" alt="saddle"><br>对于一个高维函数而言，如果梯度为零，则需要在每个方向上方向导数均为零，每个方向上可能是一个凸函数或者凹函数，如果要求它是一个局部最优，则要求在每个方向上都是一个凸函数，例如对于一个 20000 维的空间，一个局部最优要求 20000 个方向上都是凸函数，概率大约仅有 \( /frac{1}{2^{20000}} \)，因此更有可能遇到的情况是，有的方向上是凸函数，有的方向上凹函数。这就是为什么在高维空间中，更有可能遇到的是鞍点而不是局部最优点。</p>
+<h3 id="如果说局部最优不是问题，那问题是什么？"><a href="#如果说局部最优不是问题，那问题是什么？" class="headerlink" title="如果说局部最优不是问题，那问题是什么？"></a>如果说局部最优不是问题，那问题是什么？</h3><p>真正会降低学习速度的是停滞区（plateaus）。<br><img src="/2018/09/03/Optimizers/plateaus.png" alt="plateaus.png"><br>上图的曲面相当的平，优化器会沿着这个很长的坡往下走，直到抵达 * 处，从而离开停滞区。</p>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    </div>
+
+    
+
+    
+        <div class="post-tags">
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <a href="/tags/DL/">#DL</a>
+        </div>
+    
+
+    <!-- Comments -->
+    
+
+</div>
+        </section>
+
+    </div>
+</div>
+
+
+</div>
+
+<!-- Footer -->
+<div class="push"></div>
+
+<footer class="footer-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
+                <h2>About</h2>
+                <p>
+                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
+                </p>
+            </div>
+            
+    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+            
+            <li>
+                <a class="footer-post" href="/2018/09/03/Optimizers/">Optimizers</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/31/Train-Faster-R-CNN-s-RPN-as-a-standalone-app-using-TF-Object-Detecion-APIs/">Train Faster R-CNN&#39;s RPN </a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/28/Tensorflow-模型浮点数计算量和参数量统计/">TensorFlow 模型浮点数计算量和参数量统计</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/26/YOLO/">YOLO</a>
+            </li>
+            
+        </ul>
+    </div>
+
+
+
+            
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="list-inline footer-social-icons">
+                    
+                    <li class="list-inline-item">
+                        <a href="https://github.com/RobertLexis">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-github"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="mailto:robert_lexis@163.com">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-envelope-o"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="footer-copyright">
+                    @Untitled. All right reserved | Robert Lexis Loves Wenny
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- After footer scripts -->
+
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Tween Max -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/main.js"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>

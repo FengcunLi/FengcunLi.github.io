@@ -167,8 +167,8 @@
         <!-- Post Content -->
         <p>本博文主要是在学习 <a href="http://cs231n.stanford.edu/2017/" target="_blank" rel="external">CS231n: Convolutional Neural Networks for Visual Recognition Spring 2017</a> Lecture 3: Loss Functions and Optimization 之后的总结。<br><a id="more"></a></p>
 <h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><p><img src="" alt="problem"><br>Suppose: 3 training examples, 3 classes. With some \(W\) the scores \( f(x, W) = Wx\) are:<br>损失函数告诉我们目前模型性能的好坏（A loss function tells how<br>good our current classifier is）。<br>Loss function takes in the \(W\), looks at the scores, then tell us how bad quantitatively the \(W\) is.<br>Optimizer comes up a procedure for searching through the space of all possible \(Ws\) to get the least bad W.<br>给定数据集 \(\lbrace (x_i, y_i) \rbrace_{i=1}^N\)，其中 \(x_i\) 是图片，\(y_i\) 是一个整数标签，在整个数据集上损失是：<br>$$<br>L = \frac{1}{N} \sum_i L_i(f(x_i, W), y_i)<br>$$</p>
-<h3 id="Multiclass-SVM-loss"><a href="#Multiclass-SVM-loss" class="headerlink" title="Multiclass SVM loss"></a>Multiclass SVM loss</h3><p>$$<br>\begin{split}<br>L_i &amp; = \sum_{j \not= y_i} \begin{cases}<br>    0 &amp; s_{y_i} &gt; s_j + 1 \\\<br>    s_j - s_{y_i} + 1 &amp; otherwise<br>    \end{cases} \\\<br>    &amp; = \sum_{j \not= y_i} max(0, s_j - s_{y_i} + 1)<br>\end{split}<br>$$</p>
-<p>对一个样本\(i\)而言，我们可以得到其在各个类别上的 score，如上图所示，<br>仅在不是真实标签类别\(y_i\)的其他类别上\(j\)上计算损失，仅当其他类别上的 score \(s_j\) 加上一个 safety margin值之后还小于真实类别上的 score \(s_{y_i}\)时，损失才为0。即不仅仅要求真实类别score \(s_{y_i}\) 大于其他类别score \(s_j}\)，而且更进一步要求优化器使得前者大于后者加上一个safety margin。<br>在 otherwise 分支，\(s_j\) 比 \(s_{y_i}\) 大的值再加上safety margin就是损失值。<br>$$<br>HingeLoss_{i, j} = max(0, s_j - s_{y_i} + 1)<br>$$<br>作为 \(s_{y_i}\) 的函数斜率为 -1，必过点 \((s_j + 1, 0)\)。<br><img src="" alt="hinge_loss"></p>
+<h3 id="Multiclass-SVM-loss"><a href="#Multiclass-SVM-loss" class="headerlink" title="Multiclass SVM loss"></a>Multiclass SVM loss</h3><p>$$<br>\begin{split}<br>L_i &amp; = \sum_{j \not= y_i} \begin{cases}<br>    0 &amp; s_{y_i} \geq s_j + 1 \\\<br>    s_j - s_{y_i} + 1 &amp; otherwise<br>    \end{cases} \\\<br>    &amp; = \sum_{j \not= y_i} max(0, s_j - s_{y_i} + 1)<br>\end{split}<br>$$</p>
+<p>对一个样本 \(i\) 而言，我们可以得到其在各个类别上的 score，如上图所示，<br>仅在不是真实标签类别 \(y_i\) 的其他类别上 \(j\) 上计算损失，仅当其他类别上的 score \(s_j\) 加上一个 safety margin值之后还小于真实类别上的 score \(s_{y_i}\)时，损失才为0。即不仅仅要求真实类别 score \(s_{y_i}\) 大于其他类别 score \(s_j}\)，而且更进一步要求优化器使得前者大于后者加上一个safety margin。<br>在 otherwise 分支，\(s_j\) 比 \(s_{y_i}\) 大的值再加上safety margin就是损失值。<br>$$<br>HingeLoss_{i, j} = max(0, s_j - s_{y_i} + 1)<br>$$<br>作为 \( s_{y_i} \) 的函数斜率为 -1，必过点 \( (s_j + 1, 0) \)。<br><img src="" alt="hinge_loss"></p>
 <p><img src="" alt="losses"><br>$$<br>L = (2.9 + 0 + 12.9) / 3 = 5.27<br>$$</p>
 <h5 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h5><ul>
 <li>What happens to loss if car scores change a bit ?<br>  The loss will not change.<br>  这说明 SVM loss 关心的仅仅是让真实标签类别的 score 比其他类别的 score 大 1。</li>
@@ -222,19 +222,19 @@
         <ul>
             
             <li>
+                <a class="footer-post" href="/2018/09/03/Optimizers/">Optimizers</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/31/Train-Faster-R-CNN-s-RPN-as-a-standalone-app-using-TF-Object-Detecion-APIs/">Train Faster R-CNN&#39;s RPN </a>
+            </li>
+            
+            <li>
                 <a class="footer-post" href="/2018/08/28/Tensorflow-模型浮点数计算量和参数量统计/">TensorFlow 模型浮点数计算量和参数量统计</a>
             </li>
             
             <li>
                 <a class="footer-post" href="/2018/08/26/YOLO/">YOLO</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2018/08/26/非最大值抑制/">非最大值抑制</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2018/08/26/目标定位-vs-目标检测/">目标定位 vs 目标检测</a>
             </li>
             
         </ul>

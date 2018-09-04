@@ -255,11 +255,12 @@ Precision and recall\[precision = \frac{ TP }{ TP + FP } \\\\recall = \frac{ TP 
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">calculate_average_precision</span><span class="params">(rec, prec)</span>:</span></div><div class="line">    <span class="comment"># 对 rec 进行前后扩展，使得 rec 能够覆盖 [0, 1] 整个范围，不然求出的面积会偏小</span></div><div class="line">    rec.insert(<span class="number">0</span>, <span class="number">0</span>)</div><div class="line">    rec.append(<span class="number">1</span>)</div><div class="line"></div><div class="line">    <span class="comment"># 对 prec 进行前后扩展，通过 append 0 和变为阶梯状的操作，使得 prec 进行了合理的扩展，</span></div><div class="line">    <span class="comment"># prec 能够和 rec 一一对应了</span></div><div class="line">    prec.insert(<span class="number">0</span>, <span class="number">0</span>)</div><div class="line">    prec.append(<span class="number">0</span>)</div><div class="line">    <span class="comment"># 变为阶梯状</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> reversed(range(<span class="number">1</span>, len(prec))):</div><div class="line">        prec[i<span class="number">-1</span>] = max(prec[i<span class="number">-1</span>], prec[i])</div><div class="line">    </div><div class="line">    <span class="comment"># 找到 recall 值发生变化的地方</span></div><div class="line">    ii = []</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(rec)<span class="number">-1</span>):</div><div class="line">        <span class="keyword">if</span> rec[i] != rec[i+<span class="number">1</span>]:</div><div class="line">            ii.append(i + <span class="number">1</span>)</div><div class="line"></div><div class="line">    <span class="comment"># 对面积进行累加</span></div><div class="line">    ap = <span class="number">0</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> ii:</div><div class="line">        ap = ap + np.sum((rec[i] - rec[i<span class="number">-1</span>]) * prec[i])</div><div class="line">    <span class="keyword">return</span> ap</div></pre></td></tr></table></figure>
 </li>
 </ol>
+<p>实现代码<a href="https://github.com/rafaelpadilla/Object-Detection-Metrics" target="_blank" rel="external">参考</a>。</p>
 <h3 id="补充材料-from-Yesterday’s-Coffee"><a href="#补充材料-from-Yesterday’s-Coffee" class="headerlink" title="补充材料 from Yesterday’s Coffee"></a>补充材料 from <a href="http://www.yesterdayscoffee.de/" target="_blank" rel="external">Yesterday’s Coffee</a></h3><p>采摘自 <a href="http://www.yesterdayscoffee.de/2013/09/03/precision-recall-curves-and-mean-average-precision/" target="_blank" rel="external">Precision-Recall-Curves and Mean Average Precision</a><br>Precision-recall curves are often used to evaluate ranked results of an information retrieval system (e.g., a search engine). The principle is easy, for every search result, check the precision and recall you have until now (precision/recall at k). If you plot this in a graph with recall on the x-axis and precision on the y-axis, you end up with something like this (blue line):<br><img src="/2018/07/26/AP-and-mAP-in-object-detection/pr.png" alt="pr"><br>The essential shape is always the same. Why? Let’s say we have looked at k results which corresponds to a point with a precision and a recall value. What can happen when we go to result k+1? The result can be correct, then recall will increase and precision as well – the curve goes up and right. Or it can go wrong, then recall stays the same and precision drops – the curve goes straight down.</p>
 <p>The red line is the interpolated precision, meaning we define precision at some arbitrary level to be the maximum precision reached at any later recall level. Essentially, we flatten the “teeth” of the curve. The difference can be pretty big (see in the plot at recall around 0.2), we can even “skip” a tooth.</p>
 <p>What would the curve look like for a perfect system? Meaning a system that only returns correct results? It would be 1.0 for every recall level. </p>
 <p>What should the value be for precision at recall 0? If we interpolate, the answer is clear: the highest precision value at some later recall level. This does not have to be 1.0 – it could happen that the first result is wrong, the second correct, then we have P=0.5 at k=2 and it might only drop from there.</p>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
     </div>
 
     
@@ -301,19 +302,19 @@ Precision and recall\[precision = \frac{ TP }{ TP + FP } \\\\recall = \frac{ TP 
         <ul>
             
             <li>
+                <a class="footer-post" href="/2018/09/03/Optimizers/">Optimizers</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/31/Train-Faster-R-CNN-s-RPN-as-a-standalone-app-using-TF-Object-Detecion-APIs/">Train Faster R-CNN&#39;s RPN </a>
+            </li>
+            
+            <li>
                 <a class="footer-post" href="/2018/08/28/Tensorflow-模型浮点数计算量和参数量统计/">TensorFlow 模型浮点数计算量和参数量统计</a>
             </li>
             
             <li>
                 <a class="footer-post" href="/2018/08/26/YOLO/">YOLO</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2018/08/26/非最大值抑制/">非最大值抑制</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2018/08/26/目标定位-vs-目标检测/">目标定位 vs 目标检测</a>
             </li>
             
         </ul>
