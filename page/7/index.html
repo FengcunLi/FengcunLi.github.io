@@ -147,6 +147,116 @@
 
     <div class="post-header index">
         <h1 class="title">
+            <a href="/2017/11/03/Python-os-system-与-os-popen-的不同/">
+                Python os.system 与 os.popen 的不同
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2017-11-03</span>
+            
+            
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <h3 id="两者是否等待子进程退出"><a href="#两者是否等待子进程退出" class="headerlink" title="两者是否等待子进程退出"></a>两者是否等待子进程退出</h3><p>在参加阿里金服《商场中精确定位用户所在店铺》的算法比赛时，使用的是 pandas 和 sklearn ，虽然在数据预处理时使用了 pandas 的 <code>melt</code> 和 <code>pivot</code> 等“批处理”方式，避免了使用循环对每一条记录进行预处理，但是由于数据量较大还是挺费时的，且这个过程是单线程的。在使用 sklearn 的 <code>RandomForestClassifier</code> 时通过指定 <code>n_jobs=-1</code>，可以开启多线程进行训练。在数据预处理和模型拟合是串行的情况下，数据预处理阶段 CPU 的线程（服务器是8核16线程）是没有跑满的，这是一个性能瓶颈。因此想要通过多线程或者多进程的方式充分利用 CPU 的计算能力。达到下面的效果。<br><img src="http://oytnj8g2y.bkt.clouddn.com/multithread.png" alt="multiprocess"><br>由于不同商场记录数目不一，所需的预处理和模型拟合时间不一，期望达到同一时刻有的进程处在预处理阶段，有的进程处于模型拟合阶段，避免 CPU 计算能力的浪费。<br></p>
+        </div>
+        <a href="/2017/11/03/Python-os-system-与-os-popen-的不同/" class="read-more">Read More</a>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
+            <a href="/2017/11/03/hexo-使用随笔/">
+                hexo 使用随笔
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2017-11-03</span>
+            
+            
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <a id="more"></a>
+<h3 id="修改-hexo-中引用（blockquote）的样式"><a href="#修改-hexo-中引用（blockquote）的样式" class="headerlink" title="修改 hexo 中引用（blockquote）的样式"></a>修改 hexo 中引用（blockquote）的样式</h3><p>在 clean blog 中使用引用<code>&gt;</code>时，渲染后引用会字体变大文本居中，十分不美观。因此需要修改样式。<br>找到文件<code>\themes\clean-blog\source\css\article.styl</code>，在其中搜索关键字<code>blockquote</code>:<br>change<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">blockquote</div><div class="line">  font-style italic</div><div class="line">  font-family font-serif</div><div class="line">  font-size 1.2em</div><div class="line">  padding 0 30px 15px</div><div class="line">  text-align center</div><div class="line">  footer....</div></pre></td></tr></table></figure></p>
+<p>to<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">blockquote</div><div class="line">  font-style italic</div><div class="line">  font-family font-serif</div><div class="line">  font-size 0.95em</div><div class="line">  padding 0 30px 15px</div><div class="line">  text-align left</div><div class="line">  footer....</div></pre></td></tr></table></figure></p>
+<p>效果就是：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/11/before_fixing.png" alt="before_fixing"><br>to<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/11/after_fixing.png" alt="after_fixing"></p>
+<h3 id="Hexo-下-Mathjax-的转义问题"><a href="#Hexo-下-Mathjax-的转义问题" class="headerlink" title="Hexo 下 Mathjax 的转义问题"></a>Hexo 下 Mathjax 的转义问题</h3><p>Q(s_{t}) 会被转义成 Q(s&lt;/em&gt;{t}) 导致 Mathjax 不能正确渲染出公式。</p>
+<h4 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h4><p>Mathjax 可以解析网页上的数学公式，与 Hexo 的结合也很简单，可以手动加入js，或者直接使用 hexo-math 插件。大部分情况下都是可以的，但是 Markdwon 本身的特殊符号与 Latex 中的符号会出现冲突的时候:</p>
+<ul>
+<li>_的转义，在 Markdown 中，_是斜体，但是在 Latex 中，却有下标的意思，就会出现问题。</li>
+<li>\\\\的换行，在 Markdown 中，\\\\会被转义为\\, 这样也会影响影响 Mathjax 对公式中的 \\\ 进行渲染。</li>
+</ul>
+<h4 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h4><p>Hexo 默认使用 marked.js 去解析我们写的 Markdown，比如一些符号，_代表斜体，会被处理为&lt;em&gt;标签，比如x_i在开始被渲染的时候，处理为x&lt;em&gt;i&lt;/em&gt;，这个时候 Mathjax 就无法渲染成下标了。很多符号都有这个问题，比如粗体*，也是无法在Mathjax渲染出来的。所以说到底，是 Hexo 使用的 Markdown 引擎的锅，因为很多其它引擎在这方面处理的很好。</p>
+<h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><p>修改 Hexo 渲染源码<br>思路就是修改 Hexo 的渲染源码: nodes_modules/lib/marked/lib/marked.js:</p>
+<ul>
+<li>去掉\的额外转义</li>
+<li>将 em 标签对应的符号中，去掉_，因为 Markdown 中有*可以表示斜体，_就去掉了。</li>
+</ul>
+<p>打开nodes_modules/marked/lib/marked.js:</p>
+<ol>
+<li>第一步<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">escape: /^\\([\\`*&#123;&#125;\[\]()# +\-.!_&gt;])/,</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>改为:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">escape: /^\\([`*&#123;&#125;\[\]()# +\-.!_&gt;])/,</div></pre></td></tr></table></figure></p>
+<p>这样就会去掉\的转义了。</p>
+<ol>
+<li>第二步，找到em的符号:<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">em: /^\b_((?:[^_]|__)+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>改为:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">em:/^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</div></pre></td></tr></table></figure></p>
+<p>去掉_的斜体含义，这样通用性很高，因为没有修改文章的内容，可以放到别的引擎下也会顺利渲染。</p>
+<h3 id="hexo-部署错误"><a href="#hexo-部署错误" class="headerlink" title="hexo 部署错误"></a>hexo 部署错误</h3><h4 id="错误提示"><a href="#错误提示" class="headerlink" title="错误提示"></a>错误提示</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">fatal: could not read Username for &apos;https://github.com&apos;: No error</div><div class="line">FATAL Something&apos;s wrong. Maybe you can find the solution here: http://hexo.io/docs/troubleshooting.html</div><div class="line">Error: fatal: HttpRequestException encountered.</div></pre></td></tr></table></figure>
+<p>在 <code>_config.yml</code> 中完成以下更改：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">  type: git</div><div class="line">  repo: https://github.com/RobertLexis/RobertLexis.github.io.git</div><div class="line">  branch: master</div></pre></td></tr></table></figure></p>
+<p>to<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">  type: git</div><div class="line">  repo:  git@github.com:RobertLexis/RobertLexis.github.io.git</div><div class="line">  branch: master</div></pre></td></tr></table></figure></p>
+<p>即由 HTTPS 转到 SSH。</p>
+<h4 id="配置-SSH"><a href="#配置-SSH" class="headerlink" title="配置 SSH"></a>配置 SSH</h4><p>在正确配置之前会报错<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Permission denied (publickey).</div><div class="line">fatal: Could not read from remote repository.</div><div class="line"></div><div class="line">Please make sure you have the correct access rights</div><div class="line">and the repository exists.</div></pre></td></tr></table></figure></p>
+<h5 id="配置步骤："><a href="#配置步骤：" class="headerlink" title="配置步骤："></a>配置步骤：</h5><ol>
+<li>检查是否有SSH key<br>登陆 github，点击头像 Settings ——&gt; SSH and GPG keys ，查看是否有 SSH keys。如果有，直接跳到第 3 步；如果没有，则继续。</li>
+<li>新建 SSH key，在 git bash 中，注意大小写：<br><code>ssh-keygen -t rsa -C robert_lexis@163.com</code><br>然后会出现：<br><code>Generating public/private rsa key pair.
+Enter file in which to save the key (/c/Users/robert/.ssh/id_rsa):</code><br>直接回车就可以。<br>然后：<br><code>Enter passphrase (empty for no passphrase):
+Enter same passphrase again:</code><br>要求你输入密码，这个密码会在你提交项目时使用，如果为空的话提交项目时则不用输入。这个设置是防止别人往你的项目里提交内容。<br>注意：输入密码的时候没有*字样的，直接输入就好。<br>然后：<br><code>Your identification has been saved in /c/Users/robert/.ssh/id_rsa.
+Your public key has been saved in /c/Users/robert/.ssh/id_rsa.pub.
+The key fingerprint is:
+...</code><br>至此，密钥已经成功生成。</li>
+<li>接下来在 github 上添加SSH key：<ol>
+<li>打开本地文件：id_rsa.pub（文件路径可以在上一步SSH生成成功后看到路径，比如我的是c/Users/robert/.ssh/id_rsa.pub），可以将这个文件在编辑器中打开，然后全选复制。</li>
+<li>登陆 github，点击头像位置处 Settings ——&gt; SSH and GPG keys ——&gt; New SSH key，点击新建SSH key。</li>
+<li>将 1 中复制的内容粘贴在 key 文本框里，title 可以不用填（或者自己起一个名字也可以）。</li>
+</ol>
+</li>
+<li>测试设置是否成功：<br><code>ssh -T git@github.com</code><br>出现：<br><code>Hi RobertLexis! You&#39;ve successfully authenticated, but GitHub does not 
+provide shell access.</code></li>
+<li><p>设置用户信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">git config --global user.name &quot;用户名&quot;</div><div class="line">git config --global user.email  &quot;你希望的邮箱名&quot;</div></pre></td></tr></table></figure>
+</li>
+<li><p>然后就可以部署你的博客到github啦~</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">hexo g</div><div class="line">hexo d</div></pre></td></tr></table></figure>
+</li>
+</ol>
+
+        </div>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
             <a href="/2017/11/02/Install-XGBoost/">
                 Install XGBoost
             </a>
@@ -372,19 +482,19 @@
         <ul>
             
             <li>
+                <a class="footer-post" href="/2019/03/13/Move-semantic/">Move semantic</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/11/21/C-Concurrency-In-Action/">C++ Concurrency In Action</a>
+            </li>
+            
+            <li>
                 <a class="footer-post" href="/2018/09/03/Optimizers/">Optimizers</a>
             </li>
             
             <li>
                 <a class="footer-post" href="/2018/08/28/Tensorflow-模型浮点数计算量和参数量统计/">TensorFlow 模型浮点数计算量和参数量统计</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2018/08/26/YOLO/">YOLO</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2018/08/26/非最大值抑制/">非最大值抑制</a>
             </li>
             
         </ul>

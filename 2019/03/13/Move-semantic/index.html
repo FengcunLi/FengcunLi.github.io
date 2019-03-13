@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="右值引用左值和右值是表达式的属性，一些表达式生成或者需要左值，另外一些表达式生成或者需要右值，一般而言，一个左值表达式表示一个对象的身份，一个右值表达式则表示一个对象的值。
+
+返回左值引用的函数，赋值、下标、解引用、前置递增、前置递减，这些返回左值
+返回非引用的函数，算术、关系、位、后置递增、后置递减，这些返回右值
+
+为了支持移动操作，C++11 引入了一种新的引用类型——右值引用（rvalue reference）。所谓右值引用是指只能绑定到右值的引用，一个右值引用类似于左值引用，也不过是某个对象的另外一个名字而已，通过 &amp;amp;&amp;amp; 来标识一个右值引用。我们只能将左值引用绑定到左值上（const 左值引用可以绑定到右值上），只能将右值引用绑定到右值上。">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Robert Lexis">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="Move semantic"/>
+    
+
+    <!--Open Graph Description-->
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="This is Robert Lexis."/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+    <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>Move semantic - This is Robert Lexis.</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Google Analytics -->
+    
+
+
+</head>
+
+
+<body>
+
+<div class="bg-gradient"></div>
+<div class="bg-pattern"></div>
+
+<!-- Menu -->
+<!--Menu Links and Overlay-->
+<div class="menu-bg">
+    <div class="menu-container">
+        <ul>
+            
+            <li class="menu-item">
+                <a href="/">
+                    Home
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/archives">
+                    Archives
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/about">
+                    About
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/tags">
+                    Tags
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/categories">
+                    Categories
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/contact">
+                    Contact
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+<!--Hamburger Icon-->
+<nav>
+    <a href="#menu"></a>
+</nav>
+
+<div class="container">
+
+    <!-- Main Content -->
+    <div class="row">
+    <div class="col-sm-12">
+
+        <!--Title and Logo-->
+        <header>
+    <div class="logo">
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
+        
+    </div>
+</header>
+
+        <section class="main">
+            
+<div class="post">
+
+    <div class="post-header">
+        <h1 class="title">
+            <a href="/2019/03/13/Move-semantic/">
+                Move semantic
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2019-03-13</span>
+            
+            
+            
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- Gallery -->
+        
+
+        <!-- Post Content -->
+        <h3 id="右值引用"><a href="#右值引用" class="headerlink" title="右值引用"></a>右值引用</h3><p>左值和右值是表达式的属性，一些表达式生成或者需要左值，另外一些表达式生成或者需要右值，一般而言，一个左值表达式表示一个对象的身份，一个右值表达式则表示一个对象的值。</p>
+<ul>
+<li>返回左值引用的函数，赋值、下标、解引用、前置递增、前置递减，这些返回左值</li>
+<li>返回非引用的函数，算术、关系、位、后置递增、后置递减，这些返回右值</li>
+</ul>
+<p>为了支持移动操作，C++11 引入了一种新的引用类型——右值引用（rvalue reference）。所谓右值引用是指<strong>只能</strong>绑定到右值的引用，一个右值引用类似于左值引用，也不过是某个对象的另外一个名字而已，通过 <code>&amp;&amp;</code> 来标识一个右值引用。我们只能将左值引用绑定到左值上（const 左值引用可以绑定到右值上），只能将右值引用绑定到右值上。<br><a id="more"></a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">int i = 42;</div><div class="line">int &amp;r = i;                           // 正确，左值引用绑定到左值上</div><div class="line">int &amp;&amp;rr = i;                      // 错误，右值引用不能绑定到左值上</div><div class="line">int &amp;r2 = i * 42;                // 错误，左值引用不能绑定到右值上</div><div class="line">const int &amp;r3 = i * 42;      // 正确，const 左值引用可以绑定到右值上</div><div class="line">int &amp;&amp;rr2 = i * 42;          //  正确，右值引用绑定到右值上</div></pre></td></tr></table></figure></p>
+<p><strong>右值引用绑定到的对象没有其他用户。</strong><br><strong>变量是左值，因此一个右值引用类型的变量是一个左值，即 <code>rr</code> 和 <code>rr2</code> 是左值。</strong></p>
+<h3 id="move-函数"><a href="#move-函数" class="headerlink" title="move 函数"></a>move 函数</h3><p><code>move</code> 函数告诉编译器：我们有一个左值，但是我们希望像一个右值一样处理它。我们也必须同时认识到，调用 <code>move</code> 意味着承诺：除了对<strong>移后源对象</strong>赋值或者销毁外，我们将不再使用它。</p>
+<h3 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">class BoVector &#123;</div><div class="line">    int size;</div><div class="line">    double *arr_;</div><div class="line">public:</div><div class="line">    BoVector() &#123;</div><div class="line">        size = 5;</div><div class="line">        arr_ = new double[size];</div><div class="line">        cout &lt;&lt; &quot;Default constructor&quot; &lt;&lt; endl;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    BoVector(const BoVector &amp;rhs) &#123;</div><div class="line">        size = rhs.size;</div><div class="line">        arr_ = new double[size];</div><div class="line"></div><div class="line">        for (int i = 0; i &lt; size; i++) &#123;</div><div class="line">            arr_[i] = rhs.arr_[i];</div><div class="line">        &#125;</div><div class="line">        cout &lt;&lt; &quot;Copy constructor&quot; &lt;&lt; endl;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    BoVector(BoVector &amp;&amp;rhs) noexcept &#123;</div><div class="line">        size = rhs.size;</div><div class="line">        arr_ = rhs.arr_;</div><div class="line"></div><div class="line">        rhs.arr_ = nullptr;</div><div class="line">        rhs.size = 0;</div><div class="line">        cout &lt;&lt; &quot;Move constructor&quot; &lt;&lt; endl;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    ~BoVector() &#123;</div><div class="line">        delete[] arr_;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>我们有一个类 <code>BoVector</code>，它具有默认构造函数、拷贝构造函数、移动构造函数。</p>
+<h5 id="Example-one"><a href="#Example-one" class="headerlink" title="Example one"></a>Example one</h5><p>在这个例子中，我们有如下几个函数，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">void foo(BoVector v) &#123;                   // pass-by-value</div><div class="line">&#125;</div><div class="line"></div><div class="line">void foo_by_ref(BoVector &amp;v) &#123;    // pass-by-reference</div><div class="line">&#125;</div><div class="line"></div><div class="line">BoVector createBoVector() &#123;</div><div class="line">    return &#123;&#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>先看几个简单的情况：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">int main() &#123;</div><div class="line">    BoVector reusable = createBoVector(); // 由于编译器的优化，此处并没有临时对象的生成，也就没有拷贝构造函数的调用，而只有默认构造函数的调用</div><div class="line">    foo_by_ref(reusable); // pass-by-reference，没有任何构造函数的调用</div><div class="line">    foo(BoVector());       // 同一，只有默认构造函数的调用</div><div class="line">    foo(createBoVector());  //同一，只有默认构造函数的调用</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>下面对比一下两个情况：</p>
+<ul>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">int main() &#123;</div><div class="line">    BoVector reusable = createBoVector(); // reusable 是一个左值</div><div class="line">    foo(reusable);      // pass-by-value，有新对象的生成，就有构造函数的调用，此处是拷贝构造函数</div><div class="line">    foo(std::move(reusable)); // pass-by-value，有新对象的生成，就有构造函数的调用，此处 `reusable` 移动完之后获得了一个右值，即会调用移动构造函数</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">int main() &#123;</div><div class="line">    BoVector reusable = createBoVector(); // reusable 是一个左值</div><div class="line">    foo(reusable);      // pass-by-value，有新对象的生成，就有构造函数的调用，此处是拷贝构造函数</div><div class="line">    BoVector &amp;&amp;rr = std::move(reusable);</div><div class="line">    foo(rr); // pass-by-value，有新对象的生成，就有构造函数的调用，但是由于 rr 是一个右值引用类型的变量，是一个左值，此处会调用拷贝构造函数</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h5 id="Example-two"><a href="#Example-two" class="headerlink" title="Example two"></a>Example two</h5><p>在这个例子中，我们有如下几个函数，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">void foo(BoVector &amp;v) &#123;         // pass-by-reference</div><div class="line">    cout &lt;&lt; &quot;Lvalue reference.&quot; &lt;&lt; endl;</div><div class="line">&#125;</div><div class="line"></div><div class="line">void foo(BoVector &amp;&amp;v) &#123;     // pass-by-reference</div><div class="line">    cout &lt;&lt; &quot;Rvalue reference.&quot; &lt;&lt; endl;</div><div class="line">&#125;</div><div class="line"></div><div class="line">BoVector createBoVector() &#123;</div><div class="line">    return &#123;&#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>首先看第一种情况：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">int main() &#123;</div><div class="line">    BoVector reusable = createBoVector();</div><div class="line">    foo(reusable);</div><div class="line">    BoVector &amp;&amp;rr = std::move(reusable);</div><div class="line">    foo(rr);</div><div class="line">    foo(BoVector());</div><div class="line">    foo(createBoVector());</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>输出为:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Default constructor</div><div class="line">Lvalue reference.</div><div class="line">**Lvalue reference.** // 上面介绍过，rr 是一个左值，因此会进入打印出 Lvalue reference. 的函数，即使看起来 rr 与打印出 &quot;Rvalue reference.&quot;  的函数在形式上看起来是那么匹配。</div><div class="line">Default constructor</div><div class="line">Rvalue reference.</div><div class="line">Default constructor</div><div class="line">Rvalue reference.</div></pre></td></tr></table></figure></p>
+<p>再看第二种情况：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">int main() &#123;</div><div class="line">    BoVector reusable = createBoVector();</div><div class="line">    foo(reusable);</div><div class="line">    foo(std::move(reusable));</div><div class="line">    foo(BoVector());</div><div class="line">    foo(createBoVector());</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>输出为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Default constructor</div><div class="line">Lvalue reference.</div><div class="line">**Rvalue reference.** // std::move(reusable) 获得了一个右值，因此会进入打印出 Rvalue reference. 的函数</div><div class="line">Default constructor</div><div class="line">Rvalue reference.</div><div class="line">Default constructor</div><div class="line">Rvalue reference.</div></pre></td></tr></table></figure></p>
+<p>另外需要特别注意的是，void foo(BoVector &amp;) 与 void foo(BoVector &amp;&amp;) 都是 pass-by-reference，虽然一个是左值引用，一个是右值引用，但是都是引用，都是某一对象的别名，因此传参时没有新对象的生成，也就没有任何构造函数的调用。</p>
+
+    </div>
+
+    
+
+    
+        <div class="post-tags">
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <a href="/tags/C/">#C++</a>
+        </div>
+    
+
+    <!-- Comments -->
+    
+
+</div>
+        </section>
+
+    </div>
+</div>
+
+
+</div>
+
+<!-- Footer -->
+<div class="push"></div>
+
+<footer class="footer-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
+                <h2>About</h2>
+                <p>
+                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
+                </p>
+            </div>
+            
+    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+            
+            <li>
+                <a class="footer-post" href="/2019/03/13/Move-semantic/">Move semantic</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/11/21/C-Concurrency-In-Action/">C++ Concurrency In Action</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/09/03/Optimizers/">Optimizers</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/28/Tensorflow-模型浮点数计算量和参数量统计/">TensorFlow 模型浮点数计算量和参数量统计</a>
+            </li>
+            
+        </ul>
+    </div>
+
+
+
+            
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="list-inline footer-social-icons">
+                    
+                    <li class="list-inline-item">
+                        <a href="https://github.com/RobertLexis">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-github"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="mailto:robert_lexis@163.com">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-envelope-o"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="footer-copyright">
+                    @Untitled. All right reserved | Robert Lexis Loves Wenny
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- After footer scripts -->
+
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Tween Max -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/main.js"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>
