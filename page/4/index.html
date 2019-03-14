@@ -147,6 +147,70 @@
 
     <div class="post-header index">
         <h1 class="title">
+            <a href="/2018/06/08/笔记-for-PyData-2015-Introduction-to-scikit-image/">
+                笔记 for PyData 2015 - Introduction to scikit-image
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-06-08</span>
+            
+            
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <p>这篇博文是 Emmanuelle Gouillart (scikit-image 开发者) 在 PyData 2015 上演讲 Introduction to scikit-image 的笔记。</p>
+<h3 id="scikit-image"><a href="#scikit-image" class="headerlink" title="scikit-image"></a>scikit-image</h3><p>scikit-image is a general-purpose image processing module for the Python programming language. It is designed to interact efficiently with other popular scientific Python libraries, such as NumPy and SciPy. In particular, scikit-image leverages the powerful data array container of NumPy, that can store images of various dimensions (2-D, 2D RGB, 3D, 4D…).<br></p>
+        </div>
+        <a href="/2018/06/08/笔记-for-PyData-2015-Introduction-to-scikit-image/" class="read-more">Read More</a>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
+            <a href="/2018/06/07/手工-Backpropagation-推导与-TensorFlow-automatic-differentiation/">
+                手工 Backpropagation 推导与 TensorFlow automatic differentiation
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-06-07</span>
+            
+            
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <h3 id="主要对比梯度反向传播手工推导与TensorFLow-自动差分"><a href="#主要对比梯度反向传播手工推导与TensorFLow-自动差分" class="headerlink" title="主要对比梯度反向传播手工推导与TensorFLow 自动差分"></a>主要对比梯度反向传播手工推导与TensorFLow 自动差分</h3><p>关于梯度反向传播手工推导的学习可以参考斯坦福大学的 <a href="http://cs231n.stanford.edu/" target="_blank" rel="external">CS231n: Convolutional Neural Networks for Visual Recognition</a> 的 Lecture 4。<br>下面通过代码对这两者进行对比，代码的Jupyter NoteBook 可以在我的 <a href="https://github.com/RobertLexis/TensorFlow-automatic-differentiation" target="_blank" rel="external">GitHub 仓库</a>中找到。</p>
+<h4 id="imports"><a href="#imports" class="headerlink" title="imports"></a>imports</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">import os</div><div class="line">os.environ[&apos;TF_CPP_MIN_LOG_LEVEL&apos;]=&apos;3&apos;</div><div class="line">import tensorflow as tf</div></pre></td></tr></table></figure>
+<h4 id="定义变量"><a href="#定义变量" class="headerlink" title="定义变量"></a>定义变量</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">with tf.variable_scope(&quot;params&quot;, reuse=tf.AUTO_REUSE):</div><div class="line">    w = tf.get_variable(&quot;w&quot;, initializer=tf.constant([2.0]))</div><div class="line">    b = tf.get_variable(&quot;b&quot;, initializer=tf.constant([0.0]))</div></pre></td></tr></table></figure>
+<h4 id="定义占位符"><a href="#定义占位符" class="headerlink" title="定义占位符"></a>定义占位符</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">x = tf.placeholder(tf.float32, shape=[None], name=&quot;x&quot;)</div><div class="line">y = tf.placeholder(tf.float32, shape=[None], name=&quot;y&quot;)</div></pre></td></tr></table></figure>
+<h4 id="定义表达式"><a href="#定义表达式" class="headerlink" title="定义表达式"></a>定义表达式</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">y_pred = w*x + b</div></pre></td></tr></table></figure>
+<h4 id="定义代价函数"><a href="#定义代价函数" class="headerlink" title="定义代价函数"></a>定义代价函数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">loss = tf.reduce_mean(tf.square(y_pred - y))</div></pre></td></tr></table></figure>
+<h4 id="定义优化器"><a href="#定义优化器" class="headerlink" title="定义优化器"></a>定义优化器</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.001)</div><div class="line">grads_and_vars = optimizer.compute_gradients(loss)</div><div class="line">train_op = optimizer.apply_gradients(grads_and_vars)</div></pre></td></tr></table></figure>
+<h4 id="创建会话并初始化变量"><a href="#创建会话并初始化变量" class="headerlink" title="创建会话并初始化变量"></a>创建会话并初始化变量</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">init_op = tf.global_variables_initializer()</div><div class="line"></div><div class="line">sess = tf.InteractiveSession()</div><div class="line">sess.run(init_op)</div></pre></td></tr></table></figure>
+<h4 id="根据函数-y-4x-3-给出训练数据"><a href="#根据函数-y-4x-3-给出训练数据" class="headerlink" title="根据函数 y = 4x + 3 给出训练数据"></a>根据函数 y = 4x + 3 给出训练数据</h4><h4 id="对于单个数据点输入，对比-TensorFlow-automatic-differentiation-与手工推导"><a href="#对于单个数据点输入，对比-TensorFlow-automatic-differentiation-与手工推导" class="headerlink" title="对于单个数据点输入，对比 TensorFlow automatic differentiation 与手工推导"></a>对于单个数据点输入，对比 TensorFlow automatic differentiation 与手工推导</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"># y_ = 4 * 2 + 3</div><div class="line">x_ = [2]</div><div class="line">y_ = [11] # y_ = 4 * 2 + 3</div></pre></td></tr></table></figure>
+<h6 id="手工推导-Backpropagation-过程"><a href="#手工推导-Backpropagation-过程" class="headerlink" title="手工推导 Backpropagation 过程"></a>手工推导 Backpropagation 过程</h6><p><img src="http://oytnj8g2y.bkt.clouddn.com/backwards/backward_1.png" alt="backward_1"><br></p>
+        </div>
+        <a href="/2018/06/07/手工-Backpropagation-推导与-TensorFlow-automatic-differentiation/" class="read-more">Read More</a>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
             <a href="/2018/05/28/Deep-learning-资料汇总/">
                 Deep learning 资料汇总
             </a>
@@ -369,70 +433,6 @@
 
 </div>
             
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/03/16/计算机概念的英文表述/">
-                计算机概念的英文表述
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-03-16</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <h3 id="map-vs-set"><a href="#map-vs-set" class="headerlink" title="map vs set"></a>map vs set</h3><p>In C++ STL, a map sometimes is referred to as a dictionary, consists of key/value pairs. The key is used to order the sequence, and the value is somehow associated with that key. For example, a map might contain keys representing every unique word in a text and values representing the number of times that word appears in that text.<br>a set is simply an ascending container of unique elements.<br>STL’s map and set are implemented with RB-Tree.<br>Both set and map support bidirectional iterators.<br>While not officially part of the STL standard, hash_map and hash_set are commonly used to improve searching time. These containers store elements as a hash table, with each table entry (bucket) containing a bidirectional linked list of elements.<br>Additionally, python’s dict and set is implemented with hash table. This is different from C++.<br></p>
-        </div>
-        <a href="/2018/03/16/计算机概念的英文表述/" class="read-more">Read More</a>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/03/15/MySQL-Crash-Course-读书笔记/">
-                MySQL Crash Course 读书笔记
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-03-15</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <h2 id="Chapter-1"><a href="#Chapter-1" class="headerlink" title="Chapter 1"></a>Chapter 1</h2><p>数据库就是数据库管理系统创建和操纵的容器。<br>模式(schema) 可以用来描述数据库中特定的表以及整个数据库（和其中表的关系），即关于数据库和表的布局及特性信息。</p>
-<p>数据类型限制可存储在列中的数据类型，帮助正确的排序数据，并在优化磁盘使用方面起重要的作用。<br>主键：一列或者一组列，其值可以唯一区分表中的每行。没有主键，更新或者删除表中特定行是困难的，因为没有安全的方式保证只涉及相关的行。虽然并不总是需要主键，但是大多数数据库设计人员应该保证他们创建额每个表具有一个主键，以便于以后的数据操纵和管理。<br>表中的任何列都可以作为主键，只要满足两个条件：</p>
-<ol>
-<li>任意两行不具有相同的主键</li>
-<li>每个行都必须具有一个主键值，主键列不允许NULL值。</li>
-</ol>
-<p>主键的最佳实践：</p>
-<ol>
-<li>不更新主键列的值</li>
-<li>不重用主键列的值</li>
-<li>不在主键列中使用可能会更改的值。</li></ol>
-        </div>
-        <a href="/2018/03/15/MySQL-Crash-Course-读书笔记/" class="read-more">Read More</a>
-    
-
-</div>
-            
         </section>
     </div>
 </div>
@@ -475,19 +475,19 @@
         <ul>
             
             <li>
+                <a class="footer-post" href="/2019/03/14/Perfect-forward/">Perfect forward</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/03/14/Move-semantic-perfect-forward/">Move semantic &amp; perfect f</a>
+            </li>
+            
+            <li>
                 <a class="footer-post" href="/2019/03/14/RAII-smart-pointer/">RAII &amp; smart pointer</a>
             </li>
             
             <li>
                 <a class="footer-post" href="/2019/03/13/Leetcode/">Leetcode</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/13/Move-semantic/">Move semantic</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2018/11/21/C-Concurrency-In-Action/">C++ Concurrency In Action</a>
             </li>
             
         </ul>

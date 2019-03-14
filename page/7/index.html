@@ -147,6 +147,133 @@
 
     <div class="post-header index">
         <h1 class="title">
+            <a href="/2017/11/16/Learning-Simpy/">
+                Learning Simpy
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2017-11-16</span>
+            
+            
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <h3 id="SimPy-基础"><a href="#SimPy-基础" class="headerlink" title="SimPy 基础"></a>SimPy 基础</h3><h4 id="How-SimPy-works"><a href="#How-SimPy-works" class="headerlink" title="How SimPy works"></a>How SimPy works</h4><p>SimPy 就是一个异步事件调度器，使用者要做的就是生成事件并指定事件在什么情况下触发及调度。<br><strong>事件</strong>按照优先级和仿真时间排序，拥有递增的事件id。一个事件有一个回调列表，这些回调会在事件触发时被执行。事件可以有返回值。<br>另一个概念就是<strong>进程函数</strong>，进程函数就是一个 <code>yield</code> 出 <code>Event</code> 实例的 Python 生成器函数。<br><strong>环境</strong>将事件存储在事件列表中，并 keeps track of 当前的仿真时间。<br>关键流程：当一个进程函数 yield 出一个事件时，SimPy 会将进程函数加入事件的回调列表，并挂起进程函数直到事件触发。当等待事件触发的进程函数恢复执行时就会得到事件的返回值。<br></p>
+        </div>
+        <a href="/2017/11/16/Learning-Simpy/" class="read-more">Read More</a>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
+            <a href="/2017/11/13/Ubuntu-2-1080Ti-深度学习环境配置/">
+                Ubuntu + 2*1080Ti 深度学习环境配置
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2017-11-13</span>
+            
+            
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <h2 id="Ubuntu-2-1080Ti-深度学习环境配置"><a href="#Ubuntu-2-1080Ti-深度学习环境配置" class="headerlink" title="Ubuntu + 2*1080Ti 深度学习环境配置"></a>Ubuntu + 2*1080Ti 深度学习环境配置</h2><h3 id="配置及环境"><a href="#配置及环境" class="headerlink" title="配置及环境"></a>配置及环境</h3><table>
+<thead>
+<tr>
+<th>配件</th>
+<th>型号</th>
+<th>数量</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>机箱</td>
+<td>美商海盗船 AIR740 中塔机箱</td>
+<td>1</td>
+</tr>
+<tr>
+<td>电源</td>
+<td>美商海盗船 HX1000 80plus 1000W</td>
+<td>1</td>
+</tr>
+<tr>
+<td>主板</td>
+<td>华硕（ASUS） X99-M WS (Intel X99/LGA 2011-V3)</td>
+<td>1</td>
+</tr>
+<tr>
+<td>CPU</td>
+<td>英特尔 至强 E5-2620</td>
+<td>1</td>
+</tr>
+<tr>
+<td>散热</td>
+<td>猫头鹰NH-U9S CPU散热器</td>
+<td>1</td>
+</tr>
+<tr>
+<td>硬盘</td>
+<td>西部数据 红盘 3T</td>
+<td>2</td>
+</tr>
+<tr>
+<td>SSD</td>
+<td>英特尔 600P 256G M.2</td>
+<td>1</td>
+</tr>
+<tr>
+<td>内存</td>
+<td>美商海盗船 DDR4 3000 16G</td>
+<td>2</td>
+</tr>
+<tr>
+<td>GPU</td>
+<td>技嘉 AORUS GTX 1080Ti Xtreme Edition</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>版本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ubuntu</td>
+<td>16.04.1</td>
+</tr>
+<tr>
+<td>Nvidia driver</td>
+<td>384.98</td>
+</tr>
+</tbody>
+</table>
+        </div>
+        <a href="/2017/11/13/Ubuntu-2-1080Ti-深度学习环境配置/" class="read-more">Read More</a>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
             <a href="/2017/11/05/Python-threads-communication-and-stopping/">
                 Python threads: communication and stopping
             </a>
@@ -537,19 +664,19 @@ provide shell access.</code></li>
         <ul>
             
             <li>
+                <a class="footer-post" href="/2019/03/14/Perfect-forward/">Perfect forward</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/03/14/Move-semantic-perfect-forward/">Move semantic &amp; perfect f</a>
+            </li>
+            
+            <li>
                 <a class="footer-post" href="/2019/03/14/RAII-smart-pointer/">RAII &amp; smart pointer</a>
             </li>
             
             <li>
                 <a class="footer-post" href="/2019/03/13/Leetcode/">Leetcode</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/13/Move-semantic/">Move semantic</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2018/11/21/C-Concurrency-In-Action/">C++ Concurrency In Action</a>
             </li>
             
         </ul>

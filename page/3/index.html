@@ -147,6 +147,64 @@
 
     <div class="post-header index">
         <h1 class="title">
+            <a href="/2018/07/26/Stacked-Hourglass-Networks-卫星部件检测/">
+                Stacked Hourglass Networks 卫星部件检测
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-07-26</span>
+            
+            
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <h3 id="STACKED-HOURGLASS-NETWORKS"><a href="#STACKED-HOURGLASS-NETWORKS" class="headerlink" title="STACKED HOURGLASS NETWORKS"></a>STACKED HOURGLASS NETWORKS</h3><p><a href="http://www-personal.umich.edu/~alnewell/pose/" target="_blank" rel="external">STACKED HOURGLASS NETWORKS</a> 是由密歇根大学的研究团队设计的一个专门用来进行人体姿态估计的网络结构。在卫星的部件检测项目中，我们对其进行了修改和调整，利用同样的网络结构完成了太阳帆板的检测定位（类似图像分割任务）、发动机和对接环的定位（关键点检测任务）、发动机和对接环的检测定位（类似图像分割任务）。<br>下面对 STACKED HOURGLASS NETWORKS 进行介绍及对自主实现的 Keras 关键代码进行分析。<br></p>
+        </div>
+        <a href="/2018/07/26/Stacked-Hourglass-Networks-卫星部件检测/" class="read-more">Read More</a>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
+            <a href="/2018/07/26/AP-and-mAP-in-object-detection/">
+                AP and mAP (in object detection)
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-07-26</span>
+            
+            
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <blockquote>
+<p>It’s a bird… it’s a plane… it depends on your classifier’s threshold.</p>
+</blockquote>
+<h3 id="Precision-and-recall"><a href="#Precision-and-recall" class="headerlink" title="Precision and recall"></a>Precision and recall</h3><p>\[<br>precision = \frac{ TP }{ TP + FP } \\\\<br>recall = \frac{ TP }{ TP + FN }<br>\]</p>
+<p><img src="/2018/07/26/AP-and-mAP-in-object-detection/fptp.png" alt="fptp"><br>上图是飞机检索任务中的一次检索结果，\( TP = 3, FP = 1\)。<br>\[<br>precision = 0.75 \\\\<br>recall = 0.6<br>\]<br></p>
+        </div>
+        <a href="/2018/07/26/AP-and-mAP-in-object-detection/" class="read-more">Read More</a>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
             <a href="/2018/07/09/Faster-R-CNN-s-RPN/">
                 Faster R-CNN's RPN
             </a>
@@ -358,70 +416,6 @@
 
 </div>
             
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/06/08/笔记-for-PyData-2015-Introduction-to-scikit-image/">
-                笔记 for PyData 2015 - Introduction to scikit-image
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-06-08</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <p>这篇博文是 Emmanuelle Gouillart (scikit-image 开发者) 在 PyData 2015 上演讲 Introduction to scikit-image 的笔记。</p>
-<h3 id="scikit-image"><a href="#scikit-image" class="headerlink" title="scikit-image"></a>scikit-image</h3><p>scikit-image is a general-purpose image processing module for the Python programming language. It is designed to interact efficiently with other popular scientific Python libraries, such as NumPy and SciPy. In particular, scikit-image leverages the powerful data array container of NumPy, that can store images of various dimensions (2-D, 2D RGB, 3D, 4D…).<br></p>
-        </div>
-        <a href="/2018/06/08/笔记-for-PyData-2015-Introduction-to-scikit-image/" class="read-more">Read More</a>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/06/07/手工-Backpropagation-推导与-TensorFlow-automatic-differentiation/">
-                手工 Backpropagation 推导与 TensorFlow automatic differentiation
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-06-07</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <h3 id="主要对比梯度反向传播手工推导与TensorFLow-自动差分"><a href="#主要对比梯度反向传播手工推导与TensorFLow-自动差分" class="headerlink" title="主要对比梯度反向传播手工推导与TensorFLow 自动差分"></a>主要对比梯度反向传播手工推导与TensorFLow 自动差分</h3><p>关于梯度反向传播手工推导的学习可以参考斯坦福大学的 <a href="http://cs231n.stanford.edu/" target="_blank" rel="external">CS231n: Convolutional Neural Networks for Visual Recognition</a> 的 Lecture 4。<br>下面通过代码对这两者进行对比，代码的Jupyter NoteBook 可以在我的 <a href="https://github.com/RobertLexis/TensorFlow-automatic-differentiation" target="_blank" rel="external">GitHub 仓库</a>中找到。</p>
-<h4 id="imports"><a href="#imports" class="headerlink" title="imports"></a>imports</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">import os</div><div class="line">os.environ[&apos;TF_CPP_MIN_LOG_LEVEL&apos;]=&apos;3&apos;</div><div class="line">import tensorflow as tf</div></pre></td></tr></table></figure>
-<h4 id="定义变量"><a href="#定义变量" class="headerlink" title="定义变量"></a>定义变量</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">with tf.variable_scope(&quot;params&quot;, reuse=tf.AUTO_REUSE):</div><div class="line">    w = tf.get_variable(&quot;w&quot;, initializer=tf.constant([2.0]))</div><div class="line">    b = tf.get_variable(&quot;b&quot;, initializer=tf.constant([0.0]))</div></pre></td></tr></table></figure>
-<h4 id="定义占位符"><a href="#定义占位符" class="headerlink" title="定义占位符"></a>定义占位符</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">x = tf.placeholder(tf.float32, shape=[None], name=&quot;x&quot;)</div><div class="line">y = tf.placeholder(tf.float32, shape=[None], name=&quot;y&quot;)</div></pre></td></tr></table></figure>
-<h4 id="定义表达式"><a href="#定义表达式" class="headerlink" title="定义表达式"></a>定义表达式</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">y_pred = w*x + b</div></pre></td></tr></table></figure>
-<h4 id="定义代价函数"><a href="#定义代价函数" class="headerlink" title="定义代价函数"></a>定义代价函数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">loss = tf.reduce_mean(tf.square(y_pred - y))</div></pre></td></tr></table></figure>
-<h4 id="定义优化器"><a href="#定义优化器" class="headerlink" title="定义优化器"></a>定义优化器</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.001)</div><div class="line">grads_and_vars = optimizer.compute_gradients(loss)</div><div class="line">train_op = optimizer.apply_gradients(grads_and_vars)</div></pre></td></tr></table></figure>
-<h4 id="创建会话并初始化变量"><a href="#创建会话并初始化变量" class="headerlink" title="创建会话并初始化变量"></a>创建会话并初始化变量</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">init_op = tf.global_variables_initializer()</div><div class="line"></div><div class="line">sess = tf.InteractiveSession()</div><div class="line">sess.run(init_op)</div></pre></td></tr></table></figure>
-<h4 id="根据函数-y-4x-3-给出训练数据"><a href="#根据函数-y-4x-3-给出训练数据" class="headerlink" title="根据函数 y = 4x + 3 给出训练数据"></a>根据函数 y = 4x + 3 给出训练数据</h4><h4 id="对于单个数据点输入，对比-TensorFlow-automatic-differentiation-与手工推导"><a href="#对于单个数据点输入，对比-TensorFlow-automatic-differentiation-与手工推导" class="headerlink" title="对于单个数据点输入，对比 TensorFlow automatic differentiation 与手工推导"></a>对于单个数据点输入，对比 TensorFlow automatic differentiation 与手工推导</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"># y_ = 4 * 2 + 3</div><div class="line">x_ = [2]</div><div class="line">y_ = [11] # y_ = 4 * 2 + 3</div></pre></td></tr></table></figure>
-<h6 id="手工推导-Backpropagation-过程"><a href="#手工推导-Backpropagation-过程" class="headerlink" title="手工推导 Backpropagation 过程"></a>手工推导 Backpropagation 过程</h6><p><img src="http://oytnj8g2y.bkt.clouddn.com/backwards/backward_1.png" alt="backward_1"><br></p>
-        </div>
-        <a href="/2018/06/07/手工-Backpropagation-推导与-TensorFlow-automatic-differentiation/" class="read-more">Read More</a>
-    
-
-</div>
-            
         </section>
     </div>
 </div>
@@ -464,19 +458,19 @@
         <ul>
             
             <li>
+                <a class="footer-post" href="/2019/03/14/Perfect-forward/">Perfect forward</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/03/14/Move-semantic-perfect-forward/">Move semantic &amp; perfect f</a>
+            </li>
+            
+            <li>
                 <a class="footer-post" href="/2019/03/14/RAII-smart-pointer/">RAII &amp; smart pointer</a>
             </li>
             
             <li>
                 <a class="footer-post" href="/2019/03/13/Leetcode/">Leetcode</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/13/Move-semantic/">Move semantic</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2018/11/21/C-Concurrency-In-Action/">C++ Concurrency In Action</a>
             </li>
             
         </ul>

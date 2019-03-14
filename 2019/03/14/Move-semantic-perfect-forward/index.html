@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="移动语义（move semantic）和完美转发（perfect forward）新标准重新定义了 lvalue和rvalue，并允许函数依照这两种不同的类型进行重载。通过对于右值的重新定义，语言实现了移动语义和完美转发，通过这种方法，C++在保留原有的语法、不改动已存在的代码的基础上提升了代码的性">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Robert Lexis">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="Move semantic &amp; perfect forward"/>
+    
+
+    <!--Open Graph Description-->
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="This is Robert Lexis."/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+    <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>Move semantic &amp; perfect forward - This is Robert Lexis.</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Google Analytics -->
+    
+
+
+</head>
+
+
+<body>
+
+<div class="bg-gradient"></div>
+<div class="bg-pattern"></div>
+
+<!-- Menu -->
+<!--Menu Links and Overlay-->
+<div class="menu-bg">
+    <div class="menu-container">
+        <ul>
+            
+            <li class="menu-item">
+                <a href="/">
+                    Home
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/archives">
+                    Archives
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/about">
+                    About
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/tags">
+                    Tags
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/categories">
+                    Categories
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/contact">
+                    Contact
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+<!--Hamburger Icon-->
+<nav>
+    <a href="#menu"></a>
+</nav>
+
+<div class="container">
+
+    <!-- Main Content -->
+    <div class="row">
+    <div class="col-sm-12">
+
+        <!--Title and Logo-->
+        <header>
+    <div class="logo">
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
+        
+    </div>
+</header>
+
+        <section class="main">
+            
+<div class="post">
+
+    <div class="post-header">
+        <h1 class="title">
+            <a href="/2019/03/14/Move-semantic-perfect-forward/">
+                Move semantic & perfect forward
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2019-03-14</span>
+            
+            
+            
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- Gallery -->
+        
+
+        <!-- Post Content -->
+        <h2 id="移动语义（move-semantic）和完美转发（perfect-forward）"><a href="#移动语义（move-semantic）和完美转发（perfect-forward）" class="headerlink" title="移动语义（move semantic）和完美转发（perfect forward）"></a>移动语义（move semantic）和完美转发（perfect forward）</h2><p>新标准重新定义了 <code>lvalue</code>和<code>rvalue</code>，并允许函数依照这两种不同的类型进行重载。通过对于右值的重新定义，语言实现了移动语义和完美转发，通过这种方法，C++在保留原有的语法、不改动已存在的代码的基础上提升了代码的性能。</p>
+<h3 id="移动语义解决了什么问题"><a href="#移动语义解决了什么问题" class="headerlink" title="移动语义解决了什么问题"></a>移动语义解决了什么问题</h3><p>我们先看一段代码。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span> &#123;</span></div><div class="line">    <span class="keyword">int</span> * arr&#123;<span class="literal">nullptr</span>&#125;;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">    Test():arr(<span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">5000</span>]&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>&#125;) &#123;</div><div class="line">    	<span class="built_in">cout</span> &lt;&lt; <span class="string">"default constructor"</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">    &#125;</div><div class="line">    Test(<span class="keyword">const</span> Test &amp; t) &#123;</div><div class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"copy constructor"</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">        <span class="keyword">if</span> (arr == <span class="literal">nullptr</span>) arr = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">5000</span>];</div><div class="line">        <span class="built_in">memcpy</span>(arr, t.arr, <span class="number">5000</span>*<span class="keyword">sizeof</span>(<span class="keyword">int</span>));</div><div class="line">    &#125;</div><div class="line">    ~Test()&#123;</div><div class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"destructor"</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">        <span class="keyword">delete</span> [] arr;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>在类中我们定义了一个整型数组 arr，它一共有 5000 个元素。考虑到我们可以使用一个已有的 Test 对象来初始化一个新的 Test 对象，我们实现了拷贝构造函数。</p>
+<p>接下来，我们考虑一个这样的应用场景：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</div><div class="line">    Test reusable;</div><div class="line">    <span class="comment">// do something to reusable</span></div><div class="line">    <span class="function">Test <span class="title">duplicated</span><span class="params">(reusable)</span></span>;</div><div class="line">    <span class="comment">// do something to reusable</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们创建了一个 reusable 变量并对其做了某一些操作，之后我们使用这个更改过的 reusable 变量初始化一个 duplicated 变量，在对其进行初始化之后，我们依然需要对 reusable 做其他的操作。在这个情境下，reusable 和 duplicated 变量各自有自己的用处，在这个情境下，我们的拷贝构造函数是合情合理的。</p>
+<p>现在我们考虑另外一个场景：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function">Test <span class="title">createTest</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> Test();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</div><div class="line">    Test t(createTest());</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在这个场景当中，我们需要使用一个工厂函数来构造 Test 的实例。那么在这个场景下，我们的拷贝构造函数被调用了 2 次。这两次调用相当于复制了 10000 个元素，是一个不小的开销。可是这个开销有意义吗？我们知道，在工厂函数中建立的 Test 实例在函数返回后就会被析构，而用于返回值的 Test 的临时实例也会在将值赋给 t 之后被析构。也就是说，这两个临时对象事实上并没有什么意义。由于构造他们而产生的复制的开销其实完全没有必要（事实上，编译器一般会对这种情况进行 (N)RVO，但不见得每次都能很好的优化）。所以我们就在考虑，有没有可能我们可以将在工厂函数中构造的对象的成员变量的那块内存“偷”过来，而不是重新开辟一块内存，然后再将之前的内容复制过来呢？</p>
+<h3 id="移动语义（move-semantic）"><a href="#移动语义（move-semantic）" class="headerlink" title="移动语义（move semantic）"></a>移动语义（move semantic）</h3><p>移动语义就是为了解决上面的这种问题而产生的。通过移动语义，我们可以在没有必要的时候避免复制。那么在接下来，我们就重点来谈一谈移动构造函数（move constructor）。相信到这里你已经意识到了，移动构造函数的出现就是为了解决拷贝构造函数的这个弊病。所以，其实移动构造函数应该和拷贝构造函数实现差不多的功能。那么，它也应该是一种构造函数的重载，所以，我们可以想象出来，其实移动构造函数大概就会是这个样子：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Test(&lt;KEYWORD&gt; t):arr(t.arr)&#123;t.arr = <span class="literal">nullptr</span>;&#125;</div></pre></td></tr></table></figure></p>
+<p>通过移动构造函数，事实上我们是做了一个浅拷贝（shallow copy）。至于要将之前的指针置为空的原因在于，我们的类会在析构的时候 delete 掉我们的数组。那么我们浅拷贝出来的这个对象的成员变量（arr指针）就变成了一个悬挂指针（dangling pointer）。</p>
+<p>现在的问题变成了，这个<keyword>究竟是什么？编译器如何自动判断到底应该调用拷贝构造函数还是移动构造函数呢？</keyword></p>
+<h4 id="左值（lvalue）、右值（rvalue）、左值引用（lvalue-reference）和右值引用（rvalue-reference）"><a href="#左值（lvalue）、右值（rvalue）、左值引用（lvalue-reference）和右值引用（rvalue-reference）" class="headerlink" title="左值（lvalue）、右值（rvalue）、左值引用（lvalue reference）和右值引用（rvalue reference）"></a>左值（lvalue）、右值（rvalue）、左值引用（lvalue reference）和右值引用（rvalue reference）</h4><p>C++ 定义了与 C 不相同的左值和右值的判断方法，不过说起来非常简单：凡是真正的存在内存当中，而不是寄存器当中的值就是左值，其余的都是右值。其实更通俗一点的说法就是：凡是取地址（&amp;）操作可以成功的都是左值，其余都是右值。<br>在明确了左值和右值的关系之后，左值引用而右值引用的概念也就显而易见了。对于左值的引用就是左值引用，而对于右值的引用就是右值引用。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span> &amp; i)</span> </span>&#123; <span class="built_in">cout</span> &lt;&lt; <span class="string">"const int &amp; "</span> &lt;&lt; i &lt;&lt; <span class="built_in">endl</span>; &#125;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(<span class="keyword">int</span> &amp; i)</span> </span>&#123; <span class="built_in">cout</span> &lt;&lt; <span class="string">"int &amp; "</span> &lt;&lt; i &lt;&lt; <span class="built_in">endl</span>; &#125;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(<span class="keyword">int</span> &amp;&amp; i)</span> </span>&#123; <span class="built_in">cout</span> &lt;&lt; <span class="string">"int &amp;&amp; "</span> &lt;&lt; i &lt;&lt; <span class="built_in">endl</span>; &#125;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span> &amp;&amp; i)</span> </span>&#123; <span class="built_in">cout</span> &lt;&lt; <span class="string">"const int &amp;&amp; "</span> &lt;&lt; i &lt;&lt; <span class="built_in">endl</span>; &#125; <span class="comment">// 这是个奇葩</span></div></pre></td></tr></table></figure></p>
+<p>我们在以往使用的时候大多会使用第一种形式。其实，第一种形式是一种神奇的形式，因为 <code>const int &amp;</code> 既可以绑定左值，也可以绑定右值。所以在没有后面三个重载函数的情况下，我们调用一下语句：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> i = <span class="number">2</span>;</div><div class="line">foo(i);</div><div class="line">foo(<span class="number">2</span>);</div></pre></td></tr></table></figure></p>
+<p>他们的输出都是 <code>const int &amp; 2</code>。而如果在只有第二个函数而没有其他函数的时候，第三条语句是违法的。在只有第三个函数没有其它函数的时候，第二条语句是违法的。<br>所以我们总结一下：const reference可以绑定所有的值，而其他类型的引用只能绑定自己类型的值。在这四种函数都存在的情况下，每一种函数都会绑定与自己最接近的那个值。也就是说，在四个函数都存在的情况下，当我们再次运行上面的这段代码，输出的结果就将变成：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">int &amp; 2</div><div class="line">int &amp;&amp; 2</div></pre></td></tr></table></figure></p>
+<p>回到之前的问题，现在我们可以知道上面那个Test类当中的神奇的<keyword>到底是什么了。其实就是 <code>Test &amp;&amp;</code>。由于左值和右值是两种不同的类型，所以可以依照这个类型进行重载。所以我们的Test类就变成了这样：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span> &#123;</span></div><div class="line">    <span class="keyword">int</span> * arr&#123;<span class="literal">nullptr</span>&#125;;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">    Test():arr(<span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">5000</span>]&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>&#125;) &#123;</div><div class="line">    	<span class="built_in">cout</span> &lt;&lt; <span class="string">"default constructor"</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">    &#125;</div><div class="line">    Test(<span class="keyword">const</span> Test &amp; t) &#123;</div><div class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"copy constructor"</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">        <span class="keyword">if</span> (arr == <span class="literal">nullptr</span>) arr = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">5000</span>];</div><div class="line">        <span class="built_in">memcpy</span>(arr, t.arr, <span class="number">5000</span>*<span class="keyword">sizeof</span>(<span class="keyword">int</span>));</div><div class="line">    &#125;</div><div class="line">    Test(Test &amp;&amp; t): arr(t.arr) &#123;</div><div class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"move constructor"</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">        t.arr = <span class="literal">nullptr</span>;</div><div class="line">    &#125;</div><div class="line">    ~Test()&#123;</div><div class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"destructor"</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">        <span class="keyword">delete</span> [] arr;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></keyword></p>
+<p>所以，当我们再次考虑下面这个应用场景的时候：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function">Test <span class="title">createTest</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> Test();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</div><div class="line">    Test t(createTest());</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们会发现，打印的结果变成了：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">default constructor</div><div class="line">move constructor</div><div class="line">destructor</div><div class="line">move constructor</div><div class="line">destructor</div><div class="line">destructor</div></pre></td></tr></table></figure></p>
+<p>也就是说，我们的 Test 实例在工厂函数中使用默认构造函数（default constructor）构造一次之后，调用的全部都是移动构造函数，因为我们发现其实所有的这些值都是右值。这极大地节省了开支。</p>
+<p>这里有一个编译器的 trick。gcc是一个丧心病狂的编译器，他会强制进行 (N)RVO。如果你不做任何设置直接用GCC编译运行上面的代码，你将看到的是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">default constructor</div></pre></td></tr></table></figure></p>
+<p>这个时候不要怀疑我上面说的东西有问题或者你写错了。请直接在 gcc 后面添加编译参数<code>-fno-elide-constructors</code>。所以整个的编译语句应该是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">g++ -std=c++11 -fno-elide-constructors test.cpp # for instance</div></pre></td></tr></table></figure></p>
+<p>移动语义再多说几句，现在我们再来看看一开始那个reusable的例子。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</div><div class="line">    Test reusable;</div><div class="line">    <span class="comment">// do something to reusable</span></div><div class="line">    <span class="function">Test <span class="title">duplicated</span><span class="params">(reusable)</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>如果现在我们不想复制 reusable 了，我们想在构造 duplicated 的时候也使用移动构造函数，那么应该怎么做呢？新标准给我们提供了一个解决方案：<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Test duplicated(std::move(reusable));</div></pre></td></tr></table></figure></p>
+<p>这个 <code>std::move()</code> 的作用是将左值转换为右值。不过这里要注意的一点是，如果我们在这里使用了 move 的话，那么后面我们就不能再对 reusable 进行操作了。因为移动构造函数已经将 reusable 的成员变量 arr 指针置为空了。</p>
+<p>讲解完了移动构造函数，其实移动赋值语句（move assignment）与之同理。由于STL已经默认对所有的代码进行了右值引用的改写，所以现在当你运行你之前写过的代码时，你不需要做任何的更改，就会发现似乎更快了一些。</p>
+<h3 id="进一步探讨左值和右值"><a href="#进一步探讨左值和右值" class="headerlink" title="进一步探讨左值和右值"></a>进一步探讨左值和右值</h3><p>我们来考虑下面的情景：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">doWork</span><span class="params">(TYPE&amp;&amp; param)</span> </span>&#123;</div><div class="line">    <span class="comment">// ops and expressions using std::move(param)</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这个代码是从 Scott Meyers 的演讲当中摘取的。现在的问题是：<strong>param是右值吗？</strong> 答案是：不！param是一个左值。</p>
+<p>这里牵扯到一个概念，即事实上左值和右值与类型是没有关系的，即 int 既可以是左值，也可以是右值。区别左值和右值的唯一方法就是其定义，即能否取到地址。在这里，我们明显可以对 param 进行取地址操作，所以它是一个左值，只不过它的类型是 <code>TYPE&amp;&amp;</code>。也就是说，但凡有名字的“右值”，其实都是左值。</p>
+<h3 id="完美转发（perfect-forward）又是在做什么"><a href="#完美转发（perfect-forward）又是在做什么" class="headerlink" title="完美转发（perfect forward）又是在做什么"></a>完美转发（perfect forward）又是在做什么</h3><p>我们依然考虑一个例子：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">func</span><span class="params">(T t)</span> </span>&#123;</div><div class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"in func"</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">relay</span><span class="params">(T&amp;&amp; t)</span> </span>&#123;</div><div class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"in relay"</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">    func(t);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</div><div class="line">    relay(Test());</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在这个例子当中，我们的期待是，我们在main当中调用 relay，Tes t的临时对象作为一个右值传入 relay，在 relay 当中又被转发给了 func，那这时候转发给 func 的参数 t 也应当是一个右值。也就是说，我们希望：当 relay 的参数是右值的时候，func 的参数也是右值；当 relay 的参数是左值的时候，func 的参数也是左值。</p>
+<p>那么现在我们来运行一下这个程序，我们会看到，结果与我们预想的似乎并不相同：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">default constructor</div><div class="line">in relay</div><div class="line">copy constructor</div><div class="line">in func</div><div class="line">destructor</div><div class="line">destructor</div></pre></td></tr></table></figure></p>
+<p>我们看到，在 relay 当中转发的时候，调用了拷贝构造函数，也就是说编译器认为这个参数 t 并不是一个右值，而是左值。这个的原因已经在上一节将结果了，因为它有一个名字。那么如果我们想要实现我们所说的，如果传进来的参数是一个左值，则将它作为左值转发给下一个函数；如果它是右值，则将其作为右值转发给下一个函数，我们应该怎么做呢？</p>
+<p>这时，我们需要 <code>std::forward&lt;T&gt;()</code>。与<code>std::move()</code> 相区别的是，<code>move()</code>会无条件的将一个参数转换成右值，而 <code>forward()</code> 则会保留参数的左右值类型。所以我们的代码应该是这样：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">func</span><span class="params">(T t)</span> </span>&#123;</div><div class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"in func "</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">relay</span><span class="params">(T&amp;&amp; t)</span> </span>&#123;</div><div class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"in relay "</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">    func(<span class="built_in">std</span>::forward&lt;T&gt;(t));</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>现在运行的结果就成为了：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">default constructor</div><div class="line">in relay</div><div class="line">move constructor</div><div class="line">in func</div><div class="line">destructor</div><div class="line">destructor</div></pre></td></tr></table></figure></p>
+<p>而如果我们的调用方法变成：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</div><div class="line">    Test t;</div><div class="line">    relay(t);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>那么输出就会变成：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">default constructor</div><div class="line">in relay</div><div class="line">copy constructor</div><div class="line">in func</div><div class="line">destructor</div><div class="line">destructor</div></pre></td></tr></table></figure></p>
+<p>完美地实现了我们所要的转发效果。</p>
+<h3 id="通用引用（universal-reference）"><a href="#通用引用（universal-reference）" class="headerlink" title="通用引用（universal reference）"></a>通用引用（universal reference）</h3><p>现在一定有同学感到奇怪了，既然我刚才讲的完美转发就是怎么传进来怎么传给别人，那么也就是说在后面这个例子当中我们传进来的这个参数 t 竟然是一个左值！可是我们的参数表里不是写着 T&amp;&amp;，要求接受一个右值吗？其实不是这样的。这里就牵扯到一个新的概念，叫做通用引用。</p>
+<p>通用引用（universal reference）是 Scott Meyers 在 C++ and Beyond 2012 演讲中自创的一个词，用来特指一种引用的类型。构成通用引用有两个条件：</p>
+<ul>
+<li>必须满足 <code>T&amp;&amp;</code> 这种形式</li>
+<li>类型T必须是通过推断得到的</li>
+</ul>
+<p>所以，在我们完美转发这个部分的例子当中，我们所使用的这种引用，其实是通用引用，而不是所谓的单纯的右值引用。因为我们的函数是模板函数，T的类型是推断出来的，而不是指定的。那么相应的，如果有一段这样的代码：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">TestClass</span> &#123;</span></div><div class="line">    <span class="keyword">public</span>:</div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">func</span><span class="params">(T&amp;&amp; t)</span> </span>&#123;&#125; <span class="comment">//这个T&amp;&amp;是不是一个通用引用呢</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>上面的这个 T 是不是通用引用呢？答案: <strong>不是</strong>。因为当这个类初始化的时候这个 T 就已经被确定了，不需要推断。</p>
+<p>所以，可以构成通用引用的有如下几种可能:</p>
+<ul>
+<li><p>函数模板参数（function template parameters）</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">f</span><span class="params">(T&amp;&amp; param)</span></span>;</div></pre></td></tr></table></figure>
+</li>
+<li><p>auto声明（auto declaration）auto &amp;&amp; var = …;</p>
+</li>
+<li>typedef声明（typedef declaration）</li>
+<li>decltype声明（decltype declaration）</li>
+</ul>
+<p>那么，这个通用引用与其他的引用有什么区别呢？其实最重要的一点就是引用类型折叠（Reference Collapsing Rules）。规则很简单：</p>
+<ul>
+<li>T&amp; &amp; =&gt; T&amp;</li>
+<li>T&amp;&amp; &amp; =&gt; T&amp;</li>
+<li>T&amp; &amp;&amp; =&gt; T&amp;</li>
+<li>T&amp;&amp; &amp;&amp; =&gt; T&amp;&amp;</li>
+</ul>
+<p>注意，这个折叠规则用户是不允许使用的，只有编译器才能够使用这种合成规则。这就是为什么上面的通用引用当中有一条要求是类型必须可以自动推导。这个折叠规则其实就是类型推导的规则之一。</p>
+<p><strong>这样，我们就可以知道为什么 Scott Meyers 在演讲中建议大家在通用引用的情境下，尽可能使用 forward()了，因为这样可以在不改变语义的情况下提升性能。</strong><br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">doWork</span><span class="params">(T&amp;&amp; param)</span> </span>&#123;</div><div class="line">	<span class="comment">// ops and expressions using std::forward&lt;T&gt;(param)</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h3><p>C++0x 通过引入许多新的语言特性来实现了语言性能的提升，使得本来就博大精深的一门语言变得更加的难以学习。但是一旦了解，就会被语言精妙的设计所折服。</p>
+
+    </div>
+
+    
+
+    
+        <div class="post-tags">
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <a href="/tags/C/">#C++</a>
+        </div>
+    
+
+    <!-- Comments -->
+    
+
+</div>
+        </section>
+
+    </div>
+</div>
+
+
+</div>
+
+<!-- Footer -->
+<div class="push"></div>
+
+<footer class="footer-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
+                <h2>About</h2>
+                <p>
+                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
+                </p>
+            </div>
+            
+    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+            
+            <li>
+                <a class="footer-post" href="/2019/03/14/Perfect-forward/">Perfect forward</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/03/14/Move-semantic-perfect-forward/">Move semantic &amp; perfect f</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/03/14/RAII-smart-pointer/">RAII &amp; smart pointer</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/03/13/Leetcode/">Leetcode</a>
+            </li>
+            
+        </ul>
+    </div>
+
+
+
+            
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="list-inline footer-social-icons">
+                    
+                    <li class="list-inline-item">
+                        <a href="https://github.com/RobertLexis">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-github"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="mailto:robert_lexis@163.com">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-envelope-o"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="footer-copyright">
+                    @Untitled. All right reserved | Robert Lexis Loves Wenny
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- After footer scripts -->
+
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Tween Max -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/main.js"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>
