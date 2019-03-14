@@ -147,6 +147,61 @@
 
     <div class="post-header index">
         <h1 class="title">
+            <a href="/2018/03/01/C-内存管理/">
+                C++内存管理
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-03-01</span>
+            
+            
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <h2 id="C-内存管理"><a href="#C-内存管理" class="headerlink" title="C++内存管理"></a>C++内存管理</h2><p>内存管理在C++中无处不在，内存泄漏几乎在每个C++程序中都会发生，因此要想成为C++高手，内存管理一关是必须要过的，除非放弃C++，转到Java或者.NET，他们的内存管理基本是自动的，当然你也放弃了自由和对内存的支配权，还放弃了C++超绝的性能。<br>本博文将从内存管理、内存泄漏、内存回收这三个方面来探讨C++内存管理问题。<br></p>
+        </div>
+        <a href="/2018/03/01/C-内存管理/" class="read-more">Read More</a>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
+            <a href="/2018/02/19/C-类型转换/">
+                C++类型转换
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-02-19</span>
+            
+            
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <h3 id="类型转换可以分为-隐式类型转换和显式类型转换-强制类型转换"><a href="#类型转换可以分为-隐式类型转换和显式类型转换-强制类型转换" class="headerlink" title="类型转换可以分为:隐式类型转换和显式类型转换(强制类型转换)"></a>类型转换可以分为:隐式类型转换和显式类型转换(强制类型转换)</h3><p>隐式类型转换比较常见，在混合类型表达式中经常发生，比如在表达式中存在 short 和 int，那么就会发生整型提升。</p>
+<h4 id="四种强制类型转换操作符：static-cast、dynamic-cast、const-cast、reinterpret-cast。"><a href="#四种强制类型转换操作符：static-cast、dynamic-cast、const-cast、reinterpret-cast。" class="headerlink" title="四种强制类型转换操作符：static_cast、dynamic_cast、const_cast、reinterpret_cast。"></a>四种强制类型转换操作符：static_cast、dynamic_cast、const_cast、reinterpret_cast。</h4><h4 id="static-cast-与-dynamic-cast"><a href="#static-cast-与-dynamic-cast" class="headerlink" title="static_cast 与 dynamic_cast"></a>static_cast 与 dynamic_cast</h4><p>把这两个放在一起比较容易记忆，”一静一动”，从字面上也可以看出，前者提供的是编译时期的静态类型检测，后者提供的是<br>运行时检测。<br></p>
+        </div>
+        <a href="/2018/02/19/C-类型转换/" class="read-more">Read More</a>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
             <a href="/2018/02/17/多线程编程/">
                 多线程编程
             </a>
@@ -383,77 +438,6 @@
 
 </div>
             
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2017/12/07/强化学习-1-Basic/">
-                强化学习 1 Basic
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2017-12-07</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <h1 id="强化学习基础"><a href="#强化学习基础" class="headerlink" title="强化学习基础"></a>强化学习基础</h1><h2 id="强化学习"><a href="#强化学习" class="headerlink" title="强化学习"></a>强化学习</h2><p>主要用于解决连续决策问题<br>三个主要概念：</p>
-<ol>
-<li>环境（Environment）</li>
-<li>动作（Action）</li>
-<li>奖励（Reward）<br>强化学习的目标就是让模型根据环境，动作和奖励学习出最佳的策略。<br>强化学习不像监督学习那样具有明确的标签（目标），也不像无监督学习那样完全没有标签（目标），强化学习的目标一般是变化的，不明确的，甚至不是绝对正确的。<br>Google 的 DQN（Deep Q-Network）结合了深度学习和强化学习。<br>DeepMind 的 AlphaGo 结合了策略网络（Policy Network）、估值网络（Value Network 即DQN）与蒙特卡洛搜索树。<br>无人驾驶传感，CNN，RNN 对环境信息进行处理，再结合强化学习做出决策。</li>
-</ol>
-<h2 id="两类方法"><a href="#两类方法" class="headerlink" title="两类方法"></a>两类方法</h2><ol>
-<li>Policy-Based （Policy Gradients） <ul>
-<li>直接给出某个环境状态下应该采取的动作</li>
-<li>适用于动作种类非常多或者连续取值的动作</li>
-</ul>
-</li>
-<li>Value-Based（Q-Learning）<ul>
-<li>给出某个环境状态下所有动作的Q值，之后可以选择Q值最高的动作。</li>
-<li>少量离散取值的动作</li>
-</ul>
-</li>
-</ol>
-<h2 id="Model-Based-or-Model-Free"><a href="#Model-Based-or-Model-Free" class="headerlink" title="Model-Based or Model-Free"></a>Model-Based or Model-Free</h2><p>是否可以对环境进行建模，在复杂环境下一般使用 Model-Free 强化学习，同时给予更多的样本，弥补对于环境建模的缺失。</p>
-
-        </div>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2017/12/07/Learning-TensorFlow-2-计算加速/">
-                Learning TensorFlow 2 计算加速
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2017-12-07</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            
-        </div>
-    
-
-</div>
-            
         </section>
     </div>
 </div>
@@ -496,19 +480,19 @@
         <ul>
             
             <li>
+                <a class="footer-post" href="/2019/03/14/RAII-smart-pointer/">RAII &amp; smart pointer</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/03/13/Leetcode/">Leetcode</a>
+            </li>
+            
+            <li>
                 <a class="footer-post" href="/2019/03/13/Move-semantic/">Move semantic</a>
             </li>
             
             <li>
                 <a class="footer-post" href="/2018/11/21/C-Concurrency-In-Action/">C++ Concurrency In Action</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2018/09/03/Optimizers/">Optimizers</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2018/08/28/Tensorflow-模型浮点数计算量和参数量统计/">TensorFlow 模型浮点数计算量和参数量统计</a>
             </li>
             
         </ul>

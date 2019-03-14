@@ -147,6 +147,77 @@
 
     <div class="post-header index">
         <h1 class="title">
+            <a href="/2017/12/07/强化学习-1-Basic/">
+                强化学习 1 Basic
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2017-12-07</span>
+            
+            
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <h1 id="强化学习基础"><a href="#强化学习基础" class="headerlink" title="强化学习基础"></a>强化学习基础</h1><h2 id="强化学习"><a href="#强化学习" class="headerlink" title="强化学习"></a>强化学习</h2><p>主要用于解决连续决策问题<br>三个主要概念：</p>
+<ol>
+<li>环境（Environment）</li>
+<li>动作（Action）</li>
+<li>奖励（Reward）<br>强化学习的目标就是让模型根据环境，动作和奖励学习出最佳的策略。<br>强化学习不像监督学习那样具有明确的标签（目标），也不像无监督学习那样完全没有标签（目标），强化学习的目标一般是变化的，不明确的，甚至不是绝对正确的。<br>Google 的 DQN（Deep Q-Network）结合了深度学习和强化学习。<br>DeepMind 的 AlphaGo 结合了策略网络（Policy Network）、估值网络（Value Network 即DQN）与蒙特卡洛搜索树。<br>无人驾驶传感，CNN，RNN 对环境信息进行处理，再结合强化学习做出决策。</li>
+</ol>
+<h2 id="两类方法"><a href="#两类方法" class="headerlink" title="两类方法"></a>两类方法</h2><ol>
+<li>Policy-Based （Policy Gradients） <ul>
+<li>直接给出某个环境状态下应该采取的动作</li>
+<li>适用于动作种类非常多或者连续取值的动作</li>
+</ul>
+</li>
+<li>Value-Based（Q-Learning）<ul>
+<li>给出某个环境状态下所有动作的Q值，之后可以选择Q值最高的动作。</li>
+<li>少量离散取值的动作</li>
+</ul>
+</li>
+</ol>
+<h2 id="Model-Based-or-Model-Free"><a href="#Model-Based-or-Model-Free" class="headerlink" title="Model-Based or Model-Free"></a>Model-Based or Model-Free</h2><p>是否可以对环境进行建模，在复杂环境下一般使用 Model-Free 强化学习，同时给予更多的样本，弥补对于环境建模的缺失。</p>
+
+        </div>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
+            <a href="/2017/12/07/Learning-TensorFlow-2-计算加速/">
+                Learning TensorFlow 2 计算加速
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2017-12-07</span>
+            
+            
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            
+        </div>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
             <a href="/2017/12/07/循环神经网络的原理及-TensorFlow-实现/">
                 循环神经网络的原理及 TensorFlow 实现
             </a>
@@ -436,61 +507,6 @@
 
 </div>
             
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2017/11/05/Python-threads-communication-and-stopping/">
-                Python threads: communication and stopping
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2017-11-05</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <h4 id="如何停止-杀死一个线程？如何安全地从一个线程传入传出数据？"><a href="#如何停止-杀死一个线程？如何安全地从一个线程传入传出数据？" class="headerlink" title="如何停止/杀死一个线程？如何安全地从一个线程传入传出数据？"></a>如何停止/杀死一个线程？如何安全地从一个线程传入传出数据？</h4><p>下面是一个 worker 线程实现的例子，可以给它任务，这里的每一个任务就是一个目录名，它就会进行工作，这里的工作就是罗列出给定目录及其子目录下的文件名。<br></p>
-        </div>
-        <a href="/2017/11/05/Python-threads-communication-and-stopping/" class="read-more">Read More</a>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2017/11/04/翻译-Learning-from-Imbalanced-Classes/">
-                翻译 Learning from Imbalanced Classes
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2017-11-04</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <p>在参加数据挖掘的比赛时，遇到了类别不平衡的问题，在着手解决这个问题的过程中发现了来自 <a href="https://www.svds.com/" target="_blank" rel="external">Silicon Valley Data Science(svds)</a> <a href="https://www.svds.com/team/tom-fawcett/" target="_blank" rel="external">TOM FAWCETT</a> 的一篇博客 <a href="https://www.svds.com/learning-imbalanced-classes/" target="_blank" rel="external">Learning from Imbalanced Classes</a> 写的着实精彩，因此决定将其翻译过来。</p>
-<h2 id="Learning-from-Imbalanced-Classes"><a href="#Learning-from-Imbalanced-Classes" class="headerlink" title="Learning from Imbalanced Classes"></a>Learning from Imbalanced Classes</h2><p>如果你刚刚上完一门机器学习的课程，你使用的大部分数据集可能是很简单的。当你拟合分类器时，样本的类别是平衡的，也就是说这些类别的样本量大体相等。导师通常是使用清洗过的数据集进行教学，从而能够集中精力在讲解特定的算法和技术上。通常你看到的样本是下面这样的，点代表样本，不同的颜色或者形状代表不同的类型。<br><img src="http://oytnj8g2y.bkt.clouddn.com/clean.png" alt="clean.png"></p>
-        </div>
-        <a href="/2017/11/04/翻译-Learning-from-Imbalanced-Classes/" class="read-more">Read More</a>
-    
-
-</div>
-            
         </section>
     </div>
 </div>
@@ -533,19 +549,19 @@
         <ul>
             
             <li>
+                <a class="footer-post" href="/2019/03/14/RAII-smart-pointer/">RAII &amp; smart pointer</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/03/13/Leetcode/">Leetcode</a>
+            </li>
+            
+            <li>
                 <a class="footer-post" href="/2019/03/13/Move-semantic/">Move semantic</a>
             </li>
             
             <li>
                 <a class="footer-post" href="/2018/11/21/C-Concurrency-In-Action/">C++ Concurrency In Action</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2018/09/03/Optimizers/">Optimizers</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2018/08/28/Tensorflow-模型浮点数计算量和参数量统计/">TensorFlow 模型浮点数计算量和参数量统计</a>
             </li>
             
         </ul>
