@@ -147,6 +147,33 @@
 
     <div class="post-header index">
         <h1 class="title">
+            <a href="/2018/08/26/非最大值抑制/">
+                非最大值抑制
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-08-26</span>
+            
+            
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <p>非最大值抑制 Non-max Suppression 是目标检测（object detection）中常用的后处理（post processing）技术。<br>（Fast-， Faster-）RCNN，SSD，YOLO 等目标检测框架会对一个目标产生多个 bounding box 的预测结果，而我们最终需要的仅仅是最“合适”的那一个。<br>非最大值抑制就是用来去除（clean up）多余的 bounding box 的预测结果，确保对一个目标只输出一个检测结果。<br>概率最大的 bounding box 被保留，且该 bounding box 周围的与它有较大交并比的 bounding box 会被抑制。<br>Each output prediction is:<br>\[<br>    \left[<br>    \begin{matrix}<br>    p_c \\\\<br>    b_x \\\\<br>    b_y \\\\<br>    b_w \\\\<br>    b_h<br>    \end{matrix}<br>    \right]<br>\]<br></p>
+        </div>
+        <a href="/2018/08/26/非最大值抑制/" class="read-more">Read More</a>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
             <a href="/2018/08/26/目标定位-vs-目标检测/">
                 目标定位 vs 目标检测
             </a>
@@ -410,37 +437,6 @@
 
 </div>
             
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/08/01/Nvidia-Jetson-TX2-开箱及刷机/">
-                Nvidia Jetson TX2 开箱及刷机
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-08-01</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <p>钱学森实验室购买了 Nvidia <a href="https://developer.nvidia.com/embedded-computing" target="_blank" rel="external">Jetson</a> TX2 支持嵌入式 AI 开发。</p>
-<blockquote>
-<p>Jetson, the Platform for AI at the Edge<br>NVIDIA Jetson with GPU-accelerated parallel processing is the world’s leading embedded AI computing platform. The Jetson portfolio of devices, featuring the new NVIDIA Jetson TX2, delivers more performance and features for Artificial Intelligence at the edge. Devices at the edge, from drones to intelligent cameras, need on-board AI to process complex data without relying on network connectivity. AI at the Edge is the future of industry, transforming processes in manufacturing, industrial inspection, agriculture, general robotics, security, and AI cities.</p>
-</blockquote>
-<p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/jetson/Jetson.jpeg" alt="Jetson"><br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/jetson/Jetson_1.jpeg" alt="Jetson"><br></p>
-        </div>
-        <a href="/2018/08/01/Nvidia-Jetson-TX2-开箱及刷机/" class="read-more">Read More</a>
-    
-
-</div>
-            
         </section>
     </div>
 </div>
@@ -483,6 +479,10 @@
         <ul>
             
             <li>
+                <a class="footer-post" href="/2019/03/18/Emplace-back/">Emplace back</a>
+            </li>
+            
+            <li>
                 <a class="footer-post" href="/2019/03/14/Perfect-forward/">Perfect forward</a>
             </li>
             
@@ -492,10 +492,6 @@
             
             <li>
                 <a class="footer-post" href="/2019/03/14/RAII-smart-pointer/">RAII &amp; smart pointer</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/13/Leetcode/">Leetcode</a>
             </li>
             
         </ul>

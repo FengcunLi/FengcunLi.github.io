@@ -10,6 +10,12 @@
 
     <!--Description-->
     
+        <meta name="description" content="Why emplace_back is faster than push_back?
+since C++ 11 until C++17
+12template&amp;lt;class... Args&amp;gt;void emplace_back(Args&amp;amp;&amp;amp;... args);
+
+since C">
+    
 
     <!--Author-->
     
@@ -18,7 +24,7 @@
 
     <!--Open Graph Title-->
     
-        <meta property="og:title" content="This is Robert Lexis."/>
+        <meta property="og:title" content="Emplace back"/>
     
 
     <!--Open Graph Description-->
@@ -29,7 +35,7 @@
 
     <!--Type page-->
     
-        <meta property="og:type" content="website" />
+        <meta property="og:type" content="article" />
     
 
     <!--Page Cover-->
@@ -40,7 +46,7 @@
 
     <!-- Title -->
     
-    <title>This is Robert Lexis.</title>
+    <title>Emplace back - This is Robert Lexis.</title>
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
@@ -135,17 +141,14 @@
     <div class="logo">
         <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
         
-            <h1 id="main-title" class="title">This is Robert Lexis.</h1>
-        
     </div>
 </header>
 
         <section class="main">
             
-                
 <div class="post">
 
-    <div class="post-header index">
+    <div class="post-header">
         <h1 class="title">
             <a href="/2019/03/18/Emplace-back/">
                 Emplace back
@@ -160,9 +163,13 @@
         </div>
     </div>
 
-    
-        <div class="content">
-            <h3 id="Why-emplace-back-is-faster-than-push-back"><a href="#Why-emplace-back-is-faster-than-push-back" class="headerlink" title="Why emplace_back is faster than push_back?"></a>Why emplace_back is faster than push_back?</h3><ul>
+    <div class="content">
+
+        <!-- Gallery -->
+        
+
+        <!-- Post Content -->
+        <h3 id="Why-emplace-back-is-faster-than-push-back"><a href="#Why-emplace-back-is-faster-than-push-back" class="headerlink" title="Why emplace_back is faster than push_back?"></a>Why emplace_back is faster than push_back?</h3><ul>
 <li><p>since C++ 11 until C++17</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span>&lt;<span class="class"><span class="keyword">class</span>... <span class="title">Args</span>&gt;</span></div><div class="line"><span class="class"><span class="title">void</span> <span class="title">emplace_back</span>(<span class="title">Args</span>&amp;&amp;... <span class="title">args</span>);</span></div></pre></td></tr></table></figure>
 </li>
@@ -188,289 +195,25 @@
 <p>由于 unique_ptr 的构造函数是 explicit 的，即不允许隐式类型转换，所以从 raw pointer 到 unique pointer 的转换是显式的，其实也就是 in-place 构造。<br>其实上面这个例子更推荐的做法是，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">v.push_back(std::make_unique&lt;Foo&gt;(1, &apos;x&apos;, true));</div></pre></td></tr></table></figure></p>
 <p>即通过 <code>make_unique</code> 从可变参数实例化出一个 <code>Foo</code> 对象，并实例化出一个 <code>unique_ptr</code> 对象指向它，并将 <code>unique_ptr</code> 对象<em>移动</em>构造到向量中。<br>emplace_back 的另外一个优雅用处是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">std::vector&lt;std::thread&gt; threads;</div><div class="line">threads.emplace_back(do_work, 10, &quot;foo&quot;);    // call do_work(10, &quot;foo&quot;)</div><div class="line">threads.emplace_back(&amp;Foo::g, x, 20, false);  // call x.g(20, false)</div></pre></td></tr></table></figure></p>
 
-        </div>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2019/03/14/Perfect-forward/">
-                Perfect forward
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2019-03-14</span>
-            
-            
-            
-        </div>
     </div>
 
     
-        <div class="content">
-            <h3 id="std-move"><a href="#std-move" class="headerlink" title="std::move"></a>std::move</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="keyword">decltype</span>(<span class="keyword">auto</span>) move(T&amp;&amp; param)</div><div class="line">&#123;</div><div class="line">   <span class="keyword">using</span> return_type = <span class="built_in">std</span>::remove_reference&lt;T&gt;::type&amp;&amp;;</div><div class="line">   <span class="keyword">return</span> <span class="keyword">static_cast</span>&lt;return_type&gt;(param);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+    
+        <div class="post-tags">
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <a href="/tags/C/">#C++</a>
         </div>
-        <a href="/2019/03/14/Perfect-forward/" class="read-more">Read More</a>
+    
+
+    <!-- Comments -->
     
 
 </div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2019/03/14/Move-semantic-perfect-forward/">
-                Move semantic & perfect forward
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2019-03-14</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <h2 id="移动语义（move-semantic）和完美转发（perfect-forward）"><a href="#移动语义（move-semantic）和完美转发（perfect-forward）" class="headerlink" title="移动语义（move semantic）和完美转发（perfect forward）"></a>移动语义（move semantic）和完美转发（perfect forward）</h2><p>新标准重新定义了 <code>lvalue</code>和<code>rvalue</code>，并允许函数依照这两种不同的类型进行重载。通过对于右值的重新定义，语言实现了移动语义和完美转发，通过这种方法，C++在保留原有的语法、不改动已存在的代码的基础上提升了代码的性能。<br></p>
-        </div>
-        <a href="/2019/03/14/Move-semantic-perfect-forward/" class="read-more">Read More</a>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2019/03/14/RAII-smart-pointer/">
-                RAII & smart pointer
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2019-03-14</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <h3 id="RAII"><a href="#RAII" class="headerlink" title="RAII"></a>RAII</h3><p>RAII 全称为 <em>Resource Acquisition Is Initialization</em>，1984-1989 年期间，比雅尼·斯特劳斯特鲁普和安德鲁·柯尼希在设计 C++ 异常时，为解决<strong>资源管理</strong>时的<strong>异常安全性</strong>而使用了 <strong>RAII</strong>。</p>
-<p>RAII要求，资源的有效期与持有资源的对象的生命期严格绑定，即由对象的构造函数完成资源的获取，由析构函数完成资源的释放，在这种要求下，只要对象能正确地析构，就不会出现资源泄露问题。<br></p>
-        </div>
-        <a href="/2019/03/14/RAII-smart-pointer/" class="read-more">Read More</a>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2019/03/13/Leetcode/">
-                Leetcode
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2019-03-13</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <h3 id="递归、回溯、分治"><a href="#递归、回溯、分治" class="headerlink" title="递归、回溯、分治"></a>递归、回溯、分治</h3>
-        </div>
-        <a href="/2019/03/13/Leetcode/" class="read-more">Read More</a>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2019/03/13/Move-semantic/">
-                Move semantic
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2019-03-13</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <h3 id="右值引用"><a href="#右值引用" class="headerlink" title="右值引用"></a>右值引用</h3><p>左值和右值是表达式的属性，一些表达式生成或者需要左值，另外一些表达式生成或者需要右值，一般而言，一个左值表达式表示一个对象的身份，一个右值表达式则表示一个对象的值。</p>
-<ul>
-<li>返回左值引用的函数，赋值、下标、解引用、前置递增、前置递减，这些返回左值</li>
-<li>返回非引用的函数，算术、关系、位、后置递增、后置递减，这些返回右值</li>
-</ul>
-<p>为了支持移动操作，C++11 引入了一种新的引用类型——右值引用（rvalue reference）。所谓右值引用是指<strong>只能</strong>绑定到右值的引用，一个右值引用类似于左值引用，也不过是某个对象的另外一个名字而已，通过 <code>&amp;&amp;</code> 来标识一个右值引用。我们只能将左值引用绑定到左值上（const 左值引用可以绑定到右值上），只能将右值引用绑定到右值上。<br></p>
-        </div>
-        <a href="/2019/03/13/Move-semantic/" class="read-more">Read More</a>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/11/21/C-Concurrency-In-Action/">
-                C++ Concurrency In Action
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-11-21</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <h2 id="基本的线程管理"><a href="#基本的线程管理" class="headerlink" title="基本的线程管理"></a>基本的线程管理</h2><h4 id="启动线程"><a href="#启动线程" class="headerlink" title="启动线程"></a>启动线程</h4><ul>
-<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">void do_some_work();</div><div class="line">std::thread my_thread(do_some_work);</div></pre></td></tr></table></figure>
-</li>
-<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">class background_task &#123;</div><div class="line">    public:</div><div class="line">        void operator() ()const &#123;</div><div class="line">            do_something();</div><div class="line">            do_something_else();</div><div class="line">        &#125;</div><div class="line">&#125;;</div><div class="line">background_task f;</div><div class="line">std::thread my_thread(f);</div></pre></td></tr></table></figure>
-</li>
-</ul>
-        </div>
-        <a href="/2018/11/21/C-Concurrency-In-Action/" class="read-more">Read More</a>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/09/03/Optimizers/">
-                Optimizers
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-09-03</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <h3 id="Batch-vs-mini-batch-gradient-descent"><a href="#Batch-vs-mini-batch-gradient-descent" class="headerlink" title="Batch vs. mini-batch gradient descent"></a>Batch vs. mini-batch gradient descent</h3><p>mini-batch gradient descent 可以加快训练过程，Batch gradient descent 是过一次整个训练集才更新一次参数。Too long per iteration（<br>一次更新就是一次迭代，一次迭代就是一次更新）.<br>one epoch: single pass through training set.</p>
-<h5 id="Understanding-mini-batch-gradient-descent"><a href="#Understanding-mini-batch-gradient-descent" class="headerlink" title="Understanding mini-batch gradient descent"></a>Understanding mini-batch gradient descent</h5><ul>
-<li>Batch gradient descent cost 一定是单调递减的，如果不是，有可能是学习率太大了，导致发散了。</li>
-<li>mini-batch gradient descent noisy</li></ul>
-        </div>
-        <a href="/2018/09/03/Optimizers/" class="read-more">Read More</a>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/08/28/Tensorflow-模型浮点数计算量和参数量统计/">
-                TensorFlow 模型浮点数计算量和参数量统计
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-08-28</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <p>本博文整理了如何对一个 TensorFlow 模型的浮点数计算量（FLOPs）和参数量进行统计。<br>stats_graph.py<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">stats_graph</span><span class="params">(graph)</span>:</span></div><div class="line">    flops = tf.profiler.profile(graph, options=tf.profiler.ProfileOptionBuilder.float_operation())</div><div class="line">    params = tf.profiler.profile(graph, options=tf.profiler.ProfileOptionBuilder.trainable_variables_parameter())</div><div class="line">    print(<span class="string">'FLOPs: &#123;&#125;;    Trainable params: &#123;&#125;'</span>.format(flops.total_float_ops, params.total_parameters))</div></pre></td></tr></table></figure></p>
-        </div>
-        <a href="/2018/08/28/Tensorflow-模型浮点数计算量和参数量统计/" class="read-more">Read More</a>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/08/26/YOLO/">
-                YOLO
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-08-26</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <h3 id="Sliding-Windows-滑动窗口"><a href="#Sliding-Windows-滑动窗口" class="headerlink" title="Sliding Windows 滑动窗口"></a>Sliding Windows 滑动窗口</h3><p>通过滑动窗口的方式在图像上生成一系列的 box，然后利用分类器对每个 box 进行分类，即可完成对图像中目标的检测。<br>基于滑动窗口的目标检测效率很低，因为我们需要对每个区域都进行预测，而且为了获得更加准确的结果，我们需要尝试各种不同尺寸的 box。</p>
-<h3 id="Convolutional-Implementation-of-Sliding-Windows"><a href="#Convolutional-Implementation-of-Sliding-Windows" class="headerlink" title="Convolutional Implementation of Sliding Windows"></a>Convolutional Implementation of Sliding Windows</h3><p>这是一个加速的方法，共享计算。<br><img src="/2018/08/26/YOLO/cnn-slide.jpg" alt="cnn-slide"><br></p>
-        </div>
-        <a href="/2018/08/26/YOLO/" class="read-more">Read More</a>
-    
-
-</div>
-            
         </section>
+
     </div>
 </div>
-
-
-
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="wrap-pagination">
-                <a class="disabled" href="/">
-                    <i class="fa fa-chevron-left" aria-hidden="true"></i>
-                </a>
-                <a class="" href="/page/2/">
-                    <i class="fa fa-chevron-right" aria-hidden="true"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-
-
 
 
 </div>
