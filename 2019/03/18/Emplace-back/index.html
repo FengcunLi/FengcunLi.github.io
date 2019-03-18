@@ -14,7 +14,8 @@
 since C++ 11 until C++17
 12template&amp;lt;class... Args&amp;gt;void emplace_back(Args&amp;amp;&amp;amp;... args);
 
-since C">
+since C++17
+12template&amp;lt;class... Args&amp;gt;reference emplace_back(Args&amp;amp;&amp;amp;... args);">
     
 
     <!--Author-->
@@ -177,6 +178,7 @@ since C">
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span>&lt;<span class="class"><span class="keyword">class</span>... <span class="title">Args</span>&gt;</span></div><div class="line"><span class="class"><span class="title">reference</span> <span class="title">emplace_back</span>(<span class="title">Args</span>&amp;&amp;... <span class="title">args</span>);</span></div></pre></td></tr></table></figure>
 </li>
 </ul>
+<a id="more"></a>
 <p>Appends a new element to the end of the container. The element is constructed through <code>std::allocator_traits::construct</code>, which typically uses <code>placement-new</code> to construct the element in-place at the location provided by the container. The arguments args… are forwarded to the constructor as <code>std::forward&lt;Args&gt;(args)...</code>.<br><strong>就地构造</strong><br>If the new <code>size()</code> is greater than <code>capacity()</code> then all iterators and references (including the past-the-end iterator) are invalidated. Otherwise only the past-the-end iterator is invalidated.</p>
 <h6 id="Parameters"><a href="#Parameters" class="headerlink" title="Parameters:"></a>Parameters:</h6><p>args: arguments to forward to the constructor of the element</p>
 <h6 id="Type-requirements"><a href="#Type-requirements" class="headerlink" title="Type requirements"></a>Type requirements</h6><p>T (the container’s element type) must meet the requirements of <em>MoveInsertable</em> and <em>EmplaceConstructible</em>.</p>

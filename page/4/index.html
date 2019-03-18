@@ -147,6 +147,35 @@
 
     <div class="post-header index">
         <h1 class="title">
+            <a href="/2018/07/02/Softmax-cross-entropy-推导及求导/">
+                Softmax cross entropy 推导及求导
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-07-02</span>
+            
+            
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <p>主要分析了 binary_crossentropy 和 categorical_crossentropy 的定义， softmax 和 categorical_crossentropy 的求导。</p>
+<h3 id="binary-crossentropy"><a href="#binary-crossentropy" class="headerlink" title="binary_crossentropy"></a>binary_crossentropy</h3><p>适用于每个类别相互独立但互不排斥的情况，常见于单类别任务\( (batch size, 1) \)和多类别中的多标签任务\( (batch size, num classes) \)。</p>
+<p>\[<br>\begin{split}<br>    p_{i, j} &amp; = sigmoid(logits_{i, j}) \\\\<br>    &amp; = \frac{1}{1 + e^{-logits_{i, j} } } \\\\<br>    loss_{i, j} &amp; = -[y_{i, j} \times ln p_{i, j} + (1 - y_{i, j}) \times (1 - ln p_{i, j})]<br>\end{split}<br>\]<br></p>
+        </div>
+        <a href="/2018/07/02/Softmax-cross-entropy-推导及求导/" class="read-more">Read More</a>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
             <a href="/2018/07/01/模型评估-量化预测质量/">
                 模型评估 量化预测质量
             </a>
@@ -398,34 +427,6 @@
             <p>本博文主要是在学习 <a href="http://cs231n.stanford.edu/2017/" target="_blank" rel="external">CS231n: Convolutional Neural Networks for Visual Recognition Spring 2017</a> Lecture 3: Loss Functions and Optimization 之后的总结。<br></p>
         </div>
         <a href="/2018/04/12/Loss-functions-推导及理解/" class="read-more">Read More</a>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/04/01/C-多态/">
-                C++多态
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-04-01</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <h3 id="C-多态的实现？"><a href="#C-多态的实现？" class="headerlink" title="C++多态的实现？"></a>C++多态的实现？</h3><p>多态性可以简单地概括为“一个接口，多种实现”，程序在运行时才决定调用的函数，它是面向对象编程领域的核心概念。<br>C++多态性是通过虚函数来实现的，重写虚函数。<br>多态与非多态的实质区别就是函数地址是早绑定还是晚绑定。如果函数的调用，在编译器编译时就可以确定函数的调用地址，并生产代码，是静态的，就是说地址是早绑定的。而如果函数调用的地址不能在编译器期间确定，需要在运行时才确定，这就属于晚绑定。<br>封装可以使得代码模块化，继承可以扩展已存在的代码，他们的目的都是为了代码重用。而多态的目的则是为了接口重用。<br>最常见的用法就是声明基类的指针，利用该指针指向任意一个子类对象，调用相应的虚函数，可以根据指向的子类的不同类型而调用不同的方法。如果没有使用虚函数的话，即没有利用C++多态性，则利用基类指针调用相应的函数的时候，将总被限制在基类函数，而无法调用到子类中被重写过的函数。因为没有多态性，函数调用的地址将是一定的，而固定的地址将始终调用到同一个函数，这就无法实现一个接口，多种实现的目的了。</p>
-<h3 id="虚函数的作用？"><a href="#虚函数的作用？" class="headerlink" title="虚函数的作用？"></a>虚函数的作用？</h3><p>虚函数用于实现多态，这点大家都能答上来但是虚函数在设计上还具有封装和抽象的作用。比如抽象工厂模式。<br>每个虚函数都有一个虚函数列表，根据指向对象的类型不同，函数地址也将不同。<br></p>
-        </div>
-        <a href="/2018/04/01/C-多态/" class="read-more">Read More</a>
     
 
 </div>
