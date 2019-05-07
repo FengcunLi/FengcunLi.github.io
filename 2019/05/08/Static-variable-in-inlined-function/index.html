@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="static function + static local variableDeclaring a function static will make it “hidden” in its compilation unit.">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Robert Lexis">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="Static variable in inlined function"/>
+    
+
+    <!--Open Graph Description-->
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="This is Robert Lexis."/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+    <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>Static variable in inlined function - This is Robert Lexis.</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Google Analytics -->
+    
+
+
+</head>
+
+
+<body>
+
+<div class="bg-gradient"></div>
+<div class="bg-pattern"></div>
+
+<!-- Menu -->
+<!--Menu Links and Overlay-->
+<div class="menu-bg">
+    <div class="menu-container">
+        <ul>
+            
+            <li class="menu-item">
+                <a href="/">
+                    Home
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/archives">
+                    Archives
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/about">
+                    About
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/tags">
+                    Tags
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/categories">
+                    Categories
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/contact">
+                    Contact
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+<!--Hamburger Icon-->
+<nav>
+    <a href="#menu"></a>
+</nav>
+
+<div class="container">
+
+    <!-- Main Content -->
+    <div class="row">
+    <div class="col-sm-12">
+
+        <!--Title and Logo-->
+        <header>
+    <div class="logo">
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
+        
+    </div>
+</header>
+
+        <section class="main">
+            
+<div class="post">
+
+    <div class="post-header">
+        <h1 class="title">
+            <a href="/2019/05/08/Static-variable-in-inlined-function/">
+                Static variable in inlined function
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2019-05-08</span>
+            
+            
+            
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- Gallery -->
+        
+
+        <!-- Post Content -->
+        <h3 id="static-function-static-local-variable"><a href="#static-function-static-local-variable" class="headerlink" title="static function + static local variable"></a>static function + static local variable</h3><p>Declaring a function static will make it “hidden” in its compilation unit.<br><a id="more"></a></p>
+<blockquote>
+<p>A name having namespace scope (3.3.6) has internal linkage if it is the name of a variable, function or function template that is explicitly declared static;<br><br>3.5/3 - C++14 (n3797)<br><br>When a name has internal linkage , the entity it denotes can be referred to by names from other scopes in the same translation unit.<br><br>3.5/2 - C++14 (n3797)</p>
+</blockquote>
+<p>If you declare this static function in a header, then all the compilation units including this header will have their own copy of the function.</p>
+<p>The thing is, if there are static variables inside that function, each compilation unit including this header will also have their own, personal version.</p>
+<h3 id="inline-function-static-local-variable"><a href="#inline-function-static-local-variable" class="headerlink" title="inline function + static local variable"></a>inline function + static local variable</h3><p>Declaring it inline makes it a candidate for inlining (it does not mean a lot nowadays in C++, as the compiler will inline or not, sometimes ignoring the fact the keyword inline is present or absent):</p>
+<blockquote>
+<p>A function declaration (8.3.5, 9.3, 11.3) with an inline specifier declares an inline function. The inline specifier indicates to the implementation that <strong>inline substitution of the function body at the point of call</strong> is to be preferred to <strong>the usual function call mechanism</strong>. An implementation is not required to perform this inline substitution at the point of call; however, even if this inline substitution is omitted, the other rules for inline functions defined by 7.1.2 shall still be respected.<br><br>7.1.2/2 - C++14 (n3797)</p>
+</blockquote>
+<p>In a header, it has an interesting <strong>side effect</strong>: The inlined function can be defined multiple times in the same module (<em>my-note: a module is from several compilation unit which each includes that header file.</em>), and the linker will simply join “them” into one if they were not inlined for compiler’s reason (<em>my-note: then use the usual function call mechanism.</em>).</p>
+<p>This has the advantage of “static” (i.e. it can be defined in a header) without its (<em>my-note: refers to static function</em>) flaws (i.e. it (<em>my-note: refers to inline function</em>) exists at most once if it is not inlined).</p>
+<p>For static variables declared inside, the standard specifically says there one, and only one of them (<em>my-note: 1. The static variable is shared between substitutions just as normally shared between calls to a function; 2. Not shared between different compilation units as always.</em>):</p>
+<blockquote>
+<p>A static local variable in an extern inline function always refers to the same object.<br><br>7.1.2/4 - C++98/C++14 (n3797)</p>
+</blockquote>
+<p>(functions are by default extern, so, unless you specifically mark your function as static, this (<em>my-note: the rule mentioned just above</em>) applies to <strong>non-static inline function</strong>.)</p>
+<p>Even if the function is inlined, the static variable inside won’t be, and you’ll end with as much static variables as you have compilation units including the definition of your static functions(<em>my-note: Not as mush as the substitutions; Commonly the number of substitutions &gt;= the number of compilation units; The number of copies of static variable always equals to the number of compilation units, so the substitutions in the same compilation unit shares the same copy of static variable.</em>).</p>
+<blockquote>
+<p>Static <strong>local</strong> variables have no linkage (they can’t be referred to by name outside their scope), but has static storage duration (i.e. it is global, but its construction and destruction obey to specific rules).</p>
+</blockquote>
+<h3 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h3><ul>
+<li><code>inline</code> 仅仅影响是否就地展开，并不影响静态局部变量的份数，静态局部变量的份数仅由编译单元的数目确定。一个函数可能就地展开了很多次，但是只要只有一个编译单元，就只有一份静态局部变量。</li>
+<li>除了使用 <code>inline</code> 和 <code>static</code> 声明函数，你并没有别的途径可以将函数的定义放进头文件并使得头文件被多个编译单元所包含。</li>
+</ul>
+<h3 id="Some-Cases"><a href="#Some-Cases" class="headerlink" title="Some Cases"></a>Some Cases</h3><ol>
+<li><p>When the function is merely “inline”, there is only one copy of the static variable <strong>in one compilation unit</strong>.(<em>my-note: shared between substitutions</em>). <strong>There are as many copies as there are translation units.</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">doSomething</span><span class="params">()</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">   <span class="keyword">static</span> <span class="keyword">int</span> value ;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>It is “private” for each compilation unit, meaning that every CPP file including the header where the static function is declared will have its own private copy of the function, including its own private copy of global hidden variable, thus as much variables as there are compilation units including the header. <strong>There are as many copies as there are translation units.</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">doSomething</span><span class="params">()</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">   <span class="keyword">static</span> <span class="keyword">int</span> value ;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>When the function is “static inline”, <strong>there are as many copies as there are translation units.</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">inline</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">doSomething</span><span class="params">()</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">   <span class="keyword">static</span> <span class="keyword">int</span> value ;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p><strong>在函数声明时加不加 <code>static</code> 或/和 <code>inline</code>，对于静态局部变量的份数没有影响。</strong></p>
+
+    </div>
+
+    
+
+    
+        <div class="post-tags">
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <a href="/tags/C/">#C++</a>
+        </div>
+    
+
+    <!-- Comments -->
+    
+
+</div>
+        </section>
+
+    </div>
+</div>
+
+
+</div>
+
+<!-- Footer -->
+<div class="push"></div>
+
+<footer class="footer-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
+                <h2>About</h2>
+                <p>
+                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
+                </p>
+            </div>
+            
+    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+            
+            <li>
+                <a class="footer-post" href="/2019/05/08/Static-variable-in-inlined-function/">Static variable in inline</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/23/Iterator-invalidation-rules/">Iterator invalidation rul</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/03/18/Emplace-back/">Emplace back</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/03/14/Perfect-forward/">Perfect forward</a>
+            </li>
+            
+        </ul>
+    </div>
+
+
+
+            
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="list-inline footer-social-icons">
+                    
+                    <li class="list-inline-item">
+                        <a href="https://github.com/RobertLexis">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-github"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="mailto:robert_lexis@163.com">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-envelope-o"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="footer-copyright">
+                    @Untitled. All right reserved | Robert Lexis Loves Wenny
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- After footer scripts -->
+
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Tween Max -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/main.js"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>

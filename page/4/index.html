@@ -147,6 +147,32 @@
 
     <div class="post-header index">
         <h1 class="title">
+            <a href="/2018/07/03/Advanced-machine-learning-with-scikit-learn/">
+                Advanced machine learning with scikit-learn
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-07-03</span>
+            
+            
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            
+        </div>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
             <a href="/2018/07/03/Machine-learning-with-scikit-learn/">
                 Machine learning with scikit-learn
             </a>
@@ -397,39 +423,6 @@
 
 </div>
             
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/05/05/喂饱GPU：多线程加载图像数据/">
-                喂饱GPU：多线程加载图像数据
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-05-05</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <p>在训练卷积神经网络时，为了充分利用GPU的计算能力，让GPU充分运转，减少GPU等待批次（batch）数据的时间，需要进行图像数据加载的并行编程。可以进行多进程或者多线程编程，需要注意的是，由于 Python GIL 的存在，基于多线程的并行编程仅适用于 I/O 密集型的并发，并不适用于 CPU 计算密集型的并发。因此，如果图像数据加载（I/O密集型）后，需要进行图像数据的预处理（CPU 计算密集型），推荐使用多进程编程，关于多进程编程我后续会写一篇博客进行介绍，本文主要介绍我在使用使用多线程加载图像数据时遇到的一些知识点，主要包括：</p>
-<ul>
-<li>加锁：关键代码区访问控制</li>
-<li>双重锁验证</li>
-<li>长时代码移出关键代码区</li>
-</ul>
-<p>另外如果想了解关于线程之间通信的相关知识，可以查看我的另一篇博文<a href="https://robertlexis.github.io/2017/11/05/Python-threads-communication-and-stopping/" target="_blank" rel="external">Python threads: communication and stopping</a>。<br></p>
-        </div>
-        <a href="/2018/05/05/喂饱GPU：多线程加载图像数据/" class="read-more">Read More</a>
-    
-
-</div>
-            
         </section>
     </div>
 </div>
@@ -472,6 +465,10 @@
         <ul>
             
             <li>
+                <a class="footer-post" href="/2019/05/08/Static-variable-in-inlined-function/">Static variable in inline</a>
+            </li>
+            
+            <li>
                 <a class="footer-post" href="/2019/04/23/Iterator-invalidation-rules/">Iterator invalidation rul</a>
             </li>
             
@@ -481,10 +478,6 @@
             
             <li>
                 <a class="footer-post" href="/2019/03/14/Perfect-forward/">Perfect forward</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/14/Move-semantic-perfect-forward/">Move semantic &amp; perfect f</a>
             </li>
             
         </ul>

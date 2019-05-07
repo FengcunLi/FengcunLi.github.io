@@ -147,6 +147,36 @@
 
     <div class="post-header index">
         <h1 class="title">
+            <a href="/2018/02/10/C-const-extern-static-volatile/">
+                C++ const/extern/static/volatile
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-02-10</span>
+            
+            
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <h2 id="C-C-中的-const-关键字"><a href="#C-C-中的-const-关键字" class="headerlink" title="C/C++ 中的 const 关键字"></a>C/C++ 中的 const 关键字</h2><p>const 可以用来修饰变量，指针，函数参数，函数返回值，成员函数本身。而后三者是 const 最具威力的用法。<br>const 成员函数有两个语义：</p>
+<ol>
+<li>使得 class 的接口更加容易被理解，方便的知道哪个函数可以修改调用对象的内容，哪个函数不行。</li>
+<li>使得区别对待常量调用对象与非常量调用对象成为可能。（两个成员函数仅仅是常量性不同是可以被重载的）<br>改善 C++ 程序效率的一个根本办法是 pass-by-reference-to-const</li></ol>
+        </div>
+        <a href="/2018/02/10/C-const-extern-static-volatile/" class="read-more">Read More</a>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
             <a href="/2018/01/23/数据结构与算法分析C/">
                 数据结构与算法分析C++
             </a>
@@ -421,33 +451,6 @@
 
 </div>
             
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2017/11/21/Pandas-加载数据的I-O性能比较/">
-                Pandas 加载数据的I/O性能比较
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2017-11-21</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <h3 id="Pandas-加载数据的I-O性能比较"><a href="#Pandas-加载数据的I-O性能比较" class="headerlink" title="Pandas 加载数据的I/O性能比较"></a>Pandas 加载数据的I/O性能比较</h3><p>在使用阿里巴巴集群数据时，由于数据量比较大，对数据进行分析前加载数据需要花费较长的时间，因此测试了 Pandas 读取数据不同方法的 I/O 性能。<br>测试数据:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">batch_instance.csv 819M</div><div class="line"></div><div class="line">wc -l batch_instance.csv </div><div class="line">16094656 batch_instance.csv</div></pre></td></tr></table></figure></p>
-        </div>
-        <a href="/2017/11/21/Pandas-加载数据的I-O性能比较/" class="read-more">Read More</a>
-    
-
-</div>
-            
         </section>
     </div>
 </div>
@@ -490,6 +493,10 @@
         <ul>
             
             <li>
+                <a class="footer-post" href="/2019/05/08/Static-variable-in-inlined-function/">Static variable in inline</a>
+            </li>
+            
+            <li>
                 <a class="footer-post" href="/2019/04/23/Iterator-invalidation-rules/">Iterator invalidation rul</a>
             </li>
             
@@ -499,10 +506,6 @@
             
             <li>
                 <a class="footer-post" href="/2019/03/14/Perfect-forward/">Perfect forward</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/14/Move-semantic-perfect-forward/">Move semantic &amp; perfect f</a>
             </li>
             
         </ul>
