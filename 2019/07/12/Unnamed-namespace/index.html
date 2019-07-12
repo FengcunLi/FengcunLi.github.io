@@ -10,8 +10,7 @@
 
     <!--Description-->
     
-        <meta name="description" content="匿名命名空间的 external linkage 与 internal linkage123namespace &amp;#123;&amp;#125;
-在 C++ 11 之前，匿名命名空间具有 external linkage，在 C++ 11 之后，匿名命名空间具有 internal linkage. This">
+        <meta name="description" content="匿名命名空间的 external linkage 与 internal linkage123namespace &amp;#123;&amp;#125;">
     
 
     <!--Author-->
@@ -167,6 +166,7 @@
 
         <!-- Post Content -->
         <h3 id="匿名命名空间的-external-linkage-与-internal-linkage"><a href="#匿名命名空间的-external-linkage-与-internal-linkage" class="headerlink" title="匿名命名空间的 external linkage 与 internal linkage"></a>匿名命名空间的 external linkage 与 internal linkage</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">namespace &#123;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<a id="more"></a>
 <p>在 <code>C++ 11</code> 之前，匿名命名空间具有 external linkage，在 <code>C++ 11</code> 之后，匿名命名空间具有 internal linkage. This means you can have free functions <code>help</code> that can exist in multiple translation units, and they won’t clash at link time. The effect is almost identical to using the static keyword used in <code>C</code> which you can put in in the declaration of identifiers. <strong>Unnamed namespaces are a superior alternative, being able to even make a type translation unit local.</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">namespace &#123; int a1; &#125;</div><div class="line">static int a2;</div></pre></td></tr></table></figure>
 <p>Both a’s are <strong>translation unit local</strong> and won’t clash at link time. But the difference is that the a1 in the anonymous namespace gets a unique name.</p>
@@ -178,7 +178,7 @@
 <p>These don’t need to be in an anonymous namespace, since <code>const</code> object already have static linkage and therefore can’t possibly conflict with identifiers of the same name in another translation unit. “These don’t need to be in an anonymous namespace” Technically, sure - but still, it doesn’t hurt to put them in one, as a visual reminder of their semantics and to make it (even more) trivial to remove constness later if desired. </p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ol>
 <li>在 <code>C/C++03</code> 中，为了获得 internal linkage，会加上 static，通过 static linkage 使得 translation unit local，从而达成 internal linkage.</li>
-<li>在 <code>C++11</code> 中，可以通过匿名命名空间直接使得 translation unit local，从而达成 internal1 linkage.</li>
+<li>在 <code>C++11</code> 中，可以通过匿名命名空间直接使得 translation unit local，从而达成 internal linkage.</li>
 <li><code>const</code> 具有 static linkage. </li>
 </ol>
 
