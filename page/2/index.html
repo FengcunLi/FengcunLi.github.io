@@ -147,6 +147,36 @@
 
     <div class="post-header index">
         <h1 class="title">
+            <a href="/2018/09/03/Optimizers/">
+                Optimizers
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-09-03</span>
+            
+            
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <h3 id="Batch-vs-mini-batch-gradient-descent"><a href="#Batch-vs-mini-batch-gradient-descent" class="headerlink" title="Batch vs. mini-batch gradient descent"></a>Batch vs. mini-batch gradient descent</h3><p>mini-batch gradient descent 可以加快训练过程，Batch gradient descent 是过一次整个训练集才更新一次参数。Too long per iteration（<br>一次更新就是一次迭代，一次迭代就是一次更新）.<br>one epoch: single pass through training set.</p>
+<h5 id="Understanding-mini-batch-gradient-descent"><a href="#Understanding-mini-batch-gradient-descent" class="headerlink" title="Understanding mini-batch gradient descent"></a>Understanding mini-batch gradient descent</h5><ul>
+<li>Batch gradient descent cost 一定是单调递减的，如果不是，有可能是学习率太大了，导致发散了。</li>
+<li>mini-batch gradient descent noisy</li></ul>
+        </div>
+        <a href="/2018/09/03/Optimizers/" class="read-more">Read More</a>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
             <a href="/2018/08/28/Tensorflow-模型浮点数计算量和参数量统计/">
                 TensorFlow 模型浮点数计算量和参数量统计
             </a>
@@ -407,35 +437,6 @@
 
 </div>
             
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/08/08/OpenCV-Python-C-与Scikit-image在BGR-RGB转灰度图上的不同/">
-                OpenCV(Python & C++)与Scikit-image在BGR/RGB转灰度图上的不同
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-08-08</span>
-            
-            
-            
-        </div>
-    </div>
-
-    
-        <div class="content">
-            <p>将主机 Python 环境下训练的卷积神经网络模型移植到 Jetson TX2 的 TensorRT 加速环境（C++）下时，遇到了模型精度损失的问题，发现是由于 Python Scikit-image 中函数 <code>color.rgb2gray</code> 与 C++ OpenCV 中函数 <code>cv::cvtColor(cv::InputArray src, cv::OutputArray dst, cv::COLOR_BGR2GRAY)</code> 的彩色图转灰度图的转换函数定义不同，分别如下：</p>
-<h3 id="OpenCV"><a href="#OpenCV" class="headerlink" title="OpenCV"></a>OpenCV</h3><p>\[ Y = 0.299 \times R + 0.587 \times G + 0.114 \times B \]</p>
-<h3 id="Scikit-image"><a href="#Scikit-image" class="headerlink" title="Scikit-image"></a>Scikit-image</h3><p>\[ Y = 0.2125 \times R + 0.7154 \times G + 0.0721 \times B \]<br></p>
-        </div>
-        <a href="/2018/08/08/OpenCV-Python-C-与Scikit-image在BGR-RGB转灰度图上的不同/" class="read-more">Read More</a>
-    
-
-</div>
-            
         </section>
     </div>
 </div>
@@ -478,6 +479,10 @@
         <ul>
             
             <li>
+                <a class="footer-post" href="/2019/07/12/Unnamed-namespace/">Unnamed namespace</a>
+            </li>
+            
+            <li>
                 <a class="footer-post" href="/2019/05/08/Static-variable-in-inlined-function/">Static variable in inline</a>
             </li>
             
@@ -487,10 +492,6 @@
             
             <li>
                 <a class="footer-post" href="/2019/03/18/Emplace-back/">Emplace back</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/14/Perfect-forward/">Perfect forward</a>
             </li>
             
         </ul>
