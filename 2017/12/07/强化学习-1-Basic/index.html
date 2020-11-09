@@ -12,25 +12,25 @@
 
 <link rel="stylesheet" href="/css/main.css">
 
-
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="强化学习基础强化学习主要用于解决连续决策问题三个主要概念：  环境（Environment） 动作（Action） 奖励（Reward）强化学习的目标就是让模型根据环境，动作和奖励学习出最佳的策略。强化学习不像监督学习那样具有明确的标签（目标），也不像无监督学习那样完全没有标签（目标），强化学习的目标一般是变化的，不明确的，甚至不是绝对正确的。Google 的 DQN（Deep Q-Network">
+  <meta name="description" content="强化学习基础">
 <meta property="og:type" content="article">
 <meta property="og:title" content="强化学习 1 Basic">
 <meta property="og:url" content="http://yoursite.com/2017/12/07/强化学习-1-Basic/index.html">
 <meta property="og:site_name" content="The next stop - Antarctica">
-<meta property="og:description" content="强化学习基础强化学习主要用于解决连续决策问题三个主要概念：  环境（Environment） 动作（Action） 奖励（Reward）强化学习的目标就是让模型根据环境，动作和奖励学习出最佳的策略。强化学习不像监督学习那样具有明确的标签（目标），也不像无监督学习那样完全没有标签（目标），强化学习的目标一般是变化的，不明确的，甚至不是绝对正确的。Google 的 DQN（Deep Q-Network">
+<meta property="og:description" content="强化学习基础">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2017-12-09T08:32:18.000Z">
+<meta property="og:updated_time" content="2020-11-09T04:31:28.698Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="强化学习 1 Basic">
-<meta name="twitter:description" content="强化学习基础强化学习主要用于解决连续决策问题三个主要概念：  环境（Environment） 动作（Action） 奖励（Reward）强化学习的目标就是让模型根据环境，动作和奖励学习出最佳的策略。强化学习不像监督学习那样具有明确的标签（目标），也不像无监督学习那样完全没有标签（目标），强化学习的目标一般是变化的，不明确的，甚至不是绝对正确的。Google 的 DQN（Deep Q-Network">
+<meta name="twitter:description" content="强化学习基础">
 
 <link rel="canonical" href="http://yoursite.com/2017/12/07/强化学习-1-Basic/">
 
@@ -118,6 +118,16 @@
     <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
         <li class="menu-item menu-item-archives">
 
     <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
@@ -154,7 +164,7 @@
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/07/强化学习-1-Basic/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.jpg">
       <meta itemprop="name" content="Fengcun Li">
       <meta itemprop="description" content="">
     </span>
@@ -181,7 +191,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2017-12-09 16:32:18" itemprop="dateModified" datetime="2017-12-09T16:32:18+08:00">2017-12-09</time>
+                <time title="修改时间：2020-11-09 12:31:28" itemprop="dateModified" datetime="2020-11-09T12:31:28+08:00">2020-11-09</time>
               </span>
 
           
@@ -195,20 +205,21 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="强化学习基础"><a href="#强化学习基础" class="headerlink" title="强化学习基础"></a>强化学习基础</h1><h2 id="强化学习"><a href="#强化学习" class="headerlink" title="强化学习"></a>强化学习</h2><p>主要用于解决连续决策问题<br>三个主要概念：</p>
+        <h1 id="强化学习基础"><a href="#强化学习基础" class="headerlink" title="强化学习基础"></a>强化学习基础</h1><a id="more"></a>
+<h2 id="强化学习"><a href="#强化学习" class="headerlink" title="强化学习"></a>强化学习</h2><p>主要用于解决连续决策问题<br>三个主要概念：</p>
 <ol>
 <li>环境（Environment）</li>
 <li>动作（Action）</li>
-<li>奖励（Reward）<br>强化学习的目标就是让模型根据环境，动作和奖励学习出最佳的策略。<br>强化学习不像监督学习那样具有明确的标签（目标），也不像无监督学习那样完全没有标签（目标），强化学习的目标一般是变化的，不明确的，甚至不是绝对正确的。<br>Google 的 DQN（Deep Q-Network）结合了深度学习和强化学习。<br>DeepMind 的 AlphaGo 结合了策略网络（Policy Network）、估值网络（Value Network 即DQN）与蒙特卡洛搜索树。<br>无人驾驶传感，CNN，RNN 对环境信息进行处理，再结合强化学习做出决策。</li>
+<li>奖励（Reward）<br>强化学习的目标就是让模型根据环境，动作和奖励学习出最佳的策略。<br>强化学习不像监督学习那样具有明确的标签（目标），也不像无监督学习那样完全没有标签（目标），强化学习的目标一般是变化的，不明确的，甚至不是绝对正确的。<br>Google 的 DQN（Deep Q-Network）结合了深度学习和强化学习。<br>DeepMind 的 AlphaGo 结合了策略网络（Policy Network）、估值网络（Value Network 即 DQN）与蒙特卡洛搜索树。<br>无人驾驶传感，CNN，RNN 对环境信息进行处理，再结合强化学习做出决策。</li>
 </ol>
 <h2 id="两类方法"><a href="#两类方法" class="headerlink" title="两类方法"></a>两类方法</h2><ol>
-<li>Policy-Based （Policy Gradients） <ul>
+<li>Policy-Based （Policy Gradients）<ul>
 <li>直接给出某个环境状态下应该采取的动作</li>
 <li>适用于动作种类非常多或者连续取值的动作</li>
 </ul>
 </li>
 <li>Value-Based（Q-Learning）<ul>
-<li>给出某个环境状态下所有动作的Q值，之后可以选择Q值最高的动作。</li>
+<li>给出某个环境状态下所有动作的 Q 值，之后可以选择 Q 值最高的动作。</li>
 <li>少量离散取值的动作</li>
 </ul>
 </li>
@@ -229,8 +240,8 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2017/12/07/Learning-TensorFlow-2-计算加速/" rel="prev" title="Learning TensorFlow 2 计算加速">
-      <i class="fa fa-chevron-left"></i> Learning TensorFlow 2 计算加速
+    <a href="/2017/12/07/循环神经网络的原理及-TensorFlow-实现/" rel="prev" title="循环神经网络的原理及 TensorFlow 实现">
+      <i class="fa fa-chevron-left"></i> 循环神经网络的原理及 TensorFlow 实现
     </a></div>
       <div class="post-nav-item">
     <a href="/2017/12/09/强化学习-2-策略网络及其-TensorFlow-实现/" rel="next" title="强化学习 2 策略网络及其 TensorFlow 实现">
@@ -300,6 +311,8 @@
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
   <p class="site-author-name" itemprop="name">Fengcun Li</p>
   <div class="site-description" itemprop="description"></div>
 </div>
@@ -308,12 +321,13 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-count">67</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
+          
         <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
@@ -347,7 +361,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>
 
         

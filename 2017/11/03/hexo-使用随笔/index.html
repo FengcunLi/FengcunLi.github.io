@@ -12,28 +12,28 @@
 
 <link rel="stylesheet" href="/css/main.css">
 
-
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="修改 hexo 中引用（blockquote）的样式在 clean blog 中使用引用&amp;gt;时，渲染后引用会字体变大文本居中，十分不美观。因此需要修改样式。找到文件\themes\clean-blog\source\css\article.styl，在其中搜索关键字blockquote:change1234567blockquote  font-style italic  font-fami">
+  <meta name="description" content="修改 hexo 中引用（blockquote）的样式">
 <meta name="keywords" content="Tool">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Hexo 使用随笔">
 <meta property="og:url" content="http://yoursite.com/2017/11/03/hexo-使用随笔/index.html">
 <meta property="og:site_name" content="The next stop - Antarctica">
-<meta property="og:description" content="修改 hexo 中引用（blockquote）的样式在 clean blog 中使用引用&amp;gt;时，渲染后引用会字体变大文本居中，十分不美观。因此需要修改样式。找到文件\themes\clean-blog\source\css\article.styl，在其中搜索关键字blockquote:change1234567blockquote  font-style italic  font-fami">
+<meta property="og:description" content="修改 hexo 中引用（blockquote）的样式">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/11/before_fixing.png">
 <meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/11/after_fixing.png">
-<meta property="og:updated_time" content="2018-08-26T11:24:44.882Z">
+<meta property="og:updated_time" content="2020-11-09T04:29:12.998Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Hexo 使用随笔">
-<meta name="twitter:description" content="修改 hexo 中引用（blockquote）的样式在 clean blog 中使用引用&amp;gt;时，渲染后引用会字体变大文本居中，十分不美观。因此需要修改样式。找到文件\themes\clean-blog\source\css\article.styl，在其中搜索关键字blockquote:change1234567blockquote  font-style italic  font-fami">
+<meta name="twitter:description" content="修改 hexo 中引用（blockquote）的样式">
 <meta name="twitter:image" content="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/11/before_fixing.png">
 
 <link rel="canonical" href="http://yoursite.com/2017/11/03/hexo-使用随笔/">
@@ -122,6 +122,16 @@
     <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
         <li class="menu-item menu-item-archives">
 
     <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
@@ -158,7 +168,7 @@
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/11/03/hexo-使用随笔/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.jpg">
       <meta itemprop="name" content="Fengcun Li">
       <meta itemprop="description" content="">
     </span>
@@ -185,7 +195,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2018-08-26 19:24:44" itemprop="dateModified" datetime="2018-08-26T19:24:44+08:00">2018-08-26</time>
+                <time title="修改时间：2020-11-09 12:29:12" itemprop="dateModified" datetime="2020-11-09T12:29:12+08:00">2020-11-09</time>
               </span>
 
           
@@ -199,63 +209,59 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <a id="more"></a>
-<h3 id="修改-hexo-中引用（blockquote）的样式"><a href="#修改-hexo-中引用（blockquote）的样式" class="headerlink" title="修改 hexo 中引用（blockquote）的样式"></a>修改 hexo 中引用（blockquote）的样式</h3><p>在 clean blog 中使用引用<code>&gt;</code>时，渲染后引用会字体变大文本居中，十分不美观。因此需要修改样式。<br>找到文件<code>\themes\clean-blog\source\css\article.styl</code>，在其中搜索关键字<code>blockquote</code>:<br>change<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">blockquote</span><br><span class="line">  font-style italic</span><br><span class="line">  font-family font-serif</span><br><span class="line">  font-size 1.2em</span><br><span class="line">  padding 0 30px 15px</span><br><span class="line">  text-align center</span><br><span class="line">  footer....</span><br></pre></td></tr></table></figure></p>
-<p>to<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">blockquote</span><br><span class="line">  font-style italic</span><br><span class="line">  font-family font-serif</span><br><span class="line">  font-size 0.95em</span><br><span class="line">  padding 0 30px 15px</span><br><span class="line">  text-align left</span><br><span class="line">  footer....</span><br></pre></td></tr></table></figure></p>
+        <h3 id="修改-hexo-中引用（blockquote）的样式"><a href="#修改-hexo-中引用（blockquote）的样式" class="headerlink" title="修改 hexo 中引用（blockquote）的样式"></a>修改 hexo 中引用（blockquote）的样式</h3><a id="more"></a>
+<p>在 clean blog 中使用引用<code>&gt;</code>时，渲染后引用会字体变大文本居中，十分不美观。因此需要修改样式。<br>找到文件<code>\themes\clean-blog\source\css\article.styl</code>，在其中搜索关键字<code>blockquote</code>:<br>change</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">blockquote</span><br><span class="line">  font-style italic</span><br><span class="line">  font-family font-serif</span><br><span class="line">  font-size 1.2em</span><br><span class="line">  padding 0 30px 15px</span><br><span class="line">  text-align center</span><br><span class="line">  footer....</span><br></pre></td></tr></table></figure>
+<p>to</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">blockquote</span><br><span class="line">  font-style italic</span><br><span class="line">  font-family font-serif</span><br><span class="line">  font-size 0.95em</span><br><span class="line">  padding 0 30px 15px</span><br><span class="line">  text-align left</span><br><span class="line">  footer....</span><br></pre></td></tr></table></figure>
 <p>效果就是：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/11/before_fixing.png" alt="before_fixing"><br>to<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/11/after_fixing.png" alt="after_fixing"></p>
 <h3 id="Hexo-下-Mathjax-的转义问题"><a href="#Hexo-下-Mathjax-的转义问题" class="headerlink" title="Hexo 下 Mathjax 的转义问题"></a>Hexo 下 Mathjax 的转义问题</h3><p>Q(s_{t}) 会被转义成 Q(s&lt;/em&gt;{t}) 导致 Mathjax 不能正确渲染出公式。</p>
-<h4 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h4><p>Mathjax 可以解析网页上的数学公式，与 Hexo 的结合也很简单，可以手动加入js，或者直接使用 hexo-math 插件。大部分情况下都是可以的，但是 Markdwon 本身的特殊符号与 Latex 中的符号会出现冲突的时候:</p>
+<h4 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h4><p>Mathjax 可以解析网页上的数学公式，与 Hexo 的结合也很简单，可以手动加入 js，或者直接使用 hexo-math 插件。大部分情况下都是可以的，但是 Markdwon 本身的特殊符号与 Latex 中的符号会出现冲突的时候:</p>
 <ul>
 <li>_的转义，在 Markdown 中，_是斜体，但是在 Latex 中，却有下标的意思，就会出现问题。</li>
 <li>\\的换行，在 Markdown 中，\\会被转义为\, 这样也会影响影响 Mathjax 对公式中的 \\ 进行渲染。</li>
 </ul>
-<h4 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h4><p>Hexo 默认使用 marked.js 去解析我们写的 Markdown，比如一些符号，_代表斜体，会被处理为&lt;em&gt;标签，比如x_i在开始被渲染的时候，处理为x&lt;em&gt;i&lt;/em&gt;，这个时候 Mathjax 就无法渲染成下标了。很多符号都有这个问题，比如粗体*，也是无法在Mathjax渲染出来的。所以说到底，是 Hexo 使用的 Markdown 引擎的锅，因为很多其它引擎在这方面处理的很好。</p>
+<h4 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h4><p>Hexo 默认使用 marked.js 去解析我们写的 Markdown，比如一些符号，_代表斜体，会被处理为&lt;em&gt;标签，比如 x_i 在开始被渲染的时候，处理为 x&lt;em&gt;i&lt;/em&gt;，这个时候 Mathjax 就无法渲染成下标了。很多符号都有这个问题，比如粗体*，也是无法在 Mathjax 渲染出来的。所以说到底，是 Hexo 使用的 Markdown 引擎的锅，因为很多其它引擎在这方面处理的很好。</p>
 <h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><p>修改 Hexo 渲染源码<br>思路就是修改 Hexo 的渲染源码: nodes_modules/lib/marked/lib/marked.js:</p>
 <ul>
 <li>去掉\的额外转义</li>
 <li>将 em 标签对应的符号中，去掉_，因为 Markdown 中有*可以表示斜体，_就去掉了。</li>
 </ul>
-<p>打开nodes_modules/marked/lib/marked.js:</p>
+<p>打开 nodes_modules/marked/lib/marked.js:</p>
 <ol>
-<li>第一步<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">escape: /^\\([\\`*&#123;&#125;\[\]()# +\-.!_&gt;])/,</span><br></pre></td></tr></table></figure>
-</li>
+<li>第一步</li>
 </ol>
-<p>改为:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">escape: /^\\([`*&#123;&#125;\[\]()# +\-.!_&gt;])/,</span><br></pre></td></tr></table></figure></p>
-<p>这样就会去掉\的转义了。</p>
-<ol start="2">
-<li>第二步，找到em的符号:<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">em: /^\b_((?:[^_]|__)+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<p>改为:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">em:/^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">escape: /^\\([\\`*&#123;&#125;\[\]()# +\-.!_&gt;])/,</span><br></pre></td></tr></table></figure>
+<p>改为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">escape: /^\\([`*&#123;&#125;\[\]()# +\-.!_&gt;])/,</span><br></pre></td></tr></table></figure>
+<p>这样就会去掉\的转义了。 2. 第二步，找到 em 的符号:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">em: /^\b_((?:[^_]|__)+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</span><br></pre></td></tr></table></figure>
+<p>改为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">em:/^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</span><br></pre></td></tr></table></figure>
 <p>去掉_的斜体含义，这样通用性很高，因为没有修改文章的内容，可以放到别的引擎下也会顺利渲染。</p>
 <h3 id="hexo-部署错误"><a href="#hexo-部署错误" class="headerlink" title="hexo 部署错误"></a>hexo 部署错误</h3><h4 id="错误提示"><a href="#错误提示" class="headerlink" title="错误提示"></a>错误提示</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">fatal: could not read Username for &apos;https://github.com&apos;: No error</span><br><span class="line">FATAL Something&apos;s wrong. Maybe you can find the solution here: http://hexo.io/docs/troubleshooting.html</span><br><span class="line">Error: fatal: HttpRequestException encountered.</span><br></pre></td></tr></table></figure>
-<p>在 <code>_config.yml</code> 中完成以下更改：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: https://github.com/RobertLexis/RobertLexis.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure></p>
-<p>to<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo:  git@github.com:RobertLexis/RobertLexis.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure></p>
+<p>在 <code>_config.yml</code> 中完成以下更改：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: https://github.com/RobertLexis/RobertLexis.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
+<p>to</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo:  git@github.com:RobertLexis/RobertLexis.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
 <p>即由 HTTPS 转到 SSH。</p>
-<h4 id="配置-SSH"><a href="#配置-SSH" class="headerlink" title="配置 SSH"></a>配置 SSH</h4><p>在正确配置之前会报错<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Permission denied (publickey).</span><br><span class="line">fatal: Could not read from remote repository.</span><br><span class="line"></span><br><span class="line">Please make sure you have the correct access rights</span><br><span class="line">and the repository exists.</span><br></pre></td></tr></table></figure></p>
+<h4 id="配置-SSH"><a href="#配置-SSH" class="headerlink" title="配置 SSH"></a>配置 SSH</h4><p>在正确配置之前会报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Permission denied (publickey).</span><br><span class="line">fatal: Could not read from remote repository.</span><br><span class="line"></span><br><span class="line">Please make sure you have the correct access rights</span><br><span class="line">and the repository exists.</span><br></pre></td></tr></table></figure>
 <h5 id="配置步骤："><a href="#配置步骤：" class="headerlink" title="配置步骤："></a>配置步骤：</h5><ol>
-<li>检查是否有SSH key<br>登陆 github，点击头像 Settings ——&gt; SSH and GPG keys ，查看是否有 SSH keys。如果有，直接跳到第 3 步；如果没有，则继续。</li>
-<li>新建 SSH key，在 git bash 中，注意大小写：<br><code>ssh-keygen -t rsa -C robert_lexis@163.com</code><br>然后会出现：<br><code>Generating public/private rsa key pair.
-Enter file in which to save the key (/c/Users/robert/.ssh/id_rsa):</code><br>直接回车就可以。<br>然后：<br><code>Enter passphrase (empty for no passphrase):
-Enter same passphrase again:</code><br>要求你输入密码，这个密码会在你提交项目时使用，如果为空的话提交项目时则不用输入。这个设置是防止别人往你的项目里提交内容。<br>注意：输入密码的时候没有*字样的，直接输入就好。<br>然后：<br><code>Your identification has been saved in /c/Users/robert/.ssh/id_rsa.
-Your public key has been saved in /c/Users/robert/.ssh/id_rsa.pub.
-The key fingerprint is:
-...</code><br>至此，密钥已经成功生成。</li>
-<li>接下来在 github 上添加SSH key：<ol>
-<li>打开本地文件：id_rsa.pub（文件路径可以在上一步SSH生成成功后看到路径，比如我的是c/Users/robert/.ssh/id_rsa.pub），可以将这个文件在编辑器中打开，然后全选复制。</li>
-<li>登陆 github，点击头像位置处 Settings ——&gt; SSH and GPG keys ——&gt; New SSH key，点击新建SSH key。</li>
+<li>检查是否有 SSH key<br>登陆 github，点击头像 Settings ——&gt; SSH and GPG keys ，查看是否有 SSH keys。如果有，直接跳到第 3 步；如果没有，则继续。</li>
+<li>新建 SSH key，在 git bash 中，注意大小写：<br><code>ssh-keygen -t rsa -C robert_lexis@163.com</code><br>然后会出现：<br><code>Generating public/private rsa key pair. Enter file in which to save the key (/c/Users/robert/.ssh/id_rsa):</code><br>直接回车就可以。<br>然后：<br><code>Enter passphrase (empty for no passphrase): Enter same passphrase again:</code><br>要求你输入密码，这个密码会在你提交项目时使用，如果为空的话提交项目时则不用输入。这个设置是防止别人往你的项目里提交内容。<br>注意：输入密码的时候没有*字样的，直接输入就好。<br>然后：<br><code>Your identification has been saved in /c/Users/robert/.ssh/id_rsa. Your public key has been saved in /c/Users/robert/.ssh/id_rsa.pub. The key fingerprint is: ...</code><br>至此，密钥已经成功生成。</li>
+<li>接下来在 github 上添加 SSH key：</li>
+<li>打开本地文件：id_rsa.pub（文件路径可以在上一步 SSH 生成成功后看到路径，比如我的是 c/Users/robert/.ssh/id_rsa.pub），可以将这个文件在编辑器中打开，然后全选复制。</li>
+<li>登陆 github，点击头像位置处 Settings ——&gt; SSH and GPG keys ——&gt; New SSH key，点击新建 SSH key。</li>
 <li>将 1 中复制的内容粘贴在 key 文本框里，title 可以不用填（或者自己起一个名字也可以）。</li>
+<li>测试设置是否成功：<br><code>ssh -T git@github.com</code><br>出现：<br><code>Hi RobertLexis! You&#39;ve successfully authenticated, but GitHub does not provide shell access.</code></li>
+<li>设置用户信息：</li>
 </ol>
-</li>
-<li>测试设置是否成功：<br><code>ssh -T git@github.com</code><br>出现：<br><code>Hi RobertLexis! You&#39;ve successfully authenticated, but GitHub does not 
-provide shell access.</code></li>
-<li><p>设置用户信息：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name &quot;用户名&quot;</span><br><span class="line">git config --global user.email  &quot;你希望的邮箱名&quot;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>然后就可以部署你的博客到github啦~</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
-</li>
+<ol start="6">
+<li>然后就可以部署你的博客到 github 啦~</li>
 </ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
 
     </div>
 
@@ -274,8 +280,8 @@ provide shell access.</code></li>
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2017/11/02/Install-XGBoost/" rel="prev" title="Install XGBoost">
-      <i class="fa fa-chevron-left"></i> Install XGBoost
+    <a href="/2017/11/02/在Dell-PowerEdge-R430上打造一个科学计算环境/" rel="prev" title="在Dell PowerEdge R430上打造一个科学计算环境">
+      <i class="fa fa-chevron-left"></i> 在Dell PowerEdge R430上打造一个科学计算环境
     </a></div>
       <div class="post-nav-item">
     <a href="/2017/11/03/Python-os-system-与-os-popen-的不同/" rel="next" title="Python os.system 与 os.popen 的不同">
@@ -345,6 +351,8 @@ provide shell access.</code></li>
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
   <p class="site-author-name" itemprop="name">Fengcun Li</p>
   <div class="site-description" itemprop="description"></div>
 </div>
@@ -353,12 +361,13 @@ provide shell access.</code></li>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-count">67</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
+          
         <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
@@ -392,7 +401,7 @@ provide shell access.</code></li>
   </span>
   <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>
 
         

@@ -12,12 +12,12 @@
 
 <link rel="stylesheet" href="/css/main.css">
 
-
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="匿名命名空间的 external linkage 与 internal linkage123namespace &amp;#123;&amp;#125;">
@@ -28,7 +28,7 @@
 <meta property="og:site_name" content="The next stop - Antarctica">
 <meta property="og:description" content="匿名命名空间的 external linkage 与 internal linkage123namespace &amp;#123;&amp;#125;">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-07-12T03:07:35.874Z">
+<meta property="og:updated_time" content="2020-11-09T03:42:38.581Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unnamed Namespace">
 <meta name="twitter:description" content="匿名命名空间的 external linkage 与 internal linkage123namespace &amp;#123;&amp;#125;">
@@ -119,6 +119,16 @@
     <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
         <li class="menu-item menu-item-archives">
 
     <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
@@ -155,7 +165,7 @@
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/12/Unnamed-namespace/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.jpg">
       <meta itemprop="name" content="Fengcun Li">
       <meta itemprop="description" content="">
     </span>
@@ -174,10 +184,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2019-07-12 10:37:23 / 修改时间：11:07:35" itemprop="dateCreated datePublished" datetime="2019-07-12T10:37:23+08:00">2019-07-12</time>
+              <time title="创建时间：2019-07-12 10:37:23" itemprop="dateCreated datePublished" datetime="2019-07-12T10:37:23+08:00">2019-07-12</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-09 11:42:38" itemprop="dateModified" datetime="2020-11-09T11:42:38+08:00">2020-11-09</time>
+              </span>
 
           
 
@@ -190,21 +206,21 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="匿名命名空间的-external-linkage-与-internal-linkage"><a href="#匿名命名空间的-external-linkage-与-internal-linkage" class="headerlink" title="匿名命名空间的 external linkage 与 internal linkage"></a>匿名命名空间的 external linkage 与 internal linkage</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">namespace &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        <h3 id="匿名命名空间的-external-linkage-与-internal-linkage"><a href="#匿名命名空间的-external-linkage-与-internal-linkage" class="headerlink" title="匿名命名空间的 external linkage 与 internal linkage"></a>匿名命名空间的 external linkage 与 internal linkage</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <a id="more"></a>
 <p>在 <code>C++ 11</code> 之前，匿名命名空间具有 external linkage，在 <code>C++ 11</code> 之后，匿名命名空间具有 internal linkage. This means you can have free functions <code>help</code> that can exist in multiple translation units, and they won’t clash at link time. The effect is almost identical to using the static keyword used in <code>C</code> which you can put in in the declaration of identifiers. <strong>Unnamed namespaces are a superior alternative, being able to even make a type translation unit local.</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">namespace &#123; int a1; &#125;</span><br><span class="line">static int a2;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> &#123; <span class="keyword">int</span> a1; &#125;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">int</span> a2;</span><br></pre></td></tr></table></figure>
 <p>Both a’s are <strong>translation unit local</strong> and won’t clash at link time. But the difference is that the a1 in the anonymous namespace gets a unique name.</p>
 <p>Having something in an anonymous namespace means it’s local to this translation unit (.cpp file and all its includes) this means that if another symbol with the same name is defined elsewhere there will not be a violation of the <strong>One Definition Rule (ODR)</strong>.</p>
 <p>This is the same as the C way of having a static global variable or static function but it can be used for class definitions as well (and should be used rather than static in C++).</p>
 <p>All anonymous namespaces in the same file are treated as the same namespace and all anonymous namespaces in different files are distinct. An anonymous namespace is the equivalent of:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">namespace __unique_compiler_generated_identifer0x42 &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line">using namespace __unique_compiler_generated_identifer0x42;</span><br></pre></td></tr></table></figure>
 <h3 id="const’s-static-linkage"><a href="#const’s-static-linkage" class="headerlink" title="const’s static linkage"></a>const’s static linkage</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">namespace &#123;</span><br><span class="line">    const int SIZE_OF_ARRAY_X;</span><br><span class="line">    const int SIZE_OF_ARRAY_Y;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>These don’t need to be in an anonymous namespace, since <code>const</code> object already have static linkage and therefore can’t possibly conflict with identifiers of the same name in another translation unit. “These don’t need to be in an anonymous namespace” Technically, sure - but still, it doesn’t hurt to put them in one, as a visual reminder of their semantics and to make it (even more) trivial to remove constness later if desired. </p>
+<p>These don’t need to be in an anonymous namespace, since <code>const</code> object already have static linkage and therefore can’t possibly conflict with identifiers of the same name in another translation unit. “These don’t need to be in an anonymous namespace” Technically, sure - but still, it doesn’t hurt to put them in one, as a visual reminder of their semantics and to make it (even more) trivial to remove constness later if desired.</p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ol>
 <li>在 <code>C/C++03</code> 中，为了获得 internal linkage，会加上 static，通过 static linkage 使得 translation unit local，从而达成 internal linkage.</li>
 <li>在 <code>C++11</code> 中，可以通过匿名命名空间直接使得 translation unit local，从而达成 internal linkage.</li>
-<li><code>const</code> 具有 static linkage. </li>
+<li><code>const</code> 具有 static linkage.</li>
 </ol>
 
     </div>
@@ -292,6 +308,8 @@
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
   <p class="site-author-name" itemprop="name">Fengcun Li</p>
   <div class="site-description" itemprop="description"></div>
 </div>
@@ -300,12 +318,13 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-count">67</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
+          
         <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
@@ -339,7 +358,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>
 
         

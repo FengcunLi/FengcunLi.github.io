@@ -12,25 +12,25 @@
 
 <link rel="stylesheet" href="/css/main.css">
 
-
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="map vs setIn C++ STL, a map sometimes is referred to as a dictionary, consists of key/value pairs. The key is used to order the sequence, and the value is somehow associated with that key. For example">
+  <meta name="description" content="map vs set">
 <meta property="og:type" content="article">
 <meta property="og:title" content="计算机概念的英文表述">
 <meta property="og:url" content="http://yoursite.com/2018/03/16/计算机概念的英文表述/index.html">
 <meta property="og:site_name" content="The next stop - Antarctica">
-<meta property="og:description" content="map vs setIn C++ STL, a map sometimes is referred to as a dictionary, consists of key/value pairs. The key is used to order the sequence, and the value is somehow associated with that key. For example">
+<meta property="og:description" content="map vs set">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-08-26T11:08:44.566Z">
+<meta property="og:updated_time" content="2020-11-09T04:22:13.821Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="计算机概念的英文表述">
-<meta name="twitter:description" content="map vs setIn C++ STL, a map sometimes is referred to as a dictionary, consists of key/value pairs. The key is used to order the sequence, and the value is somehow associated with that key. For example">
+<meta name="twitter:description" content="map vs set">
 
 <link rel="canonical" href="http://yoursite.com/2018/03/16/计算机概念的英文表述/">
 
@@ -118,6 +118,16 @@
     <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
         <li class="menu-item menu-item-archives">
 
     <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
@@ -154,7 +164,7 @@
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/16/计算机概念的英文表述/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.jpg">
       <meta itemprop="name" content="Fengcun Li">
       <meta itemprop="description" content="">
     </span>
@@ -181,7 +191,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2018-08-26 19:08:44" itemprop="dateModified" datetime="2018-08-26T19:08:44+08:00">2018-08-26</time>
+                <time title="修改时间：2020-11-09 12:22:13" itemprop="dateModified" datetime="2020-11-09T12:22:13+08:00">2020-11-09</time>
               </span>
 
           
@@ -195,7 +205,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="map-vs-set"><a href="#map-vs-set" class="headerlink" title="map vs set"></a>map vs set</h3><p>In C++ STL, a map sometimes is referred to as a dictionary, consists of key/value pairs. The key is used to order the sequence, and the value is somehow associated with that key. For example, a map might contain keys representing every unique word in a text and values representing the number of times that word appears in that text.<br>a set is simply an ascending container of unique elements.<br>STL’s map and set are implemented with RB-Tree.<br>Both set and map support bidirectional iterators.<br>While not officially part of the STL standard, hash_map and hash_set are commonly used to improve searching time. These containers store elements as a hash table, with each table entry (bucket) containing a bidirectional linked list of elements.<br>Additionally, python’s dict and set is implemented with hash table. This is different from C++.<br><a id="more"></a></p>
+        <h3 id="map-vs-set"><a href="#map-vs-set" class="headerlink" title="map vs set"></a>map vs set</h3><a id="more"></a>
+<p>In C++ STL, a map sometimes is referred to as a dictionary, consists of key/value pairs. The key is used to order the sequence, and the value is somehow associated with that key. For example, a map might contain keys representing every unique word in a text and values representing the number of times that word appears in that text.<br>a set is simply an ascending container of unique elements.<br>STL’s map and set are implemented with RB-Tree.<br>Both set and map support bidirectional iterators.<br>While not officially part of the STL standard, hash_map and hash_set are commonly used to improve searching time. These containers store elements as a hash table, with each table entry (bucket) containing a bidirectional linked list of elements.<br>Additionally, python’s dict and set is implemented with hash table. This is different from C++.</p>
 <h3 id="stack-vs-heap"><a href="#stack-vs-heap" class="headerlink" title="stack vs heap"></a>stack vs heap</h3><p>stack:</p>
 <ol>
 <li>abstract data type, concept, LIFO</li>
@@ -227,14 +238,11 @@
 </ol>
 <h3 id="SQL-injection"><a href="#SQL-injection" class="headerlink" title="SQL injection"></a>SQL injection</h3><p>nefarious SQL statements are inserted into an entry field.<br>May dump the database contents to attackers.</p>
 <ol>
-<li>incorrectly filtered escape characters<br>This form of SQL injection occurs when user input is not filterd for escape characters and then is passed into an SQL statement.<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&quot;select * from users where name = &apos;&quot; + username +&quot;&apos;;&quot;</span><br><span class="line">username = &apos; OR &apos;1&apos; = &apos;1</span><br></pre></td></tr></table></figure>
-</li>
+<li>incorrectly filtered escape characters<br>This form of SQL injection occurs when user input is not filterd for escape characters and then is passed into an SQL statement.</li>
 </ol>
-<p>now attackers will get all data in users table.</p>
-<ol start="2">
-<li>incorrect type handling<br>occurs when a user-supplied field is not strongly typed or is not checked for type constraints.<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&quot;select * from userinfo where id=&quot; + a_variable +&quot;;&quot;</span><br><span class="line">a_variable is intended to be a number </span><br><span class="line">but if it is a string such as &quot;1; drop table users&quot;</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&quot;select * from users where name = &apos;&quot; + username +&quot;&apos;;&quot;</span><br><span class="line">username = &apos; OR &apos;1&apos; = &apos;1</span><br></pre></td></tr></table></figure>
+<p>now attackers will get all data in users table. 2. incorrect type handling<br>occurs when a user-supplied field is not strongly typed or is not checked for type constraints.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&quot;select * from userinfo where id=&quot; + a_variable +&quot;;&quot;</span><br><span class="line">a_variable is intended to be a number</span><br><span class="line">but if it is a string such as &quot;1; drop table users&quot;</span><br></pre></td></tr></table></figure>
 <p>solution:<br>escaping and type checking</p>
 <h3 id="Cross-site-Scripting-XSS"><a href="#Cross-site-Scripting-XSS" class="headerlink" title="Cross-site Scripting (XSS)"></a>Cross-site Scripting (XSS)</h3><p>typically found in web applications<br>XSS enables attackers to inject client-side scripts into the web pages which are viewed by other users.<br>A XSS vulnerability may be used by attackers to bypass access controls such as the same-origin policy.<br>same-origin policy:<br>A web browser permits scripts contained in the first web page to access data in the second web page, only if both web pages have the same origin.<br>same-origin: same protocol, same host and same port.</p>
 <h3 id="Singleton-pattern"><a href="#Singleton-pattern" class="headerlink" title="Singleton pattern"></a>Singleton pattern</h3><p>is a software design pattern that restricts the instantiation of a class to only one object.<br>It’s useful when exactly one object is needed to coordinate actions across the whole system.<br>How to implement a singleton class</p>
@@ -250,18 +258,18 @@
 </ol>
 <h3 id="binary-tree"><a href="#binary-tree" class="headerlink" title="binary tree"></a>binary tree</h3><p>is tree data structure in which each node has at most two child nodes, which refered to as left child and right child.<br>A binary tree node typically has a data field, left field and right field.<br>tree: In graph theory, a tree is a connected acyclic[ˌeɪˈsaɪklɪk] graph.</p>
 <h3 id="binary-sorted-tree-binary-search-tree"><a href="#binary-sorted-tree-binary-search-tree" class="headerlink" title="binary sorted tree/ binary search tree"></a>binary sorted tree/ binary search tree</h3><p>keeps their keys in sorted order, so that lookup and other operations can use the principle of binary search.<br>search/ insertion/ deletion logn<br>That’s much better than the linear time required to find items by key in an unsorted array, but slower than the corresponding operations on hash table.<br>BST satisfies the binary search property, which states that the key in each node must be greater than or equal to any keys stored in the left sub-tree, and less than or equal to any keys stored in the right sub-tree.<br>BST can be used to implement either dynamic set of items or look up table that allow finding items by key.</p>
-<h3 id="Database-index"><a href="#Database-index" class="headerlink" title="Database index"></a>Database index</h3><p>is a data structure that improves the speed of data retrieval[rɪˈtri:vl]<br> operations at the cost of additional space and effort to maintain the structure.</p>
+<h3 id="Database-index"><a href="#Database-index" class="headerlink" title="Database index"></a>Database index</h3><p>is a data structure that improves the speed of data retrieval[rɪˈtri:vl]<br>operations at the cost of additional space and effort to maintain the structure.</p>
 <p>indexes are used to quickly locate data without having to search every row in a database table. Indexes can be created using one or more columns.<br>An index is a copy of data from the selected columns and include a low-level disk block address or direct link to a complete row.<br>Tree Node key: index column value<br>Tree Node value: address or link</p>
 <ul>
 <li>Dense Index: pairs of key and pointer for every record in data file.</li>
 <li>Spare Index: pairs of key and pointer for every block in data file.</li>
 </ul>
-<h3 id="memory-leak"><a href="#memory-leak" class="headerlink" title="memory leak"></a>memory leak</h3><p>memory which is no longer needed is not released.<br>In oop, a memory leak may happen when an object is stored in memory but can be accessed by running code.<br>Because memory leak can exhaust available system memory as application runs, memory leak is often a cause of or a contributing factor for software aging. </p>
+<h3 id="memory-leak"><a href="#memory-leak" class="headerlink" title="memory leak"></a>memory leak</h3><p>memory which is no longer needed is not released.<br>In oop, a memory leak may happen when an object is stored in memory but can be accessed by running code.<br>Because memory leak can exhaust available system memory as application runs, memory leak is often a cause of or a contributing factor for software aging.</p>
 <h5 id="solutions"><a href="#solutions" class="headerlink" title="solutions"></a>solutions</h5><ol>
 <li>RAII resource acqusition is initialization<br>is an approch to this problem commonly taken in C++.<br>It associates scoped objects with required resources, and automatically release resources once the objects go out of scope. Unlike garbage collection, RAII has the advantage of knowing when objects exist and when they don’t.</li>
-<li>reference counting, smart pointer<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">/*C version */</span><br><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line">void f(int n) &#123;</span><br><span class="line">    int* array = calloc(n, sizeof(int));</span><br><span class="line">    do_somework(array);</span><br><span class="line">    free(array);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
+<li>reference counting, smart pointer</li>
 </ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">/*C version */</span><br><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line">void f(int n) &#123;</span><br><span class="line">    int* array = calloc(n, sizeof(int));</span><br><span class="line">    do_somework(array);</span><br><span class="line">    free(array);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">/* C++ version */</span><br><span class="line">#include &lt;vector&gt;</span><br><span class="line">void f(int n) &#123;</span><br><span class="line">    std::vector&lt;int&gt; array(n);</span><br><span class="line">    do_somework(array);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>The C++ version requires no explicit deallocation.<br>It will always occur automatically once the object goes out of scope, including if a exception is thrown.<br>RAII also works with open files, open windows, objects in a graphics drawing library, thread synchronization primitives, network connections and connections to database.</p>
 <h3 id="multiple-inheritance"><a href="#multiple-inheritance" class="headerlink" title="multiple inheritance"></a>multiple inheritance</h3><p>is a feature of oop in which a class can inherit from more than one parent class.<br>It has been a sensitive issue for many years and it may result in “Diamond Problem”.</p>
@@ -282,7 +290,7 @@
 <li>file</li>
 <li>socket</li>
 <li>message queue</li>
-<li>pipe </li>
+<li>pipe</li>
 <li>shared memory</li>
 <li>memory-mapped file</li>
 <li>signal (asynchronous system trap): a system message sent from one process to another not usually used to transfer data, but to remotely command the partnered process.</li>
@@ -319,7 +327,7 @@
 <h3 id="stack-vs-heap-1"><a href="#stack-vs-heap-1" class="headerlink" title="stack vs heap"></a>stack vs heap</h3><ul>
 <li>the stack is memory set aside as scratch space for a thread execution.</li>
 <li>the heap is memory set aside for dynamic allocation.</li>
-<li>variables created on stack will be deallocated automatically when they go out of scope </li>
+<li>variables created on stack will be deallocated automatically when they go out of scope</li>
 <li>variables created on heap must be destroyed manually.</li>
 <li>allocation on stack is faster than heap</li>
 <li>stack stores local variables, return addresses, and is used for parameters passing.</li>
@@ -357,8 +365,8 @@
 </ul>
 <h3 id="inline-vs-macro"><a href="#inline-vs-macro" class="headerlink" title="inline vs macro"></a>inline vs macro</h3><ul>
 <li>type check</li>
-<li>debug </li>
-<li>a function vs just text </li>
+<li>debug</li>
+<li>a function vs just text</li>
 </ul>
 <p>the code is inserted into the position where the function is called.</p>
 <p>speed up execution vs code bloat</p>
@@ -459,6 +467,8 @@
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
   <p class="site-author-name" itemprop="name">Fengcun Li</p>
   <div class="site-description" itemprop="description"></div>
 </div>
@@ -467,12 +477,13 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-count">67</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
+          
         <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
@@ -506,7 +517,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>
 
         

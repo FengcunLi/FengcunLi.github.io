@@ -12,12 +12,12 @@
 
 <link rel="stylesheet" href="/css/main.css">
 
-
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="计算机视觉领域的不同任务：">
@@ -30,7 +30,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://yoursite.com/2018/08/26/目标定位-vs-目标检测/cls.jpg">
 <meta property="og:image" content="http://yoursite.com/2018/08/26/目标定位-vs-目标检测/other.jpg">
-<meta property="og:updated_time" content="2018-08-26T10:46:53.870Z">
+<meta property="og:updated_time" content="2020-11-09T04:33:51.580Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="目标定位 vs 目标检测">
 <meta name="twitter:description" content="计算机视觉领域的不同任务：">
@@ -122,6 +122,16 @@
     <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
         <li class="menu-item menu-item-archives">
 
     <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
@@ -158,7 +168,7 @@
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/26/目标定位-vs-目标检测/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.jpg">
       <meta itemprop="name" content="Fengcun Li">
       <meta itemprop="description" content="">
     </span>
@@ -177,10 +187,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2018-08-26 13:25:34 / 修改时间：18:46:53" itemprop="dateCreated datePublished" datetime="2018-08-26T13:25:34+08:00">2018-08-26</time>
+              <time title="创建时间：2018-08-26 13:25:34" itemprop="dateCreated datePublished" datetime="2018-08-26T13:25:34+08:00">2018-08-26</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-09 12:33:51" itemprop="dateModified" datetime="2020-11-09T12:33:51+08:00">2020-11-09</time>
+              </span>
 
           
 
@@ -193,49 +209,35 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>计算机视觉领域的不同任务：<br><img src="/2018/08/26/目标定位-vs-目标检测/cls.jpg" alt="classification"><br><img src="/2018/08/26/目标定位-vs-目标检测/other.jpg" alt="other task"><br><a id="more"></a></p>
+        <p>计算机视觉领域的不同任务：<br><img src="/2018/08/26/目标定位-vs-目标检测/cls.jpg" alt="classification"></p>
+<a id="more"></a>
+<p><img src="/2018/08/26/目标定位-vs-目标检测/other.jpg" alt="other task"></p>
 <h3 id="主要任务类别"><a href="#主要任务类别" class="headerlink" title="主要任务类别"></a>主要任务类别</h3><ul>
-<li>Classification<br>图像中有一个主体目标，且该张图片被标记为该主体目标的类别。<ul>
-<li>one main object per image</li>
-<li>one class label per image</li>
+<li>Classification<br>图像中有一个主体目标，且该张图片被标记为该主体目标的类别。 + one main object per image + one class label per image</li>
 </ul>
-</li>
-</ul>
-<p>one-hot vector<br>\[<br>y = \left[<br>        \begin{matrix}<br>            c_1 \\<br>            c_2 \\<br>            c_3<br>        \end{matrix}<br>\right]<br>\]</p>
+<p>one-hot vector<br>\[<br>y = \left[<br>\begin{matrix}<br>c_1 \\<br>c_2 \\<br>c_3<br>\end{matrix}<br>\right]<br>\]</p>
 <ul>
-<li>Classification + Localization<br>图像中有一个主体目标，且该张图片被标记为该主体的类别和位置。<ul>
-<li>one main object per image</li>
-<li>one class label per image</li>
+<li>Classification + Localization<br>图像中有一个主体目标，且该张图片被标记为该主体的类别和位置。 + one main object per image + one class label per image</li>
 </ul>
-</li>
-</ul>
-<p>\[<br>y = \left[<br>    \begin{matrix}<br>        p_c \\<br>        b_x \\<br>        b_y \\<br>        b_w \\<br>        b_h \\<br>        c_1 \\<br>        c_2 \\<br>        c_3<br>    \end{matrix}<br>\right]<br>\]</p>
-<p>其中 \( p_c \) 标识图像中是否出现目标，\( (b_x, b_y, b_w, b_h) \) 标识若图像中目标存在则图像中目标的位置，\(  (c_1, c_2, c_3) \) 标识若图像中目标存在则图像中目标的类别（此处以三类目标为例）。</p>
+<p>\[<br>y = \left[<br>\begin{matrix}<br>p_c \\<br>b_x \\<br>b_y \\<br>b_w \\<br>b_h \\<br>c_1 \\<br>c_2 \\<br>c_3<br>\end{matrix}<br>\right]<br>\]</p>
+<p>其中 \( p_c \) 标识图像中是否出现目标，\( (b_x, b_y, b_w, b_h) \) 标识若图像中目标存在则图像中目标的位置，\( (c_1, c_2, c_3) \) 标识若图像中目标存在则图像中目标的类别（此处以三类目标为例）。</p>
 <ul>
-<li>Object Detection<br>图像中有属于多个类别的多个目标<ul>
-<li>multi objects per image</li>
-<li>multi classes per image</li>
-</ul>
-</li>
+<li>Object Detection<br>图像中有属于多个类别的多个目标 + multi objects per image + multi classes per image</li>
 </ul>
 <h3 id="推广任务类别"><a href="#推广任务类别" class="headerlink" title="推广任务类别"></a>推广任务类别</h3><ul>
-<li>Multi label classification<br>图像中有一个主体目标，且该张图片被标记为该主体目标的类别，但该主体目标可能同时属于多个类别。<ul>
-<li>one main object per image</li>
-<li>multi class labels per image</li>
+<li>Multi label classification<br>图像中有一个主体目标，且该张图片被标记为该主体目标的类别，但该主体目标可能同时属于多个类别。 + one main object per image + multi class labels per image</li>
 </ul>
-</li>
-</ul>
-<p>\[<br>y = \left[<br>    \begin{matrix}<br>        c_1 \\<br>        c_2 \\<br>        c_3<br>    \end{matrix}<br>\right]<br>\]<br>\( y \) 根据图像中主体目标所属类别的个数不一定是 one-hot 的。</p>
+<p>\[<br>y = \left[<br>\begin{matrix}<br>c_1 \\<br>c_2 \\<br>c_3<br>\end{matrix}<br>\right]<br>\]<br>\( y \) 根据图像中主体目标所属类别的个数不一定是 one-hot 的。</p>
 <ul>
 <li>Multi objects Classification + Localization<ul>
 <li>n objects per image</li>
 <li>m classes per image</li>
-<li>\( n_{c_1} + n_{c_2} + n_{c_3} + … + n_{c_m} = n \)</li>
+<li>\( n<em>{c_1} + n</em>{c<em>2} + n</em>{c<em>3} + … + n</em>{c_m} = n \)</li>
 <li>\( n, m, n_{c_i} \) 对于一个具体任务是一组确定的值。</li>
 </ul>
 </li>
 </ul>
-<p>\[<br>y\_category = \left[<br>    \begin{matrix}<br>    p_c \\<br>    c_1 \\<br>    c_2 \\<br>    c_{3, 1} \\<br>    c_{3, 2}<br>    \end{matrix}<br>\right]<br>y\<em>location = \left[<br>    \begin{matrix}<br>    \\<br>    b</em>{x, 1} \\<br>    b_{y, 1} \\<br>    b_{w, 1} \\<br>    b_{h, 1} \\<br>    b_{x, 2} \\<br>    b_{y, 2} \\<br>    b_{w, 2} \\<br>    b_{h, 2} \\<br>    b_{x, (3, 1)} \\<br>    b_{y, (3, 1)} \\<br>    b_{w, (3, 1)} \\<br>    b_{h, (3, 1)} \\<br>    b_{x, (3, 2)} \\<br>    b_{y, (3, 2)} \\<br>    b_{w, (3, 2)} \\<br>    b_{h, (3, 2)}<br>    \end{matrix}<br>\right]<br>\]</p>
+<p>\[<br>y\_category = \left[<br>\begin{matrix}<br>p_c \\<br>c_1 \\<br>c_2 \\<br>c_{3, 1} \\<br>c<em>{3, 2}<br>\end{matrix}<br>\right]<br>y\_location = \left[<br>\begin{matrix}<br>\\<br>b</em>{x, 1} \\<br>b<em>{y, 1} \\<br>b</em>{w, 1} \\<br>b<em>{h, 1} \\<br>b</em>{x, 2} \\<br>b<em>{y, 2} \\<br>b</em>{w, 2} \\<br>b<em>{h, 2} \\<br>b</em>{x, (3, 1)} \\<br>b<em>{y, (3, 1)} \\<br>b</em>{w, (3, 1)} \\<br>b<em>{h, (3, 1)} \\<br>b</em>{x, (3, 2)} \\<br>b<em>{y, (3, 2)} \\<br>b</em>{w, (3, 2)} \\<br>b_{h, (3, 2)}<br>\end{matrix}<br>\right]<br>\]</p>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 
     </div>
@@ -326,6 +328,8 @@
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
   <p class="site-author-name" itemprop="name">Fengcun Li</p>
   <div class="site-description" itemprop="description"></div>
 </div>
@@ -334,12 +338,13 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-count">67</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
+          
         <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
@@ -373,7 +378,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>
 
         

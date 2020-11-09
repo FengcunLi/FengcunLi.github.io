@@ -12,27 +12,27 @@
 
 <link rel="stylesheet" href="/css/main.css">
 
-
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="本文分别在 Numpy 和 TensorFlow 下实现了卷积和转置卷积的计算，并对卷积和转置卷积的参数关系进行了探讨。本文代码的 Jupyter Notebook 可以在我的 github 仓库中找到。 卷积正向传播：\[\mathbf{y} = \mathbf{C}\mathbf{x}\] 核及输入1kernel = np.arange(1, 10).reshape((3, 3)) \[ker">
+  <meta name="description" content="本文分别在 Numpy 和 TensorFlow 下实现了卷积和转置卷积的计算，并对卷积和转置卷积的参数关系进行了探讨。本文代码的 Jupyter Notebook 可以在我的 github 仓库中找到。">
 <meta name="keywords" content="DL">
 <meta property="og:type" content="article">
 <meta property="og:title" content="卷积转置卷积关系在 TensorFLow 中的验证">
 <meta property="og:url" content="http://yoursite.com/2018/08/09/卷积转置卷积关系在-TensorFLow-中的验证/index.html">
 <meta property="og:site_name" content="The next stop - Antarctica">
-<meta property="og:description" content="本文分别在 Numpy 和 TensorFlow 下实现了卷积和转置卷积的计算，并对卷积和转置卷积的参数关系进行了探讨。本文代码的 Jupyter Notebook 可以在我的 github 仓库中找到。 卷积正向传播：\[\mathbf{y} = \mathbf{C}\mathbf{x}\] 核及输入1kernel = np.arange(1, 10).reshape((3, 3)) \[ker">
+<meta property="og:description" content="本文分别在 Numpy 和 TensorFlow 下实现了卷积和转置卷积的计算，并对卷积和转置卷积的参数关系进行了探讨。本文代码的 Jupyter Notebook 可以在我的 github 仓库中找到。">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/convolution.gif">
-<meta property="og:updated_time" content="2018-08-26T10:51:42.613Z">
+<meta property="og:updated_time" content="2020-11-09T04:13:04.260Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="卷积转置卷积关系在 TensorFLow 中的验证">
-<meta name="twitter:description" content="本文分别在 Numpy 和 TensorFlow 下实现了卷积和转置卷积的计算，并对卷积和转置卷积的参数关系进行了探讨。本文代码的 Jupyter Notebook 可以在我的 github 仓库中找到。 卷积正向传播：\[\mathbf{y} = \mathbf{C}\mathbf{x}\] 核及输入1kernel = np.arange(1, 10).reshape((3, 3)) \[ker">
+<meta name="twitter:description" content="本文分别在 Numpy 和 TensorFlow 下实现了卷积和转置卷积的计算，并对卷积和转置卷积的参数关系进行了探讨。本文代码的 Jupyter Notebook 可以在我的 github 仓库中找到。">
 <meta name="twitter:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/convolution.gif">
 
 <link rel="canonical" href="http://yoursite.com/2018/08/09/卷积转置卷积关系在-TensorFLow-中的验证/">
@@ -121,6 +121,16 @@
     <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
         <li class="menu-item menu-item-archives">
 
     <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
@@ -157,7 +167,7 @@
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/09/卷积转置卷积关系在-TensorFLow-中的验证/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.jpg">
       <meta itemprop="name" content="Fengcun Li">
       <meta itemprop="description" content="">
     </span>
@@ -184,7 +194,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2018-08-26 18:51:42" itemprop="dateModified" datetime="2018-08-26T18:51:42+08:00">2018-08-26</time>
+                <time title="修改时间：2020-11-09 12:13:04" itemprop="dateModified" datetime="2020-11-09T12:13:04+08:00">2020-11-09</time>
               </span>
 
           
@@ -199,33 +209,42 @@
 
       
         <p>本文分别在 Numpy 和 TensorFlow 下实现了卷积和转置卷积的计算，并对卷积和转置卷积的参数关系进行了探讨。<br>本文代码的 Jupyter Notebook 可以在我的 <a href="https://github.com/RobertLexis/convolution_vs_transpose_convolution" target="_blank" rel="noopener">github 仓库</a>中找到。</p>
+<a id="more"></a>
 <h3 id="卷积"><a href="#卷积" class="headerlink" title="卷积"></a>卷积</h3><p>正向传播：<br>\[<br>\mathbf{y} = \mathbf{C}\mathbf{x}<br>\]</p>
-<h5 id="核及输入"><a href="#核及输入" class="headerlink" title="核及输入"></a>核及输入</h5><p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/convolution.gif" alt="convolution"><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kernel = np.arange(1, 10).reshape((3, 3))</span><br></pre></td></tr></table></figure></p>
-<p>\[<br>kernel =<br>\left[<br>    \begin{matrix}<br>    1 &amp; 2 &amp; 3 \\<br>    4 &amp; 5 &amp; 6 \\<br>    7 &amp; 8 &amp; 9<br>    \end{matrix}<br>\right]<br>\]<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">C = np.array([[1, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9, 0, 0, 0, 0, 0],</span><br><span class="line">              [0, 1, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9, 0, 0, 0, 0],</span><br><span class="line">              [0, 0, 0, 0, 1, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9, 0],</span><br><span class="line">              [0,  0, 0, 0, 0, 1, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9]])</span><br></pre></td></tr></table></figure></p>
-<p>\[<br>\mathbf{C} =<br>\left[<br>    \begin{matrix}<br>    1 &amp; 2 &amp; 3 &amp; 0 &amp; 4 &amp; 5 &amp; 6 &amp; 0 &amp; 7 &amp; 8 &amp; 9 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\<br>    0 &amp; 1 &amp; 2 &amp; 3 &amp; 0 &amp; 4 &amp; 5 &amp; 6 &amp; 0 &amp; 7 &amp; 8 &amp; 9 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\<br>    0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 0 &amp; 4 &amp; 5 &amp; 6 &amp; 0 &amp; 7 &amp; 8 &amp; 9 &amp; 0 \\<br>    0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 0 &amp; 4 &amp; 5 &amp; 6 &amp; 0 &amp; 7 &amp; 8 &amp; 9<br>    \end{matrix}<br>\right]<br>\]<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">input_ = np.arange(1, 17).reshape((4, 4))</span><br></pre></td></tr></table></figure></p>
-<p>\[<br>input\_ =<br>\left[<br>    \begin{matrix}<br>    1 &amp; 2 &amp; 3 &amp; 4 \\<br>    5 &amp; 6 &amp; 7 &amp; 8 \\<br>    9 &amp; 10 &amp; 11 &amp; 12 \\<br>    13 &amp; 14 &amp; 15 &amp; 16<br>    \end{matrix}<br>\right]<br>\]<br><a id="more"></a></p>
+<h5 id="核及输入"><a href="#核及输入" class="headerlink" title="核及输入"></a>核及输入</h5><p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/convolution.gif" alt="convolution"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kernel = np.arange(1, 10).reshape((3, 3))</span><br></pre></td></tr></table></figure>
+<p>\[<br>kernel =<br>\left[<br>\begin{matrix}<br>1 &amp; 2 &amp; 3 \\<br>4 &amp; 5 &amp; 6 \\<br>7 &amp; 8 &amp; 9<br> \end{matrix}<br>\right]<br>\]</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">C = np.array([[1, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9, 0, 0, 0, 0, 0],</span><br><span class="line">              [0, 1, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9, 0, 0, 0, 0],</span><br><span class="line">              [0, 0, 0, 0, 1, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9, 0],</span><br><span class="line">              [0,  0, 0, 0, 0, 1, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9]])</span><br></pre></td></tr></table></figure>
+<p>\[<br>\mathbf{C} =<br>\left[<br>\begin{matrix}<br>1 &amp; 2 &amp; 3 &amp; 0 &amp; 4 &amp; 5 &amp; 6 &amp; 0 &amp; 7 &amp; 8 &amp; 9 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\<br>0 &amp; 1 &amp; 2 &amp; 3 &amp; 0 &amp; 4 &amp; 5 &amp; 6 &amp; 0 &amp; 7 &amp; 8 &amp; 9 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\<br>0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 0 &amp; 4 &amp; 5 &amp; 6 &amp; 0 &amp; 7 &amp; 8 &amp; 9 &amp; 0 \\<br>0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 0 &amp; 4 &amp; 5 &amp; 6 &amp; 0 &amp; 7 &amp; 8 &amp; 9<br>\end{matrix}<br>\right]<br>\]</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">input_ = np.arange(1, 17).reshape((4, 4))</span><br></pre></td></tr></table></figure>
+<p>\[<br>input\_ =<br>\left[<br>\begin{matrix}<br>1 &amp; 2 &amp; 3 &amp; 4 \\<br>5 &amp; 6 &amp; 7 &amp; 8 \\<br>9 &amp; 10 &amp; 11 &amp; 12 \\<br>13 &amp; 14 &amp; 15 &amp; 16<br>\end{matrix}<br>\right]<br>\]</p>
 <h5 id="卷积-in-Numpy"><a href="#卷积-in-Numpy" class="headerlink" title="卷积 in Numpy"></a>卷积 in Numpy</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x = input_.reshape((-1, 1))</span><br></pre></td></tr></table></figure>
-<p>\[<br>\mathbf{x} =<br>\left[<br>    \begin{matrix}<br>    1 \\<br>    2 \\<br>    3 \\<br>    4 \\<br>    5 \\<br>    6 \\<br>    7 \\<br>    8 \\<br>    9 \\<br>    10 \\<br>    11 \\<br>    12 \\<br>    13 \\<br>    14 \\<br>    15 \\<br>    16<br>    \end{matrix}<br>\right]<br>\]<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">y = C.dot(x)</span><br></pre></td></tr></table></figure></p>
-<p>\[<br>\mathbf{y} =<br>\left[<br>    \begin{matrix}<br>    348 \\<br>    393 \\<br>    528 \\<br>    573<br>    \end{matrix}<br>\right]<br>\]<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">y = y.reshape((2, 2))</span><br></pre></td></tr></table></figure></p>
-<p>\[<br>\mathbf{y} =<br>\left[<br>    \begin{matrix}<br>    348 &amp; 393 \\<br>    528 &amp; 573<br>    \end{matrix}<br>\right]<br>\]</p>
+<p>\[<br>\mathbf{x} =<br>\left[<br>\begin{matrix}<br>1 \\<br>2 \\<br>3 \\<br>4 \\<br>5 \\<br>6 \\<br>7 \\<br>8 \\<br>9 \\<br>10 \\<br>11 \\<br>12 \\<br>13 \\<br>14 \\<br>15 \\<br>16<br>\end{matrix}<br>\right]<br>\]</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">y = C.dot(x)</span><br></pre></td></tr></table></figure>
+<p>\[<br>\mathbf{y} =<br>\left[<br>\begin{matrix}<br>348 \\<br>393 \\<br>528 \\<br>573<br>\end{matrix}<br>\right]<br>\]</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">y = y.reshape((2, 2))</span><br></pre></td></tr></table></figure>
+<p>\[<br>\mathbf{y} =<br>\left[<br>\begin{matrix}<br>348 &amp; 393 \\<br>528 &amp; 573<br>\end{matrix}<br>\right]<br>\]</p>
 <h5 id="卷积-in-TensorFlow"><a href="#卷积-in-TensorFlow" class="headerlink" title="卷积 in TensorFlow"></a>卷积 in TensorFlow</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">x = tf.expand_dims(tf.expand_dims(tf.constant(input_, dtype=tf.float32), axis=-1), axis=0)</span><br><span class="line">x.get_shape().as_list()</span><br><span class="line">[1, 4, 4, 1]</span><br><span class="line"></span><br><span class="line">kernel_conv = tf.expand_dims(tf.expand_dims(tf.constant(kernel, dtype=tf.float32), axis=-1), axis=-1)</span><br><span class="line">kernel_conv.get_shape().as_list()</span><br><span class="line">[3, 3, 1, 1]</span><br><span class="line"></span><br><span class="line">y = tf.nn.conv2d(x, kernel_conv, strides=(1, 1, 1, 1), padding=&apos;VALID&apos;)</span><br><span class="line"></span><br><span class="line">with tf.Session() as sess:</span><br><span class="line">    print(y.eval()[0, :, :, 0])</span><br><span class="line">[[348. 393.]</span><br><span class="line"> [528. 573.]]</span><br></pre></td></tr></table></figure>
 <h4 id="转置卷积"><a href="#转置卷积" class="headerlink" title="转置卷积"></a>转置卷积</h4><p>正向传播：<br>\[<br>\mathbf{y} = \mathbf{C}^T\mathbf{x}<br>\]</p>
 <h5 id="核及输入-1"><a href="#核及输入-1" class="headerlink" title="核及输入"></a>核及输入</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kernel = np.arange(1, 10).reshape((3, 3))</span><br></pre></td></tr></table></figure>
-<p>\[<br>kernel =<br>\left[<br>    \begin{matrix}<br>    1 &amp; 2 &amp; 3 \\<br>    4 &amp; 5 &amp; 6 \\<br>    7 &amp; 8 &amp; 9<br>    \end{matrix}<br>\right]<br>\]<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">C = np.array([[1, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9, 0, 0, 0, 0, 0],</span><br><span class="line">              [0, 1, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9, 0, 0, 0, 0],</span><br><span class="line">              [0, 0, 0, 0, 1, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9, 0],</span><br><span class="line">              [0,  0, 0, 0, 0, 1, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9]])</span><br></pre></td></tr></table></figure></p>
-<p>\[<br>\mathbf{C} =<br>\left[<br>    \begin{matrix}<br>    1 &amp; 2 &amp; 3 &amp; 0 &amp; 4 &amp; 5 &amp; 6 &amp; 0 &amp; 7 &amp; 8 &amp; 9 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\<br>    0 &amp; 1 &amp; 2 &amp; 3 &amp; 0 &amp; 4 &amp; 5 &amp; 6 &amp; 0 &amp; 7 &amp; 8 &amp; 9 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\<br>    0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 0 &amp; 4 &amp; 5 &amp; 6 &amp; 0 &amp; 7 &amp; 8 &amp; 9 &amp; 0 \\<br>    0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 0 &amp; 4 &amp; 5 &amp; 6 &amp; 0 &amp; 7 &amp; 8 &amp; 9<br>    \end{matrix}<br>\right]<br>\]<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C_T = C.T</span><br></pre></td></tr></table></figure></p>
-<p>\[<br>\mathbf{C}^T =<br>\left[<br>    \begin{matrix}<br>       1 &amp; 0 &amp; 0 &amp; 0 \\<br>       2 &amp; 1 &amp; 0 &amp; 0 \\<br>       3 &amp; 2 &amp; 0 &amp; 0 \\<br>       0 &amp; 3 &amp; 0 &amp; 0 \\<br>       4 &amp; 0 &amp; 1 &amp; 0 \\<br>       5 &amp; 4 &amp; 2 &amp; 1 \\<br>       6 &amp; 5 &amp; 3 &amp; 2 \\<br>       0 &amp; 6 &amp; 0 &amp; 3 \\<br>       7 &amp; 0 &amp; 4 &amp; 0 \\<br>       8 &amp; 7 &amp; 5 &amp; 4 \\<br>       9 &amp; 8 &amp; 6 &amp; 5 \\<br>       0 &amp; 9 &amp; 0 &amp; 6 \\<br>       0 &amp; 0 &amp; 7 &amp; 0 \\<br>       0 &amp; 0 &amp; 8 &amp; 7 \\<br>       0 &amp; 0 &amp; 9 &amp; 8 \\<br>       0 &amp; 0 &amp; 0 &amp; 9<br>    \end{matrix}<br>\right]<br>\]</p>
+<p>\[<br>kernel =<br>\left[<br>\begin{matrix}<br>1 &amp; 2 &amp; 3 \\<br>4 &amp; 5 &amp; 6 \\<br>7 &amp; 8 &amp; 9<br> \end{matrix}<br>\right]<br>\]</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">C = np.array([[1, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9, 0, 0, 0, 0, 0],</span><br><span class="line">              [0, 1, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9, 0, 0, 0, 0],</span><br><span class="line">              [0, 0, 0, 0, 1, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9, 0],</span><br><span class="line">              [0,  0, 0, 0, 0, 1, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9]])</span><br></pre></td></tr></table></figure>
+<p>\[<br>\mathbf{C} =<br>\left[<br>\begin{matrix}<br>1 &amp; 2 &amp; 3 &amp; 0 &amp; 4 &amp; 5 &amp; 6 &amp; 0 &amp; 7 &amp; 8 &amp; 9 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\<br>0 &amp; 1 &amp; 2 &amp; 3 &amp; 0 &amp; 4 &amp; 5 &amp; 6 &amp; 0 &amp; 7 &amp; 8 &amp; 9 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\<br>0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 0 &amp; 4 &amp; 5 &amp; 6 &amp; 0 &amp; 7 &amp; 8 &amp; 9 &amp; 0 \\<br>0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 0 &amp; 4 &amp; 5 &amp; 6 &amp; 0 &amp; 7 &amp; 8 &amp; 9<br>\end{matrix}<br>\right]<br>\]</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C_T = C.T</span><br></pre></td></tr></table></figure>
+<p>\[<br>\mathbf{C}^T =<br>\left[<br>\begin{matrix}<br>1 &amp; 0 &amp; 0 &amp; 0 \\<br>2 &amp; 1 &amp; 0 &amp; 0 \\<br>3 &amp; 2 &amp; 0 &amp; 0 \\<br>0 &amp; 3 &amp; 0 &amp; 0 \\<br>4 &amp; 0 &amp; 1 &amp; 0 \\<br>5 &amp; 4 &amp; 2 &amp; 1 \\<br>6 &amp; 5 &amp; 3 &amp; 2 \\<br>0 &amp; 6 &amp; 0 &amp; 3 \\<br>7 &amp; 0 &amp; 4 &amp; 0 \\<br>8 &amp; 7 &amp; 5 &amp; 4 \\<br>9 &amp; 8 &amp; 6 &amp; 5 \\<br>0 &amp; 9 &amp; 0 &amp; 6 \\<br>0 &amp; 0 &amp; 7 &amp; 0 \\<br>0 &amp; 0 &amp; 8 &amp; 7 \\<br>0 &amp; 0 &amp; 9 &amp; 8 \\<br>0 &amp; 0 &amp; 0 &amp; 9<br>\end{matrix}<br>\right]<br>\]</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">input_ = np.arange(1, 5).reshape((2, 2))</span><br></pre></td></tr></table></figure>
-<p>\[<br>input\_ =<br>\left[<br>    \begin{matrix}<br>    1 &amp; 2  \\<br>    3 &amp; 4<br>    \end{matrix}<br>\right]<br>\]</p>
+<p>\[<br>input\_ =<br>\left[<br>\begin{matrix}<br>1 &amp; 2 \\<br>3 &amp; 4<br> \end{matrix}<br>\right]<br>\]</p>
 <h5 id="转置卷积-in-Numpy"><a href="#转置卷积-in-Numpy" class="headerlink" title="转置卷积 in Numpy"></a>转置卷积 in Numpy</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x = input_.reshape((-1, 1))</span><br></pre></td></tr></table></figure>
-<p>\[<br>\mathbf{x} =<br>\left[<br>    \begin{matrix}<br>    1\\<br>    2\\<br>    3\\<br>    4<br>    \end{matrix}<br>\right]<br>\]</p>
+<p>\[<br>\mathbf{x} =<br>\left[<br>\begin{matrix}<br>1\\<br>2\\<br>3\\<br>4<br>\end{matrix}<br>\right]<br>\]</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">y = C_T.dot(x)</span><br><span class="line">y = y.reshape(4, 4)</span><br></pre></td></tr></table></figure>
-<p>\[<br>\mathbf{y} =<br>\left[<br>    \begin{matrix}<br>     1 &amp;  4 &amp;  7 &amp;  6 \\<br>     7 &amp; 23 &amp; 33 &amp; 24 \\<br>     19 &amp; 53 &amp; 63 &amp; 42 \\<br>     21 &amp; 52 &amp; 59 &amp; 36<br>    \end{matrix}<br>\right]<br>\]</p>
+<p>\[<br>\mathbf{y} =<br>\left[<br>\begin{matrix}<br>1 &amp; 4 &amp; 7 &amp; 6 \\<br>7 &amp; 23 &amp; 33 &amp; 24 \\<br>19 &amp; 53 &amp; 63 &amp; 42 \\<br>21 &amp; 52 &amp; 59 &amp; 36<br>\end{matrix}<br>\right]<br>\]</p>
 <h5 id="转置卷积-in-TensorFlow"><a href="#转置卷积-in-TensorFlow" class="headerlink" title="转置卷积 in TensorFlow"></a>转置卷积 in TensorFlow</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">x =  tf.expand_dims(tf.expand_dims(tf.constant(input_, dtype=tf.float32), axis=-1), axis=0)</span><br><span class="line">x.get_shape().as_list()</span><br><span class="line">[1, 2, 2, 1]</span><br><span class="line"></span><br><span class="line">kernel_transpose_conv = tf.expand_dims(tf.expand_dims(tf.constant(kernel, dtype=tf.float32), axis=-1), axis=-1)</span><br><span class="line">kernel_transpose_conv.get_shape().as_list()</span><br><span class="line">[3, 3, 1, 1]</span><br><span class="line"></span><br><span class="line">y = tf.nn.conv2d_transpose(x, kernel_transpose_conv, output_shape=(1, 4, 4, 1), strides=(1, 1, 1, 1), padding=&apos;VALID&apos;)</span><br><span class="line"></span><br><span class="line">with tf.Session() as sess:</span><br><span class="line">    print(y.eval()[0, :, :, 0])</span><br><span class="line">[[ 1.  4.  7.  6.]</span><br><span class="line"> [ 7. 23. 33. 24.]</span><br><span class="line"> [19. 53. 63. 42.]</span><br><span class="line"> [21. 52. 59. 36.]]</span><br></pre></td></tr></table></figure>
-<p>这里选择参数值 <code>strides=(1, 1, 1, 1), padding=&#39;VALID&#39;</code> 是因为转置卷积过程<code>[2, 2] -&gt; [4, 4]</code>对应的卷积过程<code>[4, 4] -&gt; [2, 2]</code>（见第一部分）的 <code>strides=(1, 1, 1, 1), padding=&#39;VALID&#39;</code>，即转置卷积过程的参数是由自身对应的卷积过程的参数确定的，要想在 shape 上做到“逆”，两者的参数必须一致。<code>[2, 2] &lt;-&gt; [4, 4]</code>来回转换的参数需一致，包括 kernel 的shape。</p>
+<p>这里选择参数值 <code>strides=(1, 1, 1, 1), padding=&#39;VALID&#39;</code> 是因为转置卷积过程<code>[2, 2] -&gt; [4, 4]</code>对应的卷积过程<code>[4, 4] -&gt; [2, 2]</code>（见第一部分）的 <code>strides=(1, 1, 1, 1), padding=&#39;VALID&#39;</code>，即转置卷积过程的参数是由自身对应的卷积过程的参数确定的，要想在 shape 上做到“逆”，两者的参数必须一致。<code>[2, 2] &lt;-&gt; [4, 4]</code>来回转换的参数需一致，包括 kernel 的 shape。</p>
 <p>假设 kernel shape <code>[3, 3]</code>，<code>conv2d_transpose</code> 的输入 shape <code>[2, 2]</code>，<code>strides=(1, 1, 1, 1)</code>，而 <code>padding=&#39;SAME&#39;</code>，是不可能得到 <code>output_shape=(1, 4, 4, 1)</code> 的，这是因为 <code>conv2d</code> 在<code>strides=(1, 1, 1, 1), padding=&#39;SAME&#39;</code>，kernel shape <code>[3, 3]</code>，输入是 <code>(1, 4, 4, 1)</code>时，得到的卷积结果 shape 是 <code>[4, 4]</code> ，而不是 <code>conv2d_transpose</code> 输入的 <code>[2, 2]</code>，即卷积操作的输出 shape 和转置卷积的输入 shape 不匹配，会导致 <code>conv2d_transpose</code> 报错。</p>
-<h3 id="shape-计算"><a href="#shape-计算" class="headerlink" title="shape 计算"></a>shape 计算</h3><h5 id="卷积-1"><a href="#卷积-1" class="headerlink" title="卷积"></a>卷积</h5><p>padding == “SAME” （有 padding）<br>\[<br>    output\_shape[i] = ceil(input\_shape[i] / strides[i])<br>\]<br>padding == “VALID” （无 padding）<br>\[<br>    output\_shape[i] = ceil((input\_shape[i] - filter\_shape[i] + 1) * dilation\_rate[i] / strides[i])<br>\]</p>
+<h3 id="shape-计算"><a href="#shape-计算" class="headerlink" title="shape 计算"></a>shape 计算</h3><h5 id="卷积-1"><a href="#卷积-1" class="headerlink" title="卷积"></a>卷积</h5><p>padding == “SAME” （有 padding）<br>\[<br>output\_shape[i] = ceil(input\_shape[i] / strides[i])<br>\]<br>padding == “VALID” （无 padding）<br>\[<br>output\_shape[i] = ceil((input\_shape[i] - filter\_shape[i] + 1) * dilation\_rate[i] / strides[i])<br>\]</p>
 <h5 id="转置卷积-1"><a href="#转置卷积-1" class="headerlink" title="转置卷积"></a>转置卷积</h5><p>\[<br>new\_rows = (rows - 1) \times strides[0] + kernel\_size[0] - 2 \times padding[0] + output\_padding[0]<br>\\<br>new\_cols = (cols - 1) \times strides[1] + kernel\_size[1] - 2 \times padding[1] + output\_padding[1]<br>\]</p>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
     </div>
 
     
@@ -314,6 +333,8 @@
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
   <p class="site-author-name" itemprop="name">Fengcun Li</p>
   <div class="site-description" itemprop="description"></div>
 </div>
@@ -322,12 +343,13 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-count">67</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
+          
         <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
@@ -361,7 +383,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>
 
         

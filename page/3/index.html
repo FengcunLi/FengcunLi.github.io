@@ -12,12 +12,12 @@
 
 <link rel="stylesheet" href="/css/main.css">
 
-
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta property="og:type" content="website">
@@ -114,6 +114,16 @@
     <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
         <li class="menu-item menu-item-archives">
 
     <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
@@ -146,10 +156,10 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/08/OpenCV-Python-C-与Scikit-image在BGR-RGB转灰度图上的不同/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/11/13/Ubuntu-2-1080Ti-深度学习环境配置/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.jpg">
       <meta itemprop="name" content="Fengcun Li">
       <meta itemprop="description" content="">
     </span>
@@ -160,7 +170,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2018/08/08/OpenCV-Python-C-与Scikit-image在BGR-RGB转灰度图上的不同/" class="post-title-link" itemprop="url">OpenCV(Python & C++)与Scikit-image在BGR/RGB转灰度图上的不同</a>
+            <a href="/2017/11/13/Ubuntu-2-1080Ti-深度学习环境配置/" class="post-title-link" itemprop="url">Ubuntu + 2*1080Ti 深度学习环境配置</a>
         </h2>
 
         <div class="post-meta">
@@ -170,14 +180,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2018-08-08 17:34:30" itemprop="dateCreated datePublished" datetime="2018-08-08T17:34:30+08:00">2018-08-08</time>
+              <time title="创建时间：2017-11-13 13:06:23" itemprop="dateCreated datePublished" datetime="2017-11-13T13:06:23+08:00">2017-11-13</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2018-08-26 18:52:15" itemprop="dateModified" datetime="2018-08-26T18:52:15+08:00">2018-08-26</time>
+                <time title="修改时间：2020-11-09 12:27:59" itemprop="dateModified" datetime="2020-11-09T12:27:59+08:00">2020-11-09</time>
               </span>
 
           
@@ -191,12 +201,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>将主机 Python 环境下训练的卷积神经网络模型移植到 Jetson TX2 的 TensorRT 加速环境（C++）下时，遇到了模型精度损失的问题，发现是由于 Python Scikit-image 中函数 <code>color.rgb2gray</code> 与 C++ OpenCV 中函数 <code>cv::cvtColor(cv::InputArray src, cv::OutputArray dst, cv::COLOR_BGR2GRAY)</code> 的彩色图转灰度图的转换函数定义不同，分别如下：</p>
-<h3 id="OpenCV"><a href="#OpenCV" class="headerlink" title="OpenCV"></a>OpenCV</h3><p>\[ Y = 0.299 \times R + 0.587 \times G + 0.114 \times B \]</p>
-<h3 id="Scikit-image"><a href="#Scikit-image" class="headerlink" title="Scikit-image"></a>Scikit-image</h3><p>\[ Y = 0.2125 \times R + 0.7154 \times G + 0.0721 \times B \]<br></p>
+          <h2 id="Ubuntu-2-1080Ti-深度学习环境配置"><a href="#Ubuntu-2-1080Ti-深度学习环境配置" class="headerlink" title="Ubuntu + 2*1080Ti 深度学习环境配置"></a>Ubuntu + 2*1080Ti 深度学习环境配置</h2>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2018/08/08/OpenCV-Python-C-与Scikit-image在BGR-RGB转灰度图上的不同/#more" rel="contents">
+              <a class="btn" href="/2017/11/13/Ubuntu-2-1080Ti-深度学习环境配置/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -220,10 +228,10 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/05/Amazing-dropout/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/11/05/Python-threads-communication-and-stopping/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.jpg">
       <meta itemprop="name" content="Fengcun Li">
       <meta itemprop="description" content="">
     </span>
@@ -234,7 +242,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2018/08/05/Amazing-dropout/" class="post-title-link" itemprop="url">Amazing Dropout</a>
+            <a href="/2017/11/05/Python-threads-communication-and-stopping/" class="post-title-link" itemprop="url">Python Threads: Communication and Stopping</a>
         </h2>
 
         <div class="post-meta">
@@ -244,14 +252,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2018-08-05 20:49:00" itemprop="dateCreated datePublished" datetime="2018-08-05T20:49:00+08:00">2018-08-05</time>
+              <time title="创建时间：2017-11-05 14:50:36" itemprop="dateCreated datePublished" datetime="2017-11-05T14:50:36+08:00">2017-11-05</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2018-08-28 10:49:26" itemprop="dateModified" datetime="2018-08-28T10:49:26+08:00">2018-08-28</time>
+                <time title="修改时间：2018-08-26 19:23:05" itemprop="dateModified" datetime="2018-08-26T19:23:05+08:00">2018-08-26</time>
               </span>
 
           
@@ -265,12 +273,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>本文主要采摘、翻译、修改自 P. Galeone’s blog <a href="https://pgaleone.eu/deep-learning/regularization/2017/01/10/anaysis-of-dropout/" target="_blank" rel="noopener">Analysis of Dropout</a>。</p>
-<p>Overfitting is a problem in Deep Neural Networks (DNN): the model learns to classify only the training set, adapting itself to the training examples instead of learning decision boundaries capable of classifying generic instances. Many solutions to the overfitting problem have been presented during these years; one of them have overwhelmed the others due to its simplicity and its empirical good results: <strong>Dropout</strong>.</p>
-<p><img src="/2018/08/05/Amazing-dropout/dropout.jpg" alt="dropout"><br></p>
+          <h4 id="如何停止-杀死一个线程？如何安全地从一个线程传入传出数据？"><a href="#如何停止-杀死一个线程？如何安全地从一个线程传入传出数据？" class="headerlink" title="如何停止/杀死一个线程？如何安全地从一个线程传入传出数据？"></a>如何停止/杀死一个线程？如何安全地从一个线程传入传出数据？</h4><p>下面是一个 worker 线程实现的例子，可以给它任务，这里的每一个任务就是一个目录名，它就会进行工作，这里的工作就是罗列出给定目录及其子目录下的文件名。<br></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2018/08/05/Amazing-dropout/#more" rel="contents">
+              <a class="btn" href="/2017/11/05/Python-threads-communication-and-stopping/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -294,10 +300,10 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/03/TensorRT-加速-Keras-模型在-Jetson-上的推理/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/11/04/翻译-Learning-from-Imbalanced-Classes/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.jpg">
       <meta itemprop="name" content="Fengcun Li">
       <meta itemprop="description" content="">
     </span>
@@ -308,7 +314,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2018/08/03/TensorRT-加速-Keras-模型在-Jetson-上的推理/" class="post-title-link" itemprop="url">TensorRT 加速 Keras 模型在 Jetson 上的推理</a>
+            <a href="/2017/11/04/翻译-Learning-from-Imbalanced-Classes/" class="post-title-link" itemprop="url">翻译 Learning From Imbalanced Classes</a>
         </h2>
 
         <div class="post-meta">
@@ -318,14 +324,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2018-08-03 21:27:53" itemprop="dateCreated datePublished" datetime="2018-08-03T21:27:53+08:00">2018-08-03</time>
+              <time title="创建时间：2017-11-04 17:16:36" itemprop="dateCreated datePublished" datetime="2017-11-04T17:16:36+08:00">2017-11-04</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2018-08-26 18:49:43" itemprop="dateModified" datetime="2018-08-26T18:49:43+08:00">2018-08-26</time>
+                <time title="修改时间：2020-11-09 12:28:36" itemprop="dateModified" datetime="2020-11-09T12:28:36+08:00">2020-11-09</time>
               </span>
 
           
@@ -339,10 +345,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>将一个训练好的 Keras 模型通过 TensorRT 加速并 Push 到 Jetson TX2 上的流程框图如下：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/tensorRT/flowchart.png" alt="flowchart"><br></p>
+          <p>在参加数据挖掘的比赛时，遇到了类别不平衡的问题，在着手解决这个问题的过程中发现了来自 <a href="https://www.svds.com/" target="_blank" rel="noopener">Silicon Valley Data Science(svds)</a> <a href="https://www.svds.com/team/tom-fawcett/" target="_blank" rel="noopener">TOM FAWCETT</a> 的一篇博客 <a href="https://www.svds.com/learning-imbalanced-classes/" target="_blank" rel="noopener">Learning from Imbalanced Classes</a> 写的着实精彩，因此决定将其翻译过来。</p>
+<h2 id="Learning-from-Imbalanced-Classes"><a href="#Learning-from-Imbalanced-Classes" class="headerlink" title="Learning from Imbalanced Classes"></a>Learning from Imbalanced Classes</h2>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2018/08/03/TensorRT-加速-Keras-模型在-Jetson-上的推理/#more" rel="contents">
+              <a class="btn" href="/2017/11/04/翻译-Learning-from-Imbalanced-Classes/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -366,10 +373,10 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/01/Nvidia-Jetson-TX2-开箱及刷机/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/11/03/Python-os-system-与-os-popen-的不同/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.jpg">
       <meta itemprop="name" content="Fengcun Li">
       <meta itemprop="description" content="">
     </span>
@@ -380,7 +387,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2018/08/01/Nvidia-Jetson-TX2-开箱及刷机/" class="post-title-link" itemprop="url">Nvidia Jetson TX2 开箱及刷机</a>
+            <a href="/2017/11/03/Python-os-system-与-os-popen-的不同/" class="post-title-link" itemprop="url">Python os.system 与 os.popen 的不同</a>
         </h2>
 
         <div class="post-meta">
@@ -390,14 +397,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2018-08-01 17:27:40" itemprop="dateCreated datePublished" datetime="2018-08-01T17:27:40+08:00">2018-08-01</time>
+              <time title="创建时间：2017-11-03 19:47:13" itemprop="dateCreated datePublished" datetime="2017-11-03T19:47:13+08:00">2017-11-03</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2018-08-26 18:50:07" itemprop="dateModified" datetime="2018-08-26T18:50:07+08:00">2018-08-26</time>
+                <time title="修改时间：2020-11-09 12:28:57" itemprop="dateModified" datetime="2020-11-09T12:28:57+08:00">2020-11-09</time>
               </span>
 
           
@@ -411,14 +418,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>钱学森实验室购买了 Nvidia <a href="https://developer.nvidia.com/embedded-computing" target="_blank" rel="noopener">Jetson</a> TX2 支持嵌入式 AI 开发。</p>
-<blockquote>
-<p>Jetson, the Platform for AI at the Edge<br>NVIDIA Jetson with GPU-accelerated parallel processing is the world’s leading embedded AI computing platform. The Jetson portfolio of devices, featuring the new NVIDIA Jetson TX2, delivers more performance and features for Artificial Intelligence at the edge. Devices at the edge, from drones to intelligent cameras, need on-board AI to process complex data without relying on network connectivity. AI at the Edge is the future of industry, transforming processes in manufacturing, industrial inspection, agriculture, general robotics, security, and AI cities.</p>
-</blockquote>
-<p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/jetson/Jetson.jpeg" alt="Jetson"><br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/jetson/Jetson_1.jpeg" alt="Jetson"><br></p>
+          <h3 id="两者是否等待子进程退出"><a href="#两者是否等待子进程退出" class="headerlink" title="两者是否等待子进程退出"></a>两者是否等待子进程退出</h3>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2018/08/01/Nvidia-Jetson-TX2-开箱及刷机/#more" rel="contents">
+              <a class="btn" href="/2017/11/03/Python-os-system-与-os-popen-的不同/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -442,10 +445,10 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/26/Stacked-Hourglass-Networks-卫星部件检测/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/11/03/hexo-使用随笔/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.jpg">
       <meta itemprop="name" content="Fengcun Li">
       <meta itemprop="description" content="">
     </span>
@@ -456,7 +459,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2018/07/26/Stacked-Hourglass-Networks-卫星部件检测/" class="post-title-link" itemprop="url">Stacked Hourglass Networks 卫星部件检测</a>
+            <a href="/2017/11/03/hexo-使用随笔/" class="post-title-link" itemprop="url">Hexo 使用随笔</a>
         </h2>
 
         <div class="post-meta">
@@ -466,14 +469,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2018-07-26 23:38:39" itemprop="dateCreated datePublished" datetime="2018-07-26T23:38:39+08:00">2018-07-26</time>
+              <time title="创建时间：2017-11-03 10:17:35" itemprop="dateCreated datePublished" datetime="2017-11-03T10:17:35+08:00">2017-11-03</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2018-08-26 18:49:56" itemprop="dateModified" datetime="2018-08-26T18:49:56+08:00">2018-08-26</time>
+                <time title="修改时间：2020-11-09 12:29:12" itemprop="dateModified" datetime="2020-11-09T12:29:12+08:00">2020-11-09</time>
               </span>
 
           
@@ -487,10 +490,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="STACKED-HOURGLASS-NETWORKS"><a href="#STACKED-HOURGLASS-NETWORKS" class="headerlink" title="STACKED HOURGLASS NETWORKS"></a>STACKED HOURGLASS NETWORKS</h3><p><a href="http://www-personal.umich.edu/~alnewell/pose/" target="_blank" rel="noopener">STACKED HOURGLASS NETWORKS</a> 是由密歇根大学的研究团队设计的一个专门用来进行人体姿态估计的网络结构。在卫星的部件检测项目中，我们对其进行了修改和调整，利用同样的网络结构完成了太阳帆板的检测定位（类似图像分割任务）、发动机和对接环的定位（关键点检测任务）、发动机和对接环的检测定位（类似图像分割任务）。<br>下面对 STACKED HOURGLASS NETWORKS 进行介绍及对自主实现的 Keras 关键代码进行分析。<br></p>
+          <h3 id="修改-hexo-中引用（blockquote）的样式"><a href="#修改-hexo-中引用（blockquote）的样式" class="headerlink" title="修改 hexo 中引用（blockquote）的样式"></a>修改 hexo 中引用（blockquote）的样式</h3>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2018/07/26/Stacked-Hourglass-Networks-卫星部件检测/#more" rel="contents">
+              <a class="btn" href="/2017/11/03/hexo-使用随笔/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -514,10 +517,10 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/26/AP-and-mAP-in-object-detection/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/11/02/在Dell-PowerEdge-R430上打造一个科学计算环境/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.jpg">
       <meta itemprop="name" content="Fengcun Li">
       <meta itemprop="description" content="">
     </span>
@@ -528,7 +531,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2018/07/26/AP-and-mAP-in-object-detection/" class="post-title-link" itemprop="url">AP and mAP (In Object Detection)</a>
+            <a href="/2017/11/02/在Dell-PowerEdge-R430上打造一个科学计算环境/" class="post-title-link" itemprop="url">在Dell PowerEdge R430上打造一个科学计算环境</a>
         </h2>
 
         <div class="post-meta">
@@ -538,14 +541,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2018-07-26 21:49:56" itemprop="dateCreated datePublished" datetime="2018-07-26T21:49:56+08:00">2018-07-26</time>
+              <time title="创建时间：2017-11-02 09:40:29" itemprop="dateCreated datePublished" datetime="2017-11-02T09:40:29+08:00">2017-11-02</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2018-08-29 20:51:10" itemprop="dateModified" datetime="2018-08-29T20:51:10+08:00">2018-08-29</time>
+                <time title="修改时间：2020-11-09 12:29:39" itemprop="dateModified" datetime="2020-11-09T12:29:39+08:00">2020-11-09</time>
               </span>
 
           
@@ -559,14 +562,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <blockquote>
-<p>It’s a bird… it’s a plane… it depends on your classifier’s threshold.</p>
-</blockquote>
-<h3 id="Precision-and-recall"><a href="#Precision-and-recall" class="headerlink" title="Precision and recall"></a>Precision and recall</h3><p>\[<br>precision = \frac{ TP }{ TP + FP } \\<br>recall = \frac{ TP }{ TP + FN }<br>\]</p>
-<p><img src="/2018/07/26/AP-and-mAP-in-object-detection/fptp.png" alt="fptp"><br>上图是飞机检索任务中的一次检索结果，\( TP = 3, FP = 1\)。<br>\[<br>precision = 0.75 \\<br>recall = 0.6<br>\]<br></p>
+          <h3 id="安装-Ubuntu"><a href="#安装-Ubuntu" class="headerlink" title="安装 Ubuntu"></a>安装 Ubuntu</h3><ol>
+<li>利用 <a href="https://www.pendrivelinux.com/universal-usb-installer-easy-as-1-2-3/" target="_blank" rel="noopener">Universal-USB-Installer</a> 制作一个 Ubuntu 16.04.2 的 U 盘启动盘。</li>
+<li>F11 从 U 盘启动并进行安装。</li></ol>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2018/07/26/AP-and-mAP-in-object-detection/#more" rel="contents">
+              <a class="btn" href="/2017/11/02/在Dell-PowerEdge-R430上打造一个科学计算环境/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -590,10 +591,10 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/18/Shared-ptr-threadsafety/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/11/01/Github-Hexo-个人博客/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.jpg">
       <meta itemprop="name" content="Fengcun Li">
       <meta itemprop="description" content="">
     </span>
@@ -604,7 +605,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2018/07/18/Shared-ptr-threadsafety/" class="post-title-link" itemprop="url">Shared_ptr Threadsafety</a>
+            <a href="/2017/11/01/Github-Hexo-个人博客/" class="post-title-link" itemprop="url">Github+Hexo:个人博客</a>
         </h2>
 
         <div class="post-meta">
@@ -614,14 +615,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2018-07-18 11:11:36" itemprop="dateCreated datePublished" datetime="2018-07-18T11:11:36+08:00">2018-07-18</time>
+              <time title="创建时间：2017-11-01 11:25:52" itemprop="dateCreated datePublished" datetime="2017-11-01T11:25:52+08:00">2017-11-01</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-03-18 11:53:52" itemprop="dateModified" datetime="2019-03-18T11:53:52+08:00">2019-03-18</time>
+                <time title="修改时间：2020-11-09 12:30:59" itemprop="dateModified" datetime="2020-11-09T12:30:59+08:00">2020-11-09</time>
               </span>
 
           
@@ -635,212 +636,17 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p><strong>From giantchen.</strong><br><code>shared_ptr</code> 的引用计数本身是安全且无锁的，但对象的读写则不是，因为 <code>shared_ptr</code> 有两个数据成员，读写操作不能原子化。<code>shared_ptr</code> 的线程安全级别和内建类型、标准库容器、<code>std::string</code> 一样，即：</p>
-<ul>
-<li>一个 shared_ptr 对象实体可被多个线程同时读取；</li>
-<li>两个 shared_ptr 对象实体可以被两个线程同时写入</li>
-<li>如果要从多个线程读写同一个 shared_ptr 对象，那么需要加锁</li>
-</ul>
-<p>请注意，以上是 <code>shared_ptr</code> 对象本身的线程安全级别，不是它管理的对象的线程安全级别。</p>
-<p>本文则具体分析一下为什么“因为 <code>shared_ptr</code> 有两个数据成员，读写操作不能原子化”使得多线程读写同一个 <code>shared_ptr</code> 对象需要加锁。本文以 <code>boost::shared_ptr</code> 为例，与 <code>std::shared_ptr</code> 可能略有区别。<br></p>
+          <h3 id="环境及版本"><a href="#环境及版本" class="headerlink" title="环境及版本"></a>环境及版本</h3><ul>
+<li>window 10</li>
+<li>hexo 3.4.0</li></ul>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2018/07/18/Shared-ptr-threadsafety/#more" rel="contents">
+              <a class="btn" href="/2017/11/01/Github-Hexo-个人博客/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
           <!--/noindex-->
         
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/09/Faster-R-CNN-s-RPN/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Fengcun Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="The next stop - Antarctica">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/07/09/Faster-R-CNN-s-RPN/" class="post-title-link" itemprop="url">Faster R-CNN's RPN</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-07-09 20:17:23" itemprop="dateCreated datePublished" datetime="2018-07-09T20:17:23+08:00">2018-07-09</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2018-09-03 20:49:24" itemprop="dateModified" datetime="2018-09-03T20:49:24+08:00">2018-09-03</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>本博文主要总结了 Faster R-CNN 的 Region Proposal Network 的结构，驱动是在实际的项目中将 RPN 作为了一个 standalone 的模型进行了使用。主要参考了 <a href="https://github.com/tensorflow/models/tree/master/research/object_detection" target="_blank" rel="noopener">Tensorflow Object Detection API</a> 官方库的代码和 tryolabs 的博文 <a href="https://tryolabs.com/blog/2018/01/18/faster-r-cnn-down-the-rabbit-hole-of-modern-object-detection/" target="_blank" rel="noopener">Faster R-CNN: Down the rabbit hole of modern object detection</a>.</p>
-<h3 id="Faster-R-CNN-发展历程"><a href="#Faster-R-CNN-发展历程" class="headerlink" title="Faster R-CNN 发展历程"></a>Faster R-CNN 发展历程</h3><p>Everything started with “Rich feature hierarchies for accurate object detection and semantic segmentation” (R-CNN) in 2014, which used an algorithm called Selective Search to propose possible regions of interest and a standard Convolutional Neural Network (CNN) to classify and adjust them. It quickly evolved into Fast R-CNN, published in early 2015, where a technique called Region of Interest Pooling allowed for sharing expensive computations and made the model much faster. Finally came Faster R-CNN, where the first fully differentiable model was proposed. Faster R-CNN was originally published in NIPS 2015. </p>
-<h3 id="Faster-R-CNN-的整体架构"><a href="#Faster-R-CNN-的整体架构" class="headerlink" title="Faster R-CNN 的整体架构"></a>Faster R-CNN 的整体架构</h3><p><img src="/2018/07/09/Faster-R-CNN-s-RPN/fasterrcnn-architecture.png" alt="fasterrcnn-architecture"><br></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/07/09/Faster-R-CNN-s-RPN/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/03/Run-Keras-models-in-C-Tensorflow/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Fengcun Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="The next stop - Antarctica">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/07/03/Run-Keras-models-in-C-Tensorflow/" class="post-title-link" itemprop="url">Run Keras Models in C++ Tensorflow</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2018-07-03 17:25:26 / 修改时间：17:25:28" itemprop="dateCreated datePublished" datetime="2018-07-03T17:25:26+08:00">2018-07-03</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/03/策略梯度：倒立摆/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Fengcun Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="The next stop - Antarctica">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/07/03/策略梯度：倒立摆/" class="post-title-link" itemprop="url">策略梯度：倒立摆</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2018-07-03 17:23:09 / 修改时间：17:23:10" itemprop="dateCreated datePublished" datetime="2018-07-03T17:23:09+08:00">2018-07-03</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          
       
     </div>
 
@@ -858,7 +664,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
   </nav>
 
 
@@ -916,6 +722,8 @@
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
   <p class="site-author-name" itemprop="name">Fengcun Li</p>
   <div class="site-description" itemprop="description"></div>
 </div>
@@ -924,12 +732,13 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-count">67</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
+          
         <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
@@ -963,7 +772,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>
 
         

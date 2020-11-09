@@ -12,27 +12,27 @@
 
 <link rel="stylesheet" href="/css/main.css">
 
-
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="这篇博文是 Emmanuelle Gouillart (scikit-image 开发者) 在 PyData 2015 上演讲 Introduction to scikit-image 的笔记。 scikit-imagescikit-image is a general-purpose image processing module for the Python programming langu">
+  <meta name="description" content="这篇博文是 Emmanuelle Gouillart (scikit-image 开发者) 在 PyData 2015 上演讲 Introduction to scikit-image 的笔记。">
 <meta name="keywords" content="Python">
 <meta property="og:type" content="article">
 <meta property="og:title" content="笔记 for PyData 2015 - Introduction to Scikit-Image">
 <meta property="og:url" content="http://yoursite.com/2018/06/08/笔记-for-PyData-2015-Introduction-to-scikit-image/index.html">
 <meta property="og:site_name" content="The next stop - Antarctica">
-<meta property="og:description" content="这篇博文是 Emmanuelle Gouillart (scikit-image 开发者) 在 PyData 2015 上演讲 Introduction to scikit-image 的笔记。 scikit-imagescikit-image is a general-purpose image processing module for the Python programming langu">
+<meta property="og:description" content="这篇博文是 Emmanuelle Gouillart (scikit-image 开发者) 在 PyData 2015 上演讲 Introduction to scikit-image 的笔记。">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/skimage/skimage_label.png">
-<meta property="og:updated_time" content="2018-08-26T11:02:54.199Z">
+<meta property="og:updated_time" content="2020-11-09T04:17:52.858Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="笔记 for PyData 2015 - Introduction to Scikit-Image">
-<meta name="twitter:description" content="这篇博文是 Emmanuelle Gouillart (scikit-image 开发者) 在 PyData 2015 上演讲 Introduction to scikit-image 的笔记。 scikit-imagescikit-image is a general-purpose image processing module for the Python programming langu">
+<meta name="twitter:description" content="这篇博文是 Emmanuelle Gouillart (scikit-image 开发者) 在 PyData 2015 上演讲 Introduction to scikit-image 的笔记。">
 <meta name="twitter:image" content="http://oytnj8g2y.bkt.clouddn.com/skimage/skimage_label.png">
 
 <link rel="canonical" href="http://yoursite.com/2018/06/08/笔记-for-PyData-2015-Introduction-to-scikit-image/">
@@ -121,6 +121,16 @@
     <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
         <li class="menu-item menu-item-archives">
 
     <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
@@ -157,7 +167,7 @@
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/08/笔记-for-PyData-2015-Introduction-to-scikit-image/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.jpg">
       <meta itemprop="name" content="Fengcun Li">
       <meta itemprop="description" content="">
     </span>
@@ -184,7 +194,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2018-08-26 19:02:54" itemprop="dateModified" datetime="2018-08-26T19:02:54+08:00">2018-08-26</time>
+                <time title="修改时间：2020-11-09 12:17:52" itemprop="dateModified" datetime="2020-11-09T12:17:52+08:00">2020-11-09</time>
               </span>
 
           
@@ -199,7 +209,8 @@
 
       
         <p>这篇博文是 Emmanuelle Gouillart (scikit-image 开发者) 在 PyData 2015 上演讲 Introduction to scikit-image 的笔记。</p>
-<h3 id="scikit-image"><a href="#scikit-image" class="headerlink" title="scikit-image"></a>scikit-image</h3><p>scikit-image is a general-purpose image processing module for the Python programming language. It is designed to interact efficiently with other popular scientific Python libraries, such as NumPy and SciPy. In particular, scikit-image leverages the powerful data array container of NumPy, that can store images of various dimensions (2-D, 2D RGB, 3D, 4D…).<br><a id="more"></a></p>
+<a id="more"></a>
+<h3 id="scikit-image"><a href="#scikit-image" class="headerlink" title="scikit-image"></a>scikit-image</h3><p>scikit-image is a general-purpose image processing module for the Python programming language. It is designed to interact efficiently with other popular scientific Python libraries, such as NumPy and SciPy. In particular, scikit-image leverages the powerful data array container of NumPy, that can store images of various dimensions (2-D, 2D RGB, 3D, 4D…).</p>
 <h3 id="Foundation"><a href="#Foundation" class="headerlink" title="Foundation"></a>Foundation</h3><p>NumPy-native: images as NumPy arrays</p>
 <h3 id="Filtering：-transforming-image-data"><a href="#Filtering：-transforming-image-data" class="headerlink" title="Filtering： transforming image data"></a>Filtering： transforming image data</h3><p>modules:</p>
 <ul>
@@ -359,6 +370,8 @@
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
   <p class="site-author-name" itemprop="name">Fengcun Li</p>
   <div class="site-description" itemprop="description"></div>
 </div>
@@ -367,12 +380,13 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-count">67</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
+          
         <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
@@ -406,7 +420,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>
 
         

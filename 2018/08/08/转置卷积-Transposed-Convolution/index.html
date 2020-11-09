@@ -12,30 +12,30 @@
 
 <link rel="stylesheet" href="/css/main.css">
 
-
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="转置卷积在 Fully Convolutional Network (FCN) 结构的卷积神经网络中完成“上采样”。转置卷积与卷积在神经网络结构的正向和反向传播中正好做着相反的运算。 卷积4x4 的输入（蓝色），3x3 的卷积核, 2x2 的输出为（绿色）。  卷积操作过程可以如下计算：  输入矩阵展开为 \( 4 \times 4 = 16 \) 维（列）向量，记作 \( \mathbf{x}">
+  <meta name="description" content="转置卷积在 Fully Convolutional Network (FCN) 结构的卷积神经网络中完成“上采样”。转置卷积与卷积在神经网络结构的正向和反向传播中正好做着相反的运算。">
 <meta name="keywords" content="DL">
 <meta property="og:type" content="article">
 <meta property="og:title" content="转置卷积 Transposed Convolution">
 <meta property="og:url" content="http://yoursite.com/2018/08/08/转置卷积-Transposed-Convolution/index.html">
 <meta property="og:site_name" content="The next stop - Antarctica">
-<meta property="og:description" content="转置卷积在 Fully Convolutional Network (FCN) 结构的卷积神经网络中完成“上采样”。转置卷积与卷积在神经网络结构的正向和反向传播中正好做着相反的运算。 卷积4x4 的输入（蓝色），3x3 的卷积核, 2x2 的输出为（绿色）。  卷积操作过程可以如下计算：  输入矩阵展开为 \( 4 \times 4 = 16 \) 维（列）向量，记作 \( \mathbf{x}">
+<meta property="og:description" content="转置卷积在 Fully Convolutional Network (FCN) 结构的卷积神经网络中完成“上采样”。转置卷积与卷积在神经网络结构的正向和反向传播中正好做着相反的运算。">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/convolution.gif">
 <meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/kernel.png">
 <meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/kernel.png">
 <meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/transpose_convolution.gif">
-<meta property="og:updated_time" content="2018-08-26T10:51:13.370Z">
+<meta property="og:updated_time" content="2020-11-09T04:13:52.666Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="转置卷积 Transposed Convolution">
-<meta name="twitter:description" content="转置卷积在 Fully Convolutional Network (FCN) 结构的卷积神经网络中完成“上采样”。转置卷积与卷积在神经网络结构的正向和反向传播中正好做着相反的运算。 卷积4x4 的输入（蓝色），3x3 的卷积核, 2x2 的输出为（绿色）。  卷积操作过程可以如下计算：  输入矩阵展开为 \( 4 \times 4 = 16 \) 维（列）向量，记作 \( \mathbf{x}">
+<meta name="twitter:description" content="转置卷积在 Fully Convolutional Network (FCN) 结构的卷积神经网络中完成“上采样”。转置卷积与卷积在神经网络结构的正向和反向传播中正好做着相反的运算。">
 <meta name="twitter:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/convolution.gif">
 
 <link rel="canonical" href="http://yoursite.com/2018/08/08/转置卷积-Transposed-Convolution/">
@@ -124,6 +124,16 @@
     <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
         <li class="menu-item menu-item-archives">
 
     <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
@@ -160,7 +170,7 @@
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/08/转置卷积-Transposed-Convolution/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.jpg">
       <meta itemprop="name" content="Fengcun Li">
       <meta itemprop="description" content="">
     </span>
@@ -187,7 +197,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2018-08-26 18:51:13" itemprop="dateModified" datetime="2018-08-26T18:51:13+08:00">2018-08-26</time>
+                <time title="修改时间：2020-11-09 12:13:52" itemprop="dateModified" datetime="2020-11-09T12:13:52+08:00">2020-11-09</time>
               </span>
 
           
@@ -202,13 +212,14 @@
 
       
         <p>转置卷积在 Fully Convolutional Network (FCN) 结构的卷积神经网络中完成“上采样”。<br><strong>转置卷积</strong>与<strong>卷积</strong>在神经网络结构的正向和反向传播中正好做着相反的运算。</p>
+<a id="more"></a>
 <h3 id="卷积"><a href="#卷积" class="headerlink" title="卷积"></a>卷积</h3><p>4x4 的输入（蓝色），3x3 的卷积核, 2x2 的输出为（绿色）。</p>
 <p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/convolution.gif" alt="convolution"></p>
-<p>卷积操作过程可以如下计算： </p>
-<p>输入矩阵展开为 \( 4 \times 4 = 16 \) 维（列）向量，记作 \( \mathbf{x} \)。 </p>
-<p>输出矩阵展开为 \( 2 \times 2 = 4 \) 维（列）向量，记作 \( \mathbf{y} \)。 </p>
+<p>卷积操作过程可以如下计算：</p>
+<p>输入矩阵展开为 \( 4 \times 4 = 16 \) 维（列）向量，记作 \( \mathbf{x} \)。</p>
+<p>输出矩阵展开为 \( 2 \times 2 = 4 \) 维（列）向量，记作 \( \mathbf{y} \)。</p>
 <p>卷积核扩展为如下的形式 \( \mathbf{C} \)，注意这个矩阵并不是<a href="https://en.wikipedia.org/wiki/Toeplitz_matrix" target="_blank" rel="noopener">托普利兹矩阵（Toeplitz matrix）</a>：</p>
-<p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/kernel.png" alt="kernel"><br><a id="more"></a></p>
+<p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/kernel.png" alt="kernel"></p>
 <h5 id="正向传播"><a href="#正向传播" class="headerlink" title="正向传播"></a>正向传播</h5><p>卷积神经网络的正向传播就转换为：<br>\[ \mathbf{y} = \mathbf{C} \mathbf{x} \]<br>左乘 \( \mathbf{C} \)。</p>
 <h5 id="反向传播"><a href="#反向传播" class="headerlink" title="反向传播"></a>反向传播</h5><p>\[<br>\begin{split}<br>\frac{\partial loss}{\partial x_i} &amp; = \sum_{j}\frac{\partial loss}{\partial y_j}\frac{\partial y_j}{\partial x_i} \\<br>&amp; = \sum_{j}\frac{\partial loss}{\partial y_j}C_{j, i} \\<br>&amp; = C_{*, i}^{T}\frac{\partial loss}{\partial y}<br>\end{split}<br>\]<br>即<br>\[<br>\frac{\partial loss}{\partial x} = C^T\frac{\partial loss}{\partial y}<br>\]</p>
 <p>左乘 \( C^T \)。</p>
@@ -218,40 +229,42 @@
 <blockquote>
 <p>The term “deconvolution” is sometimes used in the literature, but we advocate against it on the grounds that a deconvolution is mathematically defined as the inverse of a convolution, which is different from a transposed convolution.<a href="https://arxiv.org/pdf/1603.07285.pdf" target="_blank" rel="noopener"><font size="2">1</font></a></p>
 </blockquote>
-<p>转置卷积核扩展为如下的形式 \( \mathbf{C} \)，注意这个矩阵并不是<a href="https://en.wikipedia.org/wiki/Toeplitz_matrix" target="_blank" rel="noopener">托普利兹矩阵（Toeplitz matrix）</a>：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/kernel.png" alt="kernel"> </p>
+<p>转置卷积核扩展为如下的形式 \( \mathbf{C} \)，注意这个矩阵并不是<a href="https://en.wikipedia.org/wiki/Toeplitz_matrix" target="_blank" rel="noopener">托普利兹矩阵（Toeplitz matrix）</a>：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/kernel.png" alt="kernel"></p>
 <h5 id="正向传播-1"><a href="#正向传播-1" class="headerlink" title="正向传播"></a>正向传播</h5><p>\[ \mathbf{y} = \mathbf{C}^T \mathbf{x} \]<br>左乘 \( \mathbf{C}^T \)。</p>
 <h5 id="反向传播-1"><a href="#反向传播-1" class="headerlink" title="反向传播"></a>反向传播</h5><p>\[<br>\begin{split}<br>\frac{\partial loss}{\partial x} &amp; = (C^T)^T\frac{\partial loss}{\partial y} \\<br>&amp; = C\frac{\partial loss}{\partial y}<br>\end{split}<br>\]<br>左乘 \( C \)。</p>
 <p>综上，转置卷积不是逆卷积，在信号处理中逆卷积是输入经过卷积的信号，还原出经过卷积之前的原始信号的操作。而神经网络中卷积和逆卷积仅仅分别是对输入左乘\( \mathbf{C} \) 和 \( \mathbf{C}^T\) 。</p>
 <h3 id="两者的联系"><a href="#两者的联系" class="headerlink" title="两者的联系"></a>两者的联系</h3><p>就像论文 <a href="https://arxiv.org/pdf/1603.07285.pdf" target="_blank" rel="noopener">A guide to convolution arithmetic for deep learning</a> 中讲到的，一个核定义了一个卷积操作，但是它是一个直接卷积（ direct convolution ）还是一个转置卷积（ transposed convolution ）取决于正向传播和反向传播是如何计算的。</p>
 <blockquote>
-<p>One way to put it is to note that the kernel defines a convolution, but whether it’s a direct convolution or a transposed convolution is determined by how the forward and backward passes are computed. </p>
+<p>One way to put it is to note that the kernel defines a convolution, but whether it’s a direct convolution or a transposed convolution is determined by how the forward and backward passes are computed.</p>
 </blockquote>
 <blockquote>
-<p>For instance, although the kernel \( \mathbf{w} \) defines a convolution whose forward and backward passes are computed by multiplying with \( \mathbf{C} \) and \( \mathbf{C}^T \) respectively, it also defines a transposed convolution whose forward and backward passes are computed by multiplying with \( \mathbf{C}^T \) and  \( (\mathbf{C}^T)^T = \mathbf{C} \) respectively.</p>
+<p>For instance, although the kernel \( \mathbf{w} \) defines a convolution whose forward and backward passes are computed by multiplying with \( \mathbf{C} \) and \( \mathbf{C}^T \) respectively, it also defines a transposed convolution whose forward and backward passes are computed by multiplying with \( \mathbf{C}^T \) and \( (\mathbf{C}^T)^T = \mathbf{C} \) respectively.</p>
 </blockquote>
 <p>另外需要注意的一点是，总是可以通过一个直接卷积（ direct convolution ）来模拟一个转置卷积（ transposed convolution ），但是这种方式的一个缺点是通常会在输入中引入大量的零行和零列，导致计算效率的降低。</p>
 <blockquote>
 <p>Finally note that it is always possible to emulate a transposed convolution with a direct convolution. The disadvantage is that it usually involves adding many columns and rows of zeros to the input, resulting in a much less efficient implementation.</p>
 </blockquote>
-<h5 id="直接卷积模拟转置卷积"><a href="#直接卷积模拟转置卷积" class="headerlink" title="直接卷积模拟转置卷积"></a>直接卷积模拟转置卷积</h5><p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/transpose_convolution.gif" alt="transpose convolution"> </p>
+<h5 id="直接卷积模拟转置卷积"><a href="#直接卷积模拟转置卷积" class="headerlink" title="直接卷积模拟转置卷积"></a>直接卷积模拟转置卷积</h5><p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/transpose_convolution.gif" alt="transpose convolution"></p>
 <ol>
 <li>对输入 \( \mathbf{x} \) (1)进行补零得到 \( \tilde{\mathbf{x}} \)；</li>
 <li>对核 \( \mathbf{w} \) (2) 进行左右翻转上下翻转得到新的核 \( \tilde{\mathbf{w}} \) (3)；</li>
-<li>利用核 \( \tilde{\mathbf{w}} \) 对  \( \tilde{\mathbf{x}} \) 进行卷积，如上面的动图所示。</li>
+<li>利用核 \( \tilde{\mathbf{w}} \) 对 \( \tilde{\mathbf{x}} \) 进行卷积，如上面的动图所示。</li>
 </ol>
-<p>\[<br> \left\{<br> \begin{matrix}<br>   x_0 &amp; x_1 \\<br>   x_2 &amp; x_3<br>  \end{matrix}<br>  \right\}\tag{1}<br>\]<br>\[<br> \left\{<br> \begin{matrix}<br>   w_{00} &amp; w_{01} &amp; w_{02} \\<br>   w_{10} &amp; w_{11} &amp; w_{12} \\<br>   w_{20} &amp; w_{21} &amp; w_{22}<br>  \end{matrix}<br>  \right\}\tag{2}<br>\]<br>\[<br> \left\{<br> \begin{matrix}<br>   w_{22} &amp; w_{21} &amp; w_{20} \\<br>   w_{12} &amp; w_{11} &amp; w_{10} \\<br>   w_{02} &amp; w_{01} &amp; w_{00}<br>  \end{matrix}<br>  \right\}\tag{3}<br>\]</p>
+<p>\[<br>\left\{<br>\begin{matrix}<br>x_0 &amp; x_1 \\<br>x_2 &amp; x_3<br>\end{matrix}<br>\right\}\tag{1}<br>\]<br>\[<br>\left\{<br>\begin{matrix}<br>w_{00} &amp; w_{01} &amp; w_{02} \\<br>w_{10} &amp; w_{11} &amp; w_{12} \\<br>w_{20} &amp; w_{21} &amp; w_{22}<br>\end{matrix}<br>\right\}\tag{2}<br>\]<br>\[<br>\left\{<br>\begin{matrix}<br>w_{22} &amp; w_{21} &amp; w_{20} \\<br>w_{12} &amp; w_{11} &amp; w_{10} \\<br>w_{02} &amp; w_{01} &amp; w_{00}<br>\end{matrix}<br>\right\}\tag{3}<br>\]</p>
 <p>由图可以看出：</p>
 <ol>
-<li>\( y_0 = w_{00} \cdot x_0 \)</li>
-<li>\( y_1 = w_{01} \cdot x_0 + w_{00} \cdot x_1 \)</li>
-<li>\( y_2 = w_{02} \cdot x_0 + w_{01} \cdot x_1 \)</li>
-<li>\( y_3 = w_{02} \cdot x_1 \)</li>
+<li>\( y<em>0 = w</em>{00} \cdot x_0 \)</li>
+<li>\( y<em>1 = w</em>{01} \cdot x<em>0 + w</em>{00} \cdot x_1 \)</li>
+<li>\( y<em>2 = w</em>{02} \cdot x<em>0 + w</em>{01} \cdot x_1 \)</li>
+<li>\( y<em>3 = w</em>{02} \cdot x_1 \)</li>
 <li>以此类推</li>
 </ol>
 <p>在结果上等效于转置卷积的定义式：</p>
-<p>\[<br> \left[<br> \begin{matrix}<br>   w_{00} &amp; 0      &amp; 0      &amp; 0      \\<br>   w_{01} &amp; w_{00} &amp; 0      &amp; 0      \\<br>   w_{02} &amp; w_{01} &amp; 0      &amp; 0      \\<br>   0      &amp; w_{02} &amp; 0      &amp; 0      \\<br>   w_{10} &amp; 0      &amp; w_{00} &amp; 0      \\<br>   w_{11} &amp; w_{10} &amp; w_{01} &amp; w_{00} \\<br>   w_{12} &amp; w_{11} &amp; w_{02} &amp; w_{01} \\<br>   0      &amp; w_{12} &amp; 0      &amp; w_{02} \\<br>   w_{20} &amp; 0      &amp; w_{10} &amp; 0      \\<br>   w_{21} &amp; w_{20} &amp; w_{11} &amp; w_{10} \\<br>   w_{22} &amp; w_{21} &amp; w_{12} &amp; w_{11} \\<br>   0      &amp; w_{22} &amp; 0      &amp; w_{12} \\<br>   0      &amp; 0      &amp; w_{20} &amp; 0      \\<br>   0      &amp; 0      &amp; w_{21} &amp; w_{20} \\<br>   0      &amp; 0      &amp; w_{22} &amp; w_{21} \\<br>   0      &amp; 0      &amp; 0      &amp; w_{22}<br>  \end{matrix}<br>  \right]<br>  \cdot<br>  \left[<br>  \begin{matrix}<br>   x_0 \\<br>   x_1 \\<br>   x_2 \\<br>   x_3<br>  \end{matrix}<br>  \right]<br>\]</p>
-<p><font size="2">[1] A guide to convolution arithmetic for deep learning</font></p>
+<p>\[<br>\left[<br>\begin{matrix}<br>w_{00} &amp; 0 &amp; 0 &amp; 0 \\<br>w_{01} &amp; w_{00} &amp; 0 &amp; 0 \\<br>w_{02} &amp; w_{01} &amp; 0 &amp; 0 \\<br>0 &amp; w_{02} &amp; 0 &amp; 0 \\<br>w_{10} &amp; 0 &amp; w_{00} &amp; 0 \\<br>w_{11} &amp; w_{10} &amp; w_{01} &amp; w_{00} \\<br>w_{12} &amp; w_{11} &amp; w_{02} &amp; w_{01} \\<br>0 &amp; w_{12} &amp; 0 &amp; w_{02} \\<br>w_{20} &amp; 0 &amp; w_{10} &amp; 0 \\<br>w_{21} &amp; w_{20} &amp; w_{11} &amp; w_{10} \\<br>w_{22} &amp; w_{21} &amp; w_{12} &amp; w_{11} \\<br>0 &amp; w_{22} &amp; 0 &amp; w_{12} \\<br>0 &amp; 0 &amp; w_{20} &amp; 0 \\<br>0 &amp; 0 &amp; w_{21} &amp; w_{20} \\<br>0 &amp; 0 &amp; w_{22} &amp; w_{21} \\<br>0 &amp; 0 &amp; 0 &amp; w_{22}<br>\end{matrix}<br>\right]<br>\cdot<br>\left[<br>\begin{matrix}<br>x_0 \\<br>x_1 \\<br>x_2 \\<br>x_3<br>\end{matrix}<br>\right]<br>\]</p>
+<font size="2">[1] A guide to convolution arithmetic for deep learning</font>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
     </div>
 
     
@@ -340,6 +353,8 @@
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
   <p class="site-author-name" itemprop="name">Fengcun Li</p>
   <div class="site-description" itemprop="description"></div>
 </div>
@@ -348,12 +363,13 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-count">67</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
+          
         <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
@@ -387,7 +403,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>
 
         

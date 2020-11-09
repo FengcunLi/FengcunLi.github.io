@@ -12,21 +12,21 @@
 
 <link rel="stylesheet" href="/css/main.css">
 
-
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="It’s a bird… it’s a plane… it depends on your classifier’s threshold.  Precision and recall\[precision = \frac{ TP }{ TP + FP } \\recall = \frac{ TP }{ TP + FN }\] 上图是飞机检索任务中的一次检索结果，\( TP = 3, FP = 1">
+  <meta name="description" content="It’s a bird… it’s a plane… it depends on your classifier’s threshold.">
 <meta name="keywords" content="DL">
 <meta property="og:type" content="article">
 <meta property="og:title" content="AP and mAP (In Object Detection)">
 <meta property="og:url" content="http://yoursite.com/2018/07/26/AP-and-mAP-in-object-detection/index.html">
 <meta property="og:site_name" content="The next stop - Antarctica">
-<meta property="og:description" content="It’s a bird… it’s a plane… it depends on your classifier’s threshold.  Precision and recall\[precision = \frac{ TP }{ TP + FP } \\recall = \frac{ TP }{ TP + FN }\] 上图是飞机检索任务中的一次检索结果，\( TP = 3, FP = 1">
+<meta property="og:description" content="It’s a bird… it’s a plane… it depends on your classifier’s threshold.">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://yoursite.com/2018/07/26/AP-and-mAP-in-object-detection/fptp.png">
 <meta property="og:image" content="http://yoursite.com/2018/07/26/AP-and-mAP-in-object-detection/ordering-wide.png">
@@ -35,10 +35,10 @@
 <meta property="og:image" content="http://yoursite.com/2018/07/26/AP-and-mAP-in-object-detection/output_after_nms.png">
 <meta property="og:image" content="http://yoursite.com/2018/07/26/AP-and-mAP-in-object-detection/AP.png">
 <meta property="og:image" content="http://yoursite.com/2018/07/26/AP-and-mAP-in-object-detection/pr.png">
-<meta property="og:updated_time" content="2018-08-29T12:51:10.545Z">
+<meta property="og:updated_time" content="2020-11-09T04:16:12.156Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="AP and mAP (In Object Detection)">
-<meta name="twitter:description" content="It’s a bird… it’s a plane… it depends on your classifier’s threshold.  Precision and recall\[precision = \frac{ TP }{ TP + FP } \\recall = \frac{ TP }{ TP + FN }\] 上图是飞机检索任务中的一次检索结果，\( TP = 3, FP = 1">
+<meta name="twitter:description" content="It’s a bird… it’s a plane… it depends on your classifier’s threshold.">
 <meta name="twitter:image" content="http://yoursite.com/2018/07/26/AP-and-mAP-in-object-detection/fptp.png">
 
 <link rel="canonical" href="http://yoursite.com/2018/07/26/AP-and-mAP-in-object-detection/">
@@ -127,6 +127,16 @@
     <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
         <li class="menu-item menu-item-archives">
 
     <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
@@ -163,7 +173,7 @@
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/26/AP-and-mAP-in-object-detection/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.jpg">
       <meta itemprop="name" content="Fengcun Li">
       <meta itemprop="description" content="">
     </span>
@@ -190,7 +200,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2018-08-29 20:51:10" itemprop="dateModified" datetime="2018-08-29T20:51:10+08:00">2018-08-29</time>
+                <time title="修改时间：2020-11-09 12:16:12" itemprop="dateModified" datetime="2020-11-09T12:16:12+08:00">2020-11-09</time>
               </span>
 
           
@@ -207,8 +217,9 @@
         <blockquote>
 <p>It’s a bird… it’s a plane… it depends on your classifier’s threshold.</p>
 </blockquote>
+<a id="more"></a>
 <h3 id="Precision-and-recall"><a href="#Precision-and-recall" class="headerlink" title="Precision and recall"></a>Precision and recall</h3><p>\[<br>precision = \frac{ TP }{ TP + FP } \\<br>recall = \frac{ TP }{ TP + FN }<br>\]</p>
-<p><img src="/2018/07/26/AP-and-mAP-in-object-detection/fptp.png" alt="fptp"><br>上图是飞机检索任务中的一次检索结果，\( TP = 3, FP = 1\)。<br>\[<br>precision = 0.75 \\<br>recall = 0.6<br>\]<br><a id="more"></a></p>
+<p><img src="/2018/07/26/AP-and-mAP-in-object-detection/fptp.png" alt="fptp"><br>上图是飞机检索任务中的一次检索结果，\( TP = 3, FP = 1\)。<br>\[<br>precision = 0.75 \\<br>recall = 0.6<br>\]</p>
 <h3 id="调整门限"><a href="#调整门限" class="headerlink" title="调整门限"></a>调整门限</h3><p>假设下图是飞机检索系统给出的 score 排序，列表的上部是检索系统认为与飞机更加相像的图片。蓝色线是给出上面的检索结果的对应门限值。<br><img src="/2018/07/26/AP-and-mAP-in-object-detection/ordering-wide.png" alt="order"><br>通过上下调整门限，我们可以得到不同的检索结果（即不同的检索集合），在不同的门限处我们可以达到不同的 precision 和 recall。</p>
 <table>
 <thead>
@@ -276,8 +287,8 @@
 <h5 id="Average-precision"><a href="#Average-precision" class="headerlink" title="Average precision"></a>Average precision</h5><p>\[<br>ap = \int_{0}^{1}p(r)dr<br>\]<br>在实际中，积分是用在各个可取到的 score 门限值处对 precision 与 \( \Delta recall \) 的乘积加和进行近似。<br>\[<br>ap = \sum_{k=1}^{N}P(k)\Delta r(k)<br>\]<br>where N is the total number of images in the collection, \( P(k) \) is the precision at a cutoff of k images, and \( \Delta r(k) \) is the change in recall that happened between cutoff k-1 and cutoff k.<br>In this example, this is<br>\[<br>(1 \times 0.2) + (1 \times 0.2) + (0.66 \times 0) + (0.75 \times 0.2) + (0.6 \times 0) + (0.66 \times 0.2) + (0.57 \times 0) + (0.5 \times 0) + (0.44 \times 0) + (0.5 \times 0.2) = 0.782.<br>\]<br>Notice that the points at which the recall doesn’t change don’t contribute to this sum (in the graph, these points are on the vertical sections of the plot, where it’s dropping straight down). This makes sense, because since we’re computing the area under the curve, those sections of the curve aren’t adding any area.</p>
 <h5 id="Interpolated-average-precision"><a href="#Interpolated-average-precision" class="headerlink" title="Interpolated average precision"></a>Interpolated average precision</h5><p>Instead of using P(k), the precision at a retrieval cutoff of k images, the interpolated average precision uses:<br>\[<br>max_{\tilde{k} \geq k}P(\tilde{k})<br>\]<br>In other words, instead of using the precision that was actually observed at cutoff k, the interpolated average precision uses the maximum precision observed across all cutoffs with higher recall. The full equation for computing the interpolated average precision is:<br>\[<br>\sum_{k=1}^{N} max_{\tilde{k} \geq k} P(\tilde{k}) \Delta r(k)<br>\]<br>In order to ignore ‘wiggles’ effects, interpolated average precision treats those regions as if they had constant precision equal to the highest precision observed at higher recalls.<br><img src="/2018/07/26/AP-and-mAP-in-object-detection/interpolated-vs-approximated.png" alt="interpolated-vs-approximated"><br>The approximated average precision closely hugs the actually observed curve. The interpolated average precision <strong>over estimates</strong> the precision at many points and produces a higher average precision value than the approximated average precision.</p>
 <h5 id="Interpolated-average-precision-variation-11-points-AP"><a href="#Interpolated-average-precision-variation-11-points-AP" class="headerlink" title="Interpolated average precision variation 11-points AP"></a>Interpolated average precision variation 11-points AP</h5><p>Take samples at a fixed 11 points (recall range from 0 to 1: {0, 0.1, 0.2, …, 0.9, 1.0}). This is called the 11-point interpolated average precision. Others sample at every k where the recall changes.</p>
-<p>The PASCAL Visual Objects Challenge has used  interpolated average precision as their evaluation metric since 2007. </p>
-<p>In early years, they took an 11-point sample to get the interpolated average precision. In later years, they evaluated the area under Interpolated  precision recall curve exactly.</p>
+<p>The PASCAL Visual Objects Challenge has used interpolated average precision as their evaluation metric since 2007.</p>
+<p>In early years, they took an 11-point sample to get the interpolated average precision. In later years, they evaluated the area under Interpolated precision recall curve exactly.</p>
 <p>Everyone compares against each other on this metric, so within the competition, this is not an issue. However, the rest of us need to be careful when comparing “average precision” values against other published results. Are we using the VOC’s interpolated average precision, while previous work had used the non-interpolated average precision? This would incorrectly show improvement of a new method when compared to the previous work.</p>
 <h3 id="mAP"><a href="#mAP" class="headerlink" title="mAP"></a>mAP</h3><p>Mean Average Precision is used when you have several retrieval tasks（several classifiers） and want to find a score that summarizes your performance across all of them. For example, you might have a large collection of images, but you’re interested in retrieving the cars, chairs, people, and lamps, each as a separate query. You would compute the average precision for your car classifier, average precision for your chair classifier, average precision for your people classifier, and average precision for your lamp classifier. Take the mean of these average precisions to get the Mean Average Precision.</p>
 <h3 id="mAP-in-object-detection"><a href="#mAP-in-object-detection" class="headerlink" title="mAP in object detection"></a>mAP in object detection</h3><p>在目标检测中经过非最大值抑制之后的结果是：<br><img src="/2018/07/26/AP-and-mAP-in-object-detection/output_after_nms.png" alt="output_after_nms"></p>
@@ -285,18 +296,20 @@
 <li><p>TP、FP<br><img src="/2018/07/26/AP-and-mAP-in-object-detection/AP.png" alt="AP"></p>
 </li>
 <li><p>recall、precision for one class:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">accumulate_FP = np.cumsum(FP)</span><br><span class="line">accumulate_TP = np.cumsum(TP)</span><br><span class="line">recall = accumulate_TP / npos</span><br><span class="line">precision = np.divide(accumulate_TP, (accumulate_TP + accumulate_FP))</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>AP for one class:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">calculate_average_precision</span><span class="params">(rec, prec)</span>:</span></span><br><span class="line">    <span class="comment"># 对 rec 进行前后扩展，使得 rec 能够覆盖 [0, 1] 整个范围，不然求出的面积会偏小</span></span><br><span class="line">    rec.insert(<span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line">    rec.append(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 对 prec 进行前后扩展，通过 append 0 和变为阶梯状的操作，使得 prec 进行了合理的扩展，</span></span><br><span class="line">    <span class="comment"># prec 能够和 rec 一一对应了</span></span><br><span class="line">    prec.insert(<span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line">    prec.append(<span class="number">0</span>)</span><br><span class="line">    <span class="comment"># 变为阶梯状</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> reversed(range(<span class="number">1</span>, len(prec))):</span><br><span class="line">        prec[i<span class="number">-1</span>] = max(prec[i<span class="number">-1</span>], prec[i])</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 找到 recall 值发生变化的地方</span></span><br><span class="line">    ii = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(rec)<span class="number">-1</span>):</span><br><span class="line">        <span class="keyword">if</span> rec[i] != rec[i+<span class="number">1</span>]:</span><br><span class="line">            ii.append(i + <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 对面积进行累加</span></span><br><span class="line">    ap = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> ii:</span><br><span class="line">        ap = ap + np.sum((rec[i] - rec[i<span class="number">-1</span>]) * prec[i])</span><br><span class="line">    <span class="keyword">return</span> ap</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">accumulate_FP = np.cumsum(FP)</span><br><span class="line">accumulate_TP = np.cumsum(TP)</span><br><span class="line">recall = accumulate_TP / npos</span><br><span class="line">precision = np.divide(accumulate_TP, (accumulate_TP + accumulate_FP))</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>AP for one class:</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">calculate_average_precision</span><span class="params">(rec, prec)</span>:</span></span><br><span class="line">    <span class="comment"># 对 rec 进行前后扩展，使得 rec 能够覆盖 [0, 1] 整个范围，不然求出的面积会偏小</span></span><br><span class="line">    rec.insert(<span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line">    rec.append(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 对 prec 进行前后扩展，通过 append 0 和变为阶梯状的操作，使得 prec 进行了合理的扩展，</span></span><br><span class="line">    <span class="comment"># prec 能够和 rec 一一对应了</span></span><br><span class="line">    prec.insert(<span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line">    prec.append(<span class="number">0</span>)</span><br><span class="line">    <span class="comment"># 变为阶梯状</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> reversed(range(<span class="number">1</span>, len(prec))):</span><br><span class="line">        prec[i<span class="number">-1</span>] = max(prec[i<span class="number">-1</span>], prec[i])</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 找到 recall 值发生变化的地方</span></span><br><span class="line">    ii = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(rec)<span class="number">-1</span>):</span><br><span class="line">        <span class="keyword">if</span> rec[i] != rec[i+<span class="number">1</span>]:</span><br><span class="line">            ii.append(i + <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 对面积进行累加</span></span><br><span class="line">    ap = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> ii:</span><br><span class="line">        ap = ap + np.sum((rec[i] - rec[i<span class="number">-1</span>]) * prec[i])</span><br><span class="line">    <span class="keyword">return</span> ap</span><br></pre></td></tr></table></figure>
 <p>实现代码<a href="https://github.com/rafaelpadilla/Object-Detection-Metrics" target="_blank" rel="noopener">参考</a>。</p>
 <h3 id="补充材料-from-Yesterday’s-Coffee"><a href="#补充材料-from-Yesterday’s-Coffee" class="headerlink" title="补充材料 from Yesterday’s Coffee"></a>补充材料 from <a href="http://www.yesterdayscoffee.de/" target="_blank" rel="noopener">Yesterday’s Coffee</a></h3><p>采摘自 <a href="http://www.yesterdayscoffee.de/2013/09/03/precision-recall-curves-and-mean-average-precision/" target="_blank" rel="noopener">Precision-Recall-Curves and Mean Average Precision</a><br>Precision-recall curves are often used to evaluate ranked results of an information retrieval system (e.g., a search engine). The principle is easy, for every search result, check the precision and recall you have until now (precision/recall at k). If you plot this in a graph with recall on the x-axis and precision on the y-axis, you end up with something like this (blue line):<br><img src="/2018/07/26/AP-and-mAP-in-object-detection/pr.png" alt="pr"><br>The essential shape is always the same. Why? Let’s say we have looked at k results which corresponds to a point with a precision and a recall value. What can happen when we go to result k+1? The result can be correct, then recall will increase and precision as well – the curve goes up and right. Or it can go wrong, then recall stays the same and precision drops – the curve goes straight down.</p>
 <p>The red line is the interpolated precision, meaning we define precision at some arbitrary level to be the maximum precision reached at any later recall level. Essentially, we flatten the “teeth” of the curve. The difference can be pretty big (see in the plot at recall around 0.2), we can even “skip” a tooth.</p>
-<p>What would the curve look like for a perfect system? Meaning a system that only returns correct results? It would be 1.0 for every recall level. </p>
+<p>What would the curve look like for a perfect system? Meaning a system that only returns correct results? It would be 1.0 for every recall level.</p>
 <p>What should the value be for precision at recall 0? If we interpolate, the answer is clear: the highest precision value at some later recall level. This does not have to be 1.0 – it could happen that the first result is wrong, the second correct, then we have P=0.5 at k=2 and it might only drop from there.</p>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
     </div>
 
     
@@ -385,6 +398,8 @@
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
   <p class="site-author-name" itemprop="name">Fengcun Li</p>
   <div class="site-description" itemprop="description"></div>
 </div>
@@ -393,12 +408,13 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-count">67</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
+          
         <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
@@ -432,7 +448,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>
 
         
