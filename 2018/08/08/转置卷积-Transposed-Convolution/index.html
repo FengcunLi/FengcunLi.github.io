@@ -1,198 +1,232 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<!-- Head tag -->
+<html lang="zh-CN">
 <head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/main.css">
 
-    <!--Description-->
-    
-        <meta name="description" content="转置卷积在 Fully Convolutional Network (FCN) 结构的卷积神经网络中完成“上采样”。转置卷积与卷积在神经网络结构的正向和反向传播中正好做着相反的运算。
-卷积4x4 的输入（蓝色），3x3 的卷积核, 2x2 的输出为（绿色）。
 
-卷积操作过程可以如下计算： 
-输入矩阵展开为 \( 4 \times 4 = 16 \) 维（列）向量，记作 \( \mathbf{x} \)。 
-输出矩阵展开为 \( 2 \times 2 = 4 \) 维（列）向量，记作 \( \mathbf{y} \)。 
-卷积核扩展为如下的形式 \( \mathbf{C} \)，注意这个矩阵并不是托普利兹矩阵（Toeplitz matrix）：">
-    
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-    <!--Author-->
-    
-        <meta name="author" content="Robert Lexis">
-    
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
-    <!--Open Graph Title-->
-    
-        <meta property="og:title" content="转置卷积 Transposed Convolution"/>
-    
+  <meta name="description" content="转置卷积在 Fully Convolutional Network (FCN) 结构的卷积神经网络中完成“上采样”。转置卷积与卷积在神经网络结构的正向和反向传播中正好做着相反的运算。 卷积4x4 的输入（蓝色），3x3 的卷积核, 2x2 的输出为（绿色）。  卷积操作过程可以如下计算：  输入矩阵展开为 \( 4 \times 4 = 16 \) 维（列）向量，记作 \( \mathbf{x}">
+<meta name="keywords" content="DL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="转置卷积 Transposed Convolution">
+<meta property="og:url" content="http://yoursite.com/2018/08/08/转置卷积-Transposed-Convolution/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="转置卷积在 Fully Convolutional Network (FCN) 结构的卷积神经网络中完成“上采样”。转置卷积与卷积在神经网络结构的正向和反向传播中正好做着相反的运算。 卷积4x4 的输入（蓝色），3x3 的卷积核, 2x2 的输出为（绿色）。  卷积操作过程可以如下计算：  输入矩阵展开为 \( 4 \times 4 = 16 \) 维（列）向量，记作 \( \mathbf{x}">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/convolution.gif">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/kernel.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/kernel.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/transpose_convolution.gif">
+<meta property="og:updated_time" content="2018-08-26T10:51:13.370Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="转置卷积 Transposed Convolution">
+<meta name="twitter:description" content="转置卷积在 Fully Convolutional Network (FCN) 结构的卷积神经网络中完成“上采样”。转置卷积与卷积在神经网络结构的正向和反向传播中正好做着相反的运算。 卷积4x4 的输入（蓝色），3x3 的卷积核, 2x2 的输出为（绿色）。  卷积操作过程可以如下计算：  输入矩阵展开为 \( 4 \times 4 = 16 \) 维（列）向量，记作 \( \mathbf{x}">
+<meta name="twitter:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/convolution.gif">
 
-    <!--Open Graph Description-->
-    
+<link rel="canonical" href="http://yoursite.com/2018/08/08/转置卷积-Transposed-Convolution/">
 
-    <!--Open Graph Site Name-->
-    <meta property="og:site_name" content="This is Robert Lexis."/>
 
-    <!--Type page-->
-    
-        <meta property="og:type" content="article" />
-    
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
 
-    <!--Page Cover-->
-    
+  <title>转置卷积 Transposed Convolution | The next stop - Antarctica</title>
+  
 
-    <meta name="twitter:card" content="summary" />
-    
 
-    <!-- Title -->
-    
-    <title>转置卷积 Transposed Convolution - This is Robert Lexis.</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 
-    <!-- Custom Fonts -->
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 
-    <!-- Gallery -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
 
-    <!-- Google Analytics -->
-    
-
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
 
 </head>
 
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
 
-<body>
-
-<div class="bg-gradient"></div>
-<div class="bg-pattern"></div>
-
-<!-- Menu -->
-<!--Menu Links and Overlay-->
-<div class="menu-bg">
-    <div class="menu-container">
-        <ul>
-            
-            <li class="menu-item">
-                <a href="/">
-                    Home
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/archives">
-                    Archives
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/about">
-                    About
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/tags">
-                    Tags
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/categories">
-                    Categories
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/contact">
-                    Contact
-                </a>
-            </li>
-            
-        </ul>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
 </div>
 
-<!--Hamburger Icon-->
-<nav>
-    <a href="#menu"></a>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
 </nav>
 
-<div class="container">
 
-    <!-- Main Content -->
-    <div class="row">
-    <div class="col-sm-12">
 
-        <!--Title and Logo-->
-        <header>
-    <div class="logo">
-        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
-        
-    </div>
-</header>
 
-        <section class="main">
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
             
-<div class="post">
 
-    <div class="post-header">
-        <h1 class="title">
-            <a href="/2018/08/08/转置卷积-Transposed-Convolution/">
-                转置卷积 Transposed Convolution
-            </a>
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/08/转置卷积-Transposed-Convolution/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          转置卷积 Transposed Convolution
         </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-08-08</span>
-            
-            
-            
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-08-08 21:28:37" itemprop="dateCreated datePublished" datetime="2018-08-08T21:28:37+08:00">2018-08-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-08-26 18:51:13" itemprop="dateModified" datetime="2018-08-26T18:51:13+08:00">2018-08-26</time>
+              </span>
+
+          
+
         </div>
-    </div>
+      </header>
 
-    <div class="content">
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
-        <!-- Gallery -->
-        
-
-        <!-- Post Content -->
+      
         <p>转置卷积在 Fully Convolutional Network (FCN) 结构的卷积神经网络中完成“上采样”。<br><strong>转置卷积</strong>与<strong>卷积</strong>在神经网络结构的正向和反向传播中正好做着相反的运算。</p>
 <h3 id="卷积"><a href="#卷积" class="headerlink" title="卷积"></a>卷积</h3><p>4x4 的输入（蓝色），3x3 的卷积核, 2x2 的输出为（绿色）。</p>
 <p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/convolution.gif" alt="convolution"></p>
 <p>卷积操作过程可以如下计算： </p>
 <p>输入矩阵展开为 \( 4 \times 4 = 16 \) 维（列）向量，记作 \( \mathbf{x} \)。 </p>
 <p>输出矩阵展开为 \( 2 \times 2 = 4 \) 维（列）向量，记作 \( \mathbf{y} \)。 </p>
-<p>卷积核扩展为如下的形式 \( \mathbf{C} \)，注意这个矩阵并不是<a href="https://en.wikipedia.org/wiki/Toeplitz_matrix" target="_blank" rel="external">托普利兹矩阵（Toeplitz matrix）</a>：</p>
+<p>卷积核扩展为如下的形式 \( \mathbf{C} \)，注意这个矩阵并不是<a href="https://en.wikipedia.org/wiki/Toeplitz_matrix" target="_blank" rel="noopener">托普利兹矩阵（Toeplitz matrix）</a>：</p>
 <p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/kernel.png" alt="kernel"><br><a id="more"></a></p>
 <h5 id="正向传播"><a href="#正向传播" class="headerlink" title="正向传播"></a>正向传播</h5><p>卷积神经网络的正向传播就转换为：<br>\[ \mathbf{y} = \mathbf{C} \mathbf{x} \]<br>左乘 \( \mathbf{C} \)。</p>
-<h5 id="反向传播"><a href="#反向传播" class="headerlink" title="反向传播"></a>反向传播</h5><p>\[<br>\begin{split}<br>\frac{\partial loss}{\partial x_i} &amp; = \sum_{j}\frac{\partial loss}{\partial y_j}\frac{\partial y_j}{\partial x_i} \\\\<br>&amp; = \sum_{j}\frac{\partial loss}{\partial y_j}C_{j, i} \\\\<br>&amp; = C_{*, i}^{T}\frac{\partial loss}{\partial y}<br>\end{split}<br>\]<br>即<br>\[<br>\frac{\partial loss}{\partial x} = C^T\frac{\partial loss}{\partial y}<br>\]</p>
+<h5 id="反向传播"><a href="#反向传播" class="headerlink" title="反向传播"></a>反向传播</h5><p>\[<br>\begin{split}<br>\frac{\partial loss}{\partial x_i} &amp; = \sum_{j}\frac{\partial loss}{\partial y_j}\frac{\partial y_j}{\partial x_i} \\<br>&amp; = \sum_{j}\frac{\partial loss}{\partial y_j}C_{j, i} \\<br>&amp; = C_{*, i}^{T}\frac{\partial loss}{\partial y}<br>\end{split}<br>\]<br>即<br>\[<br>\frac{\partial loss}{\partial x} = C^T\frac{\partial loss}{\partial y}<br>\]</p>
 <p>左乘 \( C^T \)。</p>
 <h3 id="转置卷积"><a href="#转置卷积" class="headerlink" title="转置卷积"></a>转置卷积</h3><blockquote>
-<p>Transposed convolutions – also called fractionally strided convolutions or deconvolutions – work by swapping the forward and backward passes of a convolution.<a href="https://arxiv.org/pdf/1603.07285.pdf" target="_blank" rel="external"><font size="2">1</font></a></p>
-<p>The term “deconvolution” is sometimes used in the literature, but we advocate against it on the grounds that a deconvolution is mathematically defined as the inverse of a convolution, which is different from a transposed convolution.<a href="https://arxiv.org/pdf/1603.07285.pdf" target="_blank" rel="external"><font size="2">1</font></a></p>
+<p>Transposed convolutions – also called fractionally strided convolutions or deconvolutions – work by swapping the forward and backward passes of a convolution.<a href="https://arxiv.org/pdf/1603.07285.pdf" target="_blank" rel="noopener"><font size="2">1</font></a></p>
 </blockquote>
-<p>转置卷积核扩展为如下的形式 \( \mathbf{C} \)，注意这个矩阵并不是<a href="https://en.wikipedia.org/wiki/Toeplitz_matrix" target="_blank" rel="external">托普利兹矩阵（Toeplitz matrix）</a>：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/kernel.png" alt="kernel"> </p>
+<blockquote>
+<p>The term “deconvolution” is sometimes used in the literature, but we advocate against it on the grounds that a deconvolution is mathematically defined as the inverse of a convolution, which is different from a transposed convolution.<a href="https://arxiv.org/pdf/1603.07285.pdf" target="_blank" rel="noopener"><font size="2">1</font></a></p>
+</blockquote>
+<p>转置卷积核扩展为如下的形式 \( \mathbf{C} \)，注意这个矩阵并不是<a href="https://en.wikipedia.org/wiki/Toeplitz_matrix" target="_blank" rel="noopener">托普利兹矩阵（Toeplitz matrix）</a>：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/transposeConvolution/kernel.png" alt="kernel"> </p>
 <h5 id="正向传播-1"><a href="#正向传播-1" class="headerlink" title="正向传播"></a>正向传播</h5><p>\[ \mathbf{y} = \mathbf{C}^T \mathbf{x} \]<br>左乘 \( \mathbf{C}^T \)。</p>
-<h5 id="反向传播-1"><a href="#反向传播-1" class="headerlink" title="反向传播"></a>反向传播</h5><p>\[<br>\begin{split}<br>\frac{\partial loss}{\partial x} &amp; = (C^T)^T\frac{\partial loss}{\partial y} \\\\<br>&amp; = C\frac{\partial loss}{\partial y}<br>\end{split}<br>\]<br>左乘 \( C \)。</p>
+<h5 id="反向传播-1"><a href="#反向传播-1" class="headerlink" title="反向传播"></a>反向传播</h5><p>\[<br>\begin{split}<br>\frac{\partial loss}{\partial x} &amp; = (C^T)^T\frac{\partial loss}{\partial y} \\<br>&amp; = C\frac{\partial loss}{\partial y}<br>\end{split}<br>\]<br>左乘 \( C \)。</p>
 <p>综上，转置卷积不是逆卷积，在信号处理中逆卷积是输入经过卷积的信号，还原出经过卷积之前的原始信号的操作。而神经网络中卷积和逆卷积仅仅分别是对输入左乘\( \mathbf{C} \) 和 \( \mathbf{C}^T\) 。</p>
-<h3 id="两者的联系"><a href="#两者的联系" class="headerlink" title="两者的联系"></a>两者的联系</h3><p>就像论文 <a href="https://arxiv.org/pdf/1603.07285.pdf" target="_blank" rel="external">A guide to convolution arithmetic for deep learning</a> 中讲到的，一个核定义了一个卷积操作，但是它是一个直接卷积（ direct convolution ）还是一个转置卷积（ transposed convolution ）取决于正向传播和反向传播是如何计算的。</p>
+<h3 id="两者的联系"><a href="#两者的联系" class="headerlink" title="两者的联系"></a>两者的联系</h3><p>就像论文 <a href="https://arxiv.org/pdf/1603.07285.pdf" target="_blank" rel="noopener">A guide to convolution arithmetic for deep learning</a> 中讲到的，一个核定义了一个卷积操作，但是它是一个直接卷积（ direct convolution ）还是一个转置卷积（ transposed convolution ）取决于正向传播和反向传播是如何计算的。</p>
 <blockquote>
 <p>One way to put it is to note that the kernel defines a convolution, but whether it’s a direct convolution or a transposed convolution is determined by how the forward and backward passes are computed. </p>
+</blockquote>
+<blockquote>
 <p>For instance, although the kernel \( \mathbf{w} \) defines a convolution whose forward and backward passes are computed by multiplying with \( \mathbf{C} \) and \( \mathbf{C}^T \) respectively, it also defines a transposed convolution whose forward and backward passes are computed by multiplying with \( \mathbf{C}^T \) and  \( (\mathbf{C}^T)^T = \mathbf{C} \) respectively.</p>
 </blockquote>
 <p>另外需要注意的一点是，总是可以通过一个直接卷积（ direct convolution ）来模拟一个转置卷积（ transposed convolution ），但是这种方式的一个缺点是通常会在输入中引入大量的零行和零列，导致计算效率的降低。</p>
@@ -205,7 +239,7 @@
 <li>对核 \( \mathbf{w} \) (2) 进行左右翻转上下翻转得到新的核 \( \tilde{\mathbf{w}} \) (3)；</li>
 <li>利用核 \( \tilde{\mathbf{w}} \) 对  \( \tilde{\mathbf{x}} \) 进行卷积，如上面的动图所示。</li>
 </ol>
-<p>\[<br> \left\{<br> \begin{matrix}<br>   x_0 &amp; x_1 \\\\<br>   x_2 &amp; x_3<br>  \end{matrix}<br>  \right\}\tag{1}<br>\]<br>\[<br> \left\{<br> \begin{matrix}<br>   w_{00} &amp; w_{01} &amp; w_{02} \\\\<br>   w_{10} &amp; w_{11} &amp; w_{12} \\\\<br>   w_{20} &amp; w_{21} &amp; w_{22}<br>  \end{matrix}<br>  \right\}\tag{2}<br>\]<br>\[<br> \left\{<br> \begin{matrix}<br>   w_{22} &amp; w_{21} &amp; w_{20} \\\\<br>   w_{12} &amp; w_{11} &amp; w_{10} \\\\<br>   w_{02} &amp; w_{01} &amp; w_{00}<br>  \end{matrix}<br>  \right\}\tag{3}<br>\]</p>
+<p>\[<br> \left\{<br> \begin{matrix}<br>   x_0 &amp; x_1 \\<br>   x_2 &amp; x_3<br>  \end{matrix}<br>  \right\}\tag{1}<br>\]<br>\[<br> \left\{<br> \begin{matrix}<br>   w_{00} &amp; w_{01} &amp; w_{02} \\<br>   w_{10} &amp; w_{11} &amp; w_{12} \\<br>   w_{20} &amp; w_{21} &amp; w_{22}<br>  \end{matrix}<br>  \right\}\tag{2}<br>\]<br>\[<br> \left\{<br> \begin{matrix}<br>   w_{22} &amp; w_{21} &amp; w_{20} \\<br>   w_{12} &amp; w_{11} &amp; w_{10} \\<br>   w_{02} &amp; w_{01} &amp; w_{00}<br>  \end{matrix}<br>  \right\}\tag{3}<br>\]</p>
 <p>由图可以看出：</p>
 <ol>
 <li>\( y_0 = w_{00} \cdot x_0 \)</li>
@@ -215,133 +249,189 @@
 <li>以此类推</li>
 </ol>
 <p>在结果上等效于转置卷积的定义式：</p>
-<p>\[<br> \left[<br> \begin{matrix}<br>   w_{00} &amp; 0      &amp; 0      &amp; 0      \\\\<br>   w_{01} &amp; w_{00} &amp; 0      &amp; 0      \\\\<br>   w_{02} &amp; w_{01} &amp; 0      &amp; 0      \\\\<br>   0      &amp; w_{02} &amp; 0      &amp; 0      \\\\<br>   w_{10} &amp; 0      &amp; w_{00} &amp; 0      \\\\<br>   w_{11} &amp; w_{10} &amp; w_{01} &amp; w_{00} \\\\<br>   w_{12} &amp; w_{11} &amp; w_{02} &amp; w_{01} \\\\<br>   0      &amp; w_{12} &amp; 0      &amp; w_{02} \\\\<br>   w_{20} &amp; 0      &amp; w_{10} &amp; 0      \\\\<br>   w_{21} &amp; w_{20} &amp; w_{11} &amp; w_{10} \\\\<br>   w_{22} &amp; w_{21} &amp; w_{12} &amp; w_{11} \\\\<br>   0      &amp; w_{22} &amp; 0      &amp; w_{12} \\\\<br>   0      &amp; 0      &amp; w_{20} &amp; 0      \\\\<br>   0      &amp; 0      &amp; w_{21} &amp; w_{20} \\\\<br>   0      &amp; 0      &amp; w_{22} &amp; w_{21} \\\\<br>   0      &amp; 0      &amp; 0      &amp; w_{22}<br>  \end{matrix}<br>  \right]<br>  \cdot<br>  \left[<br>  \begin{matrix}<br>   x_0 \\\\<br>   x_1 \\\\<br>   x_2 \\\\<br>   x_3<br>  \end{matrix}<br>  \right]<br>\]</p>
+<p>\[<br> \left[<br> \begin{matrix}<br>   w_{00} &amp; 0      &amp; 0      &amp; 0      \\<br>   w_{01} &amp; w_{00} &amp; 0      &amp; 0      \\<br>   w_{02} &amp; w_{01} &amp; 0      &amp; 0      \\<br>   0      &amp; w_{02} &amp; 0      &amp; 0      \\<br>   w_{10} &amp; 0      &amp; w_{00} &amp; 0      \\<br>   w_{11} &amp; w_{10} &amp; w_{01} &amp; w_{00} \\<br>   w_{12} &amp; w_{11} &amp; w_{02} &amp; w_{01} \\<br>   0      &amp; w_{12} &amp; 0      &amp; w_{02} \\<br>   w_{20} &amp; 0      &amp; w_{10} &amp; 0      \\<br>   w_{21} &amp; w_{20} &amp; w_{11} &amp; w_{10} \\<br>   w_{22} &amp; w_{21} &amp; w_{12} &amp; w_{11} \\<br>   0      &amp; w_{22} &amp; 0      &amp; w_{12} \\<br>   0      &amp; 0      &amp; w_{20} &amp; 0      \\<br>   0      &amp; 0      &amp; w_{21} &amp; w_{20} \\<br>   0      &amp; 0      &amp; w_{22} &amp; w_{21} \\<br>   0      &amp; 0      &amp; 0      &amp; w_{22}<br>  \end{matrix}<br>  \right]<br>  \cdot<br>  \left[<br>  \begin{matrix}<br>   x_0 \\<br>   x_1 \\<br>   x_2 \\<br>   x_3<br>  \end{matrix}<br>  \right]<br>\]</p>
 <p><font size="2">[1] A guide to convolution arithmetic for deep learning</font></p>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
     </div>
 
     
-
     
-        <div class="post-tags">
-            <i class="fa fa-tags" aria-hidden="true"></i>
-            <a href="/tags/DL/">#DL</a>
-        </div>
     
 
-    <!-- Comments -->
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/DL/" rel="tag"># DL</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/08/08/Nvidia-TensorRT-推理加速引擎支持的Layers/" rel="prev" title="Nvidia TensorRT 推理加速引擎支持的Layers">
+      <i class="fa fa-chevron-left"></i> Nvidia TensorRT 推理加速引擎支持的Layers
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/08/09/卷积转置卷积关系在-TensorFLow-中的验证/" rel="next" title="卷积转置卷积关系在 TensorFLow 中的验证">
+      卷积转置卷积关系在 TensorFLow 中的验证 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
     
+  </article>
+  
+  
+  
 
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#卷积"><span class="nav-number">1.</span> <span class="nav-text">卷积</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#正向传播"><span class="nav-number">1.0.1.</span> <span class="nav-text">正向传播</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#反向传播"><span class="nav-number">1.0.2.</span> <span class="nav-text">反向传播</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#转置卷积"><span class="nav-number">2.</span> <span class="nav-text">转置卷积</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#正向传播-1"><span class="nav-number">2.0.1.</span> <span class="nav-text">正向传播</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#反向传播-1"><span class="nav-number">2.0.2.</span> <span class="nav-text">反向传播</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#两者的联系"><span class="nav-number">3.</span> <span class="nav-text">两者的联系</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#直接卷积模拟转置卷积"><span class="nav-number">3.0.1.</span> <span class="nav-text">直接卷积模拟转置卷积</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
 </div>
-        </section>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
 
     </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
 
-
-</div>
-
-<!-- Footer -->
-<div class="push"></div>
-
-<footer class="footer-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
-                <h2>About</h2>
-                <p>
-                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
-                </p>
-            </div>
-            
-    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
-        <h2>Recent Posts</h2>
-        <ul>
-            
-            <li>
-                <a class="footer-post" href="/2019/07/12/Unnamed-namespace/">Unnamed namespace</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/05/08/Static-variable-in-inlined-function/">Static variable in inline</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/04/23/Iterator-invalidation-rules/">Iterator invalidation rul</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/18/Emplace-back/">Emplace back</a>
-            </li>
-            
-        </ul>
-    </div>
+        
 
 
 
-            
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <ul class="list-inline footer-social-icons">
-                    
-                    <li class="list-inline-item">
-                        <a href="https://github.com/RobertLexis">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-github"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="mailto:robert_lexis@163.com">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-envelope-o"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="footer-copyright">
-                    @Untitled. All right reserved | Robert Lexis Loves Wenny
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<!-- After footer scripts -->
-
-<!-- jQuery -->
-<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-
-<!-- Tween Max -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
-
-<!-- Gallery -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
-
-<!-- Custom JavaScript -->
-<script src="/js/main.js"></script>
-
-<!-- Disqus Comments -->
 
 
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
 
 </body>
-
 </html>

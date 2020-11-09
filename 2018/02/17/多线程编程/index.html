@@ -1,172 +1,201 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<!-- Head tag -->
+<html lang="zh-CN">
 <head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/main.css">
 
-    <!--Description-->
-    
-        <meta name="description" content="多线程编程lock_guard、unique_lock：互斥对象管理类模板
-std::lock_guard，与 Mutex RAII 相关，方便线程对互斥量上锁。
-std::unique_lock，与 Mutex RAII 相关，方便线程对互斥量上锁，但提供了更好的上锁和解锁控制。">
-    
 
-    <!--Author-->
-    
-        <meta name="author" content="Robert Lexis">
-    
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-    <!--Open Graph Title-->
-    
-        <meta property="og:title" content="多线程编程"/>
-    
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
-    <!--Open Graph Description-->
-    
+  <meta name="description" content="多线程编程lock_guard、unique_lock：互斥对象管理类模板 std::lock_guard，与 Mutex RAII 相关，方便线程对互斥量上锁。 std::unique_lock，与 Mutex RAII 相关，方便线程对互斥量上锁，但提供了更好的上锁和解锁控制。">
+<meta name="keywords" content="C++">
+<meta property="og:type" content="article">
+<meta property="og:title" content="多线程编程">
+<meta property="og:url" content="http://yoursite.com/2018/02/17/多线程编程/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="多线程编程lock_guard、unique_lock：互斥对象管理类模板 std::lock_guard，与 Mutex RAII 相关，方便线程对互斥量上锁。 std::unique_lock，与 Mutex RAII 相关，方便线程对互斥量上锁，但提供了更好的上锁和解锁控制。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-26T11:12:06.107Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="多线程编程">
+<meta name="twitter:description" content="多线程编程lock_guard、unique_lock：互斥对象管理类模板 std::lock_guard，与 Mutex RAII 相关，方便线程对互斥量上锁。 std::unique_lock，与 Mutex RAII 相关，方便线程对互斥量上锁，但提供了更好的上锁和解锁控制。">
 
-    <!--Open Graph Site Name-->
-    <meta property="og:site_name" content="This is Robert Lexis."/>
+<link rel="canonical" href="http://yoursite.com/2018/02/17/多线程编程/">
 
-    <!--Type page-->
-    
-        <meta property="og:type" content="article" />
-    
 
-    <!--Page Cover-->
-    
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
 
-    <meta name="twitter:card" content="summary" />
-    
+  <title>多线程编程 | The next stop - Antarctica</title>
+  
 
-    <!-- Title -->
-    
-    <title>多线程编程 - This is Robert Lexis.</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 
-    <!-- Custom Fonts -->
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 
-    <!-- Gallery -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
 
-    <!-- Google Analytics -->
-    
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
 
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
 
 </head>
 
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
 
-<body>
-
-<div class="bg-gradient"></div>
-<div class="bg-pattern"></div>
-
-<!-- Menu -->
-<!--Menu Links and Overlay-->
-<div class="menu-bg">
-    <div class="menu-container">
-        <ul>
-            
-            <li class="menu-item">
-                <a href="/">
-                    Home
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/archives">
-                    Archives
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/about">
-                    About
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/tags">
-                    Tags
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/categories">
-                    Categories
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/contact">
-                    Contact
-                </a>
-            </li>
-            
-        </ul>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
 </div>
 
-<!--Hamburger Icon-->
-<nav>
-    <a href="#menu"></a>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
 </nav>
 
-<div class="container">
 
-    <!-- Main Content -->
-    <div class="row">
-    <div class="col-sm-12">
 
-        <!--Title and Logo-->
-        <header>
-    <div class="logo">
-        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
-        
-    </div>
-</header>
 
-        <section class="main">
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
             
-<div class="post">
 
-    <div class="post-header">
-        <h1 class="title">
-            <a href="/2018/02/17/多线程编程/">
-                多线程编程
-            </a>
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/17/多线程编程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          多线程编程
         </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-02-17</span>
-            
-            
-            
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-02-17 11:07:41" itemprop="dateCreated datePublished" datetime="2018-02-17T11:07:41+08:00">2018-02-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-08-26 19:12:06" itemprop="dateModified" datetime="2018-08-26T19:12:06+08:00">2018-08-26</time>
+              </span>
+
+          
+
         </div>
-    </div>
+      </header>
 
-    <div class="content">
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
-        <!-- Gallery -->
-        
-
-        <!-- Post Content -->
+      
         <h3 id="多线程编程"><a href="#多线程编程" class="headerlink" title="多线程编程"></a>多线程编程</h3><h4 id="lock-guard、unique-lock：互斥对象管理类模板"><a href="#lock-guard、unique-lock：互斥对象管理类模板" class="headerlink" title="lock_guard、unique_lock：互斥对象管理类模板"></a>lock_guard、unique_lock：互斥对象管理类模板</h4><ol>
 <li>std::lock_guard，与 Mutex RAII 相关，方便线程对互斥量上锁。</li>
 <li>std::unique_lock，与 Mutex RAII 相关，方便线程对互斥量上锁，但提供了更好的上锁和解锁控制。<a id="more"></a>
@@ -190,18 +219,18 @@ std::unique_lock，与 Mutex RAII 相关，方便线程对互斥量上锁，但�
 <li>在 lock_guard 对象构造时，传入的 Mutex 对象(即<strong>互斥对象管理模板类对象</strong>所管理的 Mutex 对象)会被当前线程锁住</li>
 <li>在 lock_guard 对象被析构时，它所管理的 Mutex 对象会自动解锁</li>
 <li>由于不需要程序员手动调用 lock 和 unlock 对 Mutex 对象 进行上锁和解锁操作，因此这也是最简单安全的上锁和解锁方式，尤其是在程序抛出异常后先前已被上锁的 Mutex 对象可以正确进行解锁操作，极大地简化了程序员编写与 Mutex 相关的异常处理代码。</li>
-<li>值得注意的是，lock_guard 对象并不负责管理 Mutex 对象的生命周期<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&#123;  // 使用复合语句块封装临界区操作，块结束时即释放局部对象</div><div class="line">    std::lock_guard&lt;std::mutex&gt;  locker( x );    //  构造对象的同时加锁</div><div class="line">    *r = _x + _y;</div><div class="line"> &#125; // 无需手工解锁，locker对象在析构时自动解锁</div></pre></td></tr></table></figure>
+<li>值得注意的是，lock_guard 对象并不负责管理 Mutex 对象的生命周期<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;  // 使用复合语句块封装临界区操作，块结束时即释放局部对象</span><br><span class="line">    std::lock_guard&lt;std::mutex&gt;  locker( x );    //  构造对象的同时加锁</span><br><span class="line">    *r = _x + _y;</span><br><span class="line"> &#125; // 无需手工解锁，locker对象在析构时自动解锁</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
-<h6 id="std-lock-guard-构造函数"><a href="#std-lock-guard-构造函数" class="headerlink" title="std::lock_guard 构造函数"></a>std::lock_guard 构造函数</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">locking (1) </div><div class="line">explicit lock_guard (mutex_type&amp; m);</div><div class="line">adopting (2)    </div><div class="line">lock_guard (mutex_type&amp; m, adopt_lock_t tag);</div><div class="line">copy [deleted](3)   </div><div class="line">lock_guard (const lock_guard&amp;) = delete;</div></pre></td></tr></table></figure>
+<h6 id="std-lock-guard-构造函数"><a href="#std-lock-guard-构造函数" class="headerlink" title="std::lock_guard 构造函数"></a>std::lock_guard 构造函数</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">locking (1) </span><br><span class="line">explicit lock_guard (mutex_type&amp; m);</span><br><span class="line">adopting (2)    </span><br><span class="line">lock_guard (mutex_type&amp; m, adopt_lock_t tag);</span><br><span class="line">copy [deleted](3)   </span><br><span class="line">lock_guard (const lock_guard&amp;) = delete;</span><br></pre></td></tr></table></figure>
 <ol>
 <li>locking 初始化<br>lock_guard 对象管理 Mutex 对象 m，并在构造时对 m 进行上锁（调用 m.lock()）。<br>adopting初始化</li>
 <li>lock_guard 对象管理 Mutex 对象 m，与 locking 初始化(1) 不同的是， 不加锁，假定<strong>当前</strong>线程已获得锁的所有权，即Mutex 对象 m 已被<strong>当前</strong>线程锁住。</li>
 <li>拷贝构造<br>lock_guard 对象的拷贝构造和移动构造均被禁用，因此 lock_guard 对象不可被拷贝构造或移动构造，所有权不可转移。</li>
 </ol>
 <h5 id="unique-lock-（独一锁）类模板"><a href="#unique-lock-（独一锁）类模板" class="headerlink" title="unique_lock （独一锁）类模板"></a>unique_lock （独一锁）类模板</h5><p>unique_lock 对象以独占所有权的方式（unique owership）管理 Mutex 对象的上锁和解锁操作，所谓独占所有权，就是没有其他的 unique_lock 对象同时拥有某个 Mutex 对象的所有权。<br>在构造(或移动(move)赋值)时，unique_lock 需要传递一个 Mutex 对象作为它的参数，新创建的 unique_lock 对象负责传入的 Mutex 对象的上锁和解锁操作。<br>std::unique_lock 对象也能保证在其自身析构时它所管理的 Mutex 对象能够被正确地解锁（即使没有显式地调用 unlock 函数）。因此，和 lock_guard 一样，这也是一种简单安全的上锁和解锁方式，尤其是在程序抛出异常后先前已被上锁的 Mutex 对象可以正确进行解锁操作，极大地简化了程序员编写与 Mutex 相关的异常处理代码。<br>值得注意的是，unique_lock 对象同样也不负责管理 Mutex 对象的生命周期</p>
-<h6 id="std-unique-lock-构造函数"><a href="#std-unique-lock-构造函数" class="headerlink" title="std::unique_lock 构造函数"></a>std::unique_lock 构造函数</h6><p>std::unique_lock 的构造函数的数目相对来说比 std::lock_guard 多：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">default (1) </div><div class="line">    unique_lock() noexcept;</div><div class="line">locking (2) </div><div class="line">    explicit unique_lock(mutex_type&amp; m);</div><div class="line">try-locking (3) </div><div class="line">    unique_lock(mutex_type&amp; m, try_to_lock_t tag);</div><div class="line">deferred (4)    </div><div class="line">    unique_lock(mutex_type&amp; m, defer_lock_t tag) noexcept;</div><div class="line">adopting (5)    </div><div class="line">    unique_lock(mutex_type&amp; m, adopt_lock_t tag);</div><div class="line">locking for (6) </div><div class="line">    template &lt;class Rep, class Period&gt;</div><div class="line">    unique_lock(mutex_type&amp; m, const chrono::duration&lt;Rep,Period&gt;&amp; rel_time);</div><div class="line">locking until (7)   </div><div class="line">    template &lt;class Clock, class Duration&gt;</div><div class="line">    unique_lock(mutex_type&amp; m, const chrono::time_point&lt;Clock,Duration&gt;&amp; abs_time);</div><div class="line">copy [deleted] (8)  </div><div class="line">    unique_lock(const unique_lock&amp;) = delete;</div><div class="line">move (9)    </div><div class="line">    unique_lock(unique_lock&amp;&amp; x);</div></pre></td></tr></table></figure></p>
-<p>下面来分别介绍以上各个构造函数：<br>(1) 默认构造函数<br>新创建的 unique_lock 对象不管理任何 Mutex 对象。<br>(2) locking 初始化<br>新创建的 unique_lock 对象管理 Mutex 对象 m，并尝试调用 m.lock() 对 Mutex 对象进行上锁，如果此时另外某个 unique_lock 对象已经管理了该 Mutex 对象 m，则当前线程将会被阻塞。<br>(3) try-locking 初始化<br>新创建的 unique_lock 对象管理 Mutex 对象 m，并尝试调用 m.try_lock() 对 Mutex 对象进行上锁，但如果上锁不成功，并不会阻塞当前线程。<br>(4) deferred 初始化<br>新创建的 unique_lock 对象管理 Mutex 对象 m，但是在初始化的时候并不锁住 Mutex 对象。 m 应该是一个没有<strong>当前</strong>线程锁住的 Mutex 对象。<br>(5) adopting 初始化<br>新创建的 unique_lock 对象管理 Mutex 对象 m， m 应该（假定）是一个已经被<strong>当前</strong>线程锁住的 Mutex 对象。(并且当前新创建的 unique_lock 对象拥有锁(Lock)的所有权)。<br>(6) locking 一段时间(duration)<br>新创建的 unique_lock 对象管理 Mutex 对象 m，并试图通过调用 m.try_lock_for(rel_time) 来锁住 Mutex 对象一段时间(rel_time)。<br>(7) locking 直到某个时间点(time point)<br>新创建的 unique_lock 对象管理 Mutex 对象m，并试图通过调用 m.try_lock_until(abs_time) 来在某个时间点(abs_time)之前锁住 Mutex 对象。<br>(8) 拷贝构造 [被禁用]<br>unique_lock 对象不能被拷贝构造。<br>(9) 移动(move)构造<br>新创建的 unique_lock 对象获得了由 x 所管理的 Mutex 对象的所有权(包括当前 Mutex 的状态)。调用 move 构造之后， x 对象如同是通过默认构造函数所创建的，就不再管理任何 Mutex 对象了，即被窃取了资源，之后 x 应该被析构或者去管理新的Mutex 对象（或者再将资源切窃取回来）。<br>综上所述，由 (2) 和 (5) 创建的 unique_lock 对象通常拥有 Mutex 对象的锁。而通过 (1) 和 (4) 创建的则不会拥有锁。通过 (3)，(6) 和 (7) 创建的 unique_lock 对象，则在 lock 成功时获得锁。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">#include &lt;thread&gt;</div><div class="line">#include &lt;mutex&gt;</div><div class="line">#include &lt;iostream&gt;</div><div class="line">std::mutex foo,bar;  </div><div class="line">void task_a() &#123;  </div><div class="line">    std::lock(foo, bar);//foo和bar已被当前线程锁住  </div><div class="line">    /******************************************************* </div><div class="line">    *adopting 初始化: </div><div class="line">    *adopt_lock 是一个常量对象,通常作为参数传入给unique_lock 或  </div><div class="line">    *lock_guard 的构造函数。新创建的 unique_lock 对象管理 Mutex  </div><div class="line">    *对象 m， m 应该是一个已经被当前线程锁住的 Mutex 对象。 </div><div class="line">    *******************************************************/  </div><div class="line">    std::unique_lock&lt;std::mutex&gt; lck1(foo, std::adopt_lock);  </div><div class="line">    std::unique_lock&lt;std::mutex&gt; lck2(bar, std::adopt_lock);  </div><div class="line">    std::cout &lt;&lt; &quot;task a\n&quot;;  </div><div class="line">&#125;  </div><div class="line">void task_b() &#123;  </div><div class="line">    //新创建的 unique_lock 对象不管理任何 Mutex 对象。  </div><div class="line">    std::unique_lock&lt;std::mutex&gt; lck1, lck2;  </div><div class="line">    /****************************************************** </div><div class="line">    * deferred 初始化: </div><div class="line">    *新创建的 unique_lock 对象管理 Mutex 对象 m，但是在初始化 </div><div class="line">    *的时候并不锁住 Mutex 对象。 m 应该是一个没有**当前**线程锁住的  </div><div class="line">    *Mutex 对象。 </div><div class="line">    ******************************************************/  </div><div class="line">    // 等号右边是临时对象，即不具名，调用了移动赋值运算符，进行了资源的窃取（锁所有权的转移）</div><div class="line">    // 然后临时对象就被析构了，如此窃取其资源是安全的。</div><div class="line">    lck1 = std::unique_lock&lt;std::mutex&gt;(bar, std::defer_lock);  </div><div class="line">    lck2 = std::unique_lock&lt;std::mutex&gt;(foo, std::defer_lock);  </div><div class="line">    std::lock(lck1, lck2);</div><div class="line">    std::cout &lt;&lt; &quot;task b\n&quot;;</div><div class="line">&#125;  </div><div class="line">int main() &#123;  </div><div class="line">    std::thread th1(task_a);  </div><div class="line">    std::thread th2(task_b);  </div><div class="line">    th1.join();  </div><div class="line">    th2.join();  </div><div class="line">    return 0;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h6 id="std-unique-lock-构造函数"><a href="#std-unique-lock-构造函数" class="headerlink" title="std::unique_lock 构造函数"></a>std::unique_lock 构造函数</h6><p>std::unique_lock 的构造函数的数目相对来说比 std::lock_guard 多：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">default (1) </span><br><span class="line">    unique_lock() noexcept;</span><br><span class="line">locking (2) </span><br><span class="line">    explicit unique_lock(mutex_type&amp; m);</span><br><span class="line">try-locking (3) </span><br><span class="line">    unique_lock(mutex_type&amp; m, try_to_lock_t tag);</span><br><span class="line">deferred (4)    </span><br><span class="line">    unique_lock(mutex_type&amp; m, defer_lock_t tag) noexcept;</span><br><span class="line">adopting (5)    </span><br><span class="line">    unique_lock(mutex_type&amp; m, adopt_lock_t tag);</span><br><span class="line">locking for (6) </span><br><span class="line">    template &lt;class Rep, class Period&gt;</span><br><span class="line">    unique_lock(mutex_type&amp; m, const chrono::duration&lt;Rep,Period&gt;&amp; rel_time);</span><br><span class="line">locking until (7)   </span><br><span class="line">    template &lt;class Clock, class Duration&gt;</span><br><span class="line">    unique_lock(mutex_type&amp; m, const chrono::time_point&lt;Clock,Duration&gt;&amp; abs_time);</span><br><span class="line">copy [deleted] (8)  </span><br><span class="line">    unique_lock(const unique_lock&amp;) = delete;</span><br><span class="line">move (9)    </span><br><span class="line">    unique_lock(unique_lock&amp;&amp; x);</span><br></pre></td></tr></table></figure></p>
+<p>下面来分别介绍以上各个构造函数：<br>(1) 默认构造函数<br>新创建的 unique_lock 对象不管理任何 Mutex 对象。<br>(2) locking 初始化<br>新创建的 unique_lock 对象管理 Mutex 对象 m，并尝试调用 m.lock() 对 Mutex 对象进行上锁，如果此时另外某个 unique_lock 对象已经管理了该 Mutex 对象 m，则当前线程将会被阻塞。<br>(3) try-locking 初始化<br>新创建的 unique_lock 对象管理 Mutex 对象 m，并尝试调用 m.try_lock() 对 Mutex 对象进行上锁，但如果上锁不成功，并不会阻塞当前线程。<br>(4) deferred 初始化<br>新创建的 unique_lock 对象管理 Mutex 对象 m，但是在初始化的时候并不锁住 Mutex 对象。 m 应该是一个没有<strong>当前</strong>线程锁住的 Mutex 对象。<br>(5) adopting 初始化<br>新创建的 unique_lock 对象管理 Mutex 对象 m， m 应该（假定）是一个已经被<strong>当前</strong>线程锁住的 Mutex 对象。(并且当前新创建的 unique_lock 对象拥有锁(Lock)的所有权)。<br>(6) locking 一段时间(duration)<br>新创建的 unique_lock 对象管理 Mutex 对象 m，并试图通过调用 m.try_lock_for(rel_time) 来锁住 Mutex 对象一段时间(rel_time)。<br>(7) locking 直到某个时间点(time point)<br>新创建的 unique_lock 对象管理 Mutex 对象m，并试图通过调用 m.try_lock_until(abs_time) 来在某个时间点(abs_time)之前锁住 Mutex 对象。<br>(8) 拷贝构造 [被禁用]<br>unique_lock 对象不能被拷贝构造。<br>(9) 移动(move)构造<br>新创建的 unique_lock 对象获得了由 x 所管理的 Mutex 对象的所有权(包括当前 Mutex 的状态)。调用 move 构造之后， x 对象如同是通过默认构造函数所创建的，就不再管理任何 Mutex 对象了，即被窃取了资源，之后 x 应该被析构或者去管理新的Mutex 对象（或者再将资源切窃取回来）。<br>综上所述，由 (2) 和 (5) 创建的 unique_lock 对象通常拥有 Mutex 对象的锁。而通过 (1) 和 (4) 创建的则不会拥有锁。通过 (3)，(6) 和 (7) 创建的 unique_lock 对象，则在 lock 成功时获得锁。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;thread&gt;</span><br><span class="line">#include &lt;mutex&gt;</span><br><span class="line">#include &lt;iostream&gt;</span><br><span class="line">std::mutex foo,bar;  </span><br><span class="line">void task_a() &#123;  </span><br><span class="line">    std::lock(foo, bar);//foo和bar已被当前线程锁住  </span><br><span class="line">    /******************************************************* </span><br><span class="line">    *adopting 初始化: </span><br><span class="line">    *adopt_lock 是一个常量对象,通常作为参数传入给unique_lock 或  </span><br><span class="line">    *lock_guard 的构造函数。新创建的 unique_lock 对象管理 Mutex  </span><br><span class="line">    *对象 m， m 应该是一个已经被当前线程锁住的 Mutex 对象。 </span><br><span class="line">    *******************************************************/  </span><br><span class="line">    std::unique_lock&lt;std::mutex&gt; lck1(foo, std::adopt_lock);  </span><br><span class="line">    std::unique_lock&lt;std::mutex&gt; lck2(bar, std::adopt_lock);  </span><br><span class="line">    std::cout &lt;&lt; &quot;task a\n&quot;;  </span><br><span class="line">&#125;  </span><br><span class="line">void task_b() &#123;  </span><br><span class="line">    //新创建的 unique_lock 对象不管理任何 Mutex 对象。  </span><br><span class="line">    std::unique_lock&lt;std::mutex&gt; lck1, lck2;  </span><br><span class="line">    /****************************************************** </span><br><span class="line">    * deferred 初始化: </span><br><span class="line">    *新创建的 unique_lock 对象管理 Mutex 对象 m，但是在初始化 </span><br><span class="line">    *的时候并不锁住 Mutex 对象。 m 应该是一个没有**当前**线程锁住的  </span><br><span class="line">    *Mutex 对象。 </span><br><span class="line">    ******************************************************/  </span><br><span class="line">    // 等号右边是临时对象，即不具名，调用了移动赋值运算符，进行了资源的窃取（锁所有权的转移）</span><br><span class="line">    // 然后临时对象就被析构了，如此窃取其资源是安全的。</span><br><span class="line">    lck1 = std::unique_lock&lt;std::mutex&gt;(bar, std::defer_lock);  </span><br><span class="line">    lck2 = std::unique_lock&lt;std::mutex&gt;(foo, std::defer_lock);  </span><br><span class="line">    std::lock(lck1, lck2);</span><br><span class="line">    std::cout &lt;&lt; &quot;task b\n&quot;;</span><br><span class="line">&#125;  </span><br><span class="line">int main() &#123;  </span><br><span class="line">    std::thread th1(task_a);  </span><br><span class="line">    std::thread th2(task_b);  </span><br><span class="line">    th1.join();  </span><br><span class="line">    th2.join();  </span><br><span class="line">    return 0;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h4 id="乐观锁和悲观锁的区别"><a href="#乐观锁和悲观锁的区别" class="headerlink" title="乐观锁和悲观锁的区别"></a>乐观锁和悲观锁的区别</h4><ol>
 <li>悲观锁(Pessimistic Lock), 顾名思义，就是很悲观，每次去拿数据的时候都认为别人会修改，所以每次在拿数据的时候都会上锁，这样别人想拿这个数据就会block直到它拿到锁。传统的关系型数据库里边就用到了很多这种锁机制，比如行锁，表锁等，读锁，写锁等，都是在做操作之前先上锁。它指的是对数据被外界（包括本系统当前的其他事务，以及来自外部系统的事务处理）修改持保守态度，因此，在整个数据处理过程中，将数据处于锁定状态。悲观锁的实现，往往依靠数据库提供的锁机制（也只有数据库层提供的锁机制才能真正保证数据访问的排他性，否则，即使在本系统中实现了加锁机制，也无法保证外部系统不会修改数据）。</li>
 <li>乐观锁(Optimistic Lock), 顾名思义，就是很乐观，每次去拿数据的时候都认为别人不会修改，所以不会上锁，但是在更新的时候会判断一下在此期间别人有没有去更新这个数据，可以使用版本号等机制。乐观锁适用于多读的应用类型，这样可以提高吞吐量，像数据库如果提供类似于 write_condition 机制的其实都是提供的乐观锁。</li>
@@ -211,127 +240,183 @@ std::unique_lock，与 Mutex RAII 相关，方便线程对互斥量上锁，但�
     </div>
 
     
-
     
-        <div class="post-tags">
-            <i class="fa fa-tags" aria-hidden="true"></i>
-            <a href="/tags/C/">#C++</a>
-        </div>
     
 
-    <!-- Comments -->
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C/" rel="tag"># C++</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/02/11/C-类型转换操作符的重载/" rel="prev" title="C++类型转换操作符的重载">
+      <i class="fa fa-chevron-left"></i> C++类型转换操作符的重载
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/02/19/C-类型转换/" rel="next" title="C++类型转换">
+      C++类型转换 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
     
+  </article>
+  
+  
+  
 
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#多线程编程"><span class="nav-number">1.</span> <span class="nav-text">多线程编程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#lock-guard、unique-lock：互斥对象管理类模板"><span class="nav-number">1.1.</span> <span class="nav-text">lock_guard、unique_lock：互斥对象管理类模板</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#lock-guard-类模板-基于作用域"><span class="nav-number">1.1.1.</span> <span class="nav-text">lock_guard 类模板 基于作用域</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#std-lock-guard-构造函数"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">std::lock_guard 构造函数</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#unique-lock-（独一锁）类模板"><span class="nav-number">1.1.2.</span> <span class="nav-text">unique_lock （独一锁）类模板</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#std-unique-lock-构造函数"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">std::unique_lock 构造函数</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#乐观锁和悲观锁的区别"><span class="nav-number">1.2.</span> <span class="nav-text">乐观锁和悲观锁的区别</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
 </div>
-        </section>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
 
     </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
 
-
-</div>
-
-<!-- Footer -->
-<div class="push"></div>
-
-<footer class="footer-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
-                <h2>About</h2>
-                <p>
-                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
-                </p>
-            </div>
-            
-    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
-        <h2>Recent Posts</h2>
-        <ul>
-            
-            <li>
-                <a class="footer-post" href="/2019/07/12/Unnamed-namespace/">Unnamed namespace</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/05/08/Static-variable-in-inlined-function/">Static variable in inline</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/04/23/Iterator-invalidation-rules/">Iterator invalidation rul</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/18/Emplace-back/">Emplace back</a>
-            </li>
-            
-        </ul>
-    </div>
+        
 
 
 
-            
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <ul class="list-inline footer-social-icons">
-                    
-                    <li class="list-inline-item">
-                        <a href="https://github.com/RobertLexis">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-github"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="mailto:robert_lexis@163.com">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-envelope-o"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="footer-copyright">
-                    @Untitled. All right reserved | Robert Lexis Loves Wenny
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<!-- After footer scripts -->
-
-<!-- jQuery -->
-<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-
-<!-- Tween Max -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
-
-<!-- Gallery -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
-
-<!-- Custom JavaScript -->
-<script src="/js/main.js"></script>
-
-<!-- Disqus Comments -->
 
 
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
 
 </body>
-
 </html>

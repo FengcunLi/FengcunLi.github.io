@@ -1,179 +1,213 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<!-- Head tag -->
+<html lang="zh-CN">
 <head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/main.css">
 
-    <!--Description-->
-    
-        <meta name="description" content="修改 hexo 中引用（blockquote）的样式在 clean blog 中使用引用&amp;gt;时，渲染后引用会字体变大文本居中，十分不美观。因此需要修改样式。找到文件\themes\clean-blog\source\css\article.styl，在其中搜索关键字blockquote:chan">
-    
 
-    <!--Author-->
-    
-        <meta name="author" content="Robert Lexis">
-    
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-    <!--Open Graph Title-->
-    
-        <meta property="og:title" content="hexo 使用随笔"/>
-    
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
-    <!--Open Graph Description-->
-    
+  <meta name="description" content="修改 hexo 中引用（blockquote）的样式在 clean blog 中使用引用&amp;gt;时，渲染后引用会字体变大文本居中，十分不美观。因此需要修改样式。找到文件\themes\clean-blog\source\css\article.styl，在其中搜索关键字blockquote:change1234567blockquote  font-style italic  font-fami">
+<meta name="keywords" content="Tool">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo 使用随笔">
+<meta property="og:url" content="http://yoursite.com/2017/11/03/hexo-使用随笔/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="修改 hexo 中引用（blockquote）的样式在 clean blog 中使用引用&amp;gt;时，渲染后引用会字体变大文本居中，十分不美观。因此需要修改样式。找到文件\themes\clean-blog\source\css\article.styl，在其中搜索关键字blockquote:change1234567blockquote  font-style italic  font-fami">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/11/before_fixing.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/11/after_fixing.png">
+<meta property="og:updated_time" content="2018-08-26T11:24:44.882Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hexo 使用随笔">
+<meta name="twitter:description" content="修改 hexo 中引用（blockquote）的样式在 clean blog 中使用引用&amp;gt;时，渲染后引用会字体变大文本居中，十分不美观。因此需要修改样式。找到文件\themes\clean-blog\source\css\article.styl，在其中搜索关键字blockquote:change1234567blockquote  font-style italic  font-fami">
+<meta name="twitter:image" content="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/11/before_fixing.png">
 
-    <!--Open Graph Site Name-->
-    <meta property="og:site_name" content="This is Robert Lexis."/>
+<link rel="canonical" href="http://yoursite.com/2017/11/03/hexo-使用随笔/">
 
-    <!--Type page-->
-    
-        <meta property="og:type" content="article" />
-    
 
-    <!--Page Cover-->
-    
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
 
-    <meta name="twitter:card" content="summary" />
-    
+  <title>Hexo 使用随笔 | The next stop - Antarctica</title>
+  
 
-    <!-- Title -->
-    
-    <title>hexo 使用随笔 - This is Robert Lexis.</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 
-    <!-- Custom Fonts -->
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 
-    <!-- Gallery -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
 
-    <!-- Google Analytics -->
-    
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
 
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
 
 </head>
 
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
 
-<body>
-
-<div class="bg-gradient"></div>
-<div class="bg-pattern"></div>
-
-<!-- Menu -->
-<!--Menu Links and Overlay-->
-<div class="menu-bg">
-    <div class="menu-container">
-        <ul>
-            
-            <li class="menu-item">
-                <a href="/">
-                    Home
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/archives">
-                    Archives
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/about">
-                    About
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/tags">
-                    Tags
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/categories">
-                    Categories
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/contact">
-                    Contact
-                </a>
-            </li>
-            
-        </ul>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
 </div>
 
-<!--Hamburger Icon-->
-<nav>
-    <a href="#menu"></a>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
 </nav>
 
-<div class="container">
 
-    <!-- Main Content -->
-    <div class="row">
-    <div class="col-sm-12">
 
-        <!--Title and Logo-->
-        <header>
-    <div class="logo">
-        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
-        
-    </div>
-</header>
 
-        <section class="main">
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
             
-<div class="post">
 
-    <div class="post-header">
-        <h1 class="title">
-            <a href="/2017/11/03/hexo-使用随笔/">
-                hexo 使用随笔
-            </a>
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/11/03/hexo-使用随笔/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Hexo 使用随笔
         </h1>
-        <div class="post-info">
-            
-                <span class="date">2017-11-03</span>
-            
-            
-            
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-11-03 10:17:35" itemprop="dateCreated datePublished" datetime="2017-11-03T10:17:35+08:00">2017-11-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-08-26 19:24:44" itemprop="dateModified" datetime="2018-08-26T19:24:44+08:00">2018-08-26</time>
+              </span>
+
+          
+
         </div>
-    </div>
+      </header>
 
-    <div class="content">
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
-        <!-- Gallery -->
-        
-
-        <!-- Post Content -->
+      
         <a id="more"></a>
-<h3 id="修改-hexo-中引用（blockquote）的样式"><a href="#修改-hexo-中引用（blockquote）的样式" class="headerlink" title="修改 hexo 中引用（blockquote）的样式"></a>修改 hexo 中引用（blockquote）的样式</h3><p>在 clean blog 中使用引用<code>&gt;</code>时，渲染后引用会字体变大文本居中，十分不美观。因此需要修改样式。<br>找到文件<code>\themes\clean-blog\source\css\article.styl</code>，在其中搜索关键字<code>blockquote</code>:<br>change<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">blockquote</div><div class="line">  font-style italic</div><div class="line">  font-family font-serif</div><div class="line">  font-size 1.2em</div><div class="line">  padding 0 30px 15px</div><div class="line">  text-align center</div><div class="line">  footer....</div></pre></td></tr></table></figure></p>
-<p>to<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">blockquote</div><div class="line">  font-style italic</div><div class="line">  font-family font-serif</div><div class="line">  font-size 0.95em</div><div class="line">  padding 0 30px 15px</div><div class="line">  text-align left</div><div class="line">  footer....</div></pre></td></tr></table></figure></p>
+<h3 id="修改-hexo-中引用（blockquote）的样式"><a href="#修改-hexo-中引用（blockquote）的样式" class="headerlink" title="修改 hexo 中引用（blockquote）的样式"></a>修改 hexo 中引用（blockquote）的样式</h3><p>在 clean blog 中使用引用<code>&gt;</code>时，渲染后引用会字体变大文本居中，十分不美观。因此需要修改样式。<br>找到文件<code>\themes\clean-blog\source\css\article.styl</code>，在其中搜索关键字<code>blockquote</code>:<br>change<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">blockquote</span><br><span class="line">  font-style italic</span><br><span class="line">  font-family font-serif</span><br><span class="line">  font-size 1.2em</span><br><span class="line">  padding 0 30px 15px</span><br><span class="line">  text-align center</span><br><span class="line">  footer....</span><br></pre></td></tr></table></figure></p>
+<p>to<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">blockquote</span><br><span class="line">  font-style italic</span><br><span class="line">  font-family font-serif</span><br><span class="line">  font-size 0.95em</span><br><span class="line">  padding 0 30px 15px</span><br><span class="line">  text-align left</span><br><span class="line">  footer....</span><br></pre></td></tr></table></figure></p>
 <p>效果就是：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/11/before_fixing.png" alt="before_fixing"><br>to<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/11/after_fixing.png" alt="after_fixing"></p>
 <h3 id="Hexo-下-Mathjax-的转义问题"><a href="#Hexo-下-Mathjax-的转义问题" class="headerlink" title="Hexo 下 Mathjax 的转义问题"></a>Hexo 下 Mathjax 的转义问题</h3><p>Q(s_{t}) 会被转义成 Q(s&lt;/em&gt;{t}) 导致 Mathjax 不能正确渲染出公式。</p>
 <h4 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h4><p>Mathjax 可以解析网页上的数学公式，与 Hexo 的结合也很简单，可以手动加入js，或者直接使用 hexo-math 插件。大部分情况下都是可以的，但是 Markdwon 本身的特殊符号与 Latex 中的符号会出现冲突的时候:</p>
 <ul>
 <li>_的转义，在 Markdown 中，_是斜体，但是在 Latex 中，却有下标的意思，就会出现问题。</li>
-<li>\\\\的换行，在 Markdown 中，\\\\会被转义为\\, 这样也会影响影响 Mathjax 对公式中的 \\\ 进行渲染。</li>
+<li>\\的换行，在 Markdown 中，\\会被转义为\, 这样也会影响影响 Mathjax 对公式中的 \\ 进行渲染。</li>
 </ul>
 <h4 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h4><p>Hexo 默认使用 marked.js 去解析我们写的 Markdown，比如一些符号，_代表斜体，会被处理为&lt;em&gt;标签，比如x_i在开始被渲染的时候，处理为x&lt;em&gt;i&lt;/em&gt;，这个时候 Mathjax 就无法渲染成下标了。很多符号都有这个问题，比如粗体*，也是无法在Mathjax渲染出来的。所以说到底，是 Hexo 使用的 Markdown 引擎的锅，因为很多其它引擎在这方面处理的很好。</p>
 <h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><p>修改 Hexo 渲染源码<br>思路就是修改 Hexo 的渲染源码: nodes_modules/lib/marked/lib/marked.js:</p>
@@ -183,22 +217,22 @@
 </ul>
 <p>打开nodes_modules/marked/lib/marked.js:</p>
 <ol>
-<li>第一步<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">escape: /^\\([\\`*&#123;&#125;\[\]()# +\-.!_&gt;])/,</div></pre></td></tr></table></figure>
+<li>第一步<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">escape: /^\\([\\`*&#123;&#125;\[\]()# +\-.!_&gt;])/,</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
-<p>改为:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">escape: /^\\([`*&#123;&#125;\[\]()# +\-.!_&gt;])/,</div></pre></td></tr></table></figure></p>
+<p>改为:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">escape: /^\\([`*&#123;&#125;\[\]()# +\-.!_&gt;])/,</span><br></pre></td></tr></table></figure></p>
 <p>这样就会去掉\的转义了。</p>
-<ol>
-<li>第二步，找到em的符号:<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">em: /^\b_((?:[^_]|__)+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</div></pre></td></tr></table></figure>
+<ol start="2">
+<li>第二步，找到em的符号:<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">em: /^\b_((?:[^_]|__)+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
-<p>改为:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">em:/^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</div></pre></td></tr></table></figure></p>
+<p>改为:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">em:/^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</span><br></pre></td></tr></table></figure></p>
 <p>去掉_的斜体含义，这样通用性很高，因为没有修改文章的内容，可以放到别的引擎下也会顺利渲染。</p>
-<h3 id="hexo-部署错误"><a href="#hexo-部署错误" class="headerlink" title="hexo 部署错误"></a>hexo 部署错误</h3><h4 id="错误提示"><a href="#错误提示" class="headerlink" title="错误提示"></a>错误提示</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">fatal: could not read Username for &apos;https://github.com&apos;: No error</div><div class="line">FATAL Something&apos;s wrong. Maybe you can find the solution here: http://hexo.io/docs/troubleshooting.html</div><div class="line">Error: fatal: HttpRequestException encountered.</div></pre></td></tr></table></figure>
-<p>在 <code>_config.yml</code> 中完成以下更改：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">  type: git</div><div class="line">  repo: https://github.com/RobertLexis/RobertLexis.github.io.git</div><div class="line">  branch: master</div></pre></td></tr></table></figure></p>
-<p>to<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">  type: git</div><div class="line">  repo:  git@github.com:RobertLexis/RobertLexis.github.io.git</div><div class="line">  branch: master</div></pre></td></tr></table></figure></p>
+<h3 id="hexo-部署错误"><a href="#hexo-部署错误" class="headerlink" title="hexo 部署错误"></a>hexo 部署错误</h3><h4 id="错误提示"><a href="#错误提示" class="headerlink" title="错误提示"></a>错误提示</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">fatal: could not read Username for &apos;https://github.com&apos;: No error</span><br><span class="line">FATAL Something&apos;s wrong. Maybe you can find the solution here: http://hexo.io/docs/troubleshooting.html</span><br><span class="line">Error: fatal: HttpRequestException encountered.</span><br></pre></td></tr></table></figure>
+<p>在 <code>_config.yml</code> 中完成以下更改：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: https://github.com/RobertLexis/RobertLexis.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure></p>
+<p>to<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo:  git@github.com:RobertLexis/RobertLexis.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure></p>
 <p>即由 HTTPS 转到 SSH。</p>
-<h4 id="配置-SSH"><a href="#配置-SSH" class="headerlink" title="配置 SSH"></a>配置 SSH</h4><p>在正确配置之前会报错<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Permission denied (publickey).</div><div class="line">fatal: Could not read from remote repository.</div><div class="line"></div><div class="line">Please make sure you have the correct access rights</div><div class="line">and the repository exists.</div></pre></td></tr></table></figure></p>
+<h4 id="配置-SSH"><a href="#配置-SSH" class="headerlink" title="配置 SSH"></a>配置 SSH</h4><p>在正确配置之前会报错<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Permission denied (publickey).</span><br><span class="line">fatal: Could not read from remote repository.</span><br><span class="line"></span><br><span class="line">Please make sure you have the correct access rights</span><br><span class="line">and the repository exists.</span><br></pre></td></tr></table></figure></p>
 <h5 id="配置步骤："><a href="#配置步骤：" class="headerlink" title="配置步骤："></a>配置步骤：</h5><ol>
 <li>检查是否有SSH key<br>登陆 github，点击头像 Settings ——&gt; SSH and GPG keys ，查看是否有 SSH keys。如果有，直接跳到第 3 步；如果没有，则继续。</li>
 <li>新建 SSH key，在 git bash 中，注意大小写：<br><code>ssh-keygen -t rsa -C robert_lexis@163.com</code><br>然后会出现：<br><code>Generating public/private rsa key pair.
@@ -216,137 +250,193 @@ The key fingerprint is:
 <li>测试设置是否成功：<br><code>ssh -T git@github.com</code><br>出现：<br><code>Hi RobertLexis! You&#39;ve successfully authenticated, but GitHub does not 
 provide shell access.</code></li>
 <li><p>设置用户信息：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">git config --global user.name &quot;用户名&quot;</div><div class="line">git config --global user.email  &quot;你希望的邮箱名&quot;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name &quot;用户名&quot;</span><br><span class="line">git config --global user.email  &quot;你希望的邮箱名&quot;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>然后就可以部署你的博客到github啦~</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">hexo g</div><div class="line">hexo d</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
 
     </div>
 
     
-
     
-        <div class="post-tags">
-            <i class="fa fa-tags" aria-hidden="true"></i>
-            <a href="/tags/Tool/">#Tool</a>
-        </div>
     
 
-    <!-- Comments -->
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Tool/" rel="tag"># Tool</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/11/02/Install-XGBoost/" rel="prev" title="Install XGBoost">
+      <i class="fa fa-chevron-left"></i> Install XGBoost
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/11/03/Python-os-system-与-os-popen-的不同/" rel="next" title="Python os.system 与 os.popen 的不同">
+      Python os.system 与 os.popen 的不同 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
     
+  </article>
+  
+  
+  
 
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#修改-hexo-中引用（blockquote）的样式"><span class="nav-number">1.</span> <span class="nav-text">修改 hexo 中引用（blockquote）的样式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hexo-下-Mathjax-的转义问题"><span class="nav-number">2.</span> <span class="nav-text">Hexo 下 Mathjax 的转义问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#问题"><span class="nav-number">2.1.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#原因"><span class="nav-number">2.2.</span> <span class="nav-text">原因</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解决方案"><span class="nav-number">2.3.</span> <span class="nav-text">解决方案</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hexo-部署错误"><span class="nav-number">3.</span> <span class="nav-text">hexo 部署错误</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#错误提示"><span class="nav-number">3.1.</span> <span class="nav-text">错误提示</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#配置-SSH"><span class="nav-number">3.2.</span> <span class="nav-text">配置 SSH</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#配置步骤："><span class="nav-number">3.2.1.</span> <span class="nav-text">配置步骤：</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
 </div>
-        </section>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
 
     </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
 
-
-</div>
-
-<!-- Footer -->
-<div class="push"></div>
-
-<footer class="footer-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
-                <h2>About</h2>
-                <p>
-                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
-                </p>
-            </div>
-            
-    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
-        <h2>Recent Posts</h2>
-        <ul>
-            
-            <li>
-                <a class="footer-post" href="/2019/07/12/Unnamed-namespace/">Unnamed namespace</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/05/08/Static-variable-in-inlined-function/">Static variable in inline</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/04/23/Iterator-invalidation-rules/">Iterator invalidation rul</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/18/Emplace-back/">Emplace back</a>
-            </li>
-            
-        </ul>
-    </div>
+        
 
 
 
-            
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <ul class="list-inline footer-social-icons">
-                    
-                    <li class="list-inline-item">
-                        <a href="https://github.com/RobertLexis">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-github"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="mailto:robert_lexis@163.com">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-envelope-o"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="footer-copyright">
-                    @Untitled. All right reserved | Robert Lexis Loves Wenny
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<!-- After footer scripts -->
-
-<!-- jQuery -->
-<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-
-<!-- Tween Max -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
-
-<!-- Gallery -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
-
-<!-- Custom JavaScript -->
-<script src="/js/main.js"></script>
-
-<!-- Disqus Comments -->
 
 
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
 
 </body>
-
 </html>

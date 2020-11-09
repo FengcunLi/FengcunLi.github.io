@@ -1,170 +1,200 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<!-- Head tag -->
+<html lang="zh-CN">
 <head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/main.css">
 
-    <!--Description-->
-    
-        <meta name="description" content="map vs setIn C++ STL, a map sometimes is referred to as a dictionary, consists of key/value pairs. The key is used to order the sequence, and the value is somehow associated with that key. For example, a map might contain keys representing every unique word in a text and values representing the number of times that word appears in that text.a set is simply an ascending container of unique elements.STL’s map and set are implemented with RB-Tree.Both set and map support bidirectional iterators.While not officially part of the STL standard, hash_map and hash_set are commonly used to improve searching time. These containers store elements as a hash table, with each table entry (bucket) containing a bidirectional linked list of elements.Additionally, python’s dict and set is implemented with hash table. This is different from C++.">
-    
 
-    <!--Author-->
-    
-        <meta name="author" content="Robert Lexis">
-    
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-    <!--Open Graph Title-->
-    
-        <meta property="og:title" content="计算机概念的英文表述"/>
-    
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
-    <!--Open Graph Description-->
-    
+  <meta name="description" content="map vs setIn C++ STL, a map sometimes is referred to as a dictionary, consists of key/value pairs. The key is used to order the sequence, and the value is somehow associated with that key. For example">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机概念的英文表述">
+<meta property="og:url" content="http://yoursite.com/2018/03/16/计算机概念的英文表述/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="map vs setIn C++ STL, a map sometimes is referred to as a dictionary, consists of key/value pairs. The key is used to order the sequence, and the value is somehow associated with that key. For example">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-26T11:08:44.566Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="计算机概念的英文表述">
+<meta name="twitter:description" content="map vs setIn C++ STL, a map sometimes is referred to as a dictionary, consists of key/value pairs. The key is used to order the sequence, and the value is somehow associated with that key. For example">
 
-    <!--Open Graph Site Name-->
-    <meta property="og:site_name" content="This is Robert Lexis."/>
+<link rel="canonical" href="http://yoursite.com/2018/03/16/计算机概念的英文表述/">
 
-    <!--Type page-->
-    
-        <meta property="og:type" content="article" />
-    
 
-    <!--Page Cover-->
-    
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
 
-    <meta name="twitter:card" content="summary" />
-    
+  <title>计算机概念的英文表述 | The next stop - Antarctica</title>
+  
 
-    <!-- Title -->
-    
-    <title>计算机概念的英文表述 - This is Robert Lexis.</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 
-    <!-- Custom Fonts -->
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 
-    <!-- Gallery -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
 
-    <!-- Google Analytics -->
-    
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
 
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
 
 </head>
 
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
 
-<body>
-
-<div class="bg-gradient"></div>
-<div class="bg-pattern"></div>
-
-<!-- Menu -->
-<!--Menu Links and Overlay-->
-<div class="menu-bg">
-    <div class="menu-container">
-        <ul>
-            
-            <li class="menu-item">
-                <a href="/">
-                    Home
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/archives">
-                    Archives
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/about">
-                    About
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/tags">
-                    Tags
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/categories">
-                    Categories
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/contact">
-                    Contact
-                </a>
-            </li>
-            
-        </ul>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
 </div>
 
-<!--Hamburger Icon-->
-<nav>
-    <a href="#menu"></a>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
 </nav>
 
-<div class="container">
 
-    <!-- Main Content -->
-    <div class="row">
-    <div class="col-sm-12">
 
-        <!--Title and Logo-->
-        <header>
-    <div class="logo">
-        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
-        
-    </div>
-</header>
 
-        <section class="main">
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
             
-<div class="post">
 
-    <div class="post-header">
-        <h1 class="title">
-            <a href="/2018/03/16/计算机概念的英文表述/">
-                计算机概念的英文表述
-            </a>
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/16/计算机概念的英文表述/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          计算机概念的英文表述
         </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-03-16</span>
-            
-            
-            
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-03-16 15:05:30" itemprop="dateCreated datePublished" datetime="2018-03-16T15:05:30+08:00">2018-03-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-08-26 19:08:44" itemprop="dateModified" datetime="2018-08-26T19:08:44+08:00">2018-08-26</time>
+              </span>
+
+          
+
         </div>
-    </div>
+      </header>
 
-    <div class="content">
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
-        <!-- Gallery -->
-        
-
-        <!-- Post Content -->
+      
         <h3 id="map-vs-set"><a href="#map-vs-set" class="headerlink" title="map vs set"></a>map vs set</h3><p>In C++ STL, a map sometimes is referred to as a dictionary, consists of key/value pairs. The key is used to order the sequence, and the value is somehow associated with that key. For example, a map might contain keys representing every unique word in a text and values representing the number of times that word appears in that text.<br>a set is simply an ascending container of unique elements.<br>STL’s map and set are implemented with RB-Tree.<br>Both set and map support bidirectional iterators.<br>While not officially part of the STL standard, hash_map and hash_set are commonly used to improve searching time. These containers store elements as a hash table, with each table entry (bucket) containing a bidirectional linked list of elements.<br>Additionally, python’s dict and set is implemented with hash table. This is different from C++.<br><a id="more"></a></p>
 <h3 id="stack-vs-heap"><a href="#stack-vs-heap" class="headerlink" title="stack vs heap"></a>stack vs heap</h3><p>stack:</p>
 <ol>
@@ -197,12 +227,12 @@
 </ol>
 <h3 id="SQL-injection"><a href="#SQL-injection" class="headerlink" title="SQL injection"></a>SQL injection</h3><p>nefarious SQL statements are inserted into an entry field.<br>May dump the database contents to attackers.</p>
 <ol>
-<li>incorrectly filtered escape characters<br>This form of SQL injection occurs when user input is not filterd for escape characters and then is passed into an SQL statement.<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&quot;select * from users where name = &apos;&quot; + username +&quot;&apos;;&quot;</div><div class="line">username = &apos; OR &apos;1&apos; = &apos;1</div></pre></td></tr></table></figure>
+<li>incorrectly filtered escape characters<br>This form of SQL injection occurs when user input is not filterd for escape characters and then is passed into an SQL statement.<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&quot;select * from users where name = &apos;&quot; + username +&quot;&apos;;&quot;</span><br><span class="line">username = &apos; OR &apos;1&apos; = &apos;1</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
 <p>now attackers will get all data in users table.</p>
-<ol>
-<li>incorrect type handling<br>occurs when a user-supplied field is not strongly typed or is not checked for type constraints.<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&quot;select * from userinfo where id=&quot; + a_variable +&quot;;&quot;</div><div class="line">a_variable is intended to be a number </div><div class="line">but if it is a string such as &quot;1; drop table users&quot;</div></pre></td></tr></table></figure>
+<ol start="2">
+<li>incorrect type handling<br>occurs when a user-supplied field is not strongly typed or is not checked for type constraints.<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&quot;select * from userinfo where id=&quot; + a_variable +&quot;;&quot;</span><br><span class="line">a_variable is intended to be a number </span><br><span class="line">but if it is a string such as &quot;1; drop table users&quot;</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
 <p>solution:<br>escaping and type checking</p>
@@ -229,10 +259,10 @@
 <h3 id="memory-leak"><a href="#memory-leak" class="headerlink" title="memory leak"></a>memory leak</h3><p>memory which is no longer needed is not released.<br>In oop, a memory leak may happen when an object is stored in memory but can be accessed by running code.<br>Because memory leak can exhaust available system memory as application runs, memory leak is often a cause of or a contributing factor for software aging. </p>
 <h5 id="solutions"><a href="#solutions" class="headerlink" title="solutions"></a>solutions</h5><ol>
 <li>RAII resource acqusition is initialization<br>is an approch to this problem commonly taken in C++.<br>It associates scoped objects with required resources, and automatically release resources once the objects go out of scope. Unlike garbage collection, RAII has the advantage of knowing when objects exist and when they don’t.</li>
-<li>reference counting, smart pointer<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">/*C version */</div><div class="line">#include &lt;stdlib.h&gt;</div><div class="line">void f(int n) &#123;</div><div class="line">    int* array = calloc(n, sizeof(int));</div><div class="line">    do_somework(array);</div><div class="line">    free(array);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<li>reference counting, smart pointer<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">/*C version */</span><br><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line">void f(int n) &#123;</span><br><span class="line">    int* array = calloc(n, sizeof(int));</span><br><span class="line">    do_somework(array);</span><br><span class="line">    free(array);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">/* C++ version */</div><div class="line">#include &lt;vector&gt;</div><div class="line">void f(int n) &#123;</div><div class="line">    std::vector&lt;int&gt; array(n);</div><div class="line">    do_somework(array);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">/* C++ version */</span><br><span class="line">#include &lt;vector&gt;</span><br><span class="line">void f(int n) &#123;</span><br><span class="line">    std::vector&lt;int&gt; array(n);</span><br><span class="line">    do_somework(array);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>The C++ version requires no explicit deallocation.<br>It will always occur automatically once the object goes out of scope, including if a exception is thrown.<br>RAII also works with open files, open windows, objects in a graphics drawing library, thread synchronization primitives, network connections and connections to database.</p>
 <h3 id="multiple-inheritance"><a href="#multiple-inheritance" class="headerlink" title="multiple inheritance"></a>multiple inheritance</h3><p>is a feature of oop in which a class can inherit from more than one parent class.<br>It has been a sensitive issue for many years and it may result in “Diamond Problem”.</p>
 <h3 id="pass-by-value"><a href="#pass-by-value" class="headerlink" title="pass-by-value"></a>pass-by-value</h3><p>means that the value of function parameter is copied into another location of you memory.<br>When accessing and modifying the variable within the function, only the copy is accessed and modified, the original is left untouched. In other word, the inner variable and the outer variable are not the same one.</p>
@@ -242,7 +272,7 @@
 <h3 id="virtual-destructor"><a href="#virtual-destructor" class="headerlink" title="virtual destructor"></a>virtual destructor</h3><p>a class intended to be base class should declare a virtual destructor<br>why?<br>If an object of type Wolf is created but pointed to by an Animal pointer, and it is this Animal pointer type that is deleted, the destructor called may actually be the one defined for Animal and not the one for Wolf, unless the destructor is virtual. This is particularly the case with C++, where the behaviour is a common source of programming errors.</p>
 <h3 id="virtual-inheritance"><a href="#virtual-inheritance" class="headerlink" title="virtual inheritance"></a>virtual inheritance</h3><p>is a C++ technique that ensures only one copy of base class’s member variables are inherited by grandchild derived class.<br>without virtual inheritance, if class A and class B both inherite from class X, class C inherites from A and B, then class C will contain two copies of X’s member variables: one via A and one via B.These will be accessible independently using scope resolution.</p>
 <h3 id="smart-pointer"><a href="#smart-pointer" class="headerlink" title="smart pointer"></a>smart pointer</h3><p>prevent memory leak by making the memory deallocation automatic.<br>works with reference counting.<br>smart pointer is a container for raw pointer.<br>smart pointer in C++ is a class template that mimics raw pointer by operator overloading while providing memory management features.</p>
-<p><hr><br>shared_ptr: when reference counting is down to zero, the object is destoryed.<br>unique_ptr: explicitly prevents copying of its contained raw pointer, but the std::move function can be used to transfer the ownership of the contained raw pointer to another unique_ptr. A unique_ptr can’t be copied because its copy constructor and copy assignment operator are explicitly deleted.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">std::unique_ptr&lt;int&gt; p1(new int(5));</div><div class="line">std::unique_ptr&lt;int&gt; p2 = p1; // compile error</div><div class="line">std::unique_ptr&lt;int&gt; p3 = std::move(p1);  // ok</div><div class="line">// transfer the ownership of the contained raw pointer</div><div class="line">p3.reset(); // delete the memory</div><div class="line">p1.reset(); // does nothing</div></pre></td></tr></table></figure></p>
+<p><hr><br>shared_ptr: when reference counting is down to zero, the object is destoryed.<br>unique_ptr: explicitly prevents copying of its contained raw pointer, but the std::move function can be used to transfer the ownership of the contained raw pointer to another unique_ptr. A unique_ptr can’t be copied because its copy constructor and copy assignment operator are explicitly deleted.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">std::unique_ptr&lt;int&gt; p1(new int(5));</span><br><span class="line">std::unique_ptr&lt;int&gt; p2 = p1; // compile error</span><br><span class="line">std::unique_ptr&lt;int&gt; p3 = std::move(p1);  // ok</span><br><span class="line">// transfer the ownership of the contained raw pointer</span><br><span class="line">p3.reset(); // delete the memory</span><br><span class="line">p1.reset(); // does nothing</span><br></pre></td></tr></table></figure></p>
 <p><strong>std::auto_ptr is deprecated under C++ 11 and will be removed completely from C++ 17.</strong><br>weak_ptr is created as a copy of shared_ptr, it doesn’t increase the reference counting of the object controlled by shared_ptr.</p>
 <h3 id="database-transaction"><a href="#database-transaction" class="headerlink" title="database transaction"></a>database transaction</h3><p>a bunch of SQL statements<br>a unit of work performed by database management system against database<br>a database transaction, by definition, must be atomic, consistent, isolated, durable, ACID.<br>transaction provides an “all-or-nothing” proposition, stating that each unit of work must either complete entirely or have no effect whatsoever.</p>
 <h3 id="primary-key"><a href="#primary-key" class="headerlink" title="primary key"></a>primary key</h3><p>a column or a set of columns that uniquely identify a row in a table.</p>
@@ -347,122 +377,180 @@
     </div>
 
     
-
+    
     
 
-    <!-- Comments -->
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/03/15/MySQL-Crash-Course-读书笔记/" rel="prev" title="MySQL Crash Course 读书笔记">
+      <i class="fa fa-chevron-left"></i> MySQL Crash Course 读书笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/03/25/STL-内存池实现/" rel="next" title="STL 内存池实现">
+      STL 内存池实现 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
     
+  </article>
+  
+  
+  
 
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#map-vs-set"><span class="nav-number">1.</span> <span class="nav-text">map vs set</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#stack-vs-heap"><span class="nav-number">2.</span> <span class="nav-text">stack vs heap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#array"><span class="nav-number">3.</span> <span class="nav-text">array</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#linked-list"><span class="nav-number">4.</span> <span class="nav-text">linked list</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#singly-linked-list"><span class="nav-number">5.</span> <span class="nav-text">singly linked list</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Doubly-linked-list"><span class="nav-number">6.</span> <span class="nav-text">Doubly linked list</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Circular-linked-list"><span class="nav-number">7.</span> <span class="nav-text">Circular linked list</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Multithreading’s-drawback"><span class="nav-number">8.</span> <span class="nav-text">Multithreading’s drawback</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dining-philosophers-problem"><span class="nav-number">9.</span> <span class="nav-text">Dining philosophers problem</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Solutions"><span class="nav-number">9.0.1.</span> <span class="nav-text">Solutions</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#priority-queue-vs-heap"><span class="nav-number">10.</span> <span class="nav-text">priority queue vs heap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#heap-sort"><span class="nav-number">11.</span> <span class="nav-text">heap sort</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL-injection"><span class="nav-number">12.</span> <span class="nav-text">SQL injection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cross-site-Scripting-XSS"><span class="nav-number">13.</span> <span class="nav-text">Cross-site Scripting (XSS)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Singleton-pattern"><span class="nav-number">14.</span> <span class="nav-text">Singleton pattern</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#stack-overflow"><span class="nav-number">15.</span> <span class="nav-text">stack overflow</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#binary-tree"><span class="nav-number">16.</span> <span class="nav-text">binary tree</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#binary-sorted-tree-binary-search-tree"><span class="nav-number">17.</span> <span class="nav-text">binary sorted tree/ binary search tree</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Database-index"><span class="nav-number">18.</span> <span class="nav-text">Database index</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#memory-leak"><span class="nav-number">19.</span> <span class="nav-text">memory leak</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#solutions"><span class="nav-number">19.0.1.</span> <span class="nav-text">solutions</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#multiple-inheritance"><span class="nav-number">20.</span> <span class="nav-text">multiple inheritance</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pass-by-value"><span class="nav-number">21.</span> <span class="nav-text">pass-by-value</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pass-by-reference"><span class="nav-number">22.</span> <span class="nav-text">pass-by-reference</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#overloading-vs-overriding"><span class="nav-number">23.</span> <span class="nav-text">overloading vs overriding</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#virtual-function"><span class="nav-number">24.</span> <span class="nav-text">virtual function</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#virtual-destructor"><span class="nav-number">25.</span> <span class="nav-text">virtual destructor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#virtual-inheritance"><span class="nav-number">26.</span> <span class="nav-text">virtual inheritance</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#smart-pointer"><span class="nav-number">27.</span> <span class="nav-text">smart pointer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#database-transaction"><span class="nav-number">28.</span> <span class="nav-text">database transaction</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#primary-key"><span class="nav-number">29.</span> <span class="nav-text">primary key</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#foreign-key"><span class="nav-number">30.</span> <span class="nav-text">foreign key</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#inter-process-communication"><span class="nav-number">31.</span> <span class="nav-text">inter-process communication</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UDP-vs-TCP"><span class="nav-number">32.</span> <span class="nav-text">UDP vs TCP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Connection-establishment-of-TCP"><span class="nav-number">33.</span> <span class="nav-text">Connection establishment of TCP</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Connection-termination-of-TCP"><span class="nav-number">33.1.</span> <span class="nav-text">Connection termination of TCP</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#thread-vs-process"><span class="nav-number">34.</span> <span class="nav-text">thread vs process</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#stack-vs-heap-1"><span class="nav-number">35.</span> <span class="nav-text">stack vs heap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#polymorphism"><span class="nav-number">36.</span> <span class="nav-text">polymorphism</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#recursion"><span class="nav-number">37.</span> <span class="nav-text">recursion</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#quick-sort"><span class="nav-number">38.</span> <span class="nav-text">quick sort</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#public-private-protected"><span class="nav-number">39.</span> <span class="nav-text">public, private, protected</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#copy-constructor"><span class="nav-number">40.</span> <span class="nav-text">copy constructor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#inline-function"><span class="nav-number">41.</span> <span class="nav-text">inline function</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#default-constructor"><span class="nav-number">42.</span> <span class="nav-text">default constructor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#default"><span class="nav-number">43.</span> <span class="nav-text">default</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#namespace"><span class="nav-number">44.</span> <span class="nav-text">namespace</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#late-binding-vs-early-binding"><span class="nav-number">45.</span> <span class="nav-text">late binding vs early binding</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hash-collision"><span class="nav-number">46.</span> <span class="nav-text">hash collision</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#inline-vs-macro"><span class="nav-number">47.</span> <span class="nav-text">inline vs macro</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#when-a-smart-pointer-1"><span class="nav-number">48.</span> <span class="nav-text">when a smart pointer + 1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#when-a-smart-pointer-1-1"><span class="nav-number">49.</span> <span class="nav-text">when a smart pointer - 1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#why-MS"><span class="nav-number">50.</span> <span class="nav-text">why MS?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#have-you-ever-seen-the-designer-of-C"><span class="nav-number">51.</span> <span class="nav-text">have you ever seen the designer of C++?</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
 </div>
-        </section>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
 
     </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
 
-
-</div>
-
-<!-- Footer -->
-<div class="push"></div>
-
-<footer class="footer-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
-                <h2>About</h2>
-                <p>
-                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
-                </p>
-            </div>
-            
-    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
-        <h2>Recent Posts</h2>
-        <ul>
-            
-            <li>
-                <a class="footer-post" href="/2019/07/12/Unnamed-namespace/">Unnamed namespace</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/05/08/Static-variable-in-inlined-function/">Static variable in inline</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/04/23/Iterator-invalidation-rules/">Iterator invalidation rul</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/18/Emplace-back/">Emplace back</a>
-            </li>
-            
-        </ul>
-    </div>
+        
 
 
 
-            
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <ul class="list-inline footer-social-icons">
-                    
-                    <li class="list-inline-item">
-                        <a href="https://github.com/RobertLexis">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-github"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="mailto:robert_lexis@163.com">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-envelope-o"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="footer-copyright">
-                    @Untitled. All right reserved | Robert Lexis Loves Wenny
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<!-- After footer scripts -->
-
-<!-- jQuery -->
-<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-
-<!-- Tween Max -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
-
-<!-- Gallery -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
-
-<!-- Custom JavaScript -->
-<script src="/js/main.js"></script>
-
-<!-- Disqus Comments -->
 
 
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
 
 </body>
-
 </html>

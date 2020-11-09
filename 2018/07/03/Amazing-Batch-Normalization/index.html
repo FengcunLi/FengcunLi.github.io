@@ -1,177 +1,214 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<!-- Head tag -->
+<html lang="zh-CN">
 <head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/main.css">
 
-    <!--Description-->
-    
-        <meta name="description" content="这篇博文主要总结了 batch normalization 的公式、为什么有效的直观解释。在博文的最后，验证了通过使用 batch normalization 可以在更少的 epoch 下获得精度上的显著提升。">
-    
 
-    <!--Author-->
-    
-        <meta name="author" content="Robert Lexis">
-    
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-    <!--Open Graph Title-->
-    
-        <meta property="og:title" content="Amazing Batch Normalization"/>
-    
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
-    <!--Open Graph Description-->
-    
+  <meta name="description" content="这篇博文主要总结了 batch normalization 的公式、为什么有效的直观解释。在博文的最后，验证了通过使用 batch normalization 可以在更少的 epoch 下获得精度上的显著提升。">
+<meta name="keywords" content="DL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Amazing Batch Normalization">
+<meta property="og:url" content="http://yoursite.com/2018/07/03/Amazing-Batch-Normalization/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="这篇博文主要总结了 batch normalization 的公式、为什么有效的直观解释。在博文的最后，验证了通过使用 batch normalization 可以在更少的 epoch 下获得精度上的显著提升。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2018/07/03/Amazing-Batch-Normalization/BN.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/03/Amazing-Batch-Normalization/covariate_shift.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/03/Amazing-Batch-Normalization/why_BN_works.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/03/Amazing-Batch-Normalization/ModelAccuracy.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/03/Amazing-Batch-Normalization/val_loss.png">
+<meta property="og:updated_time" content="2018-09-03T14:06:25.922Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Amazing Batch Normalization">
+<meta name="twitter:description" content="这篇博文主要总结了 batch normalization 的公式、为什么有效的直观解释。在博文的最后，验证了通过使用 batch normalization 可以在更少的 epoch 下获得精度上的显著提升。">
+<meta name="twitter:image" content="http://yoursite.com/2018/07/03/Amazing-Batch-Normalization/BN.png">
 
-    <!--Open Graph Site Name-->
-    <meta property="og:site_name" content="This is Robert Lexis."/>
+<link rel="canonical" href="http://yoursite.com/2018/07/03/Amazing-Batch-Normalization/">
 
-    <!--Type page-->
-    
-        <meta property="og:type" content="article" />
-    
 
-    <!--Page Cover-->
-    
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
 
-    <meta name="twitter:card" content="summary" />
-    
+  <title>Amazing Batch Normalization | The next stop - Antarctica</title>
+  
 
-    <!-- Title -->
-    
-    <title>Amazing Batch Normalization - This is Robert Lexis.</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 
-    <!-- Custom Fonts -->
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 
-    <!-- Gallery -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
 
-    <!-- Google Analytics -->
-    
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
 
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
 
 </head>
 
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
 
-<body>
-
-<div class="bg-gradient"></div>
-<div class="bg-pattern"></div>
-
-<!-- Menu -->
-<!--Menu Links and Overlay-->
-<div class="menu-bg">
-    <div class="menu-container">
-        <ul>
-            
-            <li class="menu-item">
-                <a href="/">
-                    Home
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/archives">
-                    Archives
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/about">
-                    About
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/tags">
-                    Tags
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/categories">
-                    Categories
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/contact">
-                    Contact
-                </a>
-            </li>
-            
-        </ul>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
 </div>
 
-<!--Hamburger Icon-->
-<nav>
-    <a href="#menu"></a>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
 </nav>
 
-<div class="container">
 
-    <!-- Main Content -->
-    <div class="row">
-    <div class="col-sm-12">
 
-        <!--Title and Logo-->
-        <header>
-    <div class="logo">
-        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
-        
-    </div>
-</header>
 
-        <section class="main">
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
             
-<div class="post">
 
-    <div class="post-header">
-        <h1 class="title">
-            <a href="/2018/07/03/Amazing-Batch-Normalization/">
-                Amazing Batch Normalization
-            </a>
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/03/Amazing-Batch-Normalization/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Amazing Batch Normalization
         </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-07-03</span>
-            
-            
-            
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-07-03 15:57:10" itemprop="dateCreated datePublished" datetime="2018-07-03T15:57:10+08:00">2018-07-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-09-03 22:06:25" itemprop="dateModified" datetime="2018-09-03T22:06:25+08:00">2018-09-03</time>
+              </span>
+
+          
+
         </div>
-    </div>
+      </header>
 
-    <div class="content">
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
-        <!-- Gallery -->
-        
-
-        <!-- Post Content -->
+      
         <p>这篇博文主要总结了 batch normalization 的公式、为什么有效的直观解释。<br>在博文的最后，验证了通过使用 batch normalization 可以在更少的 epoch 下获得精度上的显著提升。<br><a id="more"></a></p>
 <blockquote>
 <p>Batch Normalization was first introduced by two researchers at Google, Sergey Ioffe and Christian Szegedy in their paper “Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift” in 2015. The authors showed that batch normalization improved the top result of ImageNet (2014) by a significant margin using only 7% of the training steps. Today, Batch Normalization is used in almost all CNN architectures.</p>
 </blockquote>
 <p>对输入特征做归一化能够帮助神经网络的训练，Batch Normalization 就是在隐藏层上做归一化。但是输入层和隐藏层上的归一化还是有所不同的，对隐藏层 Batch Norm 之后并不要求一定是零均值和单位方差，而是通过 learnable parameters \( \gamma \) 和 \( \beta \) 使得隐藏层具有可控的、修正的均值和方差，这个均值和方差可以是 0 和 1，也可以是由 \( \beta \) 和 \( \gamma \) 控制的其他值。<br>Batch Norm 可以让神经网络的训练对于超参数的选择不那么敏感，也让很深的神经网络的训练变的更加容易。</p>
 <h5 id="Notations"><a href="#Notations" class="headerlink" title="Notations"></a>Notations</h5><p>\(a_{n}^{[l](m)}\) 是 第 \( l \) 层上的第 \( n \) 个神经元在第 \( m \) 个样本上的激活值。</p>
-<h3 id="对输入进行归一化"><a href="#对输入进行归一化" class="headerlink" title="对输入进行归一化"></a>对输入进行归一化</h3><p>\[<br>\mu = \frac{1}{m} \sum_{i}X^{(i)} \\\\<br>X = X - \mu \\\\<br>\sigma^2 = \frac{1}{m} \sum_{i} (X^{(i)})^2 \\\\<br>X = \frac{X}{\sigma}<br>\]</p>
+<h3 id="对输入进行归一化"><a href="#对输入进行归一化" class="headerlink" title="对输入进行归一化"></a>对输入进行归一化</h3><p>\[<br>\mu = \frac{1}{m} \sum_{i}X^{(i)} \\<br>X = X - \mu \\<br>\sigma^2 = \frac{1}{m} \sum_{i} (X^{(i)})^2 \\<br>X = \frac{X}{\sigma}<br>\]</p>
 <h3 id="Can-we-normalize-z-2-so-we-can-train-w-3-and-b-3-more-efficiently-and-faster"><a href="#Can-we-normalize-z-2-so-we-can-train-w-3-and-b-3-more-efficiently-and-faster" class="headerlink" title="Can we normalize \( z^{[2]} \) so we can train \(w^{[3]}\) and \( b^{[3]} \) more efficiently and faster ?"></a>Can we normalize \( z^{[2]} \) so we can train \(w^{[3]}\) and \( b^{[3]} \) more efficiently and faster ?</h3><p>Do normalization before activation.<br>Given some intermediate values in NN \( z^{[l](i)} \)，shape 是 \( (n^{[l]}, 1) \)，\( n^{[l]} \) 是 layer \( l \) 的神经元个数，简写 \( z^{[l](i)} \) 为 \(z^{(i)}\)。<br><img src="/2018/07/03/Amazing-Batch-Normalization/BN.png" alt="BN"><br>加偏置会被减均值所抵消，因此就没有加偏置的必要了。<br>\[<br>z^{[l]} = W^{[l]}a^{[l-1]} + b^{[l]}  \longrightarrow z^{[l]} = W^{[l]}a^{[l-1]}<br>\]<br>parameters for layer \( l \): </p>
 <ul>
 <li>\( W^{[l]} \), \( \beta^{[l]} \), \( \gamma^{[l]} \).</li>
@@ -194,145 +231,201 @@
 <h3 id="Batch-Normalization-in-Keras"><a href="#Batch-Normalization-in-Keras" class="headerlink" title="Batch Normalization in Keras"></a>Batch Normalization in Keras</h3><p>Use the Keras code provided here as a baseline for showing how batch normalizations can improve the accuracy by a large margin. The baseline code does not use batch normalization and the following changes were made to it to add on batch normalization.</p>
 <ul>
 <li><p>Import the BatchNormalization modules from keras.layers</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">from keras.layers import BatchNormalization</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">from keras.layers import BatchNormalization</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>Batch Normalization calls were added in keras after the Conv2D or Dense function calls, but before the following Activation function calls. Here are some examples.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">model.add(Conv2D(32, (3, 3)))</div><div class="line">model.add(BatchNormalization())</div><div class="line">model.add(Activation(&apos;relu&apos;))</div><div class="line"></div><div class="line">model.add(Dense(32, (3, 3)))</div><div class="line">model.add(BatchNormalization())</div><div class="line">model.add(Activation(&apos;relu&apos;))</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">model.add(Conv2D(32, (3, 3)))</span><br><span class="line">model.add(BatchNormalization())</span><br><span class="line">model.add(Activation(&apos;relu&apos;))</span><br><span class="line"></span><br><span class="line">model.add(Dense(32, (3, 3)))</span><br><span class="line">model.add(BatchNormalization())</span><br><span class="line">model.add(Activation(&apos;relu&apos;))</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>Dropout calls were removed. Batch Normalization itself has some regularization effect. So usually dropout can be reduced. In our case removing it altogether also did not reduce accuracy.</p>
 </li>
 <li>Learning rate of the optimizer was increased 10 times from 0.0001 to 0.001. RMSprop optimizer was used as in the baseline code, but this would be true for other optimizers too.</li>
-<li>We used the same numpy seed to both the baseline and batch normalization versions in order to make a fair comparison between the two output versions. Since most of the deep learning algorithms are stochastic, their outputs are not exactly same in different runs, but the batch normalization version outperformed the baseline version by large margins in all the runs, with the same numpy seed as well as without giving the same numpy seed.<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">from numpy.random import seed</div><div class="line">seed(7)</div></pre></td></tr></table></figure>
+<li>We used the same numpy seed to both the baseline and batch normalization versions in order to make a fair comparison between the two output versions. Since most of the deep learning algorithms are stochastic, their outputs are not exactly same in different runs, but the batch normalization version outperformed the baseline version by large margins in all the runs, with the same numpy seed as well as without giving the same numpy seed.<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">from numpy.random import seed</span><br><span class="line">seed(7)</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <p><img src="/2018/07/03/Amazing-Batch-Normalization/ModelAccuracy.png" alt="ModelAccuracy"><br>Both the versions have roughly the same run time needed for each epoch (24-25 s), but as we see in the above plot, the accuracy attains a much higher value much faster if we use the batch normalization. The keras team reports an accuracy of  79% after 50 epochs, as seen in their Github code. Our run of the same code gave a maximum accuracy of 77%, which seems fair, given it is in the same range as theirs and the stochastic nature of the keras runs. But with batch normalization, it increases to 87%. All these runs were done on a GeForce GTX 1080.</p>
 <p><img src="/2018/07/03/Amazing-Batch-Normalization/val_loss.png" alt="val_loss"><br>Above is the plot of the validation vs training losses for both the versions. As we can see the validation loss reduces substantially with batch normalization.</p>
-<p><a href="https://github.com/spmallick/learnopencv/tree/master/BatchNormalization" target="_blank" rel="external">代码链接</a></p>
+<p><a href="https://github.com/spmallick/learnopencv/tree/master/BatchNormalization" target="_blank" rel="noopener">代码链接</a></p>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
     </div>
 
     
-
     
-        <div class="post-tags">
-            <i class="fa fa-tags" aria-hidden="true"></i>
-            <a href="/tags/DL/">#DL</a>
-        </div>
     
 
-    <!-- Comments -->
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/DL/" rel="tag"># DL</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/07/03/Advanced-machine-learning-with-scikit-learn/" rel="prev" title="Advanced Machine Learning With Scikit-Learn">
+      <i class="fa fa-chevron-left"></i> Advanced Machine Learning With Scikit-Learn
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/07/03/策略梯度：倒立摆/" rel="next" title="策略梯度：倒立摆">
+      策略梯度：倒立摆 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
     
+  </article>
+  
+  
+  
 
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#Notations"><span class="nav-number">1.</span> <span class="nav-text">Notations</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对输入进行归一化"><span class="nav-number"></span> <span class="nav-text">对输入进行归一化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Can-we-normalize-z-2-so-we-can-train-w-3-and-b-3-more-efficiently-and-faster"><span class="nav-number"></span> <span class="nav-text">Can we normalize \( z^{[2]} \) so we can train \(w^{[3]}\) and \( b^{[3]} \) more efficiently and faster ?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Why-does-Batch-Norm-work"><span class="nav-number"></span> <span class="nav-text">Why does Batch Norm work ?</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#learning-on-shifting-input-distribution"><span class="nav-number">1.</span> <span class="nav-text">learning on shifting input distribution</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#covariate-shift-是如何影响神经网络的"><span class="nav-number">2.</span> <span class="nav-text">covariate shift 是如何影响神经网络的?</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Other-benefits-of-Batch-Normalization"><span class="nav-number"></span> <span class="nav-text">Other benefits of Batch Normalization</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Batch-Norm-as-regularization"><span class="nav-number">1.</span> <span class="nav-text">Batch Norm as regularization</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Higher-learning-rate"><span class="nav-number">2.</span> <span class="nav-text">Higher learning rate</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Batch-Norm-at-test-time"><span class="nav-number"></span> <span class="nav-text">Batch Norm at test time</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Batch-Normalization-in-Keras"><span class="nav-number"></span> <span class="nav-text">Batch Normalization in Keras</span></a></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
 </div>
-        </section>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
 
     </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
 
-
-</div>
-
-<!-- Footer -->
-<div class="push"></div>
-
-<footer class="footer-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
-                <h2>About</h2>
-                <p>
-                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
-                </p>
-            </div>
-            
-    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
-        <h2>Recent Posts</h2>
-        <ul>
-            
-            <li>
-                <a class="footer-post" href="/2019/07/12/Unnamed-namespace/">Unnamed namespace</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/05/08/Static-variable-in-inlined-function/">Static variable in inline</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/04/23/Iterator-invalidation-rules/">Iterator invalidation rul</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/18/Emplace-back/">Emplace back</a>
-            </li>
-            
-        </ul>
-    </div>
+        
 
 
 
-            
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <ul class="list-inline footer-social-icons">
-                    
-                    <li class="list-inline-item">
-                        <a href="https://github.com/RobertLexis">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-github"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="mailto:robert_lexis@163.com">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-envelope-o"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="footer-copyright">
-                    @Untitled. All right reserved | Robert Lexis Loves Wenny
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<!-- After footer scripts -->
-
-<!-- jQuery -->
-<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-
-<!-- Tween Max -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
-
-<!-- Gallery -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
-
-<!-- Custom JavaScript -->
-<script src="/js/main.js"></script>
-
-<!-- Disqus Comments -->
 
 
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
 
 </body>
-
 </html>

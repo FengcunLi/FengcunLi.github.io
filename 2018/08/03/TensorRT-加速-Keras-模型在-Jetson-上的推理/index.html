@@ -1,173 +1,211 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<!-- Head tag -->
+<html lang="zh-CN">
 <head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/main.css">
 
-    <!--Description-->
-    
-        <meta name="description" content="将一个训练好的 Keras 模型通过 TensorRT 加速并 Push 到 Jetson TX2 上的流程框图如下：">
-    
 
-    <!--Author-->
-    
-        <meta name="author" content="Robert Lexis">
-    
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-    <!--Open Graph Title-->
-    
-        <meta property="og:title" content="TensorRT 加速 Keras 模型在 Jetson 上的推理"/>
-    
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
-    <!--Open Graph Description-->
-    
+  <meta name="description" content="将一个训练好的 Keras 模型通过 TensorRT 加速并 Push 到 Jetson TX2 上的流程框图如下：">
+<meta name="keywords" content="DL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TensorRT 加速 Keras 模型在 Jetson 上的推理">
+<meta property="og:url" content="http://yoursite.com/2018/08/03/TensorRT-加速-Keras-模型在-Jetson-上的推理/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="将一个训练好的 Keras 模型通过 TensorRT 加速并 Push 到 Jetson TX2 上的流程框图如下：">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/tensorRT/flowchart.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/tensorRT/installed.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/tensorRT/error1.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/tensorRT/error2.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/tensorRT/method_prototype.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/tensorRT/enum.png">
+<meta property="og:updated_time" content="2018-08-26T10:49:43.245Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TensorRT 加速 Keras 模型在 Jetson 上的推理">
+<meta name="twitter:description" content="将一个训练好的 Keras 模型通过 TensorRT 加速并 Push 到 Jetson TX2 上的流程框图如下：">
+<meta name="twitter:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/tensorRT/flowchart.png">
 
-    <!--Open Graph Site Name-->
-    <meta property="og:site_name" content="This is Robert Lexis."/>
+<link rel="canonical" href="http://yoursite.com/2018/08/03/TensorRT-加速-Keras-模型在-Jetson-上的推理/">
 
-    <!--Type page-->
-    
-        <meta property="og:type" content="article" />
-    
 
-    <!--Page Cover-->
-    
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
 
-    <meta name="twitter:card" content="summary" />
-    
+  <title>TensorRT 加速 Keras 模型在 Jetson 上的推理 | The next stop - Antarctica</title>
+  
 
-    <!-- Title -->
-    
-    <title>TensorRT 加速 Keras 模型在 Jetson 上的推理 - This is Robert Lexis.</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 
-    <!-- Custom Fonts -->
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 
-    <!-- Gallery -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
 
-    <!-- Google Analytics -->
-    
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
 
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
 
 </head>
 
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
 
-<body>
-
-<div class="bg-gradient"></div>
-<div class="bg-pattern"></div>
-
-<!-- Menu -->
-<!--Menu Links and Overlay-->
-<div class="menu-bg">
-    <div class="menu-container">
-        <ul>
-            
-            <li class="menu-item">
-                <a href="/">
-                    Home
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/archives">
-                    Archives
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/about">
-                    About
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/tags">
-                    Tags
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/categories">
-                    Categories
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/contact">
-                    Contact
-                </a>
-            </li>
-            
-        </ul>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
 </div>
 
-<!--Hamburger Icon-->
-<nav>
-    <a href="#menu"></a>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
 </nav>
 
-<div class="container">
 
-    <!-- Main Content -->
-    <div class="row">
-    <div class="col-sm-12">
 
-        <!--Title and Logo-->
-        <header>
-    <div class="logo">
-        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
-        
-    </div>
-</header>
 
-        <section class="main">
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
             
-<div class="post">
 
-    <div class="post-header">
-        <h1 class="title">
-            <a href="/2018/08/03/TensorRT-加速-Keras-模型在-Jetson-上的推理/">
-                TensorRT 加速 Keras 模型在 Jetson 上的推理
-            </a>
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/03/TensorRT-加速-Keras-模型在-Jetson-上的推理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          TensorRT 加速 Keras 模型在 Jetson 上的推理
         </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-08-03</span>
-            
-            
-            
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-08-03 21:27:53" itemprop="dateCreated datePublished" datetime="2018-08-03T21:27:53+08:00">2018-08-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-08-26 18:49:43" itemprop="dateModified" datetime="2018-08-26T18:49:43+08:00">2018-08-26</time>
+              </span>
+
+          
+
         </div>
-    </div>
+      </header>
 
-    <div class="content">
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
-        <!-- Gallery -->
-        
-
-        <!-- Post Content -->
+      
         <p>将一个训练好的 Keras 模型通过 TensorRT 加速并 Push 到 Jetson TX2 上的流程框图如下：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/tensorRT/flowchart.png" alt="flowchart"><br><a id="more"></a></p>
 <p>下面对一些关键代码及步骤进行解释：</p>
-<h3 id="Keras-model-to-Tensorflow-frozen-graph"><a href="#Keras-model-to-Tensorflow-frozen-graph" class="headerlink" title="Keras model to Tensorflow frozen graph"></a>Keras model to Tensorflow frozen graph</h3><p>这一步可以在任意一台机器上完成，不限于 Jetson TX2 或者其 Host PC 上，只要配置了 tensorflow 和 keras 即可。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf </div><div class="line"><span class="keyword">from</span> keras.models <span class="keyword">import</span> model_from_json</div><div class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> backend <span class="keyword">as</span> K</div><div class="line"><span class="keyword">import</span> os </div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">keras_to_frozen</span><span class="params">(model_file, weights_file)</span>:</span></div><div class="line">    <span class="comment"># load keras model and weights</span></div><div class="line">    <span class="keyword">with</span> open(model_file, <span class="string">'r'</span>) <span class="keyword">as</span> f:</div><div class="line">        json_string = f.read()</div><div class="line">    K.set_learning_phase(<span class="number">0</span>)</div><div class="line">    </div><div class="line">    model = model_from_json(json_string)</div><div class="line">    model.load_weights(weights_file)</div><div class="line"></div><div class="line">    <span class="comment"># rename output nodes</span></div><div class="line">    output_node_prefix = <span class="string">'output_node_'</span></div><div class="line">    output_node_names = []</div><div class="line">    output_nodes = []</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(model.outputs)):</div><div class="line">        output_node_name = output_node_prefix + str(i)</div><div class="line">        output_nodes.append(tf.identity(model.outputs[i],  name=output_node_name))</div><div class="line">        output_node_names.append(output_node_name)</div><div class="line">    print(<span class="string">'output node names are: '</span>, output_node_names)</div><div class="line"></div><div class="line">    <span class="comment"># freeze the graph</span></div><div class="line">    sess = K.get_session()</div><div class="line">    constant_graph = tf.graph_util.convert_variables_to_constants(sess=sess, </div><div class="line">                                                              input_graph_def=sess.graph.as_graph_def(), </div><div class="line">                                                              output_node_names=output_node_names)</div><div class="line">    <span class="comment"># write graph as pb</span></div><div class="line">    output_dir = <span class="string">'frozen_graph'</span></div><div class="line">    <span class="keyword">if</span> <span class="keyword">not</span> os.path.isdir(output_dir):</div><div class="line">        os.mkdir(output_dir)</div><div class="line">    filename = <span class="string">'model.pb'</span></div><div class="line">    <span class="keyword">return</span> tf.train.write_graph(constant_graph, output_dir, filename, as_text=<span class="keyword">False</span>)</div></pre></td></tr></table></figure></p>
+<h3 id="Keras-model-to-Tensorflow-frozen-graph"><a href="#Keras-model-to-Tensorflow-frozen-graph" class="headerlink" title="Keras model to Tensorflow frozen graph"></a>Keras model to Tensorflow frozen graph</h3><p>这一步可以在任意一台机器上完成，不限于 Jetson TX2 或者其 Host PC 上，只要配置了 tensorflow 和 keras 即可。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf </span><br><span class="line"><span class="keyword">from</span> keras.models <span class="keyword">import</span> model_from_json</span><br><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> backend <span class="keyword">as</span> K</span><br><span class="line"><span class="keyword">import</span> os </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">keras_to_frozen</span><span class="params">(model_file, weights_file)</span>:</span></span><br><span class="line">    <span class="comment"># load keras model and weights</span></span><br><span class="line">    <span class="keyword">with</span> open(model_file, <span class="string">'r'</span>) <span class="keyword">as</span> f:</span><br><span class="line">        json_string = f.read()</span><br><span class="line">    K.set_learning_phase(<span class="number">0</span>)</span><br><span class="line">    </span><br><span class="line">    model = model_from_json(json_string)</span><br><span class="line">    model.load_weights(weights_file)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># rename output nodes</span></span><br><span class="line">    output_node_prefix = <span class="string">'output_node_'</span></span><br><span class="line">    output_node_names = []</span><br><span class="line">    output_nodes = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(model.outputs)):</span><br><span class="line">        output_node_name = output_node_prefix + str(i)</span><br><span class="line">        output_nodes.append(tf.identity(model.outputs[i],  name=output_node_name))</span><br><span class="line">        output_node_names.append(output_node_name)</span><br><span class="line">    print(<span class="string">'output node names are: '</span>, output_node_names)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># freeze the graph</span></span><br><span class="line">    sess = K.get_session()</span><br><span class="line">    constant_graph = tf.graph_util.convert_variables_to_constants(sess=sess, </span><br><span class="line">                                                              input_graph_def=sess.graph.as_graph_def(), </span><br><span class="line">                                                              output_node_names=output_node_names)</span><br><span class="line">    <span class="comment"># write graph as pb</span></span><br><span class="line">    output_dir = <span class="string">'frozen_graph'</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> os.path.isdir(output_dir):</span><br><span class="line">        os.mkdir(output_dir)</span><br><span class="line">    filename = <span class="string">'model.pb'</span></span><br><span class="line">    <span class="keyword">return</span> tf.train.write_graph(constant_graph, output_dir, filename, as_text=<span class="keyword">False</span>)</span><br></pre></td></tr></table></figure></p>
 <p>代码的关键要点：</p>
 <ol>
 <li><code>K.set_learning_phase(0)</code> 将学习阶段设置为 0， 即 test 阶段，像 <code>BatchNormalization</code> 这种 layer 在 test 阶段和 train 阶段的行为是不一样的。</li>
@@ -175,139 +213,195 @@
 </ol>
 <h3 id="Tensorflow-frozen-graph-to-UFF"><a href="#Tensorflow-frozen-graph-to-UFF" class="headerlink" title="Tensorflow frozen graph to UFF"></a>Tensorflow frozen graph to UFF</h3><p>就目前[2018/08/03]来说，NVCaffe 框架搭建的神经网络可以直接被导入并转化为推理引擎，来自其他框架的神经网络模型可以转化为 UFF 或者 ONNX 格式，然后通过相应的解析器解析成推理引擎。</p>
 <p>将 Tensorflow frozen graph 转化为 UFF 文件，需要安装 uff Python 包。<br>这一步可以在 Jetson TX2 或者其 Host PC 上完成，只要安装了 uff 包即可。</p>
-<p>uff 包是 TensorRT 3.0.4 for Ubuntu 16.04 and CUDA 9.0 tar package 的一部分，因此需要下载这个 tar 包，同时这个 tar 包也可以用来安装 TensorRT，由于已经通过 JetPack 在 Jetson TX2 上安装了 TensorRT，这一点可以在上一篇文章<a href="https://robertlexis.github.io/2018/08/01/Nvidia-Jetson-TX2-开箱及刷机/" target="_blank" rel="external">Nvidia Jetson TX2 开箱及刷机</a>或者下图中看到，因此我在这里仅取用安装其中的 uff。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">tar -xzf TensorRT-3.0.4.Ubuntu-16.04.3.x86_64.cuda-9.0.cudnn7.0.tar.gz</div><div class="line">sudo pip install TensorRT-3.0.4/uff/uff-0.2.0-py2.py3-none-any.whl</div></pre></td></tr></table></figure></p>
+<p>uff 包是 TensorRT 3.0.4 for Ubuntu 16.04 and CUDA 9.0 tar package 的一部分，因此需要下载这个 tar 包，同时这个 tar 包也可以用来安装 TensorRT，由于已经通过 JetPack 在 Jetson TX2 上安装了 TensorRT，这一点可以在上一篇文章<a href="https://robertlexis.github.io/2018/08/01/Nvidia-Jetson-TX2-开箱及刷机/" target="_blank" rel="noopener">Nvidia Jetson TX2 开箱及刷机</a>或者下图中看到，因此我在这里仅取用安装其中的 uff。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tar -xzf TensorRT-3.0.4.Ubuntu-16.04.3.x86_64.cuda-9.0.cudnn7.0.tar.gz</span><br><span class="line">sudo pip install TensorRT-3.0.4/uff/uff-0.2.0-py2.py3-none-any.whl</span><br></pre></td></tr></table></figure></p>
 <p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/tensorRT/installed.png" alt="installed"></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> uff</div><div class="line"><span class="comment"># generate uff from frozen graph</span></div><div class="line">uff_model = uff.from_tensorflow_frozen_model(</div><div class="line">    frozen_file=frozen_graph_filename,</div><div class="line">    output_nodes=output_node_names,</div><div class="line">    output_filename=uff_model_filename,</div><div class="line">    text=<span class="keyword">False</span>,</div><div class="line">)</div></pre></td></tr></table></figure>
-<h3 id="UFF-to-plan-engine"><a href="#UFF-to-plan-engine" class="headerlink" title="UFF to plan (engine)"></a>UFF to plan (engine)</h3><p>这一步在安装了 TensorRT 的机器上完成，在此文章中为 Jetson TX2。<br>这一步可以参考 Nvidia <a href="https://developer.nvidia.com/embedded/twodaystoademo" target="_blank" rel="external">Two Days to a Demo</a> Advanced - TensorFlow to TensorRT Image Classification 的 <a href="https://github.com/NVIDIA-Jetson/tf_to_trt_image_classification" target="_blank" rel="external">github 仓库</a> 中的 <code>src/uff_to_plan.cpp</code>。<br>但是需要注意的是，该文件的 71 行方法调用存在错误：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">parser-&gt;registerInput(inputName.c_str(), DimsCHW(<span class="number">3</span>, inputHeight, inputWidth));</div></pre></td></tr></table></figure></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> uff</span><br><span class="line"><span class="comment"># generate uff from frozen graph</span></span><br><span class="line">uff_model = uff.from_tensorflow_frozen_model(</span><br><span class="line">    frozen_file=frozen_graph_filename,</span><br><span class="line">    output_nodes=output_node_names,</span><br><span class="line">    output_filename=uff_model_filename,</span><br><span class="line">    text=<span class="keyword">False</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h3 id="UFF-to-plan-engine"><a href="#UFF-to-plan-engine" class="headerlink" title="UFF to plan (engine)"></a>UFF to plan (engine)</h3><p>这一步在安装了 TensorRT 的机器上完成，在此文章中为 Jetson TX2。<br>这一步可以参考 Nvidia <a href="https://developer.nvidia.com/embedded/twodaystoademo" target="_blank" rel="noopener">Two Days to a Demo</a> Advanced - TensorFlow to TensorRT Image Classification 的 <a href="https://github.com/NVIDIA-Jetson/tf_to_trt_image_classification" target="_blank" rel="noopener">github 仓库</a> 中的 <code>src/uff_to_plan.cpp</code>。<br>但是需要注意的是，该文件的 71 行方法调用存在错误：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">parser-&gt;registerInput(inputName.c_str(), DimsCHW(<span class="number">3</span>, inputHeight, inputWidth));</span><br></pre></td></tr></table></figure></p>
 <p>编译时报错：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/tensorRT/error1.png" alt="error_1"><br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/tensorRT/error2.png" alt="error_2"><br>去 <code>/usr/include/aarch64-linux-gnu/NvUffParser.h</code> 查看函数声明，发现需要一个 <code>UffInputOrder</code> 类型的参数:<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/tensorRT/method_prototype.png" alt="error_2"><br>在这个头文件内搜索可以找到 <code>UffInputOrder</code> 这一个枚举类型:<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/tensorRT/enum.png" alt="error_2"></p>
-<p>修改 <code>src/uff_to_plan.cpp</code> 的行 71 为<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">parser-&gt;registerInput(inputName.c_str(), DimsCHW(<span class="number">3</span>, inputHeight, inputWidth), UffInputOrder::kNHWC);</div></pre></td></tr></table></figure></p>
+<p>修改 <code>src/uff_to_plan.cpp</code> 的行 71 为<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">parser-&gt;registerInput(inputName.c_str(), DimsCHW(<span class="number">3</span>, inputHeight, inputWidth), UffInputOrder::kNHWC);</span><br></pre></td></tr></table></figure></p>
 <p>即可。</p>
 <h3 id="predict-cu"><a href="#predict-cu" class="headerlink" title="predict.cu"></a>predict.cu</h3><p>这一步在安装了 TensorRT 的机器上完成，在此文章中为 Jetson TX2，即在 Jetson TX2 完成 <code>.cu</code> 文件的编译。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fstream&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sstream&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;NvInfer.h&gt;</span></span></div><div class="line"></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> nvinfer1;</div><div class="line"></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Logger</span> :</span> <span class="keyword">public</span> ILogger</div><div class="line">&#123;</div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">log</span><span class="params">(Severity severity, <span class="keyword">const</span> <span class="keyword">char</span> * msg)</span> override</span></div><div class="line"><span class="function">  </span>&#123;</div><div class="line">    <span class="keyword">if</span> (severity != Severity::kINFO)</div><div class="line">      <span class="built_in">cout</span> &lt;&lt; msg &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">  &#125;</div><div class="line">&#125; gLogger;</div><div class="line"></div><div class="line"><span class="comment">/* load the engine */</span></div><div class="line"><span class="built_in">cout</span> &lt;&lt; <span class="string">"Loading TensorRT engine from plan file..."</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line"></div><div class="line"><span class="function">ifstream <span class="title">planFile</span><span class="params">(planFilename)</span></span>; </div><div class="line"><span class="keyword">if</span> (!planFile.is_open())</div><div class="line">&#123;</div><div class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"Could not open plan file."</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">    <span class="keyword">return</span> <span class="number">1</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="built_in">stringstream</span> planBuffer;</div><div class="line">planBuffer &lt;&lt; planFile.rdbuf();</div><div class="line"><span class="built_in">string</span> plan = planBuffer.str();</div><div class="line"></div><div class="line">IRuntime *runtime = createInferRuntime(gLogger);</div><div class="line">ICudaEngine *engine = runtime-&gt;deserializeCudaEngine((<span class="keyword">void</span>*)plan.data(), plan.size(), <span class="literal">nullptr</span>);</div></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fstream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sstream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;NvInfer.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> nvinfer1;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Logger</span> :</span> <span class="keyword">public</span> ILogger</span><br><span class="line">&#123;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">log</span><span class="params">(Severity severity, <span class="keyword">const</span> <span class="keyword">char</span> * msg)</span> override</span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (severity != Severity::kINFO)</span><br><span class="line">      <span class="built_in">cout</span> &lt;&lt; msg &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125; gLogger;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* load the engine */</span></span><br><span class="line"><span class="built_in">cout</span> &lt;&lt; <span class="string">"Loading TensorRT engine from plan file..."</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line"><span class="function">ifstream <span class="title">planFile</span><span class="params">(planFilename)</span></span>; </span><br><span class="line"><span class="keyword">if</span> (!planFile.is_open())</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"Could not open plan file."</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">stringstream</span> planBuffer;</span><br><span class="line">planBuffer &lt;&lt; planFile.rdbuf();</span><br><span class="line"><span class="built_in">string</span> plan = planBuffer.str();</span><br><span class="line"></span><br><span class="line">IRuntime *runtime = createInferRuntime(gLogger);</span><br><span class="line">ICudaEngine *engine = runtime-&gt;deserializeCudaEngine((<span class="keyword">void</span>*)plan.data(), plan.size(), <span class="literal">nullptr</span>);</span><br></pre></td></tr></table></figure>
     </div>
 
     
-
     
-        <div class="post-tags">
-            <i class="fa fa-tags" aria-hidden="true"></i>
-            <a href="/tags/DL/">#DL</a>
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/DL/" rel="tag"># DL</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/08/01/Nvidia-Jetson-TX2-开箱及刷机/" rel="prev" title="Nvidia Jetson TX2 开箱及刷机">
+      <i class="fa fa-chevron-left"></i> Nvidia Jetson TX2 开箱及刷机
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/08/05/Amazing-dropout/" rel="next" title="Amazing Dropout">
+      Amazing Dropout <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
         </div>
-    
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
 
-    <!-- Comments -->
-    
+  <aside class="sidebar">
+    <div class="sidebar-inner">
 
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Keras-model-to-Tensorflow-frozen-graph"><span class="nav-number">1.</span> <span class="nav-text">Keras model to Tensorflow frozen graph</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Tensorflow-frozen-graph-to-UFF"><span class="nav-number">2.</span> <span class="nav-text">Tensorflow frozen graph to UFF</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UFF-to-plan-engine"><span class="nav-number">3.</span> <span class="nav-text">UFF to plan (engine)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#predict-cu"><span class="nav-number">4.</span> <span class="nav-text">predict.cu</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
 </div>
-        </section>
-
-    </div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
 </div>
 
 
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
 
-<!-- Footer -->
-<div class="push"></div>
-
-<footer class="footer-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
-                <h2>About</h2>
-                <p>
-                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
-                </p>
-            </div>
-            
-    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
-        <h2>Recent Posts</h2>
-        <ul>
-            
-            <li>
-                <a class="footer-post" href="/2019/07/12/Unnamed-namespace/">Unnamed namespace</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/05/08/Static-variable-in-inlined-function/">Static variable in inline</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/04/23/Iterator-invalidation-rules/">Iterator invalidation rul</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/18/Emplace-back/">Emplace back</a>
-            </li>
-            
-        </ul>
-    </div>
+        
 
 
 
-            
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <ul class="list-inline footer-social-icons">
-                    
-                    <li class="list-inline-item">
-                        <a href="https://github.com/RobertLexis">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-github"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="mailto:robert_lexis@163.com">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-envelope-o"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="footer-copyright">
-                    @Untitled. All right reserved | Robert Lexis Loves Wenny
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<!-- After footer scripts -->
-
-<!-- jQuery -->
-<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-
-<!-- Tween Max -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
-
-<!-- Gallery -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
-
-<!-- Custom JavaScript -->
-<script src="/js/main.js"></script>
-
-<!-- Disqus Comments -->
 
 
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
 
 </body>
-
 </html>

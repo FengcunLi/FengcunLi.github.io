@@ -1,303 +1,399 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<!-- Head tag -->
+<html lang="zh-CN">
 <head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/main.css">
 
-    <!--Description-->
-    
-        <meta name="description" content="循环神经网络的原理及 TensorFlow 实现循环神经网络循环体的网络结构的参数在不同时刻是共享的, 循环体的网络结构的输出不仅提供给下一时刻作为输入，同时也提供了当前时刻的输出。为了将循环体的输出转化为最终的输出，需要一个全连接来完成这个过程，这和卷积神经网络中最后的全连接层意义是一样的，不同时刻用于输出的全连接的参数也是一样的。">
-    
 
-    <!--Author-->
-    
-        <meta name="author" content="Robert Lexis">
-    
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-    <!--Open Graph Title-->
-    
-        <meta property="og:title" content="循环神经网络的原理及 TensorFlow 实现"/>
-    
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
-    <!--Open Graph Description-->
-    
+  <meta name="description" content="循环神经网络的原理及 TensorFlow 实现循环神经网络循环体的网络结构的参数在不同时刻是共享的, 循环体的网络结构的输出不仅提供给下一时刻作为输入，同时也提供了当前时刻的输出。为了将循环体的输出转化为最终的输出，需要一个全连接来完成这个过程，这和卷积神经网络中最后的全连接层意义是一样的，不同时刻用于输出的全连接的参数也是一样的。">
+<meta name="keywords" content="DL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="循环神经网络的原理及 TensorFlow 实现">
+<meta property="og:url" content="http://yoursite.com/2017/12/07/循环神经网络的原理及-TensorFlow-实现/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="循环神经网络的原理及 TensorFlow 实现循环神经网络循环体的网络结构的参数在不同时刻是共享的, 循环体的网络结构的输出不仅提供给下一时刻作为输入，同时也提供了当前时刻的输出。为了将循环体的输出转化为最终的输出，需要一个全连接来完成这个过程，这和卷积神经网络中最后的全连接层意义是一样的，不同时刻用于输出的全连接的参数也是一样的。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/RNN1.jpg">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/forget_gate.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/input_gate.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/forget_input_gate.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/output_gate.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/RNN2.jpg">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/RNN3.jpg">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/RNN4.jpg">
+<meta property="og:updated_time" content="2018-08-26T11:17:28.141Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="循环神经网络的原理及 TensorFlow 实现">
+<meta name="twitter:description" content="循环神经网络的原理及 TensorFlow 实现循环神经网络循环体的网络结构的参数在不同时刻是共享的, 循环体的网络结构的输出不仅提供给下一时刻作为输入，同时也提供了当前时刻的输出。为了将循环体的输出转化为最终的输出，需要一个全连接来完成这个过程，这和卷积神经网络中最后的全连接层意义是一样的，不同时刻用于输出的全连接的参数也是一样的。">
+<meta name="twitter:image" content="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/RNN1.jpg">
 
-    <!--Open Graph Site Name-->
-    <meta property="og:site_name" content="This is Robert Lexis."/>
+<link rel="canonical" href="http://yoursite.com/2017/12/07/循环神经网络的原理及-TensorFlow-实现/">
 
-    <!--Type page-->
-    
-        <meta property="og:type" content="article" />
-    
 
-    <!--Page Cover-->
-    
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
 
-    <meta name="twitter:card" content="summary" />
-    
+  <title>循环神经网络的原理及 TensorFlow 实现 | The next stop - Antarctica</title>
+  
 
-    <!-- Title -->
-    
-    <title>循环神经网络的原理及 TensorFlow 实现 - This is Robert Lexis.</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 
-    <!-- Custom Fonts -->
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 
-    <!-- Gallery -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
 
-    <!-- Google Analytics -->
-    
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
 
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
 
 </head>
 
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
 
-<body>
-
-<div class="bg-gradient"></div>
-<div class="bg-pattern"></div>
-
-<!-- Menu -->
-<!--Menu Links and Overlay-->
-<div class="menu-bg">
-    <div class="menu-container">
-        <ul>
-            
-            <li class="menu-item">
-                <a href="/">
-                    Home
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/archives">
-                    Archives
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/about">
-                    About
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/tags">
-                    Tags
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/categories">
-                    Categories
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/contact">
-                    Contact
-                </a>
-            </li>
-            
-        </ul>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
 </div>
 
-<!--Hamburger Icon-->
-<nav>
-    <a href="#menu"></a>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
 </nav>
 
-<div class="container">
 
-    <!-- Main Content -->
-    <div class="row">
-    <div class="col-sm-12">
 
-        <!--Title and Logo-->
-        <header>
-    <div class="logo">
-        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
-        
-    </div>
-</header>
 
-        <section class="main">
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
             
-<div class="post">
 
-    <div class="post-header">
-        <h1 class="title">
-            <a href="/2017/12/07/循环神经网络的原理及-TensorFlow-实现/">
-                循环神经网络的原理及 TensorFlow 实现
-            </a>
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/07/循环神经网络的原理及-TensorFlow-实现/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          循环神经网络的原理及 TensorFlow 实现
         </h1>
-        <div class="post-info">
-            
-                <span class="date">2017-12-07</span>
-            
-            
-            
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-12-07 12:13:18" itemprop="dateCreated datePublished" datetime="2017-12-07T12:13:18+08:00">2017-12-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-08-26 19:17:28" itemprop="dateModified" datetime="2018-08-26T19:17:28+08:00">2018-08-26</time>
+              </span>
+
+          
+
         </div>
-    </div>
+      </header>
 
-    <div class="content">
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
-        <!-- Gallery -->
-        
-
-        <!-- Post Content -->
+      
         <h2 id="循环神经网络的原理及-TensorFlow-实现"><a href="#循环神经网络的原理及-TensorFlow-实现" class="headerlink" title="循环神经网络的原理及 TensorFlow 实现"></a>循环神经网络的原理及 TensorFlow 实现</h2><h3 id="循环神经网络"><a href="#循环神经网络" class="headerlink" title="循环神经网络"></a>循环神经网络</h3><p><strong>循环体</strong>的网络结构的参数在不同时刻是共享的, 循环体的网络结构的输出不仅提供给下一时刻作为输入，同时也提供了当前时刻的输出。为了将循环体的输出转化为最终的输出，需要一个全连接来完成这个过程，这和卷积神经网络中最后的全连接层意义是一样的，不同时刻用于输出的全连接的参数也是一样的。<br><a id="more"></a></p>
-<p><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/RNN1.jpg" alt="RNN的前向传播的计算过程示意图"><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">#!coding: utf-8</div><div class="line">import numpy as np</div><div class="line"></div><div class="line">X = [1, 2]</div><div class="line">state = [0.0, 0.0]</div><div class="line"># 分开定义不同输入部分的权重以方便操作</div><div class="line">w_cell_state = np.matrix([[0.1, 0.2], [0.3, 0.4]])</div><div class="line">w_cell_input = np.matrix([0.5, 0.6])</div><div class="line">b_cell = [0.1, -0.1]</div><div class="line"></div><div class="line">w_output = np.matrix([[1.0], [2.0]])</div><div class="line">b_output = 0.1</div><div class="line"></div><div class="line"># 按照时间顺序执行循环神经网络的前向传播过程</div><div class="line">for i in range(len(X)):</div><div class="line">     before_activation = state * w_cell_state + X[i] * w_cell_input + b_cell</div><div class="line">     state = np.tanh(before_activation)</div><div class="line">     final_output = state * w_output + b_output</div><div class="line">     print &quot;before activation: &quot;, before_activation</div><div class="line">     print &quot;state: &quot;, state</div><div class="line">     print &quot;output: &quot;, final_output</div></pre></td></tr></table></figure></p>
-<p>输出结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">before activation:  [[ 0.6  0.5]]</div><div class="line">state:  [[ 0.53704957  0.46211716]]</div><div class="line">output:  [[ 1.56128388]]</div><div class="line">before activation:  [[ 1.2923401   1.39225678]]</div><div class="line">state:  [[ 0.85973818  0.88366641]]</div><div class="line">output:  [[ 2.72707101]]</div></pre></td></tr></table></figure></p>
-<h3 id="LSTM"><a href="#LSTM" class="headerlink" title="LSTM"></a>LSTM</h3><p>上面的RNN并没有记忆的功能，仅仅是将上一时刻的输出输入到该时刻，仅仅就是一个“循环”神经网络，LSTM 不仅仅将上一时刻的输出输入到该时刻，而且内部还有一个“记忆单元”可以长久保持细胞的状态。即将上一时刻细胞的状态保持到该时刻，并在该时刻进行更新，从而可以继续保持到下一时刻。<br>LSTM中有三种门，输入门，遗忘门，输出门。门是通过 sigmoid 产生的，产生的门要去 pointwise 地乘才能发挥作用，门都需要去乘以一个东西。三种门的产生所需的构造材料是不一样的，作用的对象也是不一样的。<code>h</code> 是循环体的输出（不一定是这一时刻网络的输出，因为可能还要经过一个全连接层才能成为这一时刻网络的输出；但是是可能经过激活函数激活的），<code>x</code> 是循环体的输入，<code>c</code>是一个细胞状态，通过 <code>h</code> 和 <code>x</code> 以及上一时刻的细胞状态进行更新，它的意义就是对过往的一切经过一系列遗忘之后还剩下的东西，是对过往的概括。<br>遗忘门的生成：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/forget_gate.png" alt="forget_gate"><br>输入门的生成：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/input_gate.png" alt="input_gate"><br>遗忘门和输入门发挥作用：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/forget_input_gate.png" alt="forget_input_gate"><br>输出门的生成及发挥作用：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/output_gate.png" alt="output_gate"><br>LSTM cell 输入、输出、状态、门之间的交互<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/RNN2.jpg" alt="RNN2"><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">lstm = rnn_cell.BasicLSTMCell(lstm_hidden_size)</div><div class="line"># 将LSTM中的状态初始化为全零数组</div><div class="line">state = lstm.zero_state(batch_size, tf.float32)</div><div class="line">loss = 0.0</div><div class="line"># 虽然理论上循环神经网络可以处理任意长度的序列，但是训练时为了避免梯度消散，会规定一个最大的序列长度，用 num_steps 来表示</div><div class="line">for i in range(num_steps):</div><div class="line">    if i &gt; 0:</div><div class="line">        tf.get_variable_scope().reuse_variables()</div><div class="line">    lstm_output, state = lstm(current_input, state)</div><div class="line">    final_output = fully_connected(lstm_output)</div><div class="line">    # 计算当前时刻 batch 上的损失</div><div class="line">    loss += calc_loss(final_output, expected_output)</div><div class="line"># 使用前面类似的方法训练模型</div></pre></td></tr></table></figure></p>
+<p><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/RNN1.jpg" alt="RNN的前向传播的计算过程示意图"><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">#!coding: utf-8</span><br><span class="line">import numpy as np</span><br><span class="line"></span><br><span class="line">X = [1, 2]</span><br><span class="line">state = [0.0, 0.0]</span><br><span class="line"># 分开定义不同输入部分的权重以方便操作</span><br><span class="line">w_cell_state = np.matrix([[0.1, 0.2], [0.3, 0.4]])</span><br><span class="line">w_cell_input = np.matrix([0.5, 0.6])</span><br><span class="line">b_cell = [0.1, -0.1]</span><br><span class="line"></span><br><span class="line">w_output = np.matrix([[1.0], [2.0]])</span><br><span class="line">b_output = 0.1</span><br><span class="line"></span><br><span class="line"># 按照时间顺序执行循环神经网络的前向传播过程</span><br><span class="line">for i in range(len(X)):</span><br><span class="line">     before_activation = state * w_cell_state + X[i] * w_cell_input + b_cell</span><br><span class="line">     state = np.tanh(before_activation)</span><br><span class="line">     final_output = state * w_output + b_output</span><br><span class="line">     print &quot;before activation: &quot;, before_activation</span><br><span class="line">     print &quot;state: &quot;, state</span><br><span class="line">     print &quot;output: &quot;, final_output</span><br></pre></td></tr></table></figure></p>
+<p>输出结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">before activation:  [[ 0.6  0.5]]</span><br><span class="line">state:  [[ 0.53704957  0.46211716]]</span><br><span class="line">output:  [[ 1.56128388]]</span><br><span class="line">before activation:  [[ 1.2923401   1.39225678]]</span><br><span class="line">state:  [[ 0.85973818  0.88366641]]</span><br><span class="line">output:  [[ 2.72707101]]</span><br></pre></td></tr></table></figure></p>
+<h3 id="LSTM"><a href="#LSTM" class="headerlink" title="LSTM"></a>LSTM</h3><p>上面的RNN并没有记忆的功能，仅仅是将上一时刻的输出输入到该时刻，仅仅就是一个“循环”神经网络，LSTM 不仅仅将上一时刻的输出输入到该时刻，而且内部还有一个“记忆单元”可以长久保持细胞的状态。即将上一时刻细胞的状态保持到该时刻，并在该时刻进行更新，从而可以继续保持到下一时刻。<br>LSTM中有三种门，输入门，遗忘门，输出门。门是通过 sigmoid 产生的，产生的门要去 pointwise 地乘才能发挥作用，门都需要去乘以一个东西。三种门的产生所需的构造材料是不一样的，作用的对象也是不一样的。<code>h</code> 是循环体的输出（不一定是这一时刻网络的输出，因为可能还要经过一个全连接层才能成为这一时刻网络的输出；但是是可能经过激活函数激活的），<code>x</code> 是循环体的输入，<code>c</code>是一个细胞状态，通过 <code>h</code> 和 <code>x</code> 以及上一时刻的细胞状态进行更新，它的意义就是对过往的一切经过一系列遗忘之后还剩下的东西，是对过往的概括。<br>遗忘门的生成：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/forget_gate.png" alt="forget_gate"><br>输入门的生成：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/input_gate.png" alt="input_gate"><br>遗忘门和输入门发挥作用：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/forget_input_gate.png" alt="forget_input_gate"><br>输出门的生成及发挥作用：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/output_gate.png" alt="output_gate"><br>LSTM cell 输入、输出、状态、门之间的交互<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/RNN2.jpg" alt="RNN2"><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">lstm = rnn_cell.BasicLSTMCell(lstm_hidden_size)</span><br><span class="line"># 将LSTM中的状态初始化为全零数组</span><br><span class="line">state = lstm.zero_state(batch_size, tf.float32)</span><br><span class="line">loss = 0.0</span><br><span class="line"># 虽然理论上循环神经网络可以处理任意长度的序列，但是训练时为了避免梯度消散，会规定一个最大的序列长度，用 num_steps 来表示</span><br><span class="line">for i in range(num_steps):</span><br><span class="line">    if i &gt; 0:</span><br><span class="line">        tf.get_variable_scope().reuse_variables()</span><br><span class="line">    lstm_output, state = lstm(current_input, state)</span><br><span class="line">    final_output = fully_connected(lstm_output)</span><br><span class="line">    # 计算当前时刻 batch 上的损失</span><br><span class="line">    loss += calc_loss(final_output, expected_output)</span><br><span class="line"># 使用前面类似的方法训练模型</span><br></pre></td></tr></table></figure></p>
 <p><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/RNN3.jpg" alt="RNN3"></p>
 <h3 id="循环神经网络的dropout"><a href="#循环神经网络的dropout" class="headerlink" title="循环神经网络的dropout"></a>循环神经网络的dropout</h3><p>在卷积神经网络上，通过dropout可以让神经网络更加的健壮，类似的在循环神经网络中也可以使用dropout，而且类似卷积神经网络只在最后的全连接层使用dropout，循环神经网络一般只在循环体不同层之间使用dropout，而不在同一层的循环体之间使用dropout。<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/RNN4.jpg" alt="RNN4"></p>
 <h3 id="循环神经网络的变种"><a href="#循环神经网络的变种" class="headerlink" title="循环神经网络的变种"></a>循环神经网络的变种</h3><h4 id="双向循环神经网络"><a href="#双向循环神经网络" class="headerlink" title="双向循环神经网络"></a>双向循环神经网络</h4><p>在一些问题中，当前时刻的输出不仅与之前的状态有关还和之后的状态有关，这时就需要使用双向循环神经网络。例如预测一个句子中缺失的单词，就需要前后文相结合。</p>
-<h4 id="深层循环神经网络"><a href="#深层循环神经网络" class="headerlink" title="深层循环神经网络"></a>深层循环神经网络</h4><p>为了增强模型的表达能力，在一个时刻上堆叠多个循环体，和卷积神经网络一样，每一层的循环体参数是一致的共享的，不同层之间的参数是不一样的。<br>为了支持深层循环神经网络，TensorFlow 提供了 MultiRNNCell。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"># 定义一个循环体作为组件</div><div class="line">lstm = rnn_cell.BasicLSTMCell(lstm_size)</div><div class="line">stacked_lstm = rnn_cell.MultiRNNCell([lstm] * number_of_layers)</div><div class="line"></div><div class="line"># 与经典的循环神经网络一样，通过zero_state来初始化初始状态</div><div class="line">state = stacked_lstm.zero_state(batch_size, tf.float32)</div><div class="line"></div><div class="line">for i in range(num_steps):</div><div class="line">    if i &gt; 0:</div><div class="line">        tf.get_variable_scope().reuse_variables()</div><div class="line">    lstm_output, state = stacked_lstm(current_input, state)</div><div class="line">    final_output = fully_connected(lstm_output)</div><div class="line">    # 计算当前时刻 batch 上的损失</div><div class="line">    loss += calc_loss(final_output, expected_output)</div></pre></td></tr></table></figure></p>
+<h4 id="深层循环神经网络"><a href="#深层循环神经网络" class="headerlink" title="深层循环神经网络"></a>深层循环神经网络</h4><p>为了增强模型的表达能力，在一个时刻上堆叠多个循环体，和卷积神经网络一样，每一层的循环体参数是一致的共享的，不同层之间的参数是不一样的。<br>为了支持深层循环神经网络，TensorFlow 提供了 MultiRNNCell。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># 定义一个循环体作为组件</span><br><span class="line">lstm = rnn_cell.BasicLSTMCell(lstm_size)</span><br><span class="line">stacked_lstm = rnn_cell.MultiRNNCell([lstm] * number_of_layers)</span><br><span class="line"></span><br><span class="line"># 与经典的循环神经网络一样，通过zero_state来初始化初始状态</span><br><span class="line">state = stacked_lstm.zero_state(batch_size, tf.float32)</span><br><span class="line"></span><br><span class="line">for i in range(num_steps):</span><br><span class="line">    if i &gt; 0:</span><br><span class="line">        tf.get_variable_scope().reuse_variables()</span><br><span class="line">    lstm_output, state = stacked_lstm(current_input, state)</span><br><span class="line">    final_output = fully_connected(lstm_output)</span><br><span class="line">    # 计算当前时刻 batch 上的损失</span><br><span class="line">    loss += calc_loss(final_output, expected_output)</span><br></pre></td></tr></table></figure></p>
 
     </div>
 
     
-
     
-        <div class="post-tags">
-            <i class="fa fa-tags" aria-hidden="true"></i>
-            <a href="/tags/DL/">#DL</a>
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/DL/" rel="tag"># DL</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/12/07/Learning-TensorFlow-1-Basic/" rel="prev" title="Learning TensorFlow 1 Basic">
+      <i class="fa fa-chevron-left"></i> Learning TensorFlow 1 Basic
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/12/07/Learning-TensorFlow-2-计算加速/" rel="next" title="Learning TensorFlow 2 计算加速">
+      Learning TensorFlow 2 计算加速 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
         </div>
-    
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
 
-    <!-- Comments -->
-    
+  <aside class="sidebar">
+    <div class="sidebar-inner">
 
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#循环神经网络的原理及-TensorFlow-实现"><span class="nav-number">1.</span> <span class="nav-text">循环神经网络的原理及 TensorFlow 实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#循环神经网络"><span class="nav-number">1.1.</span> <span class="nav-text">循环神经网络</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LSTM"><span class="nav-number">1.2.</span> <span class="nav-text">LSTM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#循环神经网络的dropout"><span class="nav-number">1.3.</span> <span class="nav-text">循环神经网络的dropout</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#循环神经网络的变种"><span class="nav-number">1.4.</span> <span class="nav-text">循环神经网络的变种</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#双向循环神经网络"><span class="nav-number">1.4.1.</span> <span class="nav-text">双向循环神经网络</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#深层循环神经网络"><span class="nav-number">1.4.2.</span> <span class="nav-text">深层循环神经网络</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
 </div>
-        </section>
-
-    </div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
 </div>
 
 
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
 
-<!-- Footer -->
-<div class="push"></div>
-
-<footer class="footer-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
-                <h2>About</h2>
-                <p>
-                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
-                </p>
-            </div>
-            
-    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
-        <h2>Recent Posts</h2>
-        <ul>
-            
-            <li>
-                <a class="footer-post" href="/2019/07/12/Unnamed-namespace/">Unnamed namespace</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/05/08/Static-variable-in-inlined-function/">Static variable in inline</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/04/23/Iterator-invalidation-rules/">Iterator invalidation rul</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/18/Emplace-back/">Emplace back</a>
-            </li>
-            
-        </ul>
-    </div>
+        
 
 
 
-            
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <ul class="list-inline footer-social-icons">
-                    
-                    <li class="list-inline-item">
-                        <a href="https://github.com/RobertLexis">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-github"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="mailto:robert_lexis@163.com">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-envelope-o"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="footer-copyright">
-                    @Untitled. All right reserved | Robert Lexis Loves Wenny
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<!-- After footer scripts -->
-
-<!-- jQuery -->
-<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-
-<!-- Tween Max -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
-
-<!-- Gallery -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
-
-<!-- Custom JavaScript -->
-<script src="/js/main.js"></script>
-
-<!-- Disqus Comments -->
 
 
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
 
 </body>
-
 </html>

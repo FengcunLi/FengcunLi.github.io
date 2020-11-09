@@ -1,171 +1,211 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<!-- Head tag -->
+<html lang="zh-CN">
 <head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/main.css">
 
-    <!--Description-->
-    
-        <meta name="description" content="本博文主要是在阅读 scikit-learn 官方文档3.3. Model evaluation: quantifying the quality of predictions 之后的总结。首先看一下根据 label 特点的不同做出的分类任务类型的划分：">
-    
 
-    <!--Author-->
-    
-        <meta name="author" content="Robert Lexis">
-    
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-    <!--Open Graph Title-->
-    
-        <meta property="og:title" content="模型评估 量化预测质量"/>
-    
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
-    <!--Open Graph Description-->
-    
+  <meta name="description" content="本博文主要是在阅读 scikit-learn 官方文档3.3. Model evaluation: quantifying the quality of predictions 之后的总结。首先看一下根据 label 特点的不同做出的分类任务类型的划分：">
+<meta name="keywords" content="DL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="模型评估 量化预测质量">
+<meta property="og:url" content="http://yoursite.com/2018/07/01/模型评估-量化预测质量/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="本博文主要是在阅读 scikit-learn 官方文档3.3. Model evaluation: quantifying the quality of predictions 之后的总结。首先看一下根据 label 特点的不同做出的分类任务类型的划分：">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/metrics/1.PNG">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/metrics/scoring_parameters.PNG">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/metrics/classification_metrics.PNG">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/metrics/recall_precision_f_beta.PNG">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/metrics/2.PNG">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/metrics/3.PNG">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/metrics/4.PNG">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/metrics/recall_precision_f_beta_formulations.PNG">
+<meta property="og:updated_time" content="2018-08-26T11:01:43.073Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="模型评估 量化预测质量">
+<meta name="twitter:description" content="本博文主要是在阅读 scikit-learn 官方文档3.3. Model evaluation: quantifying the quality of predictions 之后的总结。首先看一下根据 label 特点的不同做出的分类任务类型的划分：">
+<meta name="twitter:image" content="http://oytnj8g2y.bkt.clouddn.com/image/jpg/metrics/1.PNG">
 
-    <!--Open Graph Site Name-->
-    <meta property="og:site_name" content="This is Robert Lexis."/>
+<link rel="canonical" href="http://yoursite.com/2018/07/01/模型评估-量化预测质量/">
 
-    <!--Type page-->
-    
-        <meta property="og:type" content="article" />
-    
 
-    <!--Page Cover-->
-    
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
 
-    <meta name="twitter:card" content="summary" />
-    
+  <title>模型评估 量化预测质量 | The next stop - Antarctica</title>
+  
 
-    <!-- Title -->
-    
-    <title>模型评估 量化预测质量 - This is Robert Lexis.</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 
-    <!-- Custom Fonts -->
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 
-    <!-- Gallery -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
 
-    <!-- Google Analytics -->
-    
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
 
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
 
 </head>
 
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
 
-<body>
-
-<div class="bg-gradient"></div>
-<div class="bg-pattern"></div>
-
-<!-- Menu -->
-<!--Menu Links and Overlay-->
-<div class="menu-bg">
-    <div class="menu-container">
-        <ul>
-            
-            <li class="menu-item">
-                <a href="/">
-                    Home
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/archives">
-                    Archives
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/about">
-                    About
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/tags">
-                    Tags
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/categories">
-                    Categories
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/contact">
-                    Contact
-                </a>
-            </li>
-            
-        </ul>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
 </div>
 
-<!--Hamburger Icon-->
-<nav>
-    <a href="#menu"></a>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
 </nav>
 
-<div class="container">
 
-    <!-- Main Content -->
-    <div class="row">
-    <div class="col-sm-12">
 
-        <!--Title and Logo-->
-        <header>
-    <div class="logo">
-        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
-        
-    </div>
-</header>
 
-        <section class="main">
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
             
-<div class="post">
 
-    <div class="post-header">
-        <h1 class="title">
-            <a href="/2018/07/01/模型评估-量化预测质量/">
-                模型评估 量化预测质量
-            </a>
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/01/模型评估-量化预测质量/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          模型评估 量化预测质量
         </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-07-01</span>
-            
-            
-            
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-07-01 10:52:20" itemprop="dateCreated datePublished" datetime="2018-07-01T10:52:20+08:00">2018-07-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-08-26 19:01:43" itemprop="dateModified" datetime="2018-08-26T19:01:43+08:00">2018-08-26</time>
+              </span>
+
+          
+
         </div>
-    </div>
+      </header>
 
-    <div class="content">
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
-        <!-- Gallery -->
-        
-
-        <!-- Post Content -->
-        <p>本博文主要是在阅读 scikit-learn 官方文档<a href="http://scikit-learn.org/stable/modules/model_evaluation.html" target="_blank" rel="external">3.3. Model evaluation: quantifying the quality of predictions</a> 之后的总结。<br>首先看一下根据 label 特点的不同做出的分类任务类型的划分：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/metrics/1.PNG" alt="不同的分类任务"><br><a id="more"></a></p>
+      
+        <p>本博文主要是在阅读 scikit-learn 官方文档<a href="http://scikit-learn.org/stable/modules/model_evaluation.html" target="_blank" rel="noopener">3.3. Model evaluation: quantifying the quality of predictions</a> 之后的总结。<br>首先看一下根据 label 特点的不同做出的分类任务类型的划分：<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/metrics/1.PNG" alt="不同的分类任务"><br><a id="more"></a></p>
 <p>scikit-learn 提供了三种不同的 API 来评估模型的预测质量。</p>
 <ul>
 <li>Estimator score method（学习器的score 方法）</li>
@@ -176,9 +216,9 @@
 <h2 id="使用-scoring-参数来定义模型评估的规则"><a href="#使用-scoring-参数来定义模型评估的规则" class="headerlink" title="使用 scoring 参数来定义模型评估的规则"></a>使用 scoring 参数来定义模型评估的规则</h2><p>Model selection and evaluation using tools, such as <code>model_selection.GridSearchCV</code> and <code>model_selection.cross_val_score</code>, take a scoring parameter that controls what metric they apply to the estimators evaluated.<br>值得注意的是，所有的评分指标都遵循“大值优于小值”的约定。因此对于一些基于“距离”的度量，像 <code>metrics.mean_squared_error</code>，在此使用的是其相反数 <code>neg_mean_squared_error</code>。<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/metrics/scoring_parameters.PNG" alt="scoring_parameters"></p>
 <h2 id="分类问题的评估指标"><a href="#分类问题的评估指标" class="headerlink" title="分类问题的评估指标"></a>分类问题的评估指标</h2><p><code>sklearn.metrics</code> 模块提供了很多的损失（loss），评分（score）和辅助函数（utility）来度量分类器的性能。<br>一些指标函数需要分类器能够给出概率估计、confidence values, 和 binary decisions values。并且大部分的实现也允许通过提供 <code>sample_weights</code> 参数来计算指标的一个加权值。<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/metrics/classification_metrics.PNG" alt="classification_metrics"></p>
 <p>下面关注一下一些常见的指标。</p>
-<h4 id="Accuracy-score"><a href="#Accuracy-score" class="headerlink" title="Accuracy score"></a>Accuracy score</h4><p>\(\hat{y_i}\) 是第 i 个样本的预测值，\(y_i\) 是第 i 个样本的真实值。<br>$$\texttt{accuracy}(y, \hat{y}) = \frac{1}{n_\text{samples}} \sum_{i=0}^{n_\text{samples}-1} 1(\hat{y}_i = y_i)$$<br>其中 \(1(x)\) 是示性函数。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">import numpy as np</div><div class="line">from sklearn.metrics import accuracy_score</div><div class="line">y_pred = [0, 2, 1, 3]</div><div class="line">y_true = [0, 1, 2, 3]</div><div class="line">accuracy_score(y_true, y_pred)</div><div class="line">0.5</div><div class="line">accuracy_score(y_true, y_pred, normalize=False)</div><div class="line">2</div></pre></td></tr></table></figure></p>
-<p>在多标签（multilabel）任务下，使用二进制标签矩阵（binary label indicators），示性函数需要\(\hat{y}_i\) 和 \(y_i\) 完全匹配才取 1 值。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">accuracy_score(np.array([[0, 1], [1, 1]]), np.ones((2, 2)))</div><div class="line">0.5</div></pre></td></tr></table></figure></p>
-<h4 id="Classification-report"><a href="#Classification-report" class="headerlink" title="Classification report"></a>Classification report</h4><p>这个函数会构建一个展示常见分类度量指标的文本报告（text report）。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">from sklearn.metrics import classification_report</div><div class="line">y_true = [0, 1, 2, 2, 0]</div><div class="line">y_pred = [0, 0, 2, 1, 0]</div><div class="line">target_names = [&apos;class 0&apos;, &apos;class 1&apos;, &apos;class 2&apos;]</div><div class="line">print(classification_report(y_true, y_pred, target_names=target_names))</div><div class="line">             precision    recall  f1-score   support</div><div class="line"></div><div class="line">    class 0       0.67      1.00      0.80         2</div><div class="line">    class 1       0.00      0.00      0.00         1</div><div class="line">    class 2       1.00      0.50      0.67         2</div><div class="line"></div><div class="line">avg / total       0.67      0.60      0.59         5</div></pre></td></tr></table></figure></p>
+<h4 id="Accuracy-score"><a href="#Accuracy-score" class="headerlink" title="Accuracy score"></a>Accuracy score</h4><p>\(\hat{y_i}\) 是第 i 个样本的预测值，\(y_i\) 是第 i 个样本的真实值。<br>$$\texttt{accuracy}(y, \hat{y}) = \frac{1}{n_\text{samples}} \sum_{i=0}^{n_\text{samples}-1} 1(\hat{y}_i = y_i)$$<br>其中 \(1(x)\) 是示性函数。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">import numpy as np</span><br><span class="line">from sklearn.metrics import accuracy_score</span><br><span class="line">y_pred = [0, 2, 1, 3]</span><br><span class="line">y_true = [0, 1, 2, 3]</span><br><span class="line">accuracy_score(y_true, y_pred)</span><br><span class="line">0.5</span><br><span class="line">accuracy_score(y_true, y_pred, normalize=False)</span><br><span class="line">2</span><br></pre></td></tr></table></figure></p>
+<p>在多标签（multilabel）任务下，使用二进制标签矩阵（binary label indicators），示性函数需要\(\hat{y}_i\) 和 \(y_i\) 完全匹配才取 1 值。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">accuracy_score(np.array([[0, 1], [1, 1]]), np.ones((2, 2)))</span><br><span class="line">0.5</span><br></pre></td></tr></table></figure></p>
+<h4 id="Classification-report"><a href="#Classification-report" class="headerlink" title="Classification report"></a>Classification report</h4><p>这个函数会构建一个展示常见分类度量指标的文本报告（text report）。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">from sklearn.metrics import classification_report</span><br><span class="line">y_true = [0, 1, 2, 2, 0]</span><br><span class="line">y_pred = [0, 0, 2, 1, 0]</span><br><span class="line">target_names = [&apos;class 0&apos;, &apos;class 1&apos;, &apos;class 2&apos;]</span><br><span class="line">print(classification_report(y_true, y_pred, target_names=target_names))</span><br><span class="line">             precision    recall  f1-score   support</span><br><span class="line"></span><br><span class="line">    class 0       0.67      1.00      0.80         2</span><br><span class="line">    class 1       0.00      0.00      0.00         1</span><br><span class="line">    class 2       1.00      0.50      0.67         2</span><br><span class="line"></span><br><span class="line">avg / total       0.67      0.60      0.59         5</span><br></pre></td></tr></table></figure></p>
 <h4 id="Precision-recall-and-F-measures"><a href="#Precision-recall-and-F-measures" class="headerlink" title="Precision, recall and F-measures"></a>Precision, recall and F-measures</h4><p>对二分类问题而言，<br>$$<br>\text{precision} = \frac{tp}{tp + fp},<br>$$<br>$$<br>\text{recall} = \frac{tp}{tp + fn},<br>$$<br>$$<br>F_\beta = (1 + \beta^2) \frac{\text{precision} \times \text{recall}}{\beta^2 \text{precision} + \text{recall}}.<br>$$<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/metrics/recall_precision_f_beta.PNG" alt="recall_precision_f_beta"><br>对多类别和多标签分类而言，precision, recall, and F-measures 可以独立地应用于各个标签，然后可以通过 <code>average</code> 参数指定的方式将各个标签上的结果进行综合。 <code>average</code> 参数可以应用于 <code>average_precision_score</code> (multilabel only), <code>f1_score</code>, <code>fbeta_score</code>, <code>precision_recall_fscore_support</code>, <code>precision_score</code> and <code>recall_score</code> 这些函数。<br><em>Note that for “micro”-averaging in a multiclass setting with all labels included will produce equal precision, recall and F, while “weighted” averaging may produce an F-score that is not between precision and recall.</em></p>
 <ul>
 <li>\(y\) the set of predicted (sample, label) pairs</li>
@@ -198,127 +238,183 @@
     </div>
 
     
-
     
-        <div class="post-tags">
-            <i class="fa fa-tags" aria-hidden="true"></i>
-            <a href="/tags/DL/">#DL</a>
-        </div>
     
 
-    <!-- Comments -->
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/DL/" rel="tag"># DL</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/06/08/笔记-for-PyData-2015-Introduction-to-scikit-image/" rel="prev" title="笔记 for PyData 2015 - Introduction to Scikit-Image">
+      <i class="fa fa-chevron-left"></i> 笔记 for PyData 2015 - Introduction to Scikit-Image
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/07/02/Softmax-cross-entropy-推导及求导/" rel="next" title="Softmax Cross Entropy 推导及求导">
+      Softmax Cross Entropy 推导及求导 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
     
+  </article>
+  
+  
+  
 
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用-scoring-参数来定义模型评估的规则"><span class="nav-number">1.</span> <span class="nav-text">使用 scoring 参数来定义模型评估的规则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分类问题的评估指标"><span class="nav-number">2.</span> <span class="nav-text">分类问题的评估指标</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Accuracy-score"><span class="nav-number">2.0.1.</span> <span class="nav-text">Accuracy score</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Classification-report"><span class="nav-number">2.0.2.</span> <span class="nav-text">Classification report</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Precision-recall-and-F-measures"><span class="nav-number">2.0.3.</span> <span class="nav-text">Precision, recall and F-measures</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#precision-recall-curve"><span class="nav-number">2.0.4.</span> <span class="nav-text">precision_recall_curve</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#average-precision-score"><span class="nav-number">2.0.5.</span> <span class="nav-text">average_precision_score</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
 </div>
-        </section>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
 
     </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
 
-
-</div>
-
-<!-- Footer -->
-<div class="push"></div>
-
-<footer class="footer-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
-                <h2>About</h2>
-                <p>
-                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
-                </p>
-            </div>
-            
-    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
-        <h2>Recent Posts</h2>
-        <ul>
-            
-            <li>
-                <a class="footer-post" href="/2019/07/12/Unnamed-namespace/">Unnamed namespace</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/05/08/Static-variable-in-inlined-function/">Static variable in inline</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/04/23/Iterator-invalidation-rules/">Iterator invalidation rul</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/18/Emplace-back/">Emplace back</a>
-            </li>
-            
-        </ul>
-    </div>
+        
 
 
 
-            
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <ul class="list-inline footer-social-icons">
-                    
-                    <li class="list-inline-item">
-                        <a href="https://github.com/RobertLexis">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-github"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="mailto:robert_lexis@163.com">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-envelope-o"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="footer-copyright">
-                    @Untitled. All right reserved | Robert Lexis Loves Wenny
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<!-- After footer scripts -->
-
-<!-- jQuery -->
-<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-
-<!-- Tween Max -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
-
-<!-- Gallery -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
-
-<!-- Custom JavaScript -->
-<script src="/js/main.js"></script>
-
-<!-- Disqus Comments -->
 
 
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
 
 </body>
-
 </html>

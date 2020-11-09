@@ -1,330 +1,418 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<!-- Head tag -->
+<html lang="zh-CN">
 <head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/main.css">
 
-    <!--Description-->
-    
-        <meta name="description" content="Alibaba-集群数据导入MySQL数据库安装 MySQL 数据库1234sudo apt-get install mysql-server 密码：lexissudo apt-get install mysql-clientsudo apt-get install libmysqlclient-dev">
-    
 
-    <!--Author-->
-    
-        <meta name="author" content="Robert Lexis">
-    
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-    <!--Open Graph Title-->
-    
-        <meta property="og:title" content="Alibaba 集群数据导入MySQL数据库"/>
-    
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
-    <!--Open Graph Description-->
-    
+  <meta name="description" content="Alibaba-集群数据导入MySQL数据库安装 MySQL 数据库1234sudo apt-get install mysql-server 密码：lexissudo apt-get install mysql-clientsudo apt-get install libmysqlclient-dev">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Alibaba 集群数据导入MySQL数据库">
+<meta property="og:url" content="http://yoursite.com/2017/11/20/Alibaba-集群数据导入MySQL数据库/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="Alibaba-集群数据导入MySQL数据库安装 MySQL 数据库1234sudo apt-get install mysql-server 密码：lexissudo apt-get install mysql-clientsudo apt-get install libmysqlclient-dev">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-26T11:20:15.551Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Alibaba 集群数据导入MySQL数据库">
+<meta name="twitter:description" content="Alibaba-集群数据导入MySQL数据库安装 MySQL 数据库1234sudo apt-get install mysql-server 密码：lexissudo apt-get install mysql-clientsudo apt-get install libmysqlclient-dev">
 
-    <!--Open Graph Site Name-->
-    <meta property="og:site_name" content="This is Robert Lexis."/>
+<link rel="canonical" href="http://yoursite.com/2017/11/20/Alibaba-集群数据导入MySQL数据库/">
 
-    <!--Type page-->
-    
-        <meta property="og:type" content="article" />
-    
 
-    <!--Page Cover-->
-    
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
 
-    <meta name="twitter:card" content="summary" />
-    
+  <title>Alibaba 集群数据导入MySQL数据库 | The next stop - Antarctica</title>
+  
 
-    <!-- Title -->
-    
-    <title>Alibaba 集群数据导入MySQL数据库 - This is Robert Lexis.</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 
-    <!-- Custom Fonts -->
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 
-    <!-- Gallery -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
 
-    <!-- Google Analytics -->
-    
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
 
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
 
 </head>
 
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
 
-<body>
-
-<div class="bg-gradient"></div>
-<div class="bg-pattern"></div>
-
-<!-- Menu -->
-<!--Menu Links and Overlay-->
-<div class="menu-bg">
-    <div class="menu-container">
-        <ul>
-            
-            <li class="menu-item">
-                <a href="/">
-                    Home
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/archives">
-                    Archives
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/about">
-                    About
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/tags">
-                    Tags
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/categories">
-                    Categories
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/contact">
-                    Contact
-                </a>
-            </li>
-            
-        </ul>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
 </div>
 
-<!--Hamburger Icon-->
-<nav>
-    <a href="#menu"></a>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
 </nav>
 
-<div class="container">
 
-    <!-- Main Content -->
-    <div class="row">
-    <div class="col-sm-12">
 
-        <!--Title and Logo-->
-        <header>
-    <div class="logo">
-        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
-        
-    </div>
-</header>
 
-        <section class="main">
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
             
-<div class="post">
 
-    <div class="post-header">
-        <h1 class="title">
-            <a href="/2017/11/20/Alibaba-集群数据导入MySQL数据库/">
-                Alibaba 集群数据导入MySQL数据库
-            </a>
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/11/20/Alibaba-集群数据导入MySQL数据库/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Alibaba 集群数据导入MySQL数据库
         </h1>
-        <div class="post-info">
-            
-                <span class="date">2017-11-20</span>
-            
-            
-            
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-11-20 20:40:44" itemprop="dateCreated datePublished" datetime="2017-11-20T20:40:44+08:00">2017-11-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-08-26 19:20:15" itemprop="dateModified" datetime="2018-08-26T19:20:15+08:00">2018-08-26</time>
+              </span>
+
+          
+
         </div>
-    </div>
+      </header>
 
-    <div class="content">
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
-        <!-- Gallery -->
-        
-
-        <!-- Post Content -->
-        <h2 id="Alibaba-集群数据导入MySQL数据库"><a href="#Alibaba-集群数据导入MySQL数据库" class="headerlink" title="Alibaba-集群数据导入MySQL数据库"></a>Alibaba-集群数据导入MySQL数据库</h2><h3 id="安装-MySQL-数据库"><a href="#安装-MySQL-数据库" class="headerlink" title="安装 MySQL 数据库"></a>安装 MySQL 数据库</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install mysql-server </div><div class="line">密码：lexis</div><div class="line">sudo apt-get install mysql-client</div><div class="line">sudo apt-get install libmysqlclient-dev</div></pre></td></tr></table></figure>
+      
+        <h2 id="Alibaba-集群数据导入MySQL数据库"><a href="#Alibaba-集群数据导入MySQL数据库" class="headerlink" title="Alibaba-集群数据导入MySQL数据库"></a>Alibaba-集群数据导入MySQL数据库</h2><h3 id="安装-MySQL-数据库"><a href="#安装-MySQL-数据库" class="headerlink" title="安装 MySQL 数据库"></a>安装 MySQL 数据库</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install mysql-server </span><br><span class="line">密码：lexis</span><br><span class="line">sudo apt-get install mysql-client</span><br><span class="line">sudo apt-get install libmysqlclient-dev</span><br></pre></td></tr></table></figure>
 <a id="more"></a>
-<p>检查是否安装成功：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">sudo netstat -tap | grep mysqld</div><div class="line">输出：</div><div class="line">tcp        0      0 localhost:mysql         *:*                     LISTEN      21248/mysqld</div><div class="line"></div><div class="line">mysql -u root -p</div><div class="line">show databases;</div><div class="line">输出：</div><div class="line">+--------------------+</div><div class="line">| Database           |</div><div class="line">+--------------------+</div><div class="line">| information_schema |</div><div class="line">| mysql              |</div><div class="line">| performance_schema |</div><div class="line">| sys                |</div><div class="line">+--------------------+</div><div class="line">4 rows in set (0.00 sec)</div></pre></td></tr></table></figure></p>
+<p>检查是否安装成功：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">sudo netstat -tap | grep mysqld</span><br><span class="line">输出：</span><br><span class="line">tcp        0      0 localhost:mysql         *:*                     LISTEN      21248/mysqld</span><br><span class="line"></span><br><span class="line">mysql -u root -p</span><br><span class="line">show databases;</span><br><span class="line">输出：</span><br><span class="line">+--------------------+</span><br><span class="line">| Database           |</span><br><span class="line">+--------------------+</span><br><span class="line">| information_schema |</span><br><span class="line">| mysql              |</span><br><span class="line">| performance_schema |</span><br><span class="line">| sys                |</span><br><span class="line">+--------------------+</span><br><span class="line">4 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure></p>
 <p>安装 python-mysqldb, <code>sudo apt-get install python-mysqldb</code></p>
 <h3 id="导入数据"><a href="#导入数据" class="headerlink" title="导入数据"></a>导入数据</h3><ol>
 <li><p><code>mysql&gt; create database Alibaba;</code></p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">show databases;</div><div class="line">+--------------------+</div><div class="line">| Database           |</div><div class="line">+--------------------+</div><div class="line">| information_schema |</div><div class="line">| Alibaba            |</div><div class="line">| mysql              |</div><div class="line">| performance_schema |</div><div class="line">| sys                |</div><div class="line">+--------------------+</div><div class="line">5 rows in set (0.00 sec)</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">show databases;</span><br><span class="line">+--------------------+</span><br><span class="line">| Database           |</span><br><span class="line">+--------------------+</span><br><span class="line">| information_schema |</span><br><span class="line">| Alibaba            |</span><br><span class="line">| mysql              |</span><br><span class="line">| performance_schema |</span><br><span class="line">| sys                |</span><br><span class="line">+--------------------+</span><br><span class="line">5 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>新建 batch_instance 表</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">mysql&gt; use Alibaba;</div><div class="line">CREATE TABLE `batch_instance`(</div><div class="line">   `start_timestamp` INT NOT NULL,</div><div class="line">   `end_timestamp` INT,</div><div class="line">   `job_id` INT NOT NULL,</div><div class="line">   `task_id` INT NOT NULL,</div><div class="line">   `machine_id` INT NOT NULL,</div><div class="line">   `status` VARCHAR(30) NOT NULL,</div><div class="line">   `sequence_number` INT NOT NULL,</div><div class="line">   `total_sequence_number` INT NOT NULL,</div><div class="line">   `maximum_real_cpu_number` FLOAT,</div><div class="line">   `average_real_cpu_number` FLOAT,</div><div class="line">   `maximum_normalized_memory_usage` FLOAT,</div><div class="line">   `average_normalized_memory_usage` FLOAT</div><div class="line">)ENGINE=InnoDB DEFAULT CHARSET=utf8;</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; use Alibaba;</span><br><span class="line">CREATE TABLE `batch_instance`(</span><br><span class="line">   `start_timestamp` INT NOT NULL,</span><br><span class="line">   `end_timestamp` INT,</span><br><span class="line">   `job_id` INT NOT NULL,</span><br><span class="line">   `task_id` INT NOT NULL,</span><br><span class="line">   `machine_id` INT NOT NULL,</span><br><span class="line">   `status` VARCHAR(30) NOT NULL,</span><br><span class="line">   `sequence_number` INT NOT NULL,</span><br><span class="line">   `total_sequence_number` INT NOT NULL,</span><br><span class="line">   `maximum_real_cpu_number` FLOAT,</span><br><span class="line">   `average_real_cpu_number` FLOAT,</span><br><span class="line">   `maximum_normalized_memory_usage` FLOAT,</span><br><span class="line">   `average_normalized_memory_usage` FLOAT</span><br><span class="line">)ENGINE=InnoDB DEFAULT CHARSET=utf8;</span><br></pre></td></tr></table></figure>
 <p> 检查 batch_instance 表新建成功</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">mysql&gt; show tables;</div><div class="line">+-------------------+</div><div class="line">| Tables_in_Alibaba |</div><div class="line">+-------------------+</div><div class="line">| batch_instance    |</div><div class="line">+-------------------+</div><div class="line">1 row in set (0.00 sec)</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show tables;</span><br><span class="line">+-------------------+</span><br><span class="line">| Tables_in_Alibaba |</span><br><span class="line">+-------------------+</span><br><span class="line">| batch_instance    |</span><br><span class="line">+-------------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
 <p> 导入数据</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">LOAD DATA LOCAL INFILE &apos;/home/shark/Codes/Sigma/batch_instance.csv&apos; INTO TABLE batch_instance FIELDS TERMINATED BY &apos;,&apos; LINES TERMINATED BY &apos;\n&apos;;</div><div class="line">Query OK, 16094656 rows affected, 65535 warnings (1 min 44.68 sec)</div><div class="line">Records: 16094656  Deleted: 0  Skipped: 0  Warnings: 42434301</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">LOAD DATA LOCAL INFILE &apos;/home/shark/Codes/Sigma/batch_instance.csv&apos; INTO TABLE batch_instance FIELDS TERMINATED BY &apos;,&apos; LINES TERMINATED BY &apos;\n&apos;;</span><br><span class="line">Query OK, 16094656 rows affected, 65535 warnings (1 min 44.68 sec)</span><br><span class="line">Records: 16094656  Deleted: 0  Skipped: 0  Warnings: 42434301</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>新建 batch_task 表</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">CREATE TABLE `batch_task`(</div><div class="line">    `task_create_time` INT NOT NULL,</div><div class="line">    `task_end_time` INT NOT NULL,</div><div class="line">    `job_id` INT NOT NULL,</div><div class="line">    `task_id` INT NOT NULL,</div><div class="line">    `number_of_instances` INT NOT NULL,</div><div class="line">    `status` VARCHAR(30) NOT NULL,</div><div class="line">    `number_of_cpus_requested_per_instance_in_the_task` INT NOT NULL,</div><div class="line">    `normalized_memory_requested_per_instance_in_the_task` DOUBLE NOT NULL</div><div class="line">)ENGINE=InnoDB DEFAULT CHARSET=utf8;</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE `batch_task`(</span><br><span class="line">    `task_create_time` INT NOT NULL,</span><br><span class="line">    `task_end_time` INT NOT NULL,</span><br><span class="line">    `job_id` INT NOT NULL,</span><br><span class="line">    `task_id` INT NOT NULL,</span><br><span class="line">    `number_of_instances` INT NOT NULL,</span><br><span class="line">    `status` VARCHAR(30) NOT NULL,</span><br><span class="line">    `number_of_cpus_requested_per_instance_in_the_task` INT NOT NULL,</span><br><span class="line">    `normalized_memory_requested_per_instance_in_the_task` DOUBLE NOT NULL</span><br><span class="line">)ENGINE=InnoDB DEFAULT CHARSET=utf8;</span><br></pre></td></tr></table></figure>
 <p> 导入数据</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">LOAD DATA LOCAL INFILE &apos;/home/shark/Codes/Sigma/batch_task.csv&apos; INTO TABLE batch_task FIELDS TERMINATED BY &apos;,&apos; LINES TERMINATED BY &apos;\n&apos;;</div><div class="line">Query OK, 80553 rows affected, 18034 warnings (0.48 sec)</div><div class="line">Records: 80553  Deleted: 0  Skipped: 0  Warnings: 18034</div><div class="line">这里的 18034 个警告是因为阿里巴巴给出的 schema 描述中 `number_of_cpus_requested_per_instance_in_the_task` 和 `normalized_memory_requested_per_instance_in_the_task` 是强制非空的，我也是这样建的表，但是实际上在 batch_task.csv 是存在 9017 个这两个数据对为空的，因此共 9017 * 2 = 18034 个警告。</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">LOAD DATA LOCAL INFILE &apos;/home/shark/Codes/Sigma/batch_task.csv&apos; INTO TABLE batch_task FIELDS TERMINATED BY &apos;,&apos; LINES TERMINATED BY &apos;\n&apos;;</span><br><span class="line">Query OK, 80553 rows affected, 18034 warnings (0.48 sec)</span><br><span class="line">Records: 80553  Deleted: 0  Skipped: 0  Warnings: 18034</span><br><span class="line">这里的 18034 个警告是因为阿里巴巴给出的 schema 描述中 `number_of_cpus_requested_per_instance_in_the_task` 和 `normalized_memory_requested_per_instance_in_the_task` 是强制非空的，我也是这样建的表，但是实际上在 batch_task.csv 是存在 9017 个这两个数据对为空的，因此共 9017 * 2 = 18034 个警告。</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>新建 container_event 表</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">CREATE TABLE `container_event`(</div><div class="line">    `timestamp` INT NOT NULL,</div><div class="line">    `event_type` VARCHAR(30) NOT NULL,</div><div class="line">    `instance_id` INT NOT NULL,</div><div class="line">    `machine_id` INT NOT NULL,</div><div class="line">    `number_of_cpu_requested` INT NOT NULL,</div><div class="line">    `normalized_memory_requested` FLOAT NOT NULL,</div><div class="line">    `normalized_disk_space_requested` FLOAT NOT NULL,</div><div class="line">    `cpu_id_of_allocated_cpus` VARCHAR(100) NOT NULL</div><div class="line">)ENGINE=InnoDB DEFAULT CHARSET=utf8;</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE `container_event`(</span><br><span class="line">    `timestamp` INT NOT NULL,</span><br><span class="line">    `event_type` VARCHAR(30) NOT NULL,</span><br><span class="line">    `instance_id` INT NOT NULL,</span><br><span class="line">    `machine_id` INT NOT NULL,</span><br><span class="line">    `number_of_cpu_requested` INT NOT NULL,</span><br><span class="line">    `normalized_memory_requested` FLOAT NOT NULL,</span><br><span class="line">    `normalized_disk_space_requested` FLOAT NOT NULL,</span><br><span class="line">    `cpu_id_of_allocated_cpus` VARCHAR(100) NOT NULL</span><br><span class="line">)ENGINE=InnoDB DEFAULT CHARSET=utf8;</span><br></pre></td></tr></table></figure>
 <p> 导入数据</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">LOAD DATA LOCAL INFILE &apos;/home/shark/Codes/Sigma/container_event.csv&apos; INTO TABLE container_event FIELDS TERMINATED BY &apos;,&apos; LINES TERMINATED BY &apos;\n&apos;;</div><div class="line">Query OK, 11102 rows affected (0.14 sec)</div><div class="line">Records: 11102  Deleted: 0  Skipped: 0  Warnings: 0</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">LOAD DATA LOCAL INFILE &apos;/home/shark/Codes/Sigma/container_event.csv&apos; INTO TABLE container_event FIELDS TERMINATED BY &apos;,&apos; LINES TERMINATED BY &apos;\n&apos;;</span><br><span class="line">Query OK, 11102 rows affected (0.14 sec)</span><br><span class="line">Records: 11102  Deleted: 0  Skipped: 0  Warnings: 0</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>新建 container_usage 表</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">CREATE TABLE `container_usage`(</div><div class="line">    `start_time_of_measurement_interval` INT NOT NULL,</div><div class="line">    `online_instance_id` INT NOT NULL,</div><div class="line">    `used_percent_of_requested_cpus` FLOAT NOT NULL,</div><div class="line">    `used_percent_of_requested_memory` FLOAT NOT NULL,</div><div class="line">    `used_percent_of_requested_disk_space` FLOAT,</div><div class="line">    `linux_cpu_load_average_of_1_minute` FLOAT NOT NULL,</div><div class="line">    `linux_cpu_load_average_of_5_minute` FLOAT NOT NULL,</div><div class="line">    `linux_cpu_load_average_of_15_minute` FLOAT NOT NULL,</div><div class="line">    `averaged_cycles_per_instruction` FLOAT,</div><div class="line">    `average_last_level_cache_misses_per_1000_instructions` FLOAT,</div><div class="line">    `maximum_cycles_per_instruction` FLOAT,</div><div class="line">    `maximum_last_level_cache_misses_per_1000_instructions` FLOAT</div><div class="line">)ENGINE=InnoDB DEFAULT CHARSET=utf8;</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE `container_usage`(</span><br><span class="line">    `start_time_of_measurement_interval` INT NOT NULL,</span><br><span class="line">    `online_instance_id` INT NOT NULL,</span><br><span class="line">    `used_percent_of_requested_cpus` FLOAT NOT NULL,</span><br><span class="line">    `used_percent_of_requested_memory` FLOAT NOT NULL,</span><br><span class="line">    `used_percent_of_requested_disk_space` FLOAT,</span><br><span class="line">    `linux_cpu_load_average_of_1_minute` FLOAT NOT NULL,</span><br><span class="line">    `linux_cpu_load_average_of_5_minute` FLOAT NOT NULL,</span><br><span class="line">    `linux_cpu_load_average_of_15_minute` FLOAT NOT NULL,</span><br><span class="line">    `averaged_cycles_per_instruction` FLOAT,</span><br><span class="line">    `average_last_level_cache_misses_per_1000_instructions` FLOAT,</span><br><span class="line">    `maximum_cycles_per_instruction` FLOAT,</span><br><span class="line">    `maximum_last_level_cache_misses_per_1000_instructions` FLOAT</span><br><span class="line">)ENGINE=InnoDB DEFAULT CHARSET=utf8;</span><br></pre></td></tr></table></figure>
 <p> 导入数据</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">LOAD DATA LOCAL INFILE &apos;/home/shark/Codes/Sigma/container_usage.csv&apos; INTO TABLE container_usage FIELDS TERMINATED BY &apos;,&apos; LINES TERMINATED BY &apos;\n&apos;;</div><div class="line">Query OK, 1480906 rows affected, 23 warnings (13.77 sec)</div><div class="line">Records: 1480906  Deleted: 0  Skipped: 0  Warnings: 23</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">LOAD DATA LOCAL INFILE &apos;/home/shark/Codes/Sigma/container_usage.csv&apos; INTO TABLE container_usage FIELDS TERMINATED BY &apos;,&apos; LINES TERMINATED BY &apos;\n&apos;;</span><br><span class="line">Query OK, 1480906 rows affected, 23 warnings (13.77 sec)</span><br><span class="line">Records: 1480906  Deleted: 0  Skipped: 0  Warnings: 23</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>新建 server_event 表</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">CREATE TABLE `server_event`(</div><div class="line">    `timestamp` INT NOT NULL,</div><div class="line">    `machine_id` INT NOT NULL,</div><div class="line">    `event_type` VARCHAR(30) NOT NULL,</div><div class="line">    `event_detail` VARCHAR(30),</div><div class="line">    `number_of_cpus` INT,</div><div class="line">    `normalized_memory` FLOAT,</div><div class="line">    `normalized_disk_space` FLOAT</div><div class="line">)ENGINE=InnoDB DEFAULT CHARSET=utf8;</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE `server_event`(</span><br><span class="line">    `timestamp` INT NOT NULL,</span><br><span class="line">    `machine_id` INT NOT NULL,</span><br><span class="line">    `event_type` VARCHAR(30) NOT NULL,</span><br><span class="line">    `event_detail` VARCHAR(30),</span><br><span class="line">    `number_of_cpus` INT,</span><br><span class="line">    `normalized_memory` FLOAT,</span><br><span class="line">    `normalized_disk_space` FLOAT</span><br><span class="line">)ENGINE=InnoDB DEFAULT CHARSET=utf8;</span><br></pre></td></tr></table></figure>
 <p> 导入数据</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">LOAD DATA LOCAL INFILE &apos;/home/shark/Codes/Sigma/server_event.csv&apos; INTO TABLE server_event FIELDS TERMINATED BY &apos;,&apos; LINES TERMINATED BY &apos;\n&apos;;</div><div class="line">Query OK, 1352 rows affected (0.02 sec)</div><div class="line">Records: 1352  Deleted: 0  Skipped: 0  Warnings: 0</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">LOAD DATA LOCAL INFILE &apos;/home/shark/Codes/Sigma/server_event.csv&apos; INTO TABLE server_event FIELDS TERMINATED BY &apos;,&apos; LINES TERMINATED BY &apos;\n&apos;;</span><br><span class="line">Query OK, 1352 rows affected (0.02 sec)</span><br><span class="line">Records: 1352  Deleted: 0  Skipped: 0  Warnings: 0</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>新建 server_usage 表</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">CREATE TABLE `server_usage`(</div><div class="line">    `timestamp` INT NOT NULL,</div><div class="line">    `machine_id` INT NOT NULL,</div><div class="line">    `used_percent_of_cpus` FLOAT NOT NULL,</div><div class="line">    `used_percent_of_memory` FLOAT NOT NULL,</div><div class="line">    `used_percent_of_disk_space` FLOAT NOT NULL,</div><div class="line">    `linux_cpu_load_average_of_1_minute` INT NOT NULL,</div><div class="line">    `linux_cpu_load_average_of_5_minute` FLOAT NOT NULL,</div><div class="line">    `linux_cpu_load_average_of_15_minute` FLOAT NOT NULL</div><div class="line">)ENGINE=InnoDB DEFAULT CHARSET=utf8;</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE `server_usage`(</span><br><span class="line">    `timestamp` INT NOT NULL,</span><br><span class="line">    `machine_id` INT NOT NULL,</span><br><span class="line">    `used_percent_of_cpus` FLOAT NOT NULL,</span><br><span class="line">    `used_percent_of_memory` FLOAT NOT NULL,</span><br><span class="line">    `used_percent_of_disk_space` FLOAT NOT NULL,</span><br><span class="line">    `linux_cpu_load_average_of_1_minute` INT NOT NULL,</span><br><span class="line">    `linux_cpu_load_average_of_5_minute` FLOAT NOT NULL,</span><br><span class="line">    `linux_cpu_load_average_of_15_minute` FLOAT NOT NULL</span><br><span class="line">)ENGINE=InnoDB DEFAULT CHARSET=utf8;</span><br></pre></td></tr></table></figure>
 <p> 导入数据</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">LOAD DATA LOCAL INFILE &apos;/home/shark/Codes/Sigma/server_usage.csv&apos; INTO TABLE server_usage FIELDS TERMINATED BY &apos;,&apos; LINES TERMINATED BY &apos;\n&apos;;</div><div class="line">Query OK, 187963 rows affected, 5 warnings (1.03 sec)</div><div class="line">Records: 187963  Deleted: 0  Skipped: 0  Warnings: 5</div></pre></td></tr></table></figure></li>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">LOAD DATA LOCAL INFILE &apos;/home/shark/Codes/Sigma/server_usage.csv&apos; INTO TABLE server_usage FIELDS TERMINATED BY &apos;,&apos; LINES TERMINATED BY &apos;\n&apos;;</span><br><span class="line">Query OK, 187963 rows affected, 5 warnings (1.03 sec)</span><br><span class="line">Records: 187963  Deleted: 0  Skipped: 0  Warnings: 5</span><br></pre></td></tr></table></figure></li>
 </ol>
 
     </div>
 
     
-
+    
     
 
-    <!-- Comments -->
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/11/20/仿真系统：A-Dynamic-Service-Allocation-Algorithm-in-Mobile-Edge-Computing-for-ICTC-2017/" rel="prev" title="仿真系统：A Dynamic Service Allocation Algorithm in Mobile Edge Computing for ICTC 2017">
+      <i class="fa fa-chevron-left"></i> 仿真系统：A Dynamic Service Allocation Algorithm in Mobile Edge Computing for ICTC 2017
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/11/21/Pandas-加载数据的I-O性能比较/" rel="next" title="Pandas 加载数据的I/O性能比较">
+      Pandas 加载数据的I/O性能比较 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
     
+  </article>
+  
+  
+  
 
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Alibaba-集群数据导入MySQL数据库"><span class="nav-number">1.</span> <span class="nav-text">Alibaba-集群数据导入MySQL数据库</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装-MySQL-数据库"><span class="nav-number">1.1.</span> <span class="nav-text">安装 MySQL 数据库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#导入数据"><span class="nav-number">1.2.</span> <span class="nav-text">导入数据</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
 </div>
-        </section>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
 
     </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
 
-
-</div>
-
-<!-- Footer -->
-<div class="push"></div>
-
-<footer class="footer-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
-                <h2>About</h2>
-                <p>
-                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
-                </p>
-            </div>
-            
-    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
-        <h2>Recent Posts</h2>
-        <ul>
-            
-            <li>
-                <a class="footer-post" href="/2019/07/12/Unnamed-namespace/">Unnamed namespace</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/05/08/Static-variable-in-inlined-function/">Static variable in inline</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/04/23/Iterator-invalidation-rules/">Iterator invalidation rul</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/18/Emplace-back/">Emplace back</a>
-            </li>
-            
-        </ul>
-    </div>
+        
 
 
 
-            
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <ul class="list-inline footer-social-icons">
-                    
-                    <li class="list-inline-item">
-                        <a href="https://github.com/RobertLexis">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-github"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="mailto:robert_lexis@163.com">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-envelope-o"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="footer-copyright">
-                    @Untitled. All right reserved | Robert Lexis Loves Wenny
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<!-- After footer scripts -->
-
-<!-- jQuery -->
-<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-
-<!-- Tween Max -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
-
-<!-- Gallery -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
-
-<!-- Custom JavaScript -->
-<script src="/js/main.js"></script>
-
-<!-- Disqus Comments -->
 
 
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
 
 </body>
-
 </html>

@@ -1,172 +1,216 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<!-- Head tag -->
+<html lang="zh-CN">
 <head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/main.css">
 
-    <!--Description-->
-    
-        <meta name="description" content="在参加数据挖掘的比赛时，遇到了类别不平衡的问题，在着手解决这个问题的过程中发现了来自 Silicon Valley Data Science(svds) TOM FAWCETT 的一篇博客 Learning from Imbalanced Classes 写的着实精彩，因此决定将其翻译过来。
-Learning from Imbalanced Classes如果你刚刚上完一门机器学习的课程，你使用的大部分数据集可能是很简单的。当你拟合分类器时，样本的类别是平衡的，也就是说这些类别的样本量大体相等。导师通常是使用清洗过的数据集进行教学，从而能够集中精力在讲解特定的算法和技术上。通常你看到的样本是下面这样的，点代表样本，不同的颜色或者形状代表不同的类型。">
-    
 
-    <!--Author-->
-    
-        <meta name="author" content="Robert Lexis">
-    
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-    <!--Open Graph Title-->
-    
-        <meta property="og:title" content="翻译 Learning from Imbalanced Classes"/>
-    
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
-    <!--Open Graph Description-->
-    
+  <meta name="description" content="在参加数据挖掘的比赛时，遇到了类别不平衡的问题，在着手解决这个问题的过程中发现了来自 Silicon Valley Data Science(svds) TOM FAWCETT 的一篇博客 Learning from Imbalanced Classes 写的着实精彩，因此决定将其翻译过来。 Learning from Imbalanced Classes如果你刚刚上完一门机器学习的课程，你使用的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="翻译 Learning From Imbalanced Classes">
+<meta property="og:url" content="http://yoursite.com/2017/11/04/翻译-Learning-from-Imbalanced-Classes/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="在参加数据挖掘的比赛时，遇到了类别不平衡的问题，在着手解决这个问题的过程中发现了来自 Silicon Valley Data Science(svds) TOM FAWCETT 的一篇博客 Learning from Imbalanced Classes 写的着实精彩，因此决定将其翻译过来。 Learning from Imbalanced Classes如果你刚刚上完一门机器学习的课程，你使用的">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/clean.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig2.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/messy.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/Sample-ROC.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/Sample-PR-1.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig5.jpg">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig6.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig7.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig8.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig9.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig10.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig11.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig12.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig13.png">
+<meta property="og:updated_time" content="2018-08-26T11:23:30.970Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="翻译 Learning From Imbalanced Classes">
+<meta name="twitter:description" content="在参加数据挖掘的比赛时，遇到了类别不平衡的问题，在着手解决这个问题的过程中发现了来自 Silicon Valley Data Science(svds) TOM FAWCETT 的一篇博客 Learning from Imbalanced Classes 写的着实精彩，因此决定将其翻译过来。 Learning from Imbalanced Classes如果你刚刚上完一门机器学习的课程，你使用的">
+<meta name="twitter:image" content="http://oytnj8g2y.bkt.clouddn.com/clean.png">
 
-    <!--Open Graph Site Name-->
-    <meta property="og:site_name" content="This is Robert Lexis."/>
+<link rel="canonical" href="http://yoursite.com/2017/11/04/翻译-Learning-from-Imbalanced-Classes/">
 
-    <!--Type page-->
-    
-        <meta property="og:type" content="article" />
-    
 
-    <!--Page Cover-->
-    
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
 
-    <meta name="twitter:card" content="summary" />
-    
+  <title>翻译 Learning From Imbalanced Classes | The next stop - Antarctica</title>
+  
 
-    <!-- Title -->
-    
-    <title>翻译 Learning from Imbalanced Classes - This is Robert Lexis.</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 
-    <!-- Custom Fonts -->
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 
-    <!-- Gallery -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
 
-    <!-- Google Analytics -->
-    
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
 
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
 
 </head>
 
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
 
-<body>
-
-<div class="bg-gradient"></div>
-<div class="bg-pattern"></div>
-
-<!-- Menu -->
-<!--Menu Links and Overlay-->
-<div class="menu-bg">
-    <div class="menu-container">
-        <ul>
-            
-            <li class="menu-item">
-                <a href="/">
-                    Home
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/archives">
-                    Archives
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/about">
-                    About
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/tags">
-                    Tags
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/categories">
-                    Categories
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/contact">
-                    Contact
-                </a>
-            </li>
-            
-        </ul>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
 </div>
 
-<!--Hamburger Icon-->
-<nav>
-    <a href="#menu"></a>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
 </nav>
 
-<div class="container">
 
-    <!-- Main Content -->
-    <div class="row">
-    <div class="col-sm-12">
 
-        <!--Title and Logo-->
-        <header>
-    <div class="logo">
-        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
-        
-    </div>
-</header>
 
-        <section class="main">
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
             
-<div class="post">
 
-    <div class="post-header">
-        <h1 class="title">
-            <a href="/2017/11/04/翻译-Learning-from-Imbalanced-Classes/">
-                翻译 Learning from Imbalanced Classes
-            </a>
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/11/04/翻译-Learning-from-Imbalanced-Classes/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          翻译 Learning From Imbalanced Classes
         </h1>
-        <div class="post-info">
-            
-                <span class="date">2017-11-04</span>
-            
-            
-            
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-11-04 17:16:36" itemprop="dateCreated datePublished" datetime="2017-11-04T17:16:36+08:00">2017-11-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-08-26 19:23:30" itemprop="dateModified" datetime="2018-08-26T19:23:30+08:00">2018-08-26</time>
+              </span>
+
+          
+
         </div>
-    </div>
+      </header>
 
-    <div class="content">
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
-        <!-- Gallery -->
-        
-
-        <!-- Post Content -->
-        <p>在参加数据挖掘的比赛时，遇到了类别不平衡的问题，在着手解决这个问题的过程中发现了来自 <a href="https://www.svds.com/" target="_blank" rel="external">Silicon Valley Data Science(svds)</a> <a href="https://www.svds.com/team/tom-fawcett/" target="_blank" rel="external">TOM FAWCETT</a> 的一篇博客 <a href="https://www.svds.com/learning-imbalanced-classes/" target="_blank" rel="external">Learning from Imbalanced Classes</a> 写的着实精彩，因此决定将其翻译过来。</p>
+      
+        <p>在参加数据挖掘的比赛时，遇到了类别不平衡的问题，在着手解决这个问题的过程中发现了来自 <a href="https://www.svds.com/" target="_blank" rel="noopener">Silicon Valley Data Science(svds)</a> <a href="https://www.svds.com/team/tom-fawcett/" target="_blank" rel="noopener">TOM FAWCETT</a> 的一篇博客 <a href="https://www.svds.com/learning-imbalanced-classes/" target="_blank" rel="noopener">Learning from Imbalanced Classes</a> 写的着实精彩，因此决定将其翻译过来。</p>
 <h2 id="Learning-from-Imbalanced-Classes"><a href="#Learning-from-Imbalanced-Classes" class="headerlink" title="Learning from Imbalanced Classes"></a>Learning from Imbalanced Classes</h2><p>如果你刚刚上完一门机器学习的课程，你使用的大部分数据集可能是很简单的。当你拟合分类器时，样本的类别是平衡的，也就是说这些类别的样本量大体相等。导师通常是使用清洗过的数据集进行教学，从而能够集中精力在讲解特定的算法和技术上。通常你看到的样本是下面这样的，点代表样本，不同的颜色或者形状代表不同的类型。<br><img src="http://oytnj8g2y.bkt.clouddn.com/clean.png" alt="clean.png"></p>
 <a id="more"></a>
 <p>分类算法的目的是尝试学习出一个分类器能够区分这两者。基于不同的数学、统计或者几何假设，会有很多不同的算法。<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig2.png" alt="ImbalancedClasses_fig2.png"><br>但是当你接触到真实的未清洗的数据时，你会注意到的第一件事情就是数据会含有很多的噪声，并且类别不平衡。真实数据的散点图可能是下面这样的：<br><img src="http://oytnj8g2y.bkt.clouddn.com/messy.png" alt="messy.png"><br>这个数据的主要问题是类别不平衡，红色点几乎被蓝色点淹没了。<br>学术界在研究不平衡类别问题时少数类样本量会占到10%到20%。但是真实数据集会比这更加失衡。下面是几个这样的例子：</p>
@@ -199,7 +243,7 @@ Learning from Imbalanced Classes如果你刚刚上完一门机器学习的课程
 </ul>
 <h3 id="离题：评估的-dos-与-don’ts"><a href="#离题：评估的-dos-与-don’ts" class="headerlink" title="离题：评估的 dos 与 don’ts"></a>离题：评估的 dos 与 don’ts</h3><p>在谈论如何使用类别不平衡的数据训练分类器之前，先讨论一下如何正确的评估一个分类器。这一点如何强调也不足为过。只有考核正确的指标你才能取得进步。</p>
 <ol>
-<li>不要使用准确率（或者错误率）去评估你的分类器。因为这有两大缺陷。准确率朴素地应用了一个 0.50 的门限去决定样本到底属于哪一类，这在类别不平衡时通常是错误的。第二点是，分类准确率仅仅是基于错误分类的计数，你应该知道的更多，比如哪些类经常被混淆，在评分曲线的高的一端，低的一端，还是整个曲线上都被混淆着。如果你不懂这些点，你可以去看一下这篇博客 <a href="http://www.svds.com/classifiers2/" target="_blank" rel="external">The Basics of Classifier Evaluation, Part 2</a>。你应该使用 ROC 曲线，precision-recall 曲线，lift 曲线，或者 profit（gain）曲线去可视化分类器的性能。<br><img src="http://oytnj8g2y.bkt.clouddn.com/Sample-ROC.png" alt="Sample-ROC"><br>ROC curve<br><img src="http://oytnj8g2y.bkt.clouddn.com/Sample-PR-1.png" alt="Sample-PR"><br>PR curve</li>
+<li>不要使用准确率（或者错误率）去评估你的分类器。因为这有两大缺陷。准确率朴素地应用了一个 0.50 的门限去决定样本到底属于哪一类，这在类别不平衡时通常是错误的。第二点是，分类准确率仅仅是基于错误分类的计数，你应该知道的更多，比如哪些类经常被混淆，在评分曲线的高的一端，低的一端，还是整个曲线上都被混淆着。如果你不懂这些点，你可以去看一下这篇博客 <a href="http://www.svds.com/classifiers2/" target="_blank" rel="noopener">The Basics of Classifier Evaluation, Part 2</a>。你应该使用 ROC 曲线，precision-recall 曲线，lift 曲线，或者 profit（gain）曲线去可视化分类器的性能。<br><img src="http://oytnj8g2y.bkt.clouddn.com/Sample-ROC.png" alt="Sample-ROC"><br>ROC curve<br><img src="http://oytnj8g2y.bkt.clouddn.com/Sample-PR-1.png" alt="Sample-PR"><br>PR curve</li>
 <li>不要使用<code>score</code>[3][3]或者<code>predict</code>从分类器得到硬的分类标签，而应该使用<code>proba</code>或者<code>predict_proba</code>得到概率估计。</li>
 <li>当你得到概率估计，不要盲目地使用一个 0.50 的决策门限来区分类别。看一下性能曲线来决定一个合适的门限。</li>
 <li>不管你在训练时做了什么，一定要在自然（分层）的分布上测试。看一下<code>sklearn.cross_validation.StratifiedKFold</code>。</li>
@@ -207,15 +251,15 @@ Learning from Imbalanced Classes如果你刚刚上完一门机器学习的课程
 </ol>
 <p>上面展示的二维图表要比一个准确率数值含有更多的信息。但是如果必须要一个数字度量，下面的指标比准确率更可取。</p>
 <ol>
-<li><a href="https://en.wikipedia.org/wiki/Receiver_operating_characteristic#Area_under_the_curve" target="_blank" rel="external">The Area Under the ROC curve (AUC)</a> is a good general statistic. It is equal to the probability that a random positive example will be ranked above a random negative example.</li>
-<li>The <a href="https://en.wikipedia.org/wiki/F1_score" target="_blank" rel="external">F1 Score</a> is the harmonic mean of precision and recall. It is commonly used in text processing when an aggregate measure is sought.</li>
-<li><a href="https://en.wikipedia.org/wiki/Cohen%27s_kappa" target="_blank" rel="external">Cohen’s Kappa</a> is an evaluation statistic that takes into account how much agreement would be expected by chance.</li>
+<li><a href="https://en.wikipedia.org/wiki/Receiver_operating_characteristic#Area_under_the_curve" target="_blank" rel="noopener">The Area Under the ROC curve (AUC)</a> is a good general statistic. It is equal to the probability that a random positive example will be ranked above a random negative example.</li>
+<li>The <a href="https://en.wikipedia.org/wiki/F1_score" target="_blank" rel="noopener">F1 Score</a> is the harmonic mean of precision and recall. It is commonly used in text processing when an aggregate measure is sought.</li>
+<li><a href="https://en.wikipedia.org/wiki/Cohen%27s_kappa" target="_blank" rel="noopener">Cohen’s Kappa</a> is an evaluation statistic that takes into account how much agreement would be expected by chance.</li>
 </ol>
 <h3 id="过采样或者下采样"><a href="#过采样或者下采样" class="headerlink" title="过采样或者下采样"></a>过采样或者下采样</h3><p>它们是最简单的方式，仅仅需要对处理步骤的很少改变，对样本集合进行调整直到达到平衡。过采样随机地重复少数类样本来增加少数类样本的数目，下采样随机地下采样多数类样本。一些数据科学家幼稚地认为过采样比下采样要好，因为过采样会产生更多的数据样本，而下采样却丢弃了数据样本。但是需要记住的是，重复数据并不是没有后果，重复数据会导致变量的方差变得比其真实方差要小，好的一面是，重复数据也增加了分类器所犯错误的计数，如果一个分类器在原始的数据集上犯了一个 false negative 的错误，并且数据集重复了 5 倍，那么分类器就会在新的数据集上犯 6 个错误。相反地，下采样会导致变量的方差变得比其真实方差要大。就因为如此，机器学习中过采样，下采样和使用自然分布都有应用。<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig5.jpg" alt="ImbalancedClasses_fig5.png"><br>大部分的机器学习包能够进行简单的采样调整。R包<code>unbalanced</code>实现了一些专门用于类别不平衡数据集的采样技术，并且<code>scikit-learn.cross_validation</code>也有基本的采样算法。</p>
-<h3 id="Bayesian-argument-of-Wallace-et-al"><a href="#Bayesian-argument-of-Wallace-et-al" class="headerlink" title="Bayesian argument of Wallace et al."></a>Bayesian argument of Wallace et al.</h3><p>在论文<em>Class Imbalance, Redux</em>, by Wallace, Small, Brodley and Trikalinos[4][4] 中提出了可能是最好的关于类别不平衡的理论证明和实践建议。他们支持下采样多数类。他们提出的证明是数学理论上的，但是在这里我仅会展示一个他们用来表达观点的例子。他们认为两个类别在一些具有解释性的变量分布的尾部必须可分辨的。假设有两个类别只有一个依赖变量<code>x</code>，每一个类别产生自一个标准差为 1 的高斯分布，类别 1 的高斯分布的均值为 1，类别 2 的高斯分布的均值为 2。它们看起来是这样的：<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig6.png" alt="ImbalancedClasses_fig6.png"><br>给定一个 x 值，你会使用哪一个门限来确定这个样本来自于哪一个类别？很明显是中间的点 x=1.5，即图中的垂直线，如果一个新的样本 x 落在了小于 1.5 的一边，那么它可能就是类别 1，否则的话就是类别 2。当从这些样本中进行学习的时候，我们期望学习到的判别线就是 1.5。事实上，如果类别是平衡的话，这确实是我们会得到的结果。在 x 轴上的点是从每个分布得到的样本。<br>但是如果类别 1 是少数类，并假设我们有 10 个类别 1 的样本，50个类别 2 的样本，这种情况下，我们很可能学习到的就是一个发生了偏移的分隔线。<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig7.png" alt="ImbalancedClasses_fig7.png"><br>我们可以通过下采样多数类的方式让其在数量上匹配少数类。问题是在于由于样本量的减少，学习出来的分割线会具有较高的易变性。做了10次采样，会导致10根不同的垂直线。<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig8.png" alt="ImbalancedClasses_fig8.png"><br>因此最后一个步骤就是使用 <a href="https://en.wikipedia.org/wiki/Bootstrap_aggregating" target="_blank" rel="external">bagging</a> 的方式将这些分类器进行组合。整个过程看起来就是下面这样的：<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig9.png" alt="ImbalancedClasses_fig9.png"><br>这个技术在 Scikit-learn 中并没有实现，但是一个叫做 <a href="https://github.com/silicon-valley-data-science/learning-from-imbalanced-classes/blob/master/blagging.py" target="_blank" rel="external"><code>blagging.py</code></a>（balanced bagging）实现了一个 <code>BlaggingClassifier</code>，它在聚合之前平衡了 bootstrap 之后的样本。</p>
-<h3 id="Neighbor-based-approaches"><a href="#Neighbor-based-approaches" class="headerlink" title="Neighbor-based approaches"></a>Neighbor-based approaches</h3><p>上采样或者下采样使用随机选择样本的方式来调整样本的比例。一些其他的方式会仔细地检查样本空间，然后基于近邻关系采取一些行为。<br>例如，Tomek link 是指互为最近邻的分属两类的一对样本。换句话说，就是它们分属不同的类别但是却彼此很邻近。<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig10.png" alt="ImbalancedClasses_fig10.png"><br>Tomek 算法找到这样的样本对，并且从中移除多数类的样本。思想就是让多数类和少数类之间的边界变得更加清晰，让少数类区域更加清楚。上面的图展示了一个简单的 Tomek link 移除的例子。R 包的<code>unbalanced</code>除了一些专门用于类别不平衡数据集的采样技术，也实现了 Tomek link 移除。 Scikit-learn 虽然没有内建的这种功能，但是有一些可用的独立包（比如<a href="https://github.com/ojtwist/TomekLink" target="_blank" rel="external">TomekLink</a>）。</p>
-<h3 id="Synthesizing-new-examples-SMOTE-and-descendants"><a href="#Synthesizing-new-examples-SMOTE-and-descendants" class="headerlink" title="Synthesizing new examples: SMOTE and descendants"></a>Synthesizing new examples: SMOTE and descendants</h3><p>另外一个不涉及重采样样本的方式是合成新的样本。最著名的一个例子就是 Chawla 的<a href="https://www.cs.cmu.edu/afs/cs/project/jair/pub/volume16/chawla02a-html/chawla2002.html" target="_blank" rel="external">SMOTE</a> (Synthetic Minority Oversampling TEchnique)系统。思想就是通过在现存的少数类样本之间内插产生新的少数类样本。基本过程如下：<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig11.png" alt="ImbalancedClasses_fig11.png"><br>SMOTE 很是成功，启发了很多的变种，扩展。在 R 的 <code>unbalanced</code> 和 Python 的 <a href="https://github.com/scikit-learn-contrib/imbalanced-learn" target="_blank" rel="external">UnbalancedDatasete</a> 中可以找到 SMOTE 及其扩展。<br>需要注意的是 SMOTE 的一个本质局限。由于是内插少数类样本，它仅仅能够在少数类样本的内部产生样本，外部是不行的。从形式上说， SMOTE 仅仅能够填充现存少数类样本的凸包，并不能创建新的少数类样本外部区域。</p>
-<h3 id="Adjusting-class-weights"><a href="#Adjusting-class-weights" class="headerlink" title="Adjusting class weights"></a>Adjusting class weights</h3><p>许多机器学习工具包能够调整类别的重要性。例如， Scikit-learn 中的很多分类器有一个额外的参数<code>class_weight</code>，能够让一个类别的重要性高于其他的类别。下面就是一个直接来自 scikit-learn <a href="http://scikit-learn.org/stable/auto_examples/svm/plot_separating_hyperplane_unbalanced.html" target="_blank" rel="external">文档</a>的例子，展示了10倍增加少数类类别权重的作用。实线是使用默认设置（类别权重相同）时的边界，虚线是使用<code>class_weight</code>之后的效果。<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig12.png" alt="ImbalancedClasses_fig12.png"><br>你可以看得到少数类在重要性上获得了增强，在少数类上犯下错误要比在其他类上犯下错误付出的代价更大，分隔超平面会进行调整去减少损失。需要注意的一点是，调整类别的重要性通常只在一种类别错误上具有作用（如果少数类是正例的话，那就是 False Negative 这种错误）。当然，如果分类器在训练集上没有犯下这样的错误，调整类别权重就没有作用。</p>
+<h3 id="Bayesian-argument-of-Wallace-et-al"><a href="#Bayesian-argument-of-Wallace-et-al" class="headerlink" title="Bayesian argument of Wallace et al."></a>Bayesian argument of Wallace et al.</h3><p>在论文<em>Class Imbalance, Redux</em>, by Wallace, Small, Brodley and Trikalinos[4][4] 中提出了可能是最好的关于类别不平衡的理论证明和实践建议。他们支持下采样多数类。他们提出的证明是数学理论上的，但是在这里我仅会展示一个他们用来表达观点的例子。他们认为两个类别在一些具有解释性的变量分布的尾部必须可分辨的。假设有两个类别只有一个依赖变量<code>x</code>，每一个类别产生自一个标准差为 1 的高斯分布，类别 1 的高斯分布的均值为 1，类别 2 的高斯分布的均值为 2。它们看起来是这样的：<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig6.png" alt="ImbalancedClasses_fig6.png"><br>给定一个 x 值，你会使用哪一个门限来确定这个样本来自于哪一个类别？很明显是中间的点 x=1.5，即图中的垂直线，如果一个新的样本 x 落在了小于 1.5 的一边，那么它可能就是类别 1，否则的话就是类别 2。当从这些样本中进行学习的时候，我们期望学习到的判别线就是 1.5。事实上，如果类别是平衡的话，这确实是我们会得到的结果。在 x 轴上的点是从每个分布得到的样本。<br>但是如果类别 1 是少数类，并假设我们有 10 个类别 1 的样本，50个类别 2 的样本，这种情况下，我们很可能学习到的就是一个发生了偏移的分隔线。<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig7.png" alt="ImbalancedClasses_fig7.png"><br>我们可以通过下采样多数类的方式让其在数量上匹配少数类。问题是在于由于样本量的减少，学习出来的分割线会具有较高的易变性。做了10次采样，会导致10根不同的垂直线。<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig8.png" alt="ImbalancedClasses_fig8.png"><br>因此最后一个步骤就是使用 <a href="https://en.wikipedia.org/wiki/Bootstrap_aggregating" target="_blank" rel="noopener">bagging</a> 的方式将这些分类器进行组合。整个过程看起来就是下面这样的：<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig9.png" alt="ImbalancedClasses_fig9.png"><br>这个技术在 Scikit-learn 中并没有实现，但是一个叫做 <a href="https://github.com/silicon-valley-data-science/learning-from-imbalanced-classes/blob/master/blagging.py" target="_blank" rel="noopener"><code>blagging.py</code></a>（balanced bagging）实现了一个 <code>BlaggingClassifier</code>，它在聚合之前平衡了 bootstrap 之后的样本。</p>
+<h3 id="Neighbor-based-approaches"><a href="#Neighbor-based-approaches" class="headerlink" title="Neighbor-based approaches"></a>Neighbor-based approaches</h3><p>上采样或者下采样使用随机选择样本的方式来调整样本的比例。一些其他的方式会仔细地检查样本空间，然后基于近邻关系采取一些行为。<br>例如，Tomek link 是指互为最近邻的分属两类的一对样本。换句话说，就是它们分属不同的类别但是却彼此很邻近。<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig10.png" alt="ImbalancedClasses_fig10.png"><br>Tomek 算法找到这样的样本对，并且从中移除多数类的样本。思想就是让多数类和少数类之间的边界变得更加清晰，让少数类区域更加清楚。上面的图展示了一个简单的 Tomek link 移除的例子。R 包的<code>unbalanced</code>除了一些专门用于类别不平衡数据集的采样技术，也实现了 Tomek link 移除。 Scikit-learn 虽然没有内建的这种功能，但是有一些可用的独立包（比如<a href="https://github.com/ojtwist/TomekLink" target="_blank" rel="noopener">TomekLink</a>）。</p>
+<h3 id="Synthesizing-new-examples-SMOTE-and-descendants"><a href="#Synthesizing-new-examples-SMOTE-and-descendants" class="headerlink" title="Synthesizing new examples: SMOTE and descendants"></a>Synthesizing new examples: SMOTE and descendants</h3><p>另外一个不涉及重采样样本的方式是合成新的样本。最著名的一个例子就是 Chawla 的<a href="https://www.cs.cmu.edu/afs/cs/project/jair/pub/volume16/chawla02a-html/chawla2002.html" target="_blank" rel="noopener">SMOTE</a> (Synthetic Minority Oversampling TEchnique)系统。思想就是通过在现存的少数类样本之间内插产生新的少数类样本。基本过程如下：<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig11.png" alt="ImbalancedClasses_fig11.png"><br>SMOTE 很是成功，启发了很多的变种，扩展。在 R 的 <code>unbalanced</code> 和 Python 的 <a href="https://github.com/scikit-learn-contrib/imbalanced-learn" target="_blank" rel="noopener">UnbalancedDatasete</a> 中可以找到 SMOTE 及其扩展。<br>需要注意的是 SMOTE 的一个本质局限。由于是内插少数类样本，它仅仅能够在少数类样本的内部产生样本，外部是不行的。从形式上说， SMOTE 仅仅能够填充现存少数类样本的凸包，并不能创建新的少数类样本外部区域。</p>
+<h3 id="Adjusting-class-weights"><a href="#Adjusting-class-weights" class="headerlink" title="Adjusting class weights"></a>Adjusting class weights</h3><p>许多机器学习工具包能够调整类别的重要性。例如， Scikit-learn 中的很多分类器有一个额外的参数<code>class_weight</code>，能够让一个类别的重要性高于其他的类别。下面就是一个直接来自 scikit-learn <a href="http://scikit-learn.org/stable/auto_examples/svm/plot_separating_hyperplane_unbalanced.html" target="_blank" rel="noopener">文档</a>的例子，展示了10倍增加少数类类别权重的作用。实线是使用默认设置（类别权重相同）时的边界，虚线是使用<code>class_weight</code>之后的效果。<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig12.png" alt="ImbalancedClasses_fig12.png"><br>你可以看得到少数类在重要性上获得了增强，在少数类上犯下错误要比在其他类上犯下错误付出的代价更大，分隔超平面会进行调整去减少损失。需要注意的一点是，调整类别的重要性通常只在一种类别错误上具有作用（如果少数类是正例的话，那就是 False Negative 这种错误）。当然，如果分类器在训练集上没有犯下这样的错误，调整类别权重就没有作用。</p>
 <h3 id="And-beyond"><a href="#And-beyond" class="headerlink" title="And beyond"></a>And beyond</h3><p>This post has concentrated on relatively simple, accessible ways to learn classifiers from imbalanced data. Most of them involve adjusting data before or after applying standard learning algorithms. It’s worth briefly mentioning some other approaches.</p>
 <h4 id="New-algorithms"><a href="#New-algorithms" class="headerlink" title="New algorithms"></a>New algorithms</h4><p>Learning from imbalanced classes continues to be an ongoing area of research in machine learning with new algorithms introduced every year. Before concluding I’ll mention a few recent algorithmic advances that are promising.</p>
 <p>In 2014 Goh and Rudin published a paper <em>Box Drawings for Learning with Imbalanced Data</em>[5][5] which introduced two algorithms for learning from data with skewed examples. These algorithms attempt to construct “boxes” (actually axis-parallel hyper-rectangles) around clusters of minority class examples:<br><img src="http://oytnj8g2y.bkt.clouddn.com/ImbalancedClasses_fig13.png" alt="ImbalancedClasses_fig13.png"><br>Their goal is to develop a concise, intelligible representation of the minority class. Their equations penalize the number of boxes and the penalties serve as a form of regularization.</p>
@@ -228,136 +272,194 @@ Learning from Imbalanced Classes如果你刚刚上完一门机器学习的课程
 <h4 id="Resources-and-further-reading"><a href="#Resources-and-further-reading" class="headerlink" title="Resources and further reading"></a>Resources and further reading</h4><ol>
 <li><p>Several Jupyter notebooks are available illustrating aspects of imbalanced learning.</p>
 <ul>
-<li>A notebook illustrating sampled Gaussians, above, is at <a href="https://github.com/silicon-valley-data-science/learning-from-imbalanced-classes/blob/master/Gaussians.ipynb" target="_blank" rel="external">Gaussians.ipynb</a>.</li>
-<li>A simple implementation of Wallace’s method is available at <a href="https://github.com/silicon-valley-data-science/learning-from-imbalanced-classes/blob/master/blagging.py" target="_blank" rel="external">blagging.py</a>. It is a simple fork of the existing bagging implementation of sklearn, specifically ./sklearn/ensemble/bagging.py.</li>
-<li>A notebook using this method is available at <a href="https://github.com/silicon-valley-data-science/learning-from-imbalanced-classes/blob/master/ImbalancedClasses.ipynb" target="_blank" rel="external">ImbalancedClasses.ipynb</a>. It loads up several domains and compares blagging with other methods under different distributions.</li>
+<li>A notebook illustrating sampled Gaussians, above, is at <a href="https://github.com/silicon-valley-data-science/learning-from-imbalanced-classes/blob/master/Gaussians.ipynb" target="_blank" rel="noopener">Gaussians.ipynb</a>.</li>
+<li>A simple implementation of Wallace’s method is available at <a href="https://github.com/silicon-valley-data-science/learning-from-imbalanced-classes/blob/master/blagging.py" target="_blank" rel="noopener">blagging.py</a>. It is a simple fork of the existing bagging implementation of sklearn, specifically ./sklearn/ensemble/bagging.py.</li>
+<li>A notebook using this method is available at <a href="https://github.com/silicon-valley-data-science/learning-from-imbalanced-classes/blob/master/ImbalancedClasses.ipynb" target="_blank" rel="noopener">ImbalancedClasses.ipynb</a>. It loads up several domains and compares blagging with other methods under different distributions.</li>
 </ul>
 </li>
-<li><p>Source code for Box Drawings in MATLAB is available from: <a href="http://web.mit.edu/rudin/www/code/BoxDrawingsCode.zip" target="_blank" rel="external">http://web.mit.edu/rudin/www/code/BoxDrawingsCode.zip</a></p>
+<li><p>Source code for Box Drawings in MATLAB is available from: <a href="http://web.mit.edu/rudin/www/code/BoxDrawingsCode.zip" target="_blank" rel="noopener">http://web.mit.edu/rudin/www/code/BoxDrawingsCode.zip</a></p>
 </li>
-<li>Source code for Isolation Forests in R is available at: <a href="https://sourceforge.net/projects/iforest/" target="_blank" rel="external">https://sourceforge.net/projects/iforest/</a></li>
+<li>Source code for Isolation Forests in R is available at: <a href="https://sourceforge.net/projects/iforest/" target="_blank" rel="noopener">https://sourceforge.net/projects/iforest/</a></li>
 </ol>
 <p>[1] Natalie Hockham makes this point in her talk Machine learning with imbalanced data sets, which focuses on imbalance in the context of credit card fraud detection.<br>[2] By definition there are fewer instances of the rare class, but the problem comes about because the cost of missing them (a false negative) is much higher.<br>[3] The details in courier are specific to Python’s Scikit-learn.<br>[4] “Class Imbalance, Redux”. Wallace, Small, Brodley and Trikalinos. IEEE Conf on Data Mining. 2011.<br>[5] Box Drawings for Learning with Imbalanced Data.” Siong Thye Goh and Cynthia Rudin. KDD-2014, August 24–27, 2014, New York, NY, USA.<br>[6] “Isolation-Based Anomaly Detection”. Liu, Ting and Zhou. ACM Transactions on Knowledge Discovery from Data, Vol. 6, No. 1. 2012.<br>[7] “Efficient Anomaly Detection by Isolation Using Nearest Neighbour Ensemble.” Bandaragoda, Ting, Albrecht, Liu and Wells. ICDM-2014</p>
 
     </div>
 
     
-
+    
     
 
-    <!-- Comments -->
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/11/03/Python-os-system-与-os-popen-的不同/" rel="prev" title="Python os.system 与 os.popen 的不同">
+      <i class="fa fa-chevron-left"></i> Python os.system 与 os.popen 的不同
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/11/05/Python-threads-communication-and-stopping/" rel="next" title="Python Threads: Communication and Stopping">
+      Python Threads: Communication and Stopping <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
     
+  </article>
+  
+  
+  
 
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Learning-from-Imbalanced-Classes"><span class="nav-number">1.</span> <span class="nav-text">Learning from Imbalanced Classes</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#处理类别不平衡数据"><span class="nav-number">1.1.</span> <span class="nav-text">处理类别不平衡数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#离题：评估的-dos-与-don’ts"><span class="nav-number">1.2.</span> <span class="nav-text">离题：评估的 dos 与 don’ts</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#过采样或者下采样"><span class="nav-number">1.3.</span> <span class="nav-text">过采样或者下采样</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Bayesian-argument-of-Wallace-et-al"><span class="nav-number">1.4.</span> <span class="nav-text">Bayesian argument of Wallace et al.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Neighbor-based-approaches"><span class="nav-number">1.5.</span> <span class="nav-text">Neighbor-based approaches</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Synthesizing-new-examples-SMOTE-and-descendants"><span class="nav-number">1.6.</span> <span class="nav-text">Synthesizing new examples: SMOTE and descendants</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Adjusting-class-weights"><span class="nav-number">1.7.</span> <span class="nav-text">Adjusting class weights</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#And-beyond"><span class="nav-number">1.8.</span> <span class="nav-text">And beyond</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#New-algorithms"><span class="nav-number">1.8.1.</span> <span class="nav-text">New algorithms</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Buying-or-creating-more-data"><span class="nav-number">1.8.2.</span> <span class="nav-text">Buying or creating more data</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Comments-or-questions"><span class="nav-number">1.8.3.</span> <span class="nav-text">Comments or questions?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Resources-and-further-reading"><span class="nav-number">1.8.4.</span> <span class="nav-text">Resources and further reading</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
 </div>
-        </section>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
 
     </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
 
-
-</div>
-
-<!-- Footer -->
-<div class="push"></div>
-
-<footer class="footer-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
-                <h2>About</h2>
-                <p>
-                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
-                </p>
-            </div>
-            
-    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
-        <h2>Recent Posts</h2>
-        <ul>
-            
-            <li>
-                <a class="footer-post" href="/2019/07/12/Unnamed-namespace/">Unnamed namespace</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/05/08/Static-variable-in-inlined-function/">Static variable in inline</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/04/23/Iterator-invalidation-rules/">Iterator invalidation rul</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/18/Emplace-back/">Emplace back</a>
-            </li>
-            
-        </ul>
-    </div>
+        
 
 
 
-            
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <ul class="list-inline footer-social-icons">
-                    
-                    <li class="list-inline-item">
-                        <a href="https://github.com/RobertLexis">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-github"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="mailto:robert_lexis@163.com">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-envelope-o"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="footer-copyright">
-                    @Untitled. All right reserved | Robert Lexis Loves Wenny
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<!-- After footer scripts -->
-
-<!-- jQuery -->
-<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-
-<!-- Tween Max -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
-
-<!-- Gallery -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
-
-<!-- Custom JavaScript -->
-<script src="/js/main.js"></script>
-
-<!-- Disqus Comments -->
 
 
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
 
 </body>
-
 </html>

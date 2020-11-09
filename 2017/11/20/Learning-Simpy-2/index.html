@@ -1,189 +1,216 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<!-- Head tag -->
+<html lang="zh-CN">
 <head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/main.css">
 
-    <!--Description-->
-    
-        <meta name="description" content="SimPy 基础进程间交互
-睡眠直至被唤醒 Imagine you want to model an electric vehicle with an intelligent battery-charging controller. While the vehicle is driving, the controller can be passive but needs to be reactivate once the vehicle is connected to the power grid in order to charge the battery.
- In SimPy 2, this pattern was known as passivate / reactivate. In SimPy 3, you can accomplish that with a simple, shared Event:
- 1234567891011121314151617181920212223242526272829303132333435363738394041from random import seed, randintseed(23)import simpyclass EV:    def __init__(self, env):        self.env = env        self.drive_proc = env.process(self.drive(env))        self.bat_ctrl_proc = env.process(self.bat_ctrl(env))        self.bat_ctrl_reactivate = env.event()    def drive(self, env):        while True:            # Drive for 20-40 min            yield env.timeout(randint(20, 40))            # Park for 1–6 hours            print(&amp;apos;Start parking at&amp;apos;, env.now)            self.bat_ctrl_reactivate.succeed()  # &amp;quot;reactivate&amp;quot;            self.bat_ctrl_reactivate = env.event()            yield env.timeout(randint(60, 360))            print(&amp;apos;Stop parking at&amp;apos;, env.now)    def bat_ctrl(self, env):        while True:            print(&amp;apos;Bat. ctrl. passivating at&amp;apos;, env.now)            yield self.bat_ctrl_reactivate  # &amp;quot;passivate&amp;quot;            print(&amp;apos;Bat. ctrl. reactivated at&amp;apos;, env.now)            # Intelligent charging behavior here …            yield env.timeout(randint(30, 90))env = simpy.Environment()ev = EV(env)env.run(until=150)Bat. ctrl. passivating at 0Start parking at 29Bat. ctrl. reactivated at 29Bat. ctrl. passivating at 60Stop parking at 131[Finished in 0.4s]">
-    
 
-    <!--Author-->
-    
-        <meta name="author" content="Robert Lexis">
-    
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-    <!--Open Graph Title-->
-    
-        <meta property="og:title" content="Learning Simpy 2"/>
-    
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
-    <!--Open Graph Description-->
-    
+  <meta name="description" content="SimPy 基础进程间交互 睡眠直至被唤醒 Imagine you want to model an electric vehicle with an intelligent battery-charging controller. While the vehicle is driving, the controller can be passive but needs to be reactiv">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Learning Simpy 2">
+<meta property="og:url" content="http://yoursite.com/2017/11/20/Learning-Simpy-2/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="SimPy 基础进程间交互 睡眠直至被唤醒 Imagine you want to model an electric vehicle with an intelligent battery-charging controller. While the vehicle is driving, the controller can be passive but needs to be reactiv">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-26T11:21:46.900Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Learning Simpy 2">
+<meta name="twitter:description" content="SimPy 基础进程间交互 睡眠直至被唤醒 Imagine you want to model an electric vehicle with an intelligent battery-charging controller. While the vehicle is driving, the controller can be passive but needs to be reactiv">
 
-    <!--Open Graph Site Name-->
-    <meta property="og:site_name" content="This is Robert Lexis."/>
+<link rel="canonical" href="http://yoursite.com/2017/11/20/Learning-Simpy-2/">
 
-    <!--Type page-->
-    
-        <meta property="og:type" content="article" />
-    
 
-    <!--Page Cover-->
-    
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
 
-    <meta name="twitter:card" content="summary" />
-    
+  <title>Learning Simpy 2 | The next stop - Antarctica</title>
+  
 
-    <!-- Title -->
-    
-    <title>Learning Simpy 2 - This is Robert Lexis.</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 
-    <!-- Custom Fonts -->
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 
-    <!-- Gallery -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
 
-    <!-- Google Analytics -->
-    
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
 
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
 
 </head>
 
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
 
-<body>
-
-<div class="bg-gradient"></div>
-<div class="bg-pattern"></div>
-
-<!-- Menu -->
-<!--Menu Links and Overlay-->
-<div class="menu-bg">
-    <div class="menu-container">
-        <ul>
-            
-            <li class="menu-item">
-                <a href="/">
-                    Home
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/archives">
-                    Archives
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/about">
-                    About
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/tags">
-                    Tags
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/categories">
-                    Categories
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/contact">
-                    Contact
-                </a>
-            </li>
-            
-        </ul>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
 </div>
 
-<!--Hamburger Icon-->
-<nav>
-    <a href="#menu"></a>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
 </nav>
 
-<div class="container">
 
-    <!-- Main Content -->
-    <div class="row">
-    <div class="col-sm-12">
 
-        <!--Title and Logo-->
-        <header>
-    <div class="logo">
-        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
-        
-    </div>
-</header>
 
-        <section class="main">
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
             
-<div class="post">
 
-    <div class="post-header">
-        <h1 class="title">
-            <a href="/2017/11/20/Learning-Simpy-2/">
-                Learning Simpy 2
-            </a>
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/11/20/Learning-Simpy-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Learning Simpy 2
         </h1>
-        <div class="post-info">
-            
-                <span class="date">2017-11-20</span>
-            
-            
-            
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-11-20 16:12:36" itemprop="dateCreated datePublished" datetime="2017-11-20T16:12:36+08:00">2017-11-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-08-26 19:21:46" itemprop="dateModified" datetime="2018-08-26T19:21:46+08:00">2018-08-26</time>
+              </span>
+
+          
+
         </div>
-    </div>
+      </header>
 
-    <div class="content">
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
-        <!-- Gallery -->
-        
-
-        <!-- Post Content -->
+      
         <h3 id="SimPy-基础"><a href="#SimPy-基础" class="headerlink" title="SimPy 基础"></a>SimPy 基础</h3><h4 id="进程间交互"><a href="#进程间交互" class="headerlink" title="进程间交互"></a>进程间交互</h4><ol>
 <li><p>睡眠直至被唤醒<br> Imagine you want to model an electric vehicle with an intelligent battery-charging controller. While the vehicle is driving, the controller can be passive but needs to be reactivate once the vehicle is connected to the power grid in order to charge the battery.</p>
 <p> In SimPy 2, this pattern was known as passivate / reactivate. In SimPy 3, you can accomplish that with a simple, <strong>shared <code>Event</code></strong>:</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">from random import seed, randint</div><div class="line">seed(23)</div><div class="line">import simpy</div><div class="line">class EV:</div><div class="line">    def __init__(self, env):</div><div class="line">        self.env = env</div><div class="line">        self.drive_proc = env.process(self.drive(env))</div><div class="line">        self.bat_ctrl_proc = env.process(self.bat_ctrl(env))</div><div class="line">        self.bat_ctrl_reactivate = env.event()</div><div class="line"></div><div class="line">    def drive(self, env):</div><div class="line">        while True:</div><div class="line">            # Drive for 20-40 min</div><div class="line">            yield env.timeout(randint(20, 40))</div><div class="line"></div><div class="line">            # Park for 1–6 hours</div><div class="line">            print(&apos;Start parking at&apos;, env.now)</div><div class="line">            self.bat_ctrl_reactivate.succeed()  # &quot;reactivate&quot;</div><div class="line">            self.bat_ctrl_reactivate = env.event()</div><div class="line">            yield env.timeout(randint(60, 360))</div><div class="line">            print(&apos;Stop parking at&apos;, env.now)</div><div class="line"></div><div class="line">    def bat_ctrl(self, env):</div><div class="line">        while True:</div><div class="line">            print(&apos;Bat. ctrl. passivating at&apos;, env.now)</div><div class="line">            yield self.bat_ctrl_reactivate  # &quot;passivate&quot;</div><div class="line">            print(&apos;Bat. ctrl. reactivated at&apos;, env.now)</div><div class="line"></div><div class="line">            # Intelligent charging behavior here …</div><div class="line">            yield env.timeout(randint(30, 90))</div><div class="line"></div><div class="line">env = simpy.Environment()</div><div class="line">ev = EV(env)</div><div class="line">env.run(until=150)</div><div class="line"></div><div class="line">Bat. ctrl. passivating at 0</div><div class="line">Start parking at 29</div><div class="line">Bat. ctrl. reactivated at 29</div><div class="line">Bat. ctrl. passivating at 60</div><div class="line">Stop parking at 131</div><div class="line">[Finished in 0.4s]</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">from random import seed, randint</span><br><span class="line">seed(23)</span><br><span class="line">import simpy</span><br><span class="line">class EV:</span><br><span class="line">    def __init__(self, env):</span><br><span class="line">        self.env = env</span><br><span class="line">        self.drive_proc = env.process(self.drive(env))</span><br><span class="line">        self.bat_ctrl_proc = env.process(self.bat_ctrl(env))</span><br><span class="line">        self.bat_ctrl_reactivate = env.event()</span><br><span class="line"></span><br><span class="line">    def drive(self, env):</span><br><span class="line">        while True:</span><br><span class="line">            # Drive for 20-40 min</span><br><span class="line">            yield env.timeout(randint(20, 40))</span><br><span class="line"></span><br><span class="line">            # Park for 1–6 hours</span><br><span class="line">            print(&apos;Start parking at&apos;, env.now)</span><br><span class="line">            self.bat_ctrl_reactivate.succeed()  # &quot;reactivate&quot;</span><br><span class="line">            self.bat_ctrl_reactivate = env.event()</span><br><span class="line">            yield env.timeout(randint(60, 360))</span><br><span class="line">            print(&apos;Stop parking at&apos;, env.now)</span><br><span class="line"></span><br><span class="line">    def bat_ctrl(self, env):</span><br><span class="line">        while True:</span><br><span class="line">            print(&apos;Bat. ctrl. passivating at&apos;, env.now)</span><br><span class="line">            yield self.bat_ctrl_reactivate  # &quot;passivate&quot;</span><br><span class="line">            print(&apos;Bat. ctrl. reactivated at&apos;, env.now)</span><br><span class="line"></span><br><span class="line">            # Intelligent charging behavior here …</span><br><span class="line">            yield env.timeout(randint(30, 90))</span><br><span class="line"></span><br><span class="line">env = simpy.Environment()</span><br><span class="line">ev = EV(env)</span><br><span class="line">env.run(until=150)</span><br><span class="line"></span><br><span class="line">Bat. ctrl. passivating at 0</span><br><span class="line">Start parking at 29</span><br><span class="line">Bat. ctrl. reactivated at 29</span><br><span class="line">Bat. ctrl. passivating at 60</span><br><span class="line">Stop parking at 131</span><br><span class="line">[Finished in 0.4s]</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
 <a id="more"></a>
-<ol>
+<ol start="2">
 <li><p>等待另一个进程结束<br> The example above has a problem: it may happen that the vehicles wants to park for a shorter duration than it takes to charge the battery (this is the case if both, charging and parking would take 60 to 90 minutes).</p>
 <p> To fix this problem we have to slightly change our model. A new bat_ctrl() will be started every time the EV starts parking. The EV then waits until the parking duration is over <strong>and</strong> until the charging has stopped:</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">from random import seed, randint</div><div class="line">seed(23)</div><div class="line">import simpy</div><div class="line">class EV:</div><div class="line">    def __init__(self, env):</div><div class="line">        self.env = env</div><div class="line">        self.drive_proc = env.process(self.drive(env))</div><div class="line"></div><div class="line">    def drive(self, env):</div><div class="line">        while True:</div><div class="line">            # Drive for 20-40 min</div><div class="line">            yield env.timeout(randint(20, 40))</div><div class="line"></div><div class="line">            # Park for 1–6 hours</div><div class="line">            print(&apos;Start parking at&apos;, env.now)</div><div class="line">            charging = env.process(self.bat_ctrl(env))</div><div class="line">            parking = env.timeout(randint(60, 360))</div><div class="line">            yield charging &amp; parking</div><div class="line">            print(&apos;Stop parking at&apos;, env.now)</div><div class="line"></div><div class="line">    def bat_ctrl(self, env):</div><div class="line">        print(&apos;Bat. ctrl. started at&apos;, env.now)</div><div class="line">        # Intelligent charging behavior here …</div><div class="line">        yield env.timeout(randint(30, 90))</div><div class="line">        print(&apos;Bat. ctrl. done at&apos;, env.now)</div><div class="line"></div><div class="line">env = simpy.Environment()</div><div class="line">ev = EV(env)</div><div class="line">env.run(until=310)</div><div class="line"></div><div class="line">Start parking at 29</div><div class="line">Bat. ctrl. started at 29</div><div class="line">Bat. ctrl. done at 60</div><div class="line">Stop parking at 131</div><div class="line">Start parking at 169</div><div class="line">Bat. ctrl. started at 169</div><div class="line">Bat. ctrl. done at 226</div><div class="line">[Finished in 0.2s]</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">from random import seed, randint</span><br><span class="line">seed(23)</span><br><span class="line">import simpy</span><br><span class="line">class EV:</span><br><span class="line">    def __init__(self, env):</span><br><span class="line">        self.env = env</span><br><span class="line">        self.drive_proc = env.process(self.drive(env))</span><br><span class="line"></span><br><span class="line">    def drive(self, env):</span><br><span class="line">        while True:</span><br><span class="line">            # Drive for 20-40 min</span><br><span class="line">            yield env.timeout(randint(20, 40))</span><br><span class="line"></span><br><span class="line">            # Park for 1–6 hours</span><br><span class="line">            print(&apos;Start parking at&apos;, env.now)</span><br><span class="line">            charging = env.process(self.bat_ctrl(env))</span><br><span class="line">            parking = env.timeout(randint(60, 360))</span><br><span class="line">            yield charging &amp; parking</span><br><span class="line">            print(&apos;Stop parking at&apos;, env.now)</span><br><span class="line"></span><br><span class="line">    def bat_ctrl(self, env):</span><br><span class="line">        print(&apos;Bat. ctrl. started at&apos;, env.now)</span><br><span class="line">        # Intelligent charging behavior here …</span><br><span class="line">        yield env.timeout(randint(30, 90))</span><br><span class="line">        print(&apos;Bat. ctrl. done at&apos;, env.now)</span><br><span class="line"></span><br><span class="line">env = simpy.Environment()</span><br><span class="line">ev = EV(env)</span><br><span class="line">env.run(until=310)</span><br><span class="line"></span><br><span class="line">Start parking at 29</span><br><span class="line">Bat. ctrl. started at 29</span><br><span class="line">Bat. ctrl. done at 60</span><br><span class="line">Stop parking at 131</span><br><span class="line">Start parking at 169</span><br><span class="line">Bat. ctrl. started at 169</span><br><span class="line">Bat. ctrl. done at 226</span><br><span class="line">[Finished in 0.2s]</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>中断其他的进程<br> As usual, we now have another problem: Imagine, a trip is very urgent, but with the current implementation, we always need to wait until the battery is fully charged. If we could somehow interrupt that …</p>
 <p> Fortunate coincidence, there is indeed a way to do exactly this. You can call interrupt() on a Process. This will throw an Interrupt exception <strong>into</strong> that process, resuming it immediately:</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">class EV:</div><div class="line">    def __init__(self, env):</div><div class="line">        self.env = env</div><div class="line">        self.drive_proc = env.process(self.drive(env))</div><div class="line"></div><div class="line">    def drive(self, env):</div><div class="line">        while True:</div><div class="line">            # Drive for 20-40 min</div><div class="line">            yield env.timeout(randint(20, 40))</div><div class="line"></div><div class="line">            # Park for 1 hour</div><div class="line">            print(&apos;Start parking at&apos;, env.now)</div><div class="line">            charging = env.process(self.bat_ctrl(env))</div><div class="line">            parking = env.timeout(60)</div><div class="line">            yield charging | parking</div><div class="line">            if not charging.triggered:</div><div class="line">                # Interrupt charging if not already done.</div><div class="line">                charging.interrupt(&apos;Need to go!&apos;)</div><div class="line">            print(&apos;Stop parking at&apos;, env.now)</div><div class="line"></div><div class="line">    def bat_ctrl(self, env):</div><div class="line">        print(&apos;Bat. ctrl. started at&apos;, env.now)</div><div class="line">        try:</div><div class="line">            yield env.timeout(randint(60, 90))</div><div class="line">            print(&apos;Bat. ctrl. done at&apos;, env.now)</div><div class="line">        except simpy.Interrupt as i:</div><div class="line">            # Onoes! Got interrupted before the charging was done.</div><div class="line">            print(&apos;Bat. ctrl. interrupted at&apos;, env.now, &apos;msg:&apos;,</div><div class="line">                  i.cause)</div><div class="line"></div><div class="line">env = simpy.Environment()</div><div class="line">ev = EV(env)</div><div class="line">env.run(until=100)</div><div class="line"></div><div class="line">Start parking at 29</div><div class="line">Bat. ctrl. started at 29</div><div class="line">Stop parking at 89</div><div class="line">Bat. ctrl. interrupted at 89 msg: Need to go!</div><div class="line">[Finished in 0.2s]</div></pre></td></tr></table></figure>
-<p> What <code>process.interrupt()</code> actually does is scheduling an <code>Interruption</code> event for immediate execution. If this event is executed it will remove the victim process’ <code>_resume()</code> method from the callbacks of the event that it is currently waiting for (see <a href="http://simpy.readthedocs.io/en/latest/api_reference/simpy.events.html#simpy.events.Process.target" target="_blank" rel="external">target</a>). 这里的受害者进程就是 bat_ctrl，将它的<code>_resume()</code>方法从它正在等待的事件（超时事件）中移除，这是为了防止当超时事件被处理完毕后（processed为True，超时事件会自我调度并触发，这里等待的是超时事件从事件队列中出队进行处理并处理完毕）再次恢复执行受害者进程。Following that it will throw the <code>Interrupt</code> exception into the process.<br> Since we don’t do anything special to the original target event of the process, the interrupted process can yield the same event again after catching the Interrupt – Imagine someone waiting for a shop to open. The person may get interrupted by a phone call. After finishing the call, he or she checks if the shop already opened and either enters or continues to wait.</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">class EV:</span><br><span class="line">    def __init__(self, env):</span><br><span class="line">        self.env = env</span><br><span class="line">        self.drive_proc = env.process(self.drive(env))</span><br><span class="line"></span><br><span class="line">    def drive(self, env):</span><br><span class="line">        while True:</span><br><span class="line">            # Drive for 20-40 min</span><br><span class="line">            yield env.timeout(randint(20, 40))</span><br><span class="line"></span><br><span class="line">            # Park for 1 hour</span><br><span class="line">            print(&apos;Start parking at&apos;, env.now)</span><br><span class="line">            charging = env.process(self.bat_ctrl(env))</span><br><span class="line">            parking = env.timeout(60)</span><br><span class="line">            yield charging | parking</span><br><span class="line">            if not charging.triggered:</span><br><span class="line">                # Interrupt charging if not already done.</span><br><span class="line">                charging.interrupt(&apos;Need to go!&apos;)</span><br><span class="line">            print(&apos;Stop parking at&apos;, env.now)</span><br><span class="line"></span><br><span class="line">    def bat_ctrl(self, env):</span><br><span class="line">        print(&apos;Bat. ctrl. started at&apos;, env.now)</span><br><span class="line">        try:</span><br><span class="line">            yield env.timeout(randint(60, 90))</span><br><span class="line">            print(&apos;Bat. ctrl. done at&apos;, env.now)</span><br><span class="line">        except simpy.Interrupt as i:</span><br><span class="line">            # Onoes! Got interrupted before the charging was done.</span><br><span class="line">            print(&apos;Bat. ctrl. interrupted at&apos;, env.now, &apos;msg:&apos;,</span><br><span class="line">                  i.cause)</span><br><span class="line"></span><br><span class="line">env = simpy.Environment()</span><br><span class="line">ev = EV(env)</span><br><span class="line">env.run(until=100)</span><br><span class="line"></span><br><span class="line">Start parking at 29</span><br><span class="line">Bat. ctrl. started at 29</span><br><span class="line">Stop parking at 89</span><br><span class="line">Bat. ctrl. interrupted at 89 msg: Need to go!</span><br><span class="line">[Finished in 0.2s]</span><br></pre></td></tr></table></figure>
+<p> What <code>process.interrupt()</code> actually does is scheduling an <code>Interruption</code> event for immediate execution. If this event is executed it will remove the victim process’ <code>_resume()</code> method from the callbacks of the event that it is currently waiting for (see <a href="http://simpy.readthedocs.io/en/latest/api_reference/simpy.events.html#simpy.events.Process.target" target="_blank" rel="noopener">target</a>). 这里的受害者进程就是 bat_ctrl，将它的<code>_resume()</code>方法从它正在等待的事件（超时事件）中移除，这是为了防止当超时事件被处理完毕后（processed为True，超时事件会自我调度并触发，这里等待的是超时事件从事件队列中出队进行处理并处理完毕）再次恢复执行受害者进程。Following that it will throw the <code>Interrupt</code> exception into the process.<br> Since we don’t do anything special to the original target event of the process, the interrupted process can yield the same event again after catching the Interrupt – Imagine someone waiting for a shop to open. The person may get interrupted by a phone call. After finishing the call, he or she checks if the shop already opened and either enters or continues to wait.</p>
 </li>
 </ol>
 <h4 id="共享资源"><a href="#共享资源" class="headerlink" title="共享资源"></a>共享资源</h4><p>Shared resources are another way to model <strong>Process Interaction</strong>. They form a <strong>congestion point</strong> where processes queue up in order to use them.</p>
@@ -196,7 +223,7 @@
 <ol>
 <li><p>The basic concept of resources<br> All resources share the same basic concept: The resource itself is some kind of a container with a, usually limited, capacity. Processes can either try to put something into the resource or try to get something out. If the resource is full or empty, they have to queue up and wait.</p>
 <p> This is roughly how every resource looks:</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">BaseResource(capacity):</div><div class="line">   put_queue</div><div class="line">   get_queue</div><div class="line"></div><div class="line">   put(): event</div><div class="line">   get(): event</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">BaseResource(capacity):</span><br><span class="line">   put_queue</span><br><span class="line">   get_queue</span><br><span class="line"></span><br><span class="line">   put(): event</span><br><span class="line">   get(): event</span><br></pre></td></tr></table></figure>
 <p> Every resource has a maximum capacity and two queues: one for processes that want to put something into it and one for processes that want to get something out. The put() and get() methods both return an event that is triggered when the corresponding action was successful.</p>
 </li>
 <li><p>Resources and interrupts<br> While a process is waiting for a put or get event to succeed, it may be interrupted by another process. After catching the interrupt, the process has two possibilities:</p>
@@ -219,19 +246,19 @@
 <li><p>Resource<br> The Resource is conceptually a semaphore. Its only parameter – apart from the obligatory reference to an Environment – is its capacity. It must be a positive number and defaults to 1: Resource(env, capacity=1).</p>
 <p> Instead of just counting its current users, it stores the request event as an “access token” for each user. This is, for example, useful for adding preemption (see below).</p>
 <p> Here is a basic example for using a resource:</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">def resource_user(env, resource):</div><div class="line">    request = resource.request()  # Generate a request event</div><div class="line">    yield request                 # Wait for access</div><div class="line">    yield env.timeout(1)          # Do something</div><div class="line">    resource.release(request)     # Release the resource</div><div class="line"></div><div class="line">env = simpy.Environment()</div><div class="line">res = simpy.Resource(env, capacity=1)</div><div class="line">user = env.process(resource_user(env, res))</div><div class="line">env.run()</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">def resource_user(env, resource):</span><br><span class="line">    request = resource.request()  # Generate a request event</span><br><span class="line">    yield request                 # Wait for access</span><br><span class="line">    yield env.timeout(1)          # Do something</span><br><span class="line">    resource.release(request)     # Release the resource</span><br><span class="line"></span><br><span class="line">env = simpy.Environment()</span><br><span class="line">res = simpy.Resource(env, capacity=1)</span><br><span class="line">user = env.process(resource_user(env, res))</span><br><span class="line">env.run()</span><br></pre></td></tr></table></figure>
 <p> Note, that you have to release the resource under all conditions; for example, if you got interrupted while <strong>waiting for</strong>（下面代码中的 yield req） or <strong>using</strong>（下面代码中的 yield env.timeout(1)）the resource. In order to help you with that and to avoid too many try: … finally: … constructs, request events can be used as context manager:</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">def resource_user(env, resource):</div><div class="line">    with resource.request() as req:  # Generate a request event</div><div class="line">        yield req                    # Wait for access</div><div class="line">        yield env.timeout(1)         # Do something</div><div class="line">                                     # Resource released automatically</div><div class="line">user = env.process(resource_user(env, res))</div><div class="line">env.run()</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">def resource_user(env, resource):</span><br><span class="line">    with resource.request() as req:  # Generate a request event</span><br><span class="line">        yield req                    # Wait for access</span><br><span class="line">        yield env.timeout(1)         # Do something</span><br><span class="line">                                     # Resource released automatically</span><br><span class="line">user = env.process(resource_user(env, res))</span><br><span class="line">env.run()</span><br></pre></td></tr></table></figure>
 <p> Resources allow you to retrieve lists of the current users or queued users, the number of current users and the resource’s capacity:<br> 下面的代码修改自官方文档，更加清晰地展示了整个仿真过程</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">import simpy</div><div class="line">env = simpy.Environment()</div><div class="line">res = simpy.Resource(env, capacity=1)</div><div class="line"></div><div class="line">def print_stats(nth, res):</div><div class="line">    print(&apos;%dth user process: %d of %d slots are allocated.&apos; % (nth, res.count, res.capacity))</div><div class="line">    print(&apos;%dth user process: Users: &apos; %nth, res.users)</div><div class="line">    print(&apos;%dth user process: Queued events: &apos; %nth, res.queue)</div><div class="line"></div><div class="line"></div><div class="line">def user(res, nth):</div><div class="line">    print_stats(nth, res)</div><div class="line">    with res.request() as req:</div><div class="line">        yield req</div><div class="line">        print_stats(nth, res)</div><div class="line">    print_stats(nth, res)</div><div class="line"></div><div class="line">procs = [env.process(user(res, 0)), env.process(user(res, 1))]</div><div class="line">env.run()</div><div class="line"></div><div class="line">0th user process: 0 of 1 slots are allocated.</div><div class="line">0th user process: Users:  []</div><div class="line">0th user process: Queued events:  []</div><div class="line">1th user process: 1 of 1 slots are allocated.</div><div class="line">1th user process: Users:  [&lt;Request() object at 0x23d1bdf0a90&gt;]</div><div class="line">1th user process: Queued events:  []</div><div class="line">0th user process: 1 of 1 slots are allocated.</div><div class="line">0th user process: Users:  [&lt;Request() object at 0x23d1bdf0a90&gt;]</div><div class="line">0th user process: Queued events:  [&lt;Request() object at 0x23d1bdf0080&gt;]</div><div class="line">0th user process: 0 of 1 slots are allocated.</div><div class="line">0th user process: Users:  []</div><div class="line">0th user process: Queued events:  [&lt;Request() object at 0x23d1bdf0080&gt;]</div><div class="line">1th user process: 1 of 1 slots are allocated.</div><div class="line">1th user process: Users:  [&lt;Request() object at 0x23d1bdf0080&gt;]</div><div class="line">1th user process: Queued events:  []</div><div class="line">1th user process: 0 of 1 slots are allocated.</div><div class="line">1th user process: Users:  []</div><div class="line">1th user process: Queued events:  []</div><div class="line">[Finished in 0.2s]</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">import simpy</span><br><span class="line">env = simpy.Environment()</span><br><span class="line">res = simpy.Resource(env, capacity=1)</span><br><span class="line"></span><br><span class="line">def print_stats(nth, res):</span><br><span class="line">    print(&apos;%dth user process: %d of %d slots are allocated.&apos; % (nth, res.count, res.capacity))</span><br><span class="line">    print(&apos;%dth user process: Users: &apos; %nth, res.users)</span><br><span class="line">    print(&apos;%dth user process: Queued events: &apos; %nth, res.queue)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def user(res, nth):</span><br><span class="line">    print_stats(nth, res)</span><br><span class="line">    with res.request() as req:</span><br><span class="line">        yield req</span><br><span class="line">        print_stats(nth, res)</span><br><span class="line">    print_stats(nth, res)</span><br><span class="line"></span><br><span class="line">procs = [env.process(user(res, 0)), env.process(user(res, 1))]</span><br><span class="line">env.run()</span><br><span class="line"></span><br><span class="line">0th user process: 0 of 1 slots are allocated.</span><br><span class="line">0th user process: Users:  []</span><br><span class="line">0th user process: Queued events:  []</span><br><span class="line">1th user process: 1 of 1 slots are allocated.</span><br><span class="line">1th user process: Users:  [&lt;Request() object at 0x23d1bdf0a90&gt;]</span><br><span class="line">1th user process: Queued events:  []</span><br><span class="line">0th user process: 1 of 1 slots are allocated.</span><br><span class="line">0th user process: Users:  [&lt;Request() object at 0x23d1bdf0a90&gt;]</span><br><span class="line">0th user process: Queued events:  [&lt;Request() object at 0x23d1bdf0080&gt;]</span><br><span class="line">0th user process: 0 of 1 slots are allocated.</span><br><span class="line">0th user process: Users:  []</span><br><span class="line">0th user process: Queued events:  [&lt;Request() object at 0x23d1bdf0080&gt;]</span><br><span class="line">1th user process: 1 of 1 slots are allocated.</span><br><span class="line">1th user process: Users:  [&lt;Request() object at 0x23d1bdf0080&gt;]</span><br><span class="line">1th user process: Queued events:  []</span><br><span class="line">1th user process: 0 of 1 slots are allocated.</span><br><span class="line">1th user process: Users:  []</span><br><span class="line">1th user process: Queued events:  []</span><br><span class="line">[Finished in 0.2s]</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>PriorityResource<br> Priority is expressed by integer numbers; smaller numbers mean a higher priority.</p>
 </li>
 <li><p>PreemptiveResource<br> Sometimes, new requests are so important that queue-jumping is not enough and they need to kick existing users out of the resource (this is called preemption). The PreemptiveResource allows you to do exactly this</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">import simpy</div><div class="line">def resource_user(name, env, resource, wait, prio):</div><div class="line">    yield env.timeout(wait)</div><div class="line">    with resource.request(priority=prio) as req:</div><div class="line">        print(&apos;%s requesting at %s with priority=%s&apos; % (name, env.now, prio))</div><div class="line">        yield req</div><div class="line">        print(&apos;%s got resource at %s&apos; % (name, env.now))</div><div class="line">        try:</div><div class="line">            yield env.timeout(3)</div><div class="line">        except simpy.Interrupt as interrupt:</div><div class="line">            by = interrupt.cause.by</div><div class="line">            usage = env.now - interrupt.cause.usage_since</div><div class="line">            print(&apos;%s got preempted by %s at %s after %s&apos; %</div><div class="line">                  (name, by, env.now, usage))</div><div class="line"></div><div class="line">env = simpy.Environment()</div><div class="line">res = simpy.PreemptiveResource(env, capacity=1)</div><div class="line">p1 = env.process(resource_user(1, env, res, wait=0, prio=0))</div><div class="line">p2 = env.process(resource_user(2, env, res, wait=1, prio=0))</div><div class="line">p3 = env.process(resource_user(3, env, res, wait=2, prio=-1))</div><div class="line">env.run()</div><div class="line"></div><div class="line">1 requesting at 0 with priority=0</div><div class="line">1 got resource at 0</div><div class="line">2 requesting at 1 with priority=0</div><div class="line">3 requesting at 2 with priority=-1</div><div class="line">1 got preempted by &lt;Process(resource_user) object at 0x298f124e128&gt; at 2 after 2</div><div class="line">3 got resource at 2</div><div class="line">2 got resource at 5</div><div class="line">[Finished in 0.2s]</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">import simpy</span><br><span class="line">def resource_user(name, env, resource, wait, prio):</span><br><span class="line">    yield env.timeout(wait)</span><br><span class="line">    with resource.request(priority=prio) as req:</span><br><span class="line">        print(&apos;%s requesting at %s with priority=%s&apos; % (name, env.now, prio))</span><br><span class="line">        yield req</span><br><span class="line">        print(&apos;%s got resource at %s&apos; % (name, env.now))</span><br><span class="line">        try:</span><br><span class="line">            yield env.timeout(3)</span><br><span class="line">        except simpy.Interrupt as interrupt:</span><br><span class="line">            by = interrupt.cause.by</span><br><span class="line">            usage = env.now - interrupt.cause.usage_since</span><br><span class="line">            print(&apos;%s got preempted by %s at %s after %s&apos; %</span><br><span class="line">                  (name, by, env.now, usage))</span><br><span class="line"></span><br><span class="line">env = simpy.Environment()</span><br><span class="line">res = simpy.PreemptiveResource(env, capacity=1)</span><br><span class="line">p1 = env.process(resource_user(1, env, res, wait=0, prio=0))</span><br><span class="line">p2 = env.process(resource_user(2, env, res, wait=1, prio=0))</span><br><span class="line">p3 = env.process(resource_user(3, env, res, wait=2, prio=-1))</span><br><span class="line">env.run()</span><br><span class="line"></span><br><span class="line">1 requesting at 0 with priority=0</span><br><span class="line">1 got resource at 0</span><br><span class="line">2 requesting at 1 with priority=0</span><br><span class="line">3 requesting at 2 with priority=-1</span><br><span class="line">1 got preempted by &lt;Process(resource_user) object at 0x298f124e128&gt; at 2 after 2</span><br><span class="line">3 got resource at 2</span><br><span class="line">2 got resource at 5</span><br><span class="line">[Finished in 0.2s]</span><br></pre></td></tr></table></figure>
 <p> <code>PreemptiveResource</code> inherits from <code>PriorityResource</code> and adds a <code>preempt</code> flag (that defaults to <code>True</code>) to request(). By setting this to False (resource.request(priority=x, preempt=False)), a process can decide to not preempt another resource user. It will still be put in the queue according to its priority, though.</p>
 <p> The implementation of <code>PreemptiveResource</code> <strong>values priorities higher than preemption</strong>. That means preempt requests are not allowed to cheat and jump over a higher prioritized request.</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">import simpy</div><div class="line">def user(name, env, res, prio, preempt):</div><div class="line">    with res.request(priority=prio, preempt=preempt) as req:</div><div class="line">        try:</div><div class="line">            print(&apos;%s requesting at %d&apos; % (name, env.now))</div><div class="line">            yield req</div><div class="line">            print(&apos;%s got resource at %d&apos; % (name, env.now))</div><div class="line">            yield env.timeout(3)</div><div class="line">        except simpy.Interrupt:</div><div class="line">            print(&apos;%s got preempted at %d&apos; % (name, env.now))</div><div class="line"></div><div class="line">env = simpy.Environment()</div><div class="line">res = simpy.PreemptiveResource(env, capacity=1)</div><div class="line">A = env.process(user(&apos;A&apos;, env, res, prio=0, preempt=True))</div><div class="line">env.run(until=1)  # Give A a head start</div><div class="line">B = env.process(user(&apos;B&apos;, env, res, prio=-2, preempt=False))</div><div class="line">C = env.process(user(&apos;C&apos;, env, res, prio=-1, preempt=True))</div><div class="line">env.run()</div><div class="line"></div><div class="line">A requesting at 0</div><div class="line">A got resource at 0</div><div class="line">B requesting at 1</div><div class="line">C requesting at 1</div><div class="line">B got resource at 3</div><div class="line">C got resource at 6</div><div class="line">[Finished in 0.2s]</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">import simpy</span><br><span class="line">def user(name, env, res, prio, preempt):</span><br><span class="line">    with res.request(priority=prio, preempt=preempt) as req:</span><br><span class="line">        try:</span><br><span class="line">            print(&apos;%s requesting at %d&apos; % (name, env.now))</span><br><span class="line">            yield req</span><br><span class="line">            print(&apos;%s got resource at %d&apos; % (name, env.now))</span><br><span class="line">            yield env.timeout(3)</span><br><span class="line">        except simpy.Interrupt:</span><br><span class="line">            print(&apos;%s got preempted at %d&apos; % (name, env.now))</span><br><span class="line"></span><br><span class="line">env = simpy.Environment()</span><br><span class="line">res = simpy.PreemptiveResource(env, capacity=1)</span><br><span class="line">A = env.process(user(&apos;A&apos;, env, res, prio=0, preempt=True))</span><br><span class="line">env.run(until=1)  # Give A a head start</span><br><span class="line">B = env.process(user(&apos;B&apos;, env, res, prio=-2, preempt=False))</span><br><span class="line">C = env.process(user(&apos;C&apos;, env, res, prio=-1, preempt=True))</span><br><span class="line">env.run()</span><br><span class="line"></span><br><span class="line">A requesting at 0</span><br><span class="line">A got resource at 0</span><br><span class="line">B requesting at 1</span><br><span class="line">C requesting at 1</span><br><span class="line">B got resource at 3</span><br><span class="line">C got resource at 6</span><br><span class="line">[Finished in 0.2s]</span><br></pre></td></tr></table></figure>
 <ul>
 <li>Process A requests the resource with priority 0. It immediately becomes a user.</li>
 <li>Process B requests the resource with priority -2 but sets preempt to False. It will queue up and wait.</li>
@@ -248,122 +275,180 @@
     </div>
 
     
-
+    
     
 
-    <!-- Comments -->
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/11/16/Learning-Simpy/" rel="prev" title="Learning Simpy">
+      <i class="fa fa-chevron-left"></i> Learning Simpy
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/11/20/仿真系统：A-Dynamic-Service-Allocation-Algorithm-in-Mobile-Edge-Computing-for-ICTC-2017/" rel="next" title="仿真系统：A Dynamic Service Allocation Algorithm in Mobile Edge Computing for ICTC 2017">
+      仿真系统：A Dynamic Service Allocation Algorithm in Mobile Edge Computing for ICTC 2017 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
     
+  </article>
+  
+  
+  
 
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#SimPy-基础"><span class="nav-number">1.</span> <span class="nav-text">SimPy 基础</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#进程间交互"><span class="nav-number">1.1.</span> <span class="nav-text">进程间交互</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#共享资源"><span class="nav-number">1.2.</span> <span class="nav-text">共享资源</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
 </div>
-        </section>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
 
     </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
 
-
-</div>
-
-<!-- Footer -->
-<div class="push"></div>
-
-<footer class="footer-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
-                <h2>About</h2>
-                <p>
-                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
-                </p>
-            </div>
-            
-    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
-        <h2>Recent Posts</h2>
-        <ul>
-            
-            <li>
-                <a class="footer-post" href="/2019/07/12/Unnamed-namespace/">Unnamed namespace</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/05/08/Static-variable-in-inlined-function/">Static variable in inline</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/04/23/Iterator-invalidation-rules/">Iterator invalidation rul</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/18/Emplace-back/">Emplace back</a>
-            </li>
-            
-        </ul>
-    </div>
+        
 
 
 
-            
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <ul class="list-inline footer-social-icons">
-                    
-                    <li class="list-inline-item">
-                        <a href="https://github.com/RobertLexis">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-github"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="mailto:robert_lexis@163.com">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-envelope-o"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="footer-copyright">
-                    @Untitled. All right reserved | Robert Lexis Loves Wenny
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<!-- After footer scripts -->
-
-<!-- jQuery -->
-<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-
-<!-- Tween Max -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
-
-<!-- Gallery -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
-
-<!-- Custom JavaScript -->
-<script src="/js/main.js"></script>
-
-<!-- Disqus Comments -->
 
 
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
 
 </body>
-
 </html>

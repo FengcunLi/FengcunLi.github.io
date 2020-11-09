@@ -1,178 +1,214 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<!-- Head tag -->
+<html lang="zh-CN">
 <head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/main.css">
 
-    <!--Description-->
-    
-        <meta name="description" content="It’s a bird… it’s a plane… it depends on your classifier’s threshold.
 
-Precision and recall\[precision = \frac{ TP }{ TP + FP } \\\\recall = \frac{ TP }{ TP + FN }\]
-上图是飞机检索任务中的一次检索结果，\( TP = 3, FP = 1\)。\[precision = 0.75 \\\\recall = 0.6\]">
-    
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-    <!--Author-->
-    
-        <meta name="author" content="Robert Lexis">
-    
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
-    <!--Open Graph Title-->
-    
-        <meta property="og:title" content="AP and mAP (in object detection)"/>
-    
+  <meta name="description" content="It’s a bird… it’s a plane… it depends on your classifier’s threshold.  Precision and recall\[precision = \frac{ TP }{ TP + FP } \\recall = \frac{ TP }{ TP + FN }\] 上图是飞机检索任务中的一次检索结果，\( TP = 3, FP = 1">
+<meta name="keywords" content="DL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AP and mAP (In Object Detection)">
+<meta property="og:url" content="http://yoursite.com/2018/07/26/AP-and-mAP-in-object-detection/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="It’s a bird… it’s a plane… it depends on your classifier’s threshold.  Precision and recall\[precision = \frac{ TP }{ TP + FP } \\recall = \frac{ TP }{ TP + FN }\] 上图是飞机检索任务中的一次检索结果，\( TP = 3, FP = 1">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2018/07/26/AP-and-mAP-in-object-detection/fptp.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/26/AP-and-mAP-in-object-detection/ordering-wide.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/26/AP-and-mAP-in-object-detection/pr-example.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/26/AP-and-mAP-in-object-detection/interpolated-vs-approximated.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/26/AP-and-mAP-in-object-detection/output_after_nms.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/26/AP-and-mAP-in-object-detection/AP.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/26/AP-and-mAP-in-object-detection/pr.png">
+<meta property="og:updated_time" content="2018-08-29T12:51:10.545Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AP and mAP (In Object Detection)">
+<meta name="twitter:description" content="It’s a bird… it’s a plane… it depends on your classifier’s threshold.  Precision and recall\[precision = \frac{ TP }{ TP + FP } \\recall = \frac{ TP }{ TP + FN }\] 上图是飞机检索任务中的一次检索结果，\( TP = 3, FP = 1">
+<meta name="twitter:image" content="http://yoursite.com/2018/07/26/AP-and-mAP-in-object-detection/fptp.png">
 
-    <!--Open Graph Description-->
-    
+<link rel="canonical" href="http://yoursite.com/2018/07/26/AP-and-mAP-in-object-detection/">
 
-    <!--Open Graph Site Name-->
-    <meta property="og:site_name" content="This is Robert Lexis."/>
 
-    <!--Type page-->
-    
-        <meta property="og:type" content="article" />
-    
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
 
-    <!--Page Cover-->
-    
+  <title>AP and mAP (In Object Detection) | The next stop - Antarctica</title>
+  
 
-    <meta name="twitter:card" content="summary" />
-    
 
-    <!-- Title -->
-    
-    <title>AP and mAP (in object detection) - This is Robert Lexis.</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 
-    <!-- Custom Fonts -->
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 
-    <!-- Gallery -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
 
-    <!-- Google Analytics -->
-    
-
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
 
 </head>
 
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
 
-<body>
-
-<div class="bg-gradient"></div>
-<div class="bg-pattern"></div>
-
-<!-- Menu -->
-<!--Menu Links and Overlay-->
-<div class="menu-bg">
-    <div class="menu-container">
-        <ul>
-            
-            <li class="menu-item">
-                <a href="/">
-                    Home
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/archives">
-                    Archives
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/about">
-                    About
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/tags">
-                    Tags
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/categories">
-                    Categories
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/contact">
-                    Contact
-                </a>
-            </li>
-            
-        </ul>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
 </div>
 
-<!--Hamburger Icon-->
-<nav>
-    <a href="#menu"></a>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
 </nav>
 
-<div class="container">
 
-    <!-- Main Content -->
-    <div class="row">
-    <div class="col-sm-12">
 
-        <!--Title and Logo-->
-        <header>
-    <div class="logo">
-        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
-        
-    </div>
-</header>
 
-        <section class="main">
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
             
-<div class="post">
 
-    <div class="post-header">
-        <h1 class="title">
-            <a href="/2018/07/26/AP-and-mAP-in-object-detection/">
-                AP and mAP (in object detection)
-            </a>
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/26/AP-and-mAP-in-object-detection/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          AP and mAP (In Object Detection)
         </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-07-26</span>
-            
-            
-            
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-07-26 21:49:56" itemprop="dateCreated datePublished" datetime="2018-07-26T21:49:56+08:00">2018-07-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-08-29 20:51:10" itemprop="dateModified" datetime="2018-08-29T20:51:10+08:00">2018-08-29</time>
+              </span>
+
+          
+
         </div>
-    </div>
+      </header>
 
-    <div class="content">
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
-        <!-- Gallery -->
-        
-
-        <!-- Post Content -->
+      
         <blockquote>
 <p>It’s a bird… it’s a plane… it depends on your classifier’s threshold.</p>
 </blockquote>
-<h3 id="Precision-and-recall"><a href="#Precision-and-recall" class="headerlink" title="Precision and recall"></a>Precision and recall</h3><p>\[<br>precision = \frac{ TP }{ TP + FP } \\\\<br>recall = \frac{ TP }{ TP + FN }<br>\]</p>
-<p><img src="/2018/07/26/AP-and-mAP-in-object-detection/fptp.png" alt="fptp"><br>上图是飞机检索任务中的一次检索结果，\( TP = 3, FP = 1\)。<br>\[<br>precision = 0.75 \\\\<br>recall = 0.6<br>\]<br><a id="more"></a></p>
+<h3 id="Precision-and-recall"><a href="#Precision-and-recall" class="headerlink" title="Precision and recall"></a>Precision and recall</h3><p>\[<br>precision = \frac{ TP }{ TP + FP } \\<br>recall = \frac{ TP }{ TP + FN }<br>\]</p>
+<p><img src="/2018/07/26/AP-and-mAP-in-object-detection/fptp.png" alt="fptp"><br>上图是飞机检索任务中的一次检索结果，\( TP = 3, FP = 1\)。<br>\[<br>precision = 0.75 \\<br>recall = 0.6<br>\]<br><a id="more"></a></p>
 <h3 id="调整门限"><a href="#调整门限" class="headerlink" title="调整门限"></a>调整门限</h3><p>假设下图是飞机检索系统给出的 score 排序，列表的上部是检索系统认为与飞机更加相像的图片。蓝色线是给出上面的检索结果的对应门限值。<br><img src="/2018/07/26/AP-and-mAP-in-object-detection/ordering-wide.png" alt="order"><br>通过上下调整门限，我们可以得到不同的检索结果（即不同的检索集合），在不同的门限处我们可以达到不同的 precision 和 recall。</p>
 <table>
 <thead>
@@ -249,14 +285,14 @@ Precision and recall\[precision = \frac{ TP }{ TP + FP } \\\\recall = \frac{ TP 
 <li><p>TP、FP<br><img src="/2018/07/26/AP-and-mAP-in-object-detection/AP.png" alt="AP"></p>
 </li>
 <li><p>recall、precision for one class:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">accumulate_FP = np.cumsum(FP)</div><div class="line">accumulate_TP = np.cumsum(TP)</div><div class="line">recall = accumulate_TP / npos</div><div class="line">precision = np.divide(accumulate_TP, (accumulate_TP + accumulate_FP))</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">accumulate_FP = np.cumsum(FP)</span><br><span class="line">accumulate_TP = np.cumsum(TP)</span><br><span class="line">recall = accumulate_TP / npos</span><br><span class="line">precision = np.divide(accumulate_TP, (accumulate_TP + accumulate_FP))</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>AP for one class:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">calculate_average_precision</span><span class="params">(rec, prec)</span>:</span></div><div class="line">    <span class="comment"># 对 rec 进行前后扩展，使得 rec 能够覆盖 [0, 1] 整个范围，不然求出的面积会偏小</span></div><div class="line">    rec.insert(<span class="number">0</span>, <span class="number">0</span>)</div><div class="line">    rec.append(<span class="number">1</span>)</div><div class="line"></div><div class="line">    <span class="comment"># 对 prec 进行前后扩展，通过 append 0 和变为阶梯状的操作，使得 prec 进行了合理的扩展，</span></div><div class="line">    <span class="comment"># prec 能够和 rec 一一对应了</span></div><div class="line">    prec.insert(<span class="number">0</span>, <span class="number">0</span>)</div><div class="line">    prec.append(<span class="number">0</span>)</div><div class="line">    <span class="comment"># 变为阶梯状</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> reversed(range(<span class="number">1</span>, len(prec))):</div><div class="line">        prec[i<span class="number">-1</span>] = max(prec[i<span class="number">-1</span>], prec[i])</div><div class="line">    </div><div class="line">    <span class="comment"># 找到 recall 值发生变化的地方</span></div><div class="line">    ii = []</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(rec)<span class="number">-1</span>):</div><div class="line">        <span class="keyword">if</span> rec[i] != rec[i+<span class="number">1</span>]:</div><div class="line">            ii.append(i + <span class="number">1</span>)</div><div class="line"></div><div class="line">    <span class="comment"># 对面积进行累加</span></div><div class="line">    ap = <span class="number">0</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> ii:</div><div class="line">        ap = ap + np.sum((rec[i] - rec[i<span class="number">-1</span>]) * prec[i])</div><div class="line">    <span class="keyword">return</span> ap</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">calculate_average_precision</span><span class="params">(rec, prec)</span>:</span></span><br><span class="line">    <span class="comment"># 对 rec 进行前后扩展，使得 rec 能够覆盖 [0, 1] 整个范围，不然求出的面积会偏小</span></span><br><span class="line">    rec.insert(<span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line">    rec.append(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 对 prec 进行前后扩展，通过 append 0 和变为阶梯状的操作，使得 prec 进行了合理的扩展，</span></span><br><span class="line">    <span class="comment"># prec 能够和 rec 一一对应了</span></span><br><span class="line">    prec.insert(<span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line">    prec.append(<span class="number">0</span>)</span><br><span class="line">    <span class="comment"># 变为阶梯状</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> reversed(range(<span class="number">1</span>, len(prec))):</span><br><span class="line">        prec[i<span class="number">-1</span>] = max(prec[i<span class="number">-1</span>], prec[i])</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 找到 recall 值发生变化的地方</span></span><br><span class="line">    ii = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(rec)<span class="number">-1</span>):</span><br><span class="line">        <span class="keyword">if</span> rec[i] != rec[i+<span class="number">1</span>]:</span><br><span class="line">            ii.append(i + <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 对面积进行累加</span></span><br><span class="line">    ap = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> ii:</span><br><span class="line">        ap = ap + np.sum((rec[i] - rec[i<span class="number">-1</span>]) * prec[i])</span><br><span class="line">    <span class="keyword">return</span> ap</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
-<p>实现代码<a href="https://github.com/rafaelpadilla/Object-Detection-Metrics" target="_blank" rel="external">参考</a>。</p>
-<h3 id="补充材料-from-Yesterday’s-Coffee"><a href="#补充材料-from-Yesterday’s-Coffee" class="headerlink" title="补充材料 from Yesterday’s Coffee"></a>补充材料 from <a href="http://www.yesterdayscoffee.de/" target="_blank" rel="external">Yesterday’s Coffee</a></h3><p>采摘自 <a href="http://www.yesterdayscoffee.de/2013/09/03/precision-recall-curves-and-mean-average-precision/" target="_blank" rel="external">Precision-Recall-Curves and Mean Average Precision</a><br>Precision-recall curves are often used to evaluate ranked results of an information retrieval system (e.g., a search engine). The principle is easy, for every search result, check the precision and recall you have until now (precision/recall at k). If you plot this in a graph with recall on the x-axis and precision on the y-axis, you end up with something like this (blue line):<br><img src="/2018/07/26/AP-and-mAP-in-object-detection/pr.png" alt="pr"><br>The essential shape is always the same. Why? Let’s say we have looked at k results which corresponds to a point with a precision and a recall value. What can happen when we go to result k+1? The result can be correct, then recall will increase and precision as well – the curve goes up and right. Or it can go wrong, then recall stays the same and precision drops – the curve goes straight down.</p>
+<p>实现代码<a href="https://github.com/rafaelpadilla/Object-Detection-Metrics" target="_blank" rel="noopener">参考</a>。</p>
+<h3 id="补充材料-from-Yesterday’s-Coffee"><a href="#补充材料-from-Yesterday’s-Coffee" class="headerlink" title="补充材料 from Yesterday’s Coffee"></a>补充材料 from <a href="http://www.yesterdayscoffee.de/" target="_blank" rel="noopener">Yesterday’s Coffee</a></h3><p>采摘自 <a href="http://www.yesterdayscoffee.de/2013/09/03/precision-recall-curves-and-mean-average-precision/" target="_blank" rel="noopener">Precision-Recall-Curves and Mean Average Precision</a><br>Precision-recall curves are often used to evaluate ranked results of an information retrieval system (e.g., a search engine). The principle is easy, for every search result, check the precision and recall you have until now (precision/recall at k). If you plot this in a graph with recall on the x-axis and precision on the y-axis, you end up with something like this (blue line):<br><img src="/2018/07/26/AP-and-mAP-in-object-detection/pr.png" alt="pr"><br>The essential shape is always the same. Why? Let’s say we have looked at k results which corresponds to a point with a precision and a recall value. What can happen when we go to result k+1? The result can be correct, then recall will increase and precision as well – the curve goes up and right. Or it can go wrong, then recall stays the same and precision drops – the curve goes straight down.</p>
 <p>The red line is the interpolated precision, meaning we define precision at some arbitrary level to be the maximum precision reached at any later recall level. Essentially, we flatten the “teeth” of the curve. The difference can be pretty big (see in the plot at recall around 0.2), we can even “skip” a tooth.</p>
 <p>What would the curve look like for a perfect system? Meaning a system that only returns correct results? It would be 1.0 for every recall level. </p>
 <p>What should the value be for precision at recall 0? If we interpolate, the answer is clear: the highest precision value at some later recall level. This does not have to be 1.0 – it could happen that the first result is wrong, the second correct, then we have P=0.5 at k=2 and it might only drop from there.</p>
@@ -264,127 +300,183 @@ Precision and recall\[precision = \frac{ TP }{ TP + FP } \\\\recall = \frac{ TP 
     </div>
 
     
-
     
-        <div class="post-tags">
-            <i class="fa fa-tags" aria-hidden="true"></i>
-            <a href="/tags/DL/">#DL</a>
-        </div>
     
 
-    <!-- Comments -->
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/DL/" rel="tag"># DL</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/07/18/Shared-ptr-threadsafety/" rel="prev" title="Shared_ptr Threadsafety">
+      <i class="fa fa-chevron-left"></i> Shared_ptr Threadsafety
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/07/26/Stacked-Hourglass-Networks-卫星部件检测/" rel="next" title="Stacked Hourglass Networks 卫星部件检测">
+      Stacked Hourglass Networks 卫星部件检测 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
     
+  </article>
+  
+  
+  
 
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Precision-and-recall"><span class="nav-number">1.</span> <span class="nav-text">Precision and recall</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#调整门限"><span class="nav-number">2.</span> <span class="nav-text">调整门限</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Precision-recall-curves"><span class="nav-number">3.</span> <span class="nav-text">Precision-recall curves</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Average-precision-AP"><span class="nav-number">4.</span> <span class="nav-text">Average precision (AP)</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Average-precision"><span class="nav-number">4.0.1.</span> <span class="nav-text">Average precision</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Interpolated-average-precision"><span class="nav-number">4.0.2.</span> <span class="nav-text">Interpolated average precision</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Interpolated-average-precision-variation-11-points-AP"><span class="nav-number">4.0.3.</span> <span class="nav-text">Interpolated average precision variation 11-points AP</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mAP"><span class="nav-number">5.</span> <span class="nav-text">mAP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mAP-in-object-detection"><span class="nav-number">6.</span> <span class="nav-text">mAP in object detection</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#mAP-在目标检测中的计算过程："><span class="nav-number">6.0.1.</span> <span class="nav-text">mAP 在目标检测中的计算过程：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#补充材料-from-Yesterday’s-Coffee"><span class="nav-number">7.</span> <span class="nav-text">补充材料 from Yesterday’s Coffee</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
 </div>
-        </section>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
 
     </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
 
-
-</div>
-
-<!-- Footer -->
-<div class="push"></div>
-
-<footer class="footer-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
-                <h2>About</h2>
-                <p>
-                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
-                </p>
-            </div>
-            
-    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
-        <h2>Recent Posts</h2>
-        <ul>
-            
-            <li>
-                <a class="footer-post" href="/2019/07/12/Unnamed-namespace/">Unnamed namespace</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/05/08/Static-variable-in-inlined-function/">Static variable in inline</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/04/23/Iterator-invalidation-rules/">Iterator invalidation rul</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/18/Emplace-back/">Emplace back</a>
-            </li>
-            
-        </ul>
-    </div>
+        
 
 
 
-            
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <ul class="list-inline footer-social-icons">
-                    
-                    <li class="list-inline-item">
-                        <a href="https://github.com/RobertLexis">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-github"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="mailto:robert_lexis@163.com">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-envelope-o"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="footer-copyright">
-                    @Untitled. All right reserved | Robert Lexis Loves Wenny
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<!-- After footer scripts -->
-
-<!-- jQuery -->
-<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-
-<!-- Tween Max -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
-
-<!-- Gallery -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
-
-<!-- Custom JavaScript -->
-<script src="/js/main.js"></script>
-
-<!-- Disqus Comments -->
 
 
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
 
 </body>
-
 </html>

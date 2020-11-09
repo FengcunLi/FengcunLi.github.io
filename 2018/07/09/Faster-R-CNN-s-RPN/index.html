@@ -1,173 +1,209 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<!-- Head tag -->
+<html lang="zh-CN">
 <head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/main.css">
 
-    <!--Description-->
-    
-        <meta name="description" content="本博文主要总结了 Faster R-CNN 的 Region Proposal Network 的结构，驱动是在实际的项目中将 RPN 作为了一个 standalone 的模型进行了使用。主要参考了 Tensorflow Object Detection API 官方库的代码和 tryolabs 的博文 Faster R-CNN: Down the rabbit hole of modern object detection.
-Faster R-CNN 发展历程Everything started with “Rich feature hierarchies for accurate object detection and semantic segmentation” (R-CNN) in 2014, which used an algorithm called Selective Search to propose possible regions of interest and a standard Convolutional Neural Network (CNN) to classify and adjust them. It quickly evolved into Fast R-CNN, published in early 2015, where a technique called Region of Interest Pooling allowed for sharing expensive computations and made the model much faster. Finally came Faster R-CNN, where the first fully differentiable model was proposed. Faster R-CNN was originally published in NIPS 2015. 
-Faster R-CNN 的整体架构">
-    
 
-    <!--Author-->
-    
-        <meta name="author" content="Robert Lexis">
-    
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-    <!--Open Graph Title-->
-    
-        <meta property="og:title" content="Faster R-CNN&#39;s RPN"/>
-    
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
-    <!--Open Graph Description-->
-    
+  <meta name="description" content="本博文主要总结了 Faster R-CNN 的 Region Proposal Network 的结构，驱动是在实际的项目中将 RPN 作为了一个 standalone 的模型进行了使用。主要参考了 Tensorflow Object Detection API 官方库的代码和 tryolabs 的博文 Faster R-CNN: Down the rabbit hole of modern ob">
+<meta name="keywords" content="DL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Faster R-CNN&#39;s RPN">
+<meta property="og:url" content="http://yoursite.com/2018/07/09/Faster-R-CNN-s-RPN/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="本博文主要总结了 Faster R-CNN 的 Region Proposal Network 的结构，驱动是在实际的项目中将 RPN 作为了一个 standalone 的模型进行了使用。主要参考了 Tensorflow Object Detection API 官方库的代码和 tryolabs 的博文 Faster R-CNN: Down the rabbit hole of modern ob">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2018/07/09/Faster-R-CNN-s-RPN/fasterrcnn-architecture.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/09/Faster-R-CNN-s-RPN/anchors-centers.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/09/Faster-R-CNN-s-RPN/anchors-progress.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/09/Faster-R-CNN-s-RPN/rpn-architecture.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/09/Faster-R-CNN-s-RPN/rpn-conv-layers.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/09/Faster-R-CNN-s-RPN/subsample.png">
+<meta property="og:updated_time" content="2018-09-03T12:49:24.174Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Faster R-CNN&#39;s RPN">
+<meta name="twitter:description" content="本博文主要总结了 Faster R-CNN 的 Region Proposal Network 的结构，驱动是在实际的项目中将 RPN 作为了一个 standalone 的模型进行了使用。主要参考了 Tensorflow Object Detection API 官方库的代码和 tryolabs 的博文 Faster R-CNN: Down the rabbit hole of modern ob">
+<meta name="twitter:image" content="http://yoursite.com/2018/07/09/Faster-R-CNN-s-RPN/fasterrcnn-architecture.png">
 
-    <!--Open Graph Site Name-->
-    <meta property="og:site_name" content="This is Robert Lexis."/>
+<link rel="canonical" href="http://yoursite.com/2018/07/09/Faster-R-CNN-s-RPN/">
 
-    <!--Type page-->
-    
-        <meta property="og:type" content="article" />
-    
 
-    <!--Page Cover-->
-    
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
 
-    <meta name="twitter:card" content="summary" />
-    
+  <title>Faster R-CNN's RPN | The next stop - Antarctica</title>
+  
 
-    <!-- Title -->
-    
-    <title>Faster R-CNN&#39;s RPN - This is Robert Lexis.</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 
-    <!-- Custom Fonts -->
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 
-    <!-- Gallery -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
 
-    <!-- Google Analytics -->
-    
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
 
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
 
 </head>
 
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
 
-<body>
-
-<div class="bg-gradient"></div>
-<div class="bg-pattern"></div>
-
-<!-- Menu -->
-<!--Menu Links and Overlay-->
-<div class="menu-bg">
-    <div class="menu-container">
-        <ul>
-            
-            <li class="menu-item">
-                <a href="/">
-                    Home
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/archives">
-                    Archives
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/about">
-                    About
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/tags">
-                    Tags
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/categories">
-                    Categories
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/contact">
-                    Contact
-                </a>
-            </li>
-            
-        </ul>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
 </div>
 
-<!--Hamburger Icon-->
-<nav>
-    <a href="#menu"></a>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
 </nav>
 
-<div class="container">
 
-    <!-- Main Content -->
-    <div class="row">
-    <div class="col-sm-12">
 
-        <!--Title and Logo-->
-        <header>
-    <div class="logo">
-        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
-        
-    </div>
-</header>
 
-        <section class="main">
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
             
-<div class="post">
 
-    <div class="post-header">
-        <h1 class="title">
-            <a href="/2018/07/09/Faster-R-CNN-s-RPN/">
-                Faster R-CNN's RPN
-            </a>
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/09/Faster-R-CNN-s-RPN/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Faster R-CNN's RPN
         </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-07-09</span>
-            
-            
-            
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-07-09 20:17:23" itemprop="dateCreated datePublished" datetime="2018-07-09T20:17:23+08:00">2018-07-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-09-03 20:49:24" itemprop="dateModified" datetime="2018-09-03T20:49:24+08:00">2018-09-03</time>
+              </span>
+
+          
+
         </div>
-    </div>
+      </header>
 
-    <div class="content">
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
-        <!-- Gallery -->
-        
-
-        <!-- Post Content -->
-        <p>本博文主要总结了 Faster R-CNN 的 Region Proposal Network 的结构，驱动是在实际的项目中将 RPN 作为了一个 standalone 的模型进行了使用。主要参考了 <a href="https://github.com/tensorflow/models/tree/master/research/object_detection" target="_blank" rel="external">Tensorflow Object Detection API</a> 官方库的代码和 tryolabs 的博文 <a href="https://tryolabs.com/blog/2018/01/18/faster-r-cnn-down-the-rabbit-hole-of-modern-object-detection/" target="_blank" rel="external">Faster R-CNN: Down the rabbit hole of modern object detection</a>.</p>
+      
+        <p>本博文主要总结了 Faster R-CNN 的 Region Proposal Network 的结构，驱动是在实际的项目中将 RPN 作为了一个 standalone 的模型进行了使用。主要参考了 <a href="https://github.com/tensorflow/models/tree/master/research/object_detection" target="_blank" rel="noopener">Tensorflow Object Detection API</a> 官方库的代码和 tryolabs 的博文 <a href="https://tryolabs.com/blog/2018/01/18/faster-r-cnn-down-the-rabbit-hole-of-modern-object-detection/" target="_blank" rel="noopener">Faster R-CNN: Down the rabbit hole of modern object detection</a>.</p>
 <h3 id="Faster-R-CNN-发展历程"><a href="#Faster-R-CNN-发展历程" class="headerlink" title="Faster R-CNN 发展历程"></a>Faster R-CNN 发展历程</h3><p>Everything started with “Rich feature hierarchies for accurate object detection and semantic segmentation” (R-CNN) in 2014, which used an algorithm called Selective Search to propose possible regions of interest and a standard Convolutional Neural Network (CNN) to classify and adjust them. It quickly evolved into Fast R-CNN, published in early 2015, where a technique called Region of Interest Pooling allowed for sharing expensive computations and made the model much faster. Finally came Faster R-CNN, where the first fully differentiable model was proposed. Faster R-CNN was originally published in NIPS 2015. </p>
 <h3 id="Faster-R-CNN-的整体架构"><a href="#Faster-R-CNN-的整体架构" class="headerlink" title="Faster R-CNN 的整体架构"></a>Faster R-CNN 的整体架构</h3><p><img src="/2018/07/09/Faster-R-CNN-s-RPN/fasterrcnn-architecture.png" alt="fasterrcnn-architecture"><br><a id="more"></a></p>
 <p>其中 RPN 的作用是：find up to a predefined number of regions (bounding boxes), which may contain objects.</p>
@@ -186,25 +222,25 @@ Faster R-CNN 的整体架构">
 </ul>
 <h3 id="Anchors"><a href="#Anchors" class="headerlink" title="Anchors"></a>Anchors</h3><p>Predict bounding boxes by learning to predict offsets from reference boxes.<br>Take a reference box \( x_{center}, y_{center}, width, height \) and learn to predict \( \Delta_{x_{center}}, \Delta_{y_{center}}, \Delta_{width}, \Delta_{height} \), which are usually small values that tweak the reference box to better fit what we want.<br>Since we are working with a convolutional feature map of size \( conv_{width} \times conv_{height} \times conv_{depth} \), we create a set of anchors for each of the points in \( conv_{width} \times conv_{height} \). It’s important to understand that even though anchors are defined based on the convolutional feature map, <strong>the final anchors reference the original image</strong>.</p>
 <p>Since we only have convolutional and pooling layers, the dimensions of the feature map will be proportional to those of the original image. Mathematically, if the image was \( w \times h\), the feature map will end up \( \frac{w}{r} \times \frac{h}{r} \) where \( r \) is called subsampling ratio. If we define one anchor per spatial position of the feature map, the final image will end up with a bunch of anchors separated by \( r \) pixels. In the case of VGG,<br>\( r = 16 \).<br><img src="/2018/07/09/Faster-R-CNN-s-RPN/anchors-centers.png" alt="anchors-centers"><br>Anchor centers throught the original image</p>
-<p>In order to choose the set of anchors we usually define a set of sizes (e.g. 64px, 128px, 256px) and a set of ratios between width and height of boxes (e.g. 0.5, 1, 1.5) and use all the possible combinations of sizes and ratios.<br><img src="/2018/07/09/Faster-R-CNN-s-RPN/anchors-progress.png" alt="anchors-progress"><br>Left: Anchors, Center: Anchor for a single point, Right: All anchors<br>Tensorflow Object Detection API 的 anchor 生成器为 <a href="https://github.com/tensorflow/models/blob/master/research/object_detection/anchor_generators/grid_anchor_generator.py" target="_blank" rel="external">models/research/object_detection/anchor_generators/grid_anchor_generator.py</a> 中的 <code>grid_anchor_generator</code>.<br>关键代码分析如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div></pre></td><td class="code"><pre><div class="line"> <span class="function"><span class="keyword">def</span> <span class="title">_generate</span><span class="params">(self, feature_map_shape_list)</span>:</span></div><div class="line">    <span class="string">"""Generates a collection of bounding boxes to be used as anchors.</span></div><div class="line"><span class="string">    Args:</span></div><div class="line"><span class="string">      feature_map_shape_list: list of pairs of convnet layer resolutions in the</span></div><div class="line"><span class="string">        format [(height_0, width_0)].  For example, setting</span></div><div class="line"><span class="string">        feature_map_shape_list=[(8, 8)] asks for anchors that correspond</span></div><div class="line"><span class="string">        to an 8x8 layer.  For this anchor generator, only lists of length 1 are</span></div><div class="line"><span class="string">        allowed. 对于 Faster R-CNN 来说，只在一个卷积层的特征图上产生 grid anchors。</span></div><div class="line"><span class="string">    Returns:</span></div><div class="line"><span class="string">      boxes_list: a list of BoxLists each holding anchor boxes corresponding to</span></div><div class="line"><span class="string">        the input feature map shapes.</span></div><div class="line"><span class="string">    Raises:</span></div><div class="line"><span class="string">      ValueError: if feature_map_shape_list, box_specs_list do not have the same</span></div><div class="line"><span class="string">        length.</span></div><div class="line"><span class="string">      ValueError: if feature_map_shape_list does not consist of pairs of</span></div><div class="line"><span class="string">        integers</span></div><div class="line"><span class="string">    """</span></div><div class="line">    <span class="keyword">if</span> <span class="keyword">not</span> (isinstance(feature_map_shape_list, list)</div><div class="line">            <span class="keyword">and</span> len(feature_map_shape_list) == <span class="number">1</span>):</div><div class="line">      <span class="keyword">raise</span> ValueError(<span class="string">'feature_map_shape_list must be a list of length 1.'</span>)</div><div class="line">    <span class="keyword">if</span> <span class="keyword">not</span> all([isinstance(list_item, tuple) <span class="keyword">and</span> len(list_item) == <span class="number">2</span></div><div class="line">                <span class="keyword">for</span> list_item <span class="keyword">in</span> feature_map_shape_list]):</div><div class="line">      <span class="keyword">raise</span> ValueError(<span class="string">'feature_map_shape_list must be a list of pairs.'</span>)</div><div class="line">    grid_height, grid_width = feature_map_shape_list[<span class="number">0</span>]</div><div class="line">    scales_grid, aspect_ratios_grid = ops.meshgrid(self._scales,</div><div class="line">                                                   self._aspect_ratios)</div><div class="line">    scales_grid = tf.reshape(scales_grid, [<span class="number">-1</span>])</div><div class="line">    aspect_ratios_grid = tf.reshape(aspect_ratios_grid, [<span class="number">-1</span>])</div><div class="line">    anchors = tile_anchors(grid_height,</div><div class="line">                           grid_width,</div><div class="line">                           scales_grid,</div><div class="line">                           aspect_ratios_grid,</div><div class="line">                           self._base_anchor_size,</div><div class="line">                           self._anchor_stride,</div><div class="line">                           self._anchor_offset)</div><div class="line"></div><div class="line">    num_anchors = anchors.num_boxes_static()</div><div class="line">    <span class="keyword">if</span> num_anchors <span class="keyword">is</span> <span class="keyword">None</span>:</div><div class="line">      num_anchors = anchors.num_boxes()</div><div class="line">    anchor_indices = tf.zeros([num_anchors])</div><div class="line">    anchors.add_field(<span class="string">'feature_map_index'</span>, anchor_indices)</div><div class="line">    <span class="keyword">return</span> [anchors]</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">tile_anchors</span><span class="params">(grid_height,</span></span></div><div class="line"><span class="function"><span class="params">                 grid_width,</span></span></div><div class="line"><span class="function"><span class="params">                 scales,</span></span></div><div class="line"><span class="function"><span class="params">                 aspect_ratios,</span></span></div><div class="line"><span class="function"><span class="params">                 base_anchor_size,</span></span></div><div class="line"><span class="function"><span class="params">                 anchor_stride,</span></span></div><div class="line"><span class="function"><span class="params">                 anchor_offset)</span>:</span></div><div class="line">  <span class="string">"""Create a tiled set of anchors strided along a grid in image space.</span></div><div class="line"><span class="string">  This op creates a set of anchor boxes by placing a "basis" collection of</span></div><div class="line"><span class="string">  boxes with user-specified scales and aspect ratios centered at evenly</span></div><div class="line"><span class="string">  distributed points along a grid.  The basis collection is specified via the</span></div><div class="line"><span class="string">  scale and aspect_ratios arguments.  For example, setting scales=[.1, .2, .2]</span></div><div class="line"><span class="string">  and aspect ratios = [2,2,1/2] means that we create three boxes: one with scale</span></div><div class="line"><span class="string">  .1, aspect ratio 2, one with scale .2, aspect ratio 2, and one with scale .2</span></div><div class="line"><span class="string">  and aspect ratio 1/2.  Each box is multiplied by "base_anchor_size" before</span></div><div class="line"><span class="string">  placing it over its respective center.</span></div><div class="line"><span class="string">  Grid points are specified via grid_height, grid_width parameters as well as</span></div><div class="line"><span class="string">  the anchor_stride and anchor_offset parameters.</span></div><div class="line"><span class="string">  Args:</span></div><div class="line"><span class="string">    grid_height: size of the grid in the y direction (int or int scalar tensor)</span></div><div class="line"><span class="string">    grid_width: size of the grid in the x direction (int or int scalar tensor)</span></div><div class="line"><span class="string">    scales: a 1-d  (float) tensor representing the scale of each box in the</span></div><div class="line"><span class="string">      basis set.</span></div><div class="line"><span class="string">    aspect_ratios: a 1-d (float) tensor representing the aspect ratio of each</span></div><div class="line"><span class="string">      box in the basis set.  The length of the scales and aspect_ratios tensors</span></div><div class="line"><span class="string">      must be equal.</span></div><div class="line"><span class="string">    base_anchor_size: base anchor size as [height, width]</span></div><div class="line"><span class="string">      (float tensor of shape [2])</span></div><div class="line"><span class="string">    anchor_stride: difference in centers between base anchors for adjacent grid</span></div><div class="line"><span class="string">                   positions (float tensor of shape [2])</span></div><div class="line"><span class="string">    anchor_offset: center of the anchor with scale and aspect ratio 1 for the</span></div><div class="line"><span class="string">                   upper left element of the grid, this should be zero for</span></div><div class="line"><span class="string">                   feature networks with only VALID padding and even receptive</span></div><div class="line"><span class="string">                   field size, but may need some additional calculation if other</span></div><div class="line"><span class="string">                   padding is used (float tensor of shape [2])</span></div><div class="line"><span class="string">  Returns:</span></div><div class="line"><span class="string">    a BoxList holding a collection of N anchor boxes</span></div><div class="line"><span class="string">  """</span></div><div class="line">  ratio_sqrts = tf.sqrt(aspect_ratios)</div><div class="line">  heights = scales / ratio_sqrts * base_anchor_size[<span class="number">0</span>]</div><div class="line">  widths = scales * ratio_sqrts * base_anchor_size[<span class="number">1</span>]</div><div class="line"></div><div class="line">  <span class="comment"># Get a grid of box centers</span></div><div class="line">  y_centers = tf.to_float(tf.range(grid_height))</div><div class="line">  y_centers = y_centers * anchor_stride[<span class="number">0</span>] + anchor_offset[<span class="number">0</span>]</div><div class="line">  x_centers = tf.to_float(tf.range(grid_width))</div><div class="line">  x_centers = x_centers * anchor_stride[<span class="number">1</span>] + anchor_offset[<span class="number">1</span>]</div><div class="line">  x_centers, y_centers = ops.meshgrid(x_centers, y_centers)</div><div class="line"></div><div class="line">  widths_grid, x_centers_grid = ops.meshgrid(widths, x_centers)</div><div class="line">  heights_grid, y_centers_grid = ops.meshgrid(heights, y_centers)</div><div class="line">  bbox_centers = tf.stack([y_centers_grid, x_centers_grid], axis=<span class="number">3</span>)</div><div class="line">  bbox_sizes = tf.stack([heights_grid, widths_grid], axis=<span class="number">3</span>)</div><div class="line">  bbox_centers = tf.reshape(bbox_centers, [<span class="number">-1</span>, <span class="number">2</span>])</div><div class="line">  bbox_sizes = tf.reshape(bbox_sizes, [<span class="number">-1</span>, <span class="number">2</span>])</div><div class="line">  bbox_corners = _center_size_bbox_to_corners_bbox(bbox_centers, bbox_sizes)</div><div class="line">  <span class="keyword">return</span> box_list.BoxList(bbox_corners)</div></pre></td></tr></table></figure></p>
+<p>In order to choose the set of anchors we usually define a set of sizes (e.g. 64px, 128px, 256px) and a set of ratios between width and height of boxes (e.g. 0.5, 1, 1.5) and use all the possible combinations of sizes and ratios.<br><img src="/2018/07/09/Faster-R-CNN-s-RPN/anchors-progress.png" alt="anchors-progress"><br>Left: Anchors, Center: Anchor for a single point, Right: All anchors<br>Tensorflow Object Detection API 的 anchor 生成器为 <a href="https://github.com/tensorflow/models/blob/master/research/object_detection/anchor_generators/grid_anchor_generator.py" target="_blank" rel="noopener">models/research/object_detection/anchor_generators/grid_anchor_generator.py</a> 中的 <code>grid_anchor_generator</code>.<br>关键代码分析如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">def</span> <span class="title">_generate</span><span class="params">(self, feature_map_shape_list)</span>:</span></span><br><span class="line">    <span class="string">"""Generates a collection of bounding boxes to be used as anchors.</span></span><br><span class="line"><span class="string">    Args:</span></span><br><span class="line"><span class="string">      feature_map_shape_list: list of pairs of convnet layer resolutions in the</span></span><br><span class="line"><span class="string">        format [(height_0, width_0)].  For example, setting</span></span><br><span class="line"><span class="string">        feature_map_shape_list=[(8, 8)] asks for anchors that correspond</span></span><br><span class="line"><span class="string">        to an 8x8 layer.  For this anchor generator, only lists of length 1 are</span></span><br><span class="line"><span class="string">        allowed. 对于 Faster R-CNN 来说，只在一个卷积层的特征图上产生 grid anchors。</span></span><br><span class="line"><span class="string">    Returns:</span></span><br><span class="line"><span class="string">      boxes_list: a list of BoxLists each holding anchor boxes corresponding to</span></span><br><span class="line"><span class="string">        the input feature map shapes.</span></span><br><span class="line"><span class="string">    Raises:</span></span><br><span class="line"><span class="string">      ValueError: if feature_map_shape_list, box_specs_list do not have the same</span></span><br><span class="line"><span class="string">        length.</span></span><br><span class="line"><span class="string">      ValueError: if feature_map_shape_list does not consist of pairs of</span></span><br><span class="line"><span class="string">        integers</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> (isinstance(feature_map_shape_list, list)</span><br><span class="line">            <span class="keyword">and</span> len(feature_map_shape_list) == <span class="number">1</span>):</span><br><span class="line">      <span class="keyword">raise</span> ValueError(<span class="string">'feature_map_shape_list must be a list of length 1.'</span>)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> all([isinstance(list_item, tuple) <span class="keyword">and</span> len(list_item) == <span class="number">2</span></span><br><span class="line">                <span class="keyword">for</span> list_item <span class="keyword">in</span> feature_map_shape_list]):</span><br><span class="line">      <span class="keyword">raise</span> ValueError(<span class="string">'feature_map_shape_list must be a list of pairs.'</span>)</span><br><span class="line">    grid_height, grid_width = feature_map_shape_list[<span class="number">0</span>]</span><br><span class="line">    scales_grid, aspect_ratios_grid = ops.meshgrid(self._scales,</span><br><span class="line">                                                   self._aspect_ratios)</span><br><span class="line">    scales_grid = tf.reshape(scales_grid, [<span class="number">-1</span>])</span><br><span class="line">    aspect_ratios_grid = tf.reshape(aspect_ratios_grid, [<span class="number">-1</span>])</span><br><span class="line">    anchors = tile_anchors(grid_height,</span><br><span class="line">                           grid_width,</span><br><span class="line">                           scales_grid,</span><br><span class="line">                           aspect_ratios_grid,</span><br><span class="line">                           self._base_anchor_size,</span><br><span class="line">                           self._anchor_stride,</span><br><span class="line">                           self._anchor_offset)</span><br><span class="line"></span><br><span class="line">    num_anchors = anchors.num_boxes_static()</span><br><span class="line">    <span class="keyword">if</span> num_anchors <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">      num_anchors = anchors.num_boxes()</span><br><span class="line">    anchor_indices = tf.zeros([num_anchors])</span><br><span class="line">    anchors.add_field(<span class="string">'feature_map_index'</span>, anchor_indices)</span><br><span class="line">    <span class="keyword">return</span> [anchors]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tile_anchors</span><span class="params">(grid_height,</span></span></span><br><span class="line"><span class="function"><span class="params">                 grid_width,</span></span></span><br><span class="line"><span class="function"><span class="params">                 scales,</span></span></span><br><span class="line"><span class="function"><span class="params">                 aspect_ratios,</span></span></span><br><span class="line"><span class="function"><span class="params">                 base_anchor_size,</span></span></span><br><span class="line"><span class="function"><span class="params">                 anchor_stride,</span></span></span><br><span class="line"><span class="function"><span class="params">                 anchor_offset)</span>:</span></span><br><span class="line">  <span class="string">"""Create a tiled set of anchors strided along a grid in image space.</span></span><br><span class="line"><span class="string">  This op creates a set of anchor boxes by placing a "basis" collection of</span></span><br><span class="line"><span class="string">  boxes with user-specified scales and aspect ratios centered at evenly</span></span><br><span class="line"><span class="string">  distributed points along a grid.  The basis collection is specified via the</span></span><br><span class="line"><span class="string">  scale and aspect_ratios arguments.  For example, setting scales=[.1, .2, .2]</span></span><br><span class="line"><span class="string">  and aspect ratios = [2,2,1/2] means that we create three boxes: one with scale</span></span><br><span class="line"><span class="string">  .1, aspect ratio 2, one with scale .2, aspect ratio 2, and one with scale .2</span></span><br><span class="line"><span class="string">  and aspect ratio 1/2.  Each box is multiplied by "base_anchor_size" before</span></span><br><span class="line"><span class="string">  placing it over its respective center.</span></span><br><span class="line"><span class="string">  Grid points are specified via grid_height, grid_width parameters as well as</span></span><br><span class="line"><span class="string">  the anchor_stride and anchor_offset parameters.</span></span><br><span class="line"><span class="string">  Args:</span></span><br><span class="line"><span class="string">    grid_height: size of the grid in the y direction (int or int scalar tensor)</span></span><br><span class="line"><span class="string">    grid_width: size of the grid in the x direction (int or int scalar tensor)</span></span><br><span class="line"><span class="string">    scales: a 1-d  (float) tensor representing the scale of each box in the</span></span><br><span class="line"><span class="string">      basis set.</span></span><br><span class="line"><span class="string">    aspect_ratios: a 1-d (float) tensor representing the aspect ratio of each</span></span><br><span class="line"><span class="string">      box in the basis set.  The length of the scales and aspect_ratios tensors</span></span><br><span class="line"><span class="string">      must be equal.</span></span><br><span class="line"><span class="string">    base_anchor_size: base anchor size as [height, width]</span></span><br><span class="line"><span class="string">      (float tensor of shape [2])</span></span><br><span class="line"><span class="string">    anchor_stride: difference in centers between base anchors for adjacent grid</span></span><br><span class="line"><span class="string">                   positions (float tensor of shape [2])</span></span><br><span class="line"><span class="string">    anchor_offset: center of the anchor with scale and aspect ratio 1 for the</span></span><br><span class="line"><span class="string">                   upper left element of the grid, this should be zero for</span></span><br><span class="line"><span class="string">                   feature networks with only VALID padding and even receptive</span></span><br><span class="line"><span class="string">                   field size, but may need some additional calculation if other</span></span><br><span class="line"><span class="string">                   padding is used (float tensor of shape [2])</span></span><br><span class="line"><span class="string">  Returns:</span></span><br><span class="line"><span class="string">    a BoxList holding a collection of N anchor boxes</span></span><br><span class="line"><span class="string">  """</span></span><br><span class="line">  ratio_sqrts = tf.sqrt(aspect_ratios)</span><br><span class="line">  heights = scales / ratio_sqrts * base_anchor_size[<span class="number">0</span>]</span><br><span class="line">  widths = scales * ratio_sqrts * base_anchor_size[<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line">  <span class="comment"># Get a grid of box centers</span></span><br><span class="line">  y_centers = tf.to_float(tf.range(grid_height))</span><br><span class="line">  y_centers = y_centers * anchor_stride[<span class="number">0</span>] + anchor_offset[<span class="number">0</span>]</span><br><span class="line">  x_centers = tf.to_float(tf.range(grid_width))</span><br><span class="line">  x_centers = x_centers * anchor_stride[<span class="number">1</span>] + anchor_offset[<span class="number">1</span>]</span><br><span class="line">  x_centers, y_centers = ops.meshgrid(x_centers, y_centers)</span><br><span class="line"></span><br><span class="line">  widths_grid, x_centers_grid = ops.meshgrid(widths, x_centers)</span><br><span class="line">  heights_grid, y_centers_grid = ops.meshgrid(heights, y_centers)</span><br><span class="line">  bbox_centers = tf.stack([y_centers_grid, x_centers_grid], axis=<span class="number">3</span>)</span><br><span class="line">  bbox_sizes = tf.stack([heights_grid, widths_grid], axis=<span class="number">3</span>)</span><br><span class="line">  bbox_centers = tf.reshape(bbox_centers, [<span class="number">-1</span>, <span class="number">2</span>])</span><br><span class="line">  bbox_sizes = tf.reshape(bbox_sizes, [<span class="number">-1</span>, <span class="number">2</span>])</span><br><span class="line">  bbox_corners = _center_size_bbox_to_corners_bbox(bbox_centers, bbox_sizes)</span><br><span class="line">  <span class="keyword">return</span> box_list.BoxList(bbox_corners)</span><br></pre></td></tr></table></figure></p>
 <h3 id="Region-Proposal-Network"><a href="#Region-Proposal-Network" class="headerlink" title="Region Proposal Network"></a>Region Proposal Network</h3><p><img src="/2018/07/09/Faster-R-CNN-s-RPN/rpn-architecture.png" alt="rpn-architecture"><br>As we mentioned before, the RPN takes all the reference boxes (anchors) and outputs a set of good proposals for objects. It does this by having two different outputs for each of the anchors.</p>
 <p>The first one is the probability that an anchor is an object. An “objectness score”, if you will. Note that the RPN doesn’t care what class of object it is, only that it does in fact look like an object (and not background). We are going to use this objectness score to filter out the bad predictions for the second stage. The second output is the bounding box regression for adjusting the anchors to better fit the object it’s predicting.<br>The RPN is implemented efficiently in a fully convolutional way, using the convolutional feature map returned by the base network as an input. First, we use a convolutional layer with 512 channels and \( 3x3 \) kernel size and then we have two parallel convolutional layers using a \( 1x1 \) kernel, whose number of channels depends on the number of anchors per point.<br><img src="/2018/07/09/Faster-R-CNN-s-RPN/rpn-conv-layers.png" alt="rpn-conv-layers"></p>
-<p>Convolutional implementation of an RPN architecture, where k is the number of anchors.<br>来自 <a href="https://github.com/tensorflow/models/blob/master/research/object_detection/meta_architectures/faster_rcnn_meta_arch.py" target="_blank" rel="external">models/research/object_detection/meta_architectures/faster_rcnn_meta_arch.py</a> RPN 的关键代码如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">_extract_rpn_feature_maps</span><span class="params">(self, preprocessed_inputs)</span>:</span></div><div class="line">    <span class="string">"""Extracts RPN features.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">    This function extracts two feature maps: a feature map to be directly</span></div><div class="line"><span class="string">    fed to a box predictor (to predict location and objectness scores for</span></div><div class="line"><span class="string">    proposals) and a feature map from which to crop regions which will then</span></div><div class="line"><span class="string">    be sent to the second stage box classifier.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">    Args:</span></div><div class="line"><span class="string">      preprocessed_inputs: a [batch, height, width, channels] image tensor.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">    Returns:</span></div><div class="line"><span class="string">      rpn_box_predictor_features: A 4-D float32 tensor with shape</span></div><div class="line"><span class="string">        [batch, height, width, depth] to be used for predicting proposal boxes</span></div><div class="line"><span class="string">        and corresponding objectness scores.</span></div><div class="line"><span class="string">      rpn_features_to_crop: A 4-D float32 tensor with shape</span></div><div class="line"><span class="string">        [batch, height, width, depth] representing image features to crop using</span></div><div class="line"><span class="string">        the proposals boxes.</span></div><div class="line"><span class="string">      anchors: A BoxList representing anchors (for the RPN) in</span></div><div class="line"><span class="string">        absolute coordinates.</span></div><div class="line"><span class="string">      image_shape: A 1-D tensor representing the input image shape.</span></div><div class="line"><span class="string">    """</span></div><div class="line">    <span class="comment"># 利用基础网络对输入图像进行特征提取</span></div><div class="line">    image_shape = tf.shape(preprocessed_inputs)</div><div class="line">    rpn_features_to_crop, _ = self._feature_extractor.extract_proposal_features(</div><div class="line">        preprocessed_inputs, scope=self.first_stage_feature_extractor_scope)</div><div class="line"></div><div class="line">    <span class="comment"># 利用上面提到的 grid_anchor_generator 生成 anchors。</span></div><div class="line">    feature_map_shape = tf.shape(rpn_features_to_crop)</div><div class="line">    anchors = box_list_ops.concatenate(</div><div class="line">        self._first_stage_anchor_generator.generate([(feature_map_shape[<span class="number">1</span>],</div><div class="line">                                                      feature_map_shape[<span class="number">2</span>])]))</div><div class="line"></div><div class="line">    <span class="comment"># 下面对应于上图的 RPN 中的 3x3 卷积操作。 </span></div><div class="line">    <span class="keyword">with</span> slim.arg_scope(self._first_stage_box_predictor_arg_scope_fn()):</div><div class="line">      kernel_size = self._first_stage_box_predictor_kernel_size</div><div class="line">      rpn_box_predictor_features = slim.conv2d(</div><div class="line">          rpn_features_to_crop,</div><div class="line">          self._first_stage_box_predictor_depth,</div><div class="line">          kernel_size=[kernel_size, kernel_size],</div><div class="line">          rate=self._first_stage_atrous_rate,</div><div class="line">          activation_fn=tf.nn.relu6)</div><div class="line">    <span class="keyword">return</span> (rpn_box_predictor_features, rpn_features_to_crop,</div><div class="line">            anchors, image_shape)</div><div class="line"></div><div class="line"><span class="comment"># 下面对应于上图的 RPN 中的 两个 1x1 卷积操作。 </span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">_predict_rpn_proposals</span><span class="params">(self, rpn_box_predictor_features)</span>:</span></div><div class="line">    <span class="string">"""Adds box predictors to RPN feature map to predict proposals.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">    Note resulting tensors will not have been postprocessed.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">    Args:</span></div><div class="line"><span class="string">      rpn_box_predictor_features: A 4-D float32 tensor with shape</span></div><div class="line"><span class="string">        [batch, height, width, depth] to be used for predicting proposal boxes</span></div><div class="line"><span class="string">        and corresponding objectness scores.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">    Returns:</span></div><div class="line"><span class="string">      box_encodings: 3-D float tensor of shape</span></div><div class="line"><span class="string">        [batch_size, num_anchors, self._box_coder.code_size] containing</span></div><div class="line"><span class="string">        predicted boxes.</span></div><div class="line"><span class="string">      objectness_predictions_with_background: 3-D float tensor of shape</span></div><div class="line"><span class="string">        [batch_size, num_anchors, 2] containing class</span></div><div class="line"><span class="string">        predictions (logits) for each of the anchors.  Note that this</span></div><div class="line"><span class="string">        tensor *includes* background class predictions (at class index 0).</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">    Raises:</span></div><div class="line"><span class="string">      RuntimeError: if the anchor generator generates anchors corresponding to</span></div><div class="line"><span class="string">        multiple feature maps.  We currently assume that a single feature map</span></div><div class="line"><span class="string">        is generated for the RPN.</span></div><div class="line"><span class="string">    """</span></div><div class="line">    num_anchors_per_location = (</div><div class="line">        self._first_stage_anchor_generator.num_anchors_per_location())</div><div class="line">    <span class="keyword">if</span> len(num_anchors_per_location) != <span class="number">1</span>:</div><div class="line">      <span class="keyword">raise</span> RuntimeError(<span class="string">'anchor_generator is expected to generate anchors '</span></div><div class="line">                         <span class="string">'corresponding to a single feature map.'</span>)</div><div class="line">    <span class="keyword">if</span> self._first_stage_box_predictor.is_keras_model:</div><div class="line">      box_predictions = self._first_stage_box_predictor(</div><div class="line">          [rpn_box_predictor_features])</div><div class="line">    <span class="keyword">else</span>:</div><div class="line">      box_predictions = self._first_stage_box_predictor.predict(</div><div class="line">          [rpn_box_predictor_features],</div><div class="line">          num_anchors_per_location,</div><div class="line">          scope=self.first_stage_box_predictor_scope)</div><div class="line"></div><div class="line">    box_encodings = tf.concat(</div><div class="line">        box_predictions[box_predictor.BOX_ENCODINGS], axis=<span class="number">1</span>)</div><div class="line">    objectness_predictions_with_background = tf.concat(</div><div class="line">        box_predictions[box_predictor.CLASS_PREDICTIONS_WITH_BACKGROUND],</div><div class="line">        axis=<span class="number">1</span>)</div><div class="line">    <span class="keyword">return</span> (tf.squeeze(box_encodings, axis=<span class="number">2</span>),</div><div class="line">            objectness_predictions_with_background)</div></pre></td></tr></table></figure></p>
+<p>Convolutional implementation of an RPN architecture, where k is the number of anchors.<br>来自 <a href="https://github.com/tensorflow/models/blob/master/research/object_detection/meta_architectures/faster_rcnn_meta_arch.py" target="_blank" rel="noopener">models/research/object_detection/meta_architectures/faster_rcnn_meta_arch.py</a> RPN 的关键代码如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_extract_rpn_feature_maps</span><span class="params">(self, preprocessed_inputs)</span>:</span></span><br><span class="line">    <span class="string">"""Extracts RPN features.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    This function extracts two feature maps: a feature map to be directly</span></span><br><span class="line"><span class="string">    fed to a box predictor (to predict location and objectness scores for</span></span><br><span class="line"><span class="string">    proposals) and a feature map from which to crop regions which will then</span></span><br><span class="line"><span class="string">    be sent to the second stage box classifier.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Args:</span></span><br><span class="line"><span class="string">      preprocessed_inputs: a [batch, height, width, channels] image tensor.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Returns:</span></span><br><span class="line"><span class="string">      rpn_box_predictor_features: A 4-D float32 tensor with shape</span></span><br><span class="line"><span class="string">        [batch, height, width, depth] to be used for predicting proposal boxes</span></span><br><span class="line"><span class="string">        and corresponding objectness scores.</span></span><br><span class="line"><span class="string">      rpn_features_to_crop: A 4-D float32 tensor with shape</span></span><br><span class="line"><span class="string">        [batch, height, width, depth] representing image features to crop using</span></span><br><span class="line"><span class="string">        the proposals boxes.</span></span><br><span class="line"><span class="string">      anchors: A BoxList representing anchors (for the RPN) in</span></span><br><span class="line"><span class="string">        absolute coordinates.</span></span><br><span class="line"><span class="string">      image_shape: A 1-D tensor representing the input image shape.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="comment"># 利用基础网络对输入图像进行特征提取</span></span><br><span class="line">    image_shape = tf.shape(preprocessed_inputs)</span><br><span class="line">    rpn_features_to_crop, _ = self._feature_extractor.extract_proposal_features(</span><br><span class="line">        preprocessed_inputs, scope=self.first_stage_feature_extractor_scope)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 利用上面提到的 grid_anchor_generator 生成 anchors。</span></span><br><span class="line">    feature_map_shape = tf.shape(rpn_features_to_crop)</span><br><span class="line">    anchors = box_list_ops.concatenate(</span><br><span class="line">        self._first_stage_anchor_generator.generate([(feature_map_shape[<span class="number">1</span>],</span><br><span class="line">                                                      feature_map_shape[<span class="number">2</span>])]))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 下面对应于上图的 RPN 中的 3x3 卷积操作。 </span></span><br><span class="line">    <span class="keyword">with</span> slim.arg_scope(self._first_stage_box_predictor_arg_scope_fn()):</span><br><span class="line">      kernel_size = self._first_stage_box_predictor_kernel_size</span><br><span class="line">      rpn_box_predictor_features = slim.conv2d(</span><br><span class="line">          rpn_features_to_crop,</span><br><span class="line">          self._first_stage_box_predictor_depth,</span><br><span class="line">          kernel_size=[kernel_size, kernel_size],</span><br><span class="line">          rate=self._first_stage_atrous_rate,</span><br><span class="line">          activation_fn=tf.nn.relu6)</span><br><span class="line">    <span class="keyword">return</span> (rpn_box_predictor_features, rpn_features_to_crop,</span><br><span class="line">            anchors, image_shape)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 下面对应于上图的 RPN 中的 两个 1x1 卷积操作。 </span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_predict_rpn_proposals</span><span class="params">(self, rpn_box_predictor_features)</span>:</span></span><br><span class="line">    <span class="string">"""Adds box predictors to RPN feature map to predict proposals.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Note resulting tensors will not have been postprocessed.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Args:</span></span><br><span class="line"><span class="string">      rpn_box_predictor_features: A 4-D float32 tensor with shape</span></span><br><span class="line"><span class="string">        [batch, height, width, depth] to be used for predicting proposal boxes</span></span><br><span class="line"><span class="string">        and corresponding objectness scores.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Returns:</span></span><br><span class="line"><span class="string">      box_encodings: 3-D float tensor of shape</span></span><br><span class="line"><span class="string">        [batch_size, num_anchors, self._box_coder.code_size] containing</span></span><br><span class="line"><span class="string">        predicted boxes.</span></span><br><span class="line"><span class="string">      objectness_predictions_with_background: 3-D float tensor of shape</span></span><br><span class="line"><span class="string">        [batch_size, num_anchors, 2] containing class</span></span><br><span class="line"><span class="string">        predictions (logits) for each of the anchors.  Note that this</span></span><br><span class="line"><span class="string">        tensor *includes* background class predictions (at class index 0).</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Raises:</span></span><br><span class="line"><span class="string">      RuntimeError: if the anchor generator generates anchors corresponding to</span></span><br><span class="line"><span class="string">        multiple feature maps.  We currently assume that a single feature map</span></span><br><span class="line"><span class="string">        is generated for the RPN.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    num_anchors_per_location = (</span><br><span class="line">        self._first_stage_anchor_generator.num_anchors_per_location())</span><br><span class="line">    <span class="keyword">if</span> len(num_anchors_per_location) != <span class="number">1</span>:</span><br><span class="line">      <span class="keyword">raise</span> RuntimeError(<span class="string">'anchor_generator is expected to generate anchors '</span></span><br><span class="line">                         <span class="string">'corresponding to a single feature map.'</span>)</span><br><span class="line">    <span class="keyword">if</span> self._first_stage_box_predictor.is_keras_model:</span><br><span class="line">      box_predictions = self._first_stage_box_predictor(</span><br><span class="line">          [rpn_box_predictor_features])</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">      box_predictions = self._first_stage_box_predictor.predict(</span><br><span class="line">          [rpn_box_predictor_features],</span><br><span class="line">          num_anchors_per_location,</span><br><span class="line">          scope=self.first_stage_box_predictor_scope)</span><br><span class="line"></span><br><span class="line">    box_encodings = tf.concat(</span><br><span class="line">        box_predictions[box_predictor.BOX_ENCODINGS], axis=<span class="number">1</span>)</span><br><span class="line">    objectness_predictions_with_background = tf.concat(</span><br><span class="line">        box_predictions[box_predictor.CLASS_PREDICTIONS_WITH_BACKGROUND],</span><br><span class="line">        axis=<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">return</span> (tf.squeeze(box_encodings, axis=<span class="number">2</span>),</span><br><span class="line">            objectness_predictions_with_background)</span><br></pre></td></tr></table></figure></p>
 <p>其中的 <code>_first_stage_box_predictor</code> 为：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">self._first_stage_box_predictor = (</div><div class="line">    box_predictor_builder.build_convolutional_box_predictor(</div><div class="line">        is_training=self._is_training,</div><div class="line">        num_classes=<span class="number">1</span>,</div><div class="line">        conv_hyperparams_fn=self._first_stage_box_predictor_arg_scope_fn,</div><div class="line">        use_dropout=<span class="keyword">False</span>,</div><div class="line">        dropout_keep_prob=<span class="number">1.0</span>,</div><div class="line">        box_code_size=self._box_coder.code_size,</div><div class="line">        kernel_size=<span class="number">1</span>,</div><div class="line">        num_layers_before_predictor=<span class="number">0</span>,</div><div class="line">        min_depth=<span class="number">0</span>,</div><div class="line">        max_depth=<span class="number">0</span>))</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">self._first_stage_box_predictor = (</span><br><span class="line">    box_predictor_builder.build_convolutional_box_predictor(</span><br><span class="line">        is_training=self._is_training,</span><br><span class="line">        num_classes=<span class="number">1</span>,</span><br><span class="line">        conv_hyperparams_fn=self._first_stage_box_predictor_arg_scope_fn,</span><br><span class="line">        use_dropout=<span class="keyword">False</span>,</span><br><span class="line">        dropout_keep_prob=<span class="number">1.0</span>,</span><br><span class="line">        box_code_size=self._box_coder.code_size,</span><br><span class="line">        kernel_size=<span class="number">1</span>,</span><br><span class="line">        num_layers_before_predictor=<span class="number">0</span>,</span><br><span class="line">        min_depth=<span class="number">0</span>,</span><br><span class="line">        max_depth=<span class="number">0</span>))</span><br></pre></td></tr></table></figure>
 <h3 id="训练-RPN"><a href="#训练-RPN" class="headerlink" title="训练 RPN"></a>训练 RPN</h3><p>The RPN does two different type of predictions: the binary classification and the bounding box regression adjustment.</p>
 <p>For training, we take all the anchors and put them into two different categories. Those that overlap a ground-truth object with an Intersection over Union (IoU) bigger than 0.5 are considered “foreground” and those that don’t overlap any ground truth object or have less than 0.1 IoU with ground-truth objects are considered “background”.</p>
 <p>Then, we randomly sample those anchors to form a mini batch of size 256 — trying to maintain a balanced ratio between foreground and background anchors.</p>
 <p>The RPN uses all the anchors selected for the mini batch to calculate the classification loss using binary cross entropy. <strong>Then, it uses only those minibatch anchors marked as foreground to calculate the regression loss.</strong> 然后我们就仅需要对前景 anchor 计算它与最近目标的 \( \Delta_{x_{center}}, \Delta_{y_{center}}, \Delta_{width}, \Delta_{height} \) 作为回归的 target。这一点可以对比 YOLO 的做法。</p>
 <p>Instead of using a simple L1 or L2 loss for the regression error, the paper suggests using Smooth L1 loss. Smooth L1 is basically L1, but when the L1 error is small enough, defined by a certain \( \sigma \), the error is considered almost correct and the loss diminishes at a faster rate.</p>
 <p><strong>Using dynamic batches can be challenging for a number of reasons. Even though we try to maintain a balanced ratio between anchors that are considered background and those that are considered foreground, that is not always possible. Depending on the ground truth objects in the image and the size and ratios of the anchors, it is possible to end up with zero foreground anchors. In those cases, we turn to using the anchors with the biggest IoU to the ground truth boxes. This is far from ideal, but practical in the sense that we always have foreground samples and targets to learn from.</strong> 这一点对我的项目来说是不适用的，因为在项目中确实存在图像中不存在任何目标的情况，是可以仅仅拿有目标的图像来进行训练，但是这在没有任何目标的图像上泛化并不会很好。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">_loss_rpn</span><span class="params">(self, rpn_box_encodings,</span></span></div><div class="line"><span class="function"><span class="params">                rpn_objectness_predictions_with_background, anchors,</span></span></div><div class="line"><span class="function"><span class="params">                groundtruth_boxlists, groundtruth_classes_with_background_list,</span></span></div><div class="line"><span class="function"><span class="params">                groundtruth_weights_list)</span>:</span></div><div class="line">    <span class="string">"""Computes scalar RPN loss tensors.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">    Uses self._proposal_target_assigner to obtain regression and classification</span></div><div class="line"><span class="string">    targets for the first stage RPN, samples a "minibatch" of anchors to</span></div><div class="line"><span class="string">    participate in the loss computation, and returns the RPN losses.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">    Args:</span></div><div class="line"><span class="string">      rpn_box_encodings: A 4-D float tensor of shape</span></div><div class="line"><span class="string">        [batch_size, num_anchors, self._box_coder.code_size] containing</span></div><div class="line"><span class="string">        predicted proposal box encodings.</span></div><div class="line"><span class="string">      rpn_objectness_predictions_with_background: A 2-D float tensor of shape</span></div><div class="line"><span class="string">        [batch_size, num_anchors, 2] containing objectness predictions</span></div><div class="line"><span class="string">        (logits) for each of the anchors with 0 corresponding to background</span></div><div class="line"><span class="string">        and 1 corresponding to object.</span></div><div class="line"><span class="string">      anchors: A 2-D tensor of shape [num_anchors, 4] representing anchors</span></div><div class="line"><span class="string">        for the first stage RPN.  Note that `num_anchors` can differ depending</span></div><div class="line"><span class="string">        on whether the model is created in training or inference mode.</span></div><div class="line"><span class="string">      groundtruth_boxlists: A list of BoxLists containing coordinates of the</span></div><div class="line"><span class="string">        groundtruth boxes.</span></div><div class="line"><span class="string">      groundtruth_classes_with_background_list: A list of 2-D one-hot</span></div><div class="line"><span class="string">        (or k-hot) tensors of shape [num_boxes, num_classes+1] containing the</span></div><div class="line"><span class="string">        class targets with the 0th index assumed to map to the background class.</span></div><div class="line"><span class="string">      groundtruth_weights_list: A list of 1-D tf.float32 tensors of shape</span></div><div class="line"><span class="string">        [num_boxes] containing weights for groundtruth boxes.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">    Returns:</span></div><div class="line"><span class="string">      a dictionary mapping loss keys (`first_stage_localization_loss`,</span></div><div class="line"><span class="string">        `first_stage_objectness_loss`) to scalar tensors representing</span></div><div class="line"><span class="string">        corresponding loss values.</span></div><div class="line"><span class="string">    """</span></div><div class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'RPNLoss'</span>):</div><div class="line">       <span class="comment"># 构建 target</span></div><div class="line">      (batch_cls_targets, batch_cls_weights, batch_reg_targets,</div><div class="line">       batch_reg_weights, _) = target_assigner.batch_assign_targets(</div><div class="line">           target_assigner=self._proposal_target_assigner,</div><div class="line">           anchors_batch=box_list.BoxList(anchors),</div><div class="line">           gt_box_batch=groundtruth_boxlists,</div><div class="line">           gt_class_targets_batch=(len(groundtruth_boxlists) * [<span class="keyword">None</span>]),</div><div class="line">           gt_weights_batch=groundtruth_weights_list)</div><div class="line">      batch_cls_targets = tf.squeeze(batch_cls_targets, axis=<span class="number">2</span>)</div><div class="line"></div><div class="line">      <span class="comment"># 注意 _minibatch_subsample_fn 是对一张图片进行的操作，是对一张图片的正负样本均衡。</span></div><div class="line">      <span class="comment"># self._first_stage_sampler 是一个 BalancedPositiveNegativeSampler 对象，利用 subsample 进行采样， </span></div><div class="line">      <span class="comment"># subsample 方法返回的 sampled_idx_indicator，boolean tensor of shape [N], </span></div><div class="line">      <span class="comment"># True for entries which are sampled，即被选中的正负样本（anchors）均在其中。</span></div><div class="line">      <span class="function"><span class="keyword">def</span> <span class="title">_minibatch_subsample_fn</span><span class="params">(inputs)</span>:</span></div><div class="line">        cls_targets, cls_weights = inputs</div><div class="line">        <span class="comment"># cls_weights 中正负样本均为 1，忽略的样本为 0。</span></div><div class="line">        <span class="comment"># cls_targets 中正样本为1，失配的（负样本）、忽略的样本为 0。</span></div><div class="line">        <span class="comment"># 从正负样本中（由 cls_weights 限定）中 positive/negative （由 cls_targets 限定）平衡地采样，而不考虑被忽略的样本。</span></div><div class="line">        <span class="comment"># 见下面的图示。</span></div><div class="line">        <span class="keyword">return</span> self._first_stage_sampler.subsample(</div><div class="line">            tf.cast(cls_weights, tf.bool),</div><div class="line">            self._first_stage_minibatch_size, tf.cast(cls_targets, tf.bool))</div><div class="line">      batch_sampled_indices = tf.to_float(shape_utils.static_or_dynamic_map_fn(</div><div class="line">          _minibatch_subsample_fn,</div><div class="line">          [batch_cls_targets, batch_cls_weights],</div><div class="line">          dtype=tf.bool,</div><div class="line">          parallel_iterations=self._parallel_iterations,</div><div class="line">          back_prop=<span class="keyword">True</span>))</div><div class="line"></div><div class="line">      <span class="comment"># Normalize by number of examples in sampled minibatch</span></div><div class="line">      normalizer = tf.reduce_sum(batch_sampled_indices, axis=<span class="number">1</span>)</div><div class="line">      batch_one_hot_targets = tf.one_hot(</div><div class="line">          tf.to_int32(batch_cls_targets), depth=<span class="number">2</span>)</div><div class="line"></div><div class="line">      <span class="comment"># 注意 sampled_reg_indices 是一个 a float tensor of shape [batch_size, num_anchors]</span></div><div class="line">      <span class="comment"># 采样被选中的正负样本在 batch_sampled_indices 中都为 1，element-wise 相乘 batch_reg_weights 则仅选出正样本</span></div><div class="line">      <span class="comment"># ，即仅用正样本来计算定位误差。</span></div><div class="line">      sampled_reg_indices = tf.multiply(batch_sampled_indices,</div><div class="line">                                        batch_reg_weights)</div><div class="line"></div><div class="line">      <span class="comment"># _first_stage_localization_loss 是 WeightedSmoothL1LocalizationLoss，内部是 huber_loss.</span></div><div class="line">      <span class="comment"># _first_stage_objectness_loss 是 WeightedSoftmaxClassificationLoss</span></div><div class="line">      localization_losses = self._first_stage_localization_loss(</div><div class="line">          rpn_box_encodings, batch_reg_targets, weights=sampled_reg_indices)</div><div class="line">      objectness_losses = self._first_stage_objectness_loss(</div><div class="line">          rpn_objectness_predictions_with_background,</div><div class="line">          batch_one_hot_targets, weights=batch_sampled_indices)</div><div class="line">      localization_loss = tf.reduce_mean(</div><div class="line">          tf.reduce_sum(localization_losses, axis=<span class="number">1</span>) / normalizer)</div><div class="line">      objectness_loss = tf.reduce_mean(</div><div class="line">          tf.reduce_sum(objectness_losses, axis=<span class="number">1</span>) / normalizer)</div><div class="line"></div><div class="line">      localization_loss = tf.multiply(self._first_stage_loc_loss_weight,</div><div class="line">                                      localization_loss,</div><div class="line">                                      name=<span class="string">'localization_loss'</span>)</div><div class="line">      objectness_loss = tf.multiply(self._first_stage_obj_loss_weight,</div><div class="line">                                    objectness_loss, name=<span class="string">'objectness_loss'</span>)</div><div class="line">      loss_dict = &#123;localization_loss.op.name: localization_loss,</div><div class="line">                   objectness_loss.op.name: objectness_loss&#125;</div><div class="line">    <span class="keyword">return</span> loss_dict</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_loss_rpn</span><span class="params">(self, rpn_box_encodings,</span></span></span><br><span class="line"><span class="function"><span class="params">                rpn_objectness_predictions_with_background, anchors,</span></span></span><br><span class="line"><span class="function"><span class="params">                groundtruth_boxlists, groundtruth_classes_with_background_list,</span></span></span><br><span class="line"><span class="function"><span class="params">                groundtruth_weights_list)</span>:</span></span><br><span class="line">    <span class="string">"""Computes scalar RPN loss tensors.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Uses self._proposal_target_assigner to obtain regression and classification</span></span><br><span class="line"><span class="string">    targets for the first stage RPN, samples a "minibatch" of anchors to</span></span><br><span class="line"><span class="string">    participate in the loss computation, and returns the RPN losses.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Args:</span></span><br><span class="line"><span class="string">      rpn_box_encodings: A 4-D float tensor of shape</span></span><br><span class="line"><span class="string">        [batch_size, num_anchors, self._box_coder.code_size] containing</span></span><br><span class="line"><span class="string">        predicted proposal box encodings.</span></span><br><span class="line"><span class="string">      rpn_objectness_predictions_with_background: A 2-D float tensor of shape</span></span><br><span class="line"><span class="string">        [batch_size, num_anchors, 2] containing objectness predictions</span></span><br><span class="line"><span class="string">        (logits) for each of the anchors with 0 corresponding to background</span></span><br><span class="line"><span class="string">        and 1 corresponding to object.</span></span><br><span class="line"><span class="string">      anchors: A 2-D tensor of shape [num_anchors, 4] representing anchors</span></span><br><span class="line"><span class="string">        for the first stage RPN.  Note that `num_anchors` can differ depending</span></span><br><span class="line"><span class="string">        on whether the model is created in training or inference mode.</span></span><br><span class="line"><span class="string">      groundtruth_boxlists: A list of BoxLists containing coordinates of the</span></span><br><span class="line"><span class="string">        groundtruth boxes.</span></span><br><span class="line"><span class="string">      groundtruth_classes_with_background_list: A list of 2-D one-hot</span></span><br><span class="line"><span class="string">        (or k-hot) tensors of shape [num_boxes, num_classes+1] containing the</span></span><br><span class="line"><span class="string">        class targets with the 0th index assumed to map to the background class.</span></span><br><span class="line"><span class="string">      groundtruth_weights_list: A list of 1-D tf.float32 tensors of shape</span></span><br><span class="line"><span class="string">        [num_boxes] containing weights for groundtruth boxes.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Returns:</span></span><br><span class="line"><span class="string">      a dictionary mapping loss keys (`first_stage_localization_loss`,</span></span><br><span class="line"><span class="string">        `first_stage_objectness_loss`) to scalar tensors representing</span></span><br><span class="line"><span class="string">        corresponding loss values.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'RPNLoss'</span>):</span><br><span class="line">       <span class="comment"># 构建 target</span></span><br><span class="line">      (batch_cls_targets, batch_cls_weights, batch_reg_targets,</span><br><span class="line">       batch_reg_weights, _) = target_assigner.batch_assign_targets(</span><br><span class="line">           target_assigner=self._proposal_target_assigner,</span><br><span class="line">           anchors_batch=box_list.BoxList(anchors),</span><br><span class="line">           gt_box_batch=groundtruth_boxlists,</span><br><span class="line">           gt_class_targets_batch=(len(groundtruth_boxlists) * [<span class="keyword">None</span>]),</span><br><span class="line">           gt_weights_batch=groundtruth_weights_list)</span><br><span class="line">      batch_cls_targets = tf.squeeze(batch_cls_targets, axis=<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">      <span class="comment"># 注意 _minibatch_subsample_fn 是对一张图片进行的操作，是对一张图片的正负样本均衡。</span></span><br><span class="line">      <span class="comment"># self._first_stage_sampler 是一个 BalancedPositiveNegativeSampler 对象，利用 subsample 进行采样， </span></span><br><span class="line">      <span class="comment"># subsample 方法返回的 sampled_idx_indicator，boolean tensor of shape [N], </span></span><br><span class="line">      <span class="comment"># True for entries which are sampled，即被选中的正负样本（anchors）均在其中。</span></span><br><span class="line">      <span class="function"><span class="keyword">def</span> <span class="title">_minibatch_subsample_fn</span><span class="params">(inputs)</span>:</span></span><br><span class="line">        cls_targets, cls_weights = inputs</span><br><span class="line">        <span class="comment"># cls_weights 中正负样本均为 1，忽略的样本为 0。</span></span><br><span class="line">        <span class="comment"># cls_targets 中正样本为1，失配的（负样本）、忽略的样本为 0。</span></span><br><span class="line">        <span class="comment"># 从正负样本中（由 cls_weights 限定）中 positive/negative （由 cls_targets 限定）平衡地采样，而不考虑被忽略的样本。</span></span><br><span class="line">        <span class="comment"># 见下面的图示。</span></span><br><span class="line">        <span class="keyword">return</span> self._first_stage_sampler.subsample(</span><br><span class="line">            tf.cast(cls_weights, tf.bool),</span><br><span class="line">            self._first_stage_minibatch_size, tf.cast(cls_targets, tf.bool))</span><br><span class="line">      batch_sampled_indices = tf.to_float(shape_utils.static_or_dynamic_map_fn(</span><br><span class="line">          _minibatch_subsample_fn,</span><br><span class="line">          [batch_cls_targets, batch_cls_weights],</span><br><span class="line">          dtype=tf.bool,</span><br><span class="line">          parallel_iterations=self._parallel_iterations,</span><br><span class="line">          back_prop=<span class="keyword">True</span>))</span><br><span class="line"></span><br><span class="line">      <span class="comment"># Normalize by number of examples in sampled minibatch</span></span><br><span class="line">      normalizer = tf.reduce_sum(batch_sampled_indices, axis=<span class="number">1</span>)</span><br><span class="line">      batch_one_hot_targets = tf.one_hot(</span><br><span class="line">          tf.to_int32(batch_cls_targets), depth=<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">      <span class="comment"># 注意 sampled_reg_indices 是一个 a float tensor of shape [batch_size, num_anchors]</span></span><br><span class="line">      <span class="comment"># 采样被选中的正负样本在 batch_sampled_indices 中都为 1，element-wise 相乘 batch_reg_weights 则仅选出正样本</span></span><br><span class="line">      <span class="comment"># ，即仅用正样本来计算定位误差。</span></span><br><span class="line">      sampled_reg_indices = tf.multiply(batch_sampled_indices,</span><br><span class="line">                                        batch_reg_weights)</span><br><span class="line"></span><br><span class="line">      <span class="comment"># _first_stage_localization_loss 是 WeightedSmoothL1LocalizationLoss，内部是 huber_loss.</span></span><br><span class="line">      <span class="comment"># _first_stage_objectness_loss 是 WeightedSoftmaxClassificationLoss</span></span><br><span class="line">      localization_losses = self._first_stage_localization_loss(</span><br><span class="line">          rpn_box_encodings, batch_reg_targets, weights=sampled_reg_indices)</span><br><span class="line">      objectness_losses = self._first_stage_objectness_loss(</span><br><span class="line">          rpn_objectness_predictions_with_background,</span><br><span class="line">          batch_one_hot_targets, weights=batch_sampled_indices)</span><br><span class="line">      localization_loss = tf.reduce_mean(</span><br><span class="line">          tf.reduce_sum(localization_losses, axis=<span class="number">1</span>) / normalizer)</span><br><span class="line">      objectness_loss = tf.reduce_mean(</span><br><span class="line">          tf.reduce_sum(objectness_losses, axis=<span class="number">1</span>) / normalizer)</span><br><span class="line"></span><br><span class="line">      localization_loss = tf.multiply(self._first_stage_loc_loss_weight,</span><br><span class="line">                                      localization_loss,</span><br><span class="line">                                      name=<span class="string">'localization_loss'</span>)</span><br><span class="line">      objectness_loss = tf.multiply(self._first_stage_obj_loss_weight,</span><br><span class="line">                                    objectness_loss, name=<span class="string">'objectness_loss'</span>)</span><br><span class="line">      loss_dict = &#123;localization_loss.op.name: localization_loss,</span><br><span class="line">                   objectness_loss.op.name: objectness_loss&#125;</span><br><span class="line">    <span class="keyword">return</span> loss_dict</span><br></pre></td></tr></table></figure>
 <h6 id="上面代码的第-1-行："><a href="#上面代码的第-1-行：" class="headerlink" title="上面代码的第 1 行："></a>上面代码的第 1 行：</h6><p><code>_loss_rpn</code> 传入的 <code>rpn_box_encodings, rpn_objectness_predictions_with_background, anchors</code> 为上一部分中 <code>_predict_rpn_proposals</code> 的返回值。</p>
 <h6 id="上面代码的第-37-行："><a href="#上面代码的第-37-行：" class="headerlink" title="上面代码的第 37 行："></a>上面代码的第 37 行：</h6><p>在 <code>TargetAssigner.batch_assign_targets -&gt; TargetAssigner.assign</code> 里面的 <code>argmax_matcher.ArgMaxMatcher</code> 利用 <code>region_similarity_calculator.IouSimilarity</code> 计算出来的相似矩阵获得 anchor 和 ground truth 的匹配结果 <code>match</code>，<code>match</code> 是一个 <code>Match</code> 对象，其属性 <code>_match_results</code> 是一个 a int32 tensor indicating the row each column matches to，<code>region_similarity_calculator.IouSimilarity</code> 计算出来的相似矩阵的每一行对应于一个 ground truth，每一列对应于一个 anchor，即 <code>_match_results</code> 表示每一个 anchor 所匹配上的 ground truth 的 index。</p>
 <ol>
 <li><code>match_results[i]&gt;=0</code>, meaning that column i (anchor i) is matched with row match_results[i]（ground truth match_results[i]）。</li>
 <li><code>match_results[i]=-1</code>, meaning that column i (anchor i) is not matched.</li>
-<li><code>match_results[i]=-2</code>, meaning that column i (anchor i) is ignored.<br>匹配、失配、忽略三者之间的门限在 <code>ArgMaxMatcher</code> 的构造函数中指定<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">ArgMaxMatcher</span><span class="params">(matcher.Matcher)</span>:</span></div><div class="line"><span class="string">"""Matcher based on highest value.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">  This class computes matches from a similarity matrix. Each column is matched</span></div><div class="line"><span class="string">  to a single row.</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">  To support object detection target assignment this class enables setting both</span></div><div class="line"><span class="string">  matched_threshold (upper threshold) and unmatched_threshold (lower thresholds)</span></div><div class="line"><span class="string">  defining three categories of similarity which define whether examples are</span></div><div class="line"><span class="string">  positive, negative, or ignored:</span></div><div class="line"><span class="string">  (1) similarity &gt;= matched_threshold: Highest similarity. Matched/Positive!</span></div><div class="line"><span class="string">  (2) matched_threshold &gt; similarity &gt;= unmatched_threshold: Medium similarity.</span></div><div class="line"><span class="string">          Depending on negatives_lower_than_unmatched, this is either</span></div><div class="line"><span class="string">          Unmatched/Negative OR Ignore.</span></div><div class="line"><span class="string">  (3) unmatched_threshold &gt; similarity: Lowest similarity. Depending on flag</span></div><div class="line"><span class="string">          negatives_lower_than_unmatched, either Unmatched/Negative OR Ignore.</span></div><div class="line"><span class="string">  For ignored matches this class sets the values in the Match object to -2.</span></div><div class="line"><span class="string">  """</span></div></pre></td></tr></table></figure>
+<li><code>match_results[i]=-2</code>, meaning that column i (anchor i) is ignored.<br>匹配、失配、忽略三者之间的门限在 <code>ArgMaxMatcher</code> 的构造函数中指定<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ArgMaxMatcher</span><span class="params">(matcher.Matcher)</span>:</span></span><br><span class="line"><span class="string">"""Matcher based on highest value.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">  This class computes matches from a similarity matrix. Each column is matched</span></span><br><span class="line"><span class="string">  to a single row.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">  To support object detection target assignment this class enables setting both</span></span><br><span class="line"><span class="string">  matched_threshold (upper threshold) and unmatched_threshold (lower thresholds)</span></span><br><span class="line"><span class="string">  defining three categories of similarity which define whether examples are</span></span><br><span class="line"><span class="string">  positive, negative, or ignored:</span></span><br><span class="line"><span class="string">  (1) similarity &gt;= matched_threshold: Highest similarity. Matched/Positive!</span></span><br><span class="line"><span class="string">  (2) matched_threshold &gt; similarity &gt;= unmatched_threshold: Medium similarity.</span></span><br><span class="line"><span class="string">          Depending on negatives_lower_than_unmatched, this is either</span></span><br><span class="line"><span class="string">          Unmatched/Negative OR Ignore.</span></span><br><span class="line"><span class="string">  (3) unmatched_threshold &gt; similarity: Lowest similarity. Depending on flag</span></span><br><span class="line"><span class="string">          negatives_lower_than_unmatched, either Unmatched/Negative OR Ignore.</span></span><br><span class="line"><span class="string">  For ignored matches this class sets the values in the Match object to -2.</span></span><br><span class="line"><span class="string">  """</span></span><br></pre></td></tr></table></figure>
 </li>
 </ol>
 <p><code>TargetAssigner.batch_assign_targets</code> 的返回值：</p>
@@ -212,7 +248,7 @@ Faster R-CNN 的整体架构">
 <li><code>batch_cls_targets</code> 是一个 tensor with shape <code>[batch_size, num_anchors, num_classes]</code>，<code>num_classes &gt; 1</code>即适用于多类别的任务，我的实际项目中利用的就是这一点。由 <code>TargetAssigner._create_classification_targets</code> 利用对象 <code>match</code> 产生。在 <code>batch_cls_targets</code> 中失配的和被忽略的 anchor 用 <code>unmatched_class_label</code> 标记，它是一个 a float32 tensor with shape <code>[d_1, d_2, ..., d_k]</code>，在 shape 上与一个 anchor 类别标签一致，If set to None, unmatched_cls_target is set to be [0] for each anchor。在 Faster RCNN 中 <code>unmatched_class_label</code>，<code>groundtruth_labels</code> 都设为 <code>None</code>，在 <code>TargetAssigner.assign</code> 中将 <code>unmatched_class_label</code> 替换为0，即失配的和忽略的 anchor 用 0 标记，与 ground truth 匹配的 anchor 用 1 标记。</li>
 <li><code>batch_cls_weights</code> 是一个 a tensor with shape <code>[batch_size, num_anchors]</code>, 通过 <code>1, 0, _negative_class_weight</code> 分别表示与 ground truth 匹配上了的 anchor 、忽略的 、失配的 anchor。在 Faster RCNN <code>_negative_class_weight</code> 被设置为 1。</li>
 <li><p><code>batch_reg_targets</code> 是一个 a tensor with shape <code>[batch_size, num_anchors, box_code_dimension]</code>，由 <code>TargetAssigner._create_regression_targets</code> 利用对象 <code>match</code> 产生，在 <code>TargetAssigner._create_regression_targets</code> 中 <code>matched_gt_boxes</code> 是每一个 anchor 所匹配上的 groundtruth_box，对于 <code>match</code> 中失配的和忽略的 anchor，给它们的 groundtruth_box 是 [0, 0, 0, 0]。利用 <code>FasterRcnnBoxCoder.encode</code> 对每一个 anchor 所匹配的 groundtruth_box 对照于该 anchor 进行编码使其由 <code>[ymin, xmin, ymax, xmax]</code> 格式变为 <code>[ty, tx, th, tw]</code> 格式， <code>[ty, tx, th, tw]</code> 所对应的 <code>scale_factors</code> 为 <code>[10.0, 10.0, 5.0, 5.0]</code> 见下面的代码，另外通过 <code>FasterRcnnBoxCoder.encode</code> 编码之后失配的和忽略的 anchor 对应的 <code>[ty, tx, th, tw]</code>也可能是非零值（垃圾值），需要使用 <code>tf.where</code> 进行 Zero out，将它们设为 0。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">ty *= self._scale_factors[0]</div><div class="line">tx *= self._scale_factors[1]</div><div class="line">th *= self._scale_factors[2]</div><div class="line">tw *= self._scale_factors[3]</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ty *= self._scale_factors[0]</span><br><span class="line">tx *= self._scale_factors[1]</span><br><span class="line">th *= self._scale_factors[2]</span><br><span class="line">tw *= self._scale_factors[3]</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><code>batch_reg_weights</code> 是一个 a tensor with shape <code>[batch_size, num_anchors]</code>，由 <code>TargetAssigner._create_regression_weights</code> 利用对象 <code>match</code> 产生，通过 1 和 0 分别表示保留与 ground truth 匹配上了的 anchor 与失配的和忽略的 anchor。</p>
 </li>
@@ -222,127 +258,183 @@ Faster R-CNN 的整体架构">
     </div>
 
     
-
     
-        <div class="post-tags">
-            <i class="fa fa-tags" aria-hidden="true"></i>
-            <a href="/tags/DL/">#DL</a>
-        </div>
     
 
-    <!-- Comments -->
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/DL/" rel="tag"># DL</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/07/03/Run-Keras-models-in-C-Tensorflow/" rel="prev" title="Run Keras Models in C++ Tensorflow">
+      <i class="fa fa-chevron-left"></i> Run Keras Models in C++ Tensorflow
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/07/18/Shared-ptr-threadsafety/" rel="next" title="Shared_ptr Threadsafety">
+      Shared_ptr Threadsafety <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
     
+  </article>
+  
+  
+  
 
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Faster-R-CNN-发展历程"><span class="nav-number">1.</span> <span class="nav-text">Faster R-CNN 发展历程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Faster-R-CNN-的整体架构"><span class="nav-number">2.</span> <span class="nav-text">Faster R-CNN 的整体架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Anchors"><span class="nav-number">3.</span> <span class="nav-text">Anchors</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Region-Proposal-Network"><span class="nav-number">4.</span> <span class="nav-text">Region Proposal Network</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#训练-RPN"><span class="nav-number">5.</span> <span class="nav-text">训练 RPN</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#上面代码的第-1-行："><span class="nav-number">5.0.0.1.</span> <span class="nav-text">上面代码的第 1 行：</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#上面代码的第-37-行："><span class="nav-number">5.0.0.2.</span> <span class="nav-text">上面代码的第 37 行：</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#上面代码的第-50-行："><span class="nav-number">5.0.0.3.</span> <span class="nav-text">上面代码的第 50 行：</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
 </div>
-        </section>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
 
     </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
 
-
-</div>
-
-<!-- Footer -->
-<div class="push"></div>
-
-<footer class="footer-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
-                <h2>About</h2>
-                <p>
-                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
-                </p>
-            </div>
-            
-    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
-        <h2>Recent Posts</h2>
-        <ul>
-            
-            <li>
-                <a class="footer-post" href="/2019/07/12/Unnamed-namespace/">Unnamed namespace</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/05/08/Static-variable-in-inlined-function/">Static variable in inline</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/04/23/Iterator-invalidation-rules/">Iterator invalidation rul</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/18/Emplace-back/">Emplace back</a>
-            </li>
-            
-        </ul>
-    </div>
+        
 
 
 
-            
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <ul class="list-inline footer-social-icons">
-                    
-                    <li class="list-inline-item">
-                        <a href="https://github.com/RobertLexis">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-github"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="mailto:robert_lexis@163.com">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-envelope-o"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="footer-copyright">
-                    @Untitled. All right reserved | Robert Lexis Loves Wenny
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<!-- After footer scripts -->
-
-<!-- jQuery -->
-<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-
-<!-- Tween Max -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
-
-<!-- Gallery -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
-
-<!-- Custom JavaScript -->
-<script src="/js/main.js"></script>
-
-<!-- Disqus Comments -->
 
 
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
 
 </body>
-
 </html>

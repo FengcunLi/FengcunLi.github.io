@@ -1,198 +1,238 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<!-- Head tag -->
+<html lang="zh-CN">
 <head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/main.css">
 
-    <!--Description-->
-    
-        <meta name="description" content="Basic Concepts张量Tensor 存储的不是数字，而是运算（Operation）结果的一个引用，例如 Tensor(&amp;quot;add:0&amp;quot;, shape=(2,), dtype=float32)。">
-    
 
-    <!--Author-->
-    
-        <meta name="author" content="Robert Lexis">
-    
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-    <!--Open Graph Title-->
-    
-        <meta property="og:title" content="Learning TensorFlow 1 Basic"/>
-    
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
-    <!--Open Graph Description-->
-    
+  <meta name="description" content="Basic Concepts张量Tensor 存储的不是数字，而是运算（Operation）结果的一个引用，例如 Tensor(&amp;quot;add:0&amp;quot;, shape=(2,), dtype=float32)。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Learning TensorFlow 1 Basic">
+<meta property="og:url" content="http://yoursite.com/2017/12/07/Learning-TensorFlow-1-Basic/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="Basic Concepts张量Tensor 存储的不是数字，而是运算（Operation）结果的一个引用，例如 Tensor(&amp;quot;add:0&amp;quot;, shape=(2,), dtype=float32)。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-26T11:18:30.449Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Learning TensorFlow 1 Basic">
+<meta name="twitter:description" content="Basic Concepts张量Tensor 存储的不是数字，而是运算（Operation）结果的一个引用，例如 Tensor(&amp;quot;add:0&amp;quot;, shape=(2,), dtype=float32)。">
 
-    <!--Open Graph Site Name-->
-    <meta property="og:site_name" content="This is Robert Lexis."/>
+<link rel="canonical" href="http://yoursite.com/2017/12/07/Learning-TensorFlow-1-Basic/">
 
-    <!--Type page-->
-    
-        <meta property="og:type" content="article" />
-    
 
-    <!--Page Cover-->
-    
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
 
-    <meta name="twitter:card" content="summary" />
-    
+  <title>Learning TensorFlow 1 Basic | The next stop - Antarctica</title>
+  
 
-    <!-- Title -->
-    
-    <title>Learning TensorFlow 1 Basic - This is Robert Lexis.</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 
-    <!-- Custom Fonts -->
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 
-    <!-- Gallery -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
 
-    <!-- Google Analytics -->
-    
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
 
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
 
 </head>
 
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
 
-<body>
-
-<div class="bg-gradient"></div>
-<div class="bg-pattern"></div>
-
-<!-- Menu -->
-<!--Menu Links and Overlay-->
-<div class="menu-bg">
-    <div class="menu-container">
-        <ul>
-            
-            <li class="menu-item">
-                <a href="/">
-                    Home
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/archives">
-                    Archives
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/about">
-                    About
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/tags">
-                    Tags
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/categories">
-                    Categories
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/contact">
-                    Contact
-                </a>
-            </li>
-            
-        </ul>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
 </div>
 
-<!--Hamburger Icon-->
-<nav>
-    <a href="#menu"></a>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
 </nav>
 
-<div class="container">
 
-    <!-- Main Content -->
-    <div class="row">
-    <div class="col-sm-12">
 
-        <!--Title and Logo-->
-        <header>
-    <div class="logo">
-        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
-        
-    </div>
-</header>
 
-        <section class="main">
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
             
-<div class="post">
 
-    <div class="post-header">
-        <h1 class="title">
-            <a href="/2017/12/07/Learning-TensorFlow-1-Basic/">
-                Learning TensorFlow 1 Basic
-            </a>
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/07/Learning-TensorFlow-1-Basic/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Learning TensorFlow 1 Basic
         </h1>
-        <div class="post-info">
-            
-                <span class="date">2017-12-07</span>
-            
-            
-            
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-12-07 10:13:28" itemprop="dateCreated datePublished" datetime="2017-12-07T10:13:28+08:00">2017-12-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-08-26 19:18:30" itemprop="dateModified" datetime="2018-08-26T19:18:30+08:00">2018-08-26</time>
+              </span>
+
+          
+
         </div>
-    </div>
+      </header>
 
-    <div class="content">
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
-        <!-- Gallery -->
-        
-
-        <!-- Post Content -->
+      
         <h2 id="Basic-Concepts"><a href="#Basic-Concepts" class="headerlink" title="Basic Concepts"></a>Basic Concepts</h2><h4 id="张量"><a href="#张量" class="headerlink" title="张量"></a>张量</h4><p><strong>Tensor</strong> 存储的不是数字，而是<strong>运算（Operation）</strong>结果的一个引用，例如 <code>Tensor(&quot;add:0&quot;, shape=(2,), dtype=float32)</code>。<br><a id="more"></a></p>
 <blockquote>
 <p>Tensor<br>Represents one of the outputs of an <strong>Operation</strong>.</p>
+</blockquote>
+<blockquote>
 <p>A Tensor is a symbolic handle to one of the outputs of an Operation. It does not hold the values of that operation’s output, but instead provides a means of computing those values in a TensorFlow tf.Session.<br>This class has two primary purposes:</p>
+</blockquote>
+<blockquote>
 <ul>
 <li>A Tensor can be passed as an input to another Operation. This builds a dataflow connection between operations, which enables TensorFlow to execute an entire Graph that represents a large, multi-step computation.</li>
 <li>After the graph has been launched in a session, the value of the Tensor can be computed by passing it to tf.Session.run. <strong>t.eval() is a shortcut for calling tf.get_default_session().run(t)</strong>.<br>In the following example, c, d, and e are symbolic Tensor objects, whereas result is a numpy array that stores a concrete value:</li>
 </ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Build a dataflow graph.</span></div><div class="line">c = tf.constant([[<span class="number">1.0</span>, <span class="number">2.0</span>], [<span class="number">3.0</span>, <span class="number">4.0</span>]])</div><div class="line">d = tf.constant([[<span class="number">1.0</span>, <span class="number">1.0</span>], [<span class="number">0.0</span>, <span class="number">1.0</span>]])</div><div class="line">e = tf.matmul(c, d)</div><div class="line"></div><div class="line"><span class="comment"># Construct a `Session` to execute the graph.</span></div><div class="line">sess = tf.Session()</div><div class="line"></div><div class="line"><span class="comment"># Execute the graph and store the value that `e` represents in `result`.</span></div><div class="line">result = sess.run(e)</div></pre></td></tr></table></figure>
 </blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Build a dataflow graph.</span></span><br><span class="line">c = tf.constant([[<span class="number">1.0</span>, <span class="number">2.0</span>], [<span class="number">3.0</span>, <span class="number">4.0</span>]])</span><br><span class="line">d = tf.constant([[<span class="number">1.0</span>, <span class="number">1.0</span>], [<span class="number">0.0</span>, <span class="number">1.0</span>]])</span><br><span class="line">e = tf.matmul(c, d)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Construct a `Session` to execute the graph.</span></span><br><span class="line">sess = tf.Session()</span><br><span class="line"></span><br><span class="line"><span class="comment"># Execute the graph and store the value that `e` represents in `result`.</span></span><br><span class="line">result = sess.run(e)</span><br></pre></td></tr></table></figure>
 <h4 id="运算-Operation"><a href="#运算-Operation" class="headerlink" title="运算 Operation"></a>运算 Operation</h4><p>运算是对张量的操作, 张量与张量之间的联系是通过运算发生的。</p>
 <blockquote>
 <p>Represents a graph node that performs computation on tensors.</p>
 <p>An Operation is a node in a TensorFlow Graph that takes zero or more Tensor objects as input, and produces zero or more Tensor objects as output. Objects of type Operation are created by calling a Python op constructor (such as tf.matmul) or tf.Graph.create_op.<br>For example <code>c = tf.matmul(a, b)</code> creates <strong>an Operation of type “MatMul”</strong> that takes tensors <code>a</code> and <code>b</code> as input, and produces <code>c</code> as output.<br>After the graph has been launched in a session, an Operation can be executed by passing it to <code>tf.Session.run</code>. <strong>op.run() is a shortcut for calling tf.get_default_session().run(op)</strong>.</p>
 </blockquote>
 <h4 id="计算图"><a href="#计算图" class="headerlink" title="计算图"></a>计算图</h4><p>TensorFlow 会自动生成一个默认的计算图，如果没有特殊指定，运算（即节点）会自动被加入到这个计算图中。</p>
-<h4 id="会话"><a href="#会话" class="headerlink" title="会话"></a>会话</h4><p>TensorFlow 不会自动生成一个默认的会话，但是可以在指定默认会话之后通过 <code>tf.Tensor.eval()</code>来获得张量所引用的运算结果的值。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">sess = tf.Session()</div><div class="line"># 通过上下文管理器就可以完成默认会话的指定</div><div class="line">with sess.as_default():</div><div class="line">     print(result.eval())</div></pre></td></tr></table></figure></p>
-<p>上面的代码和<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sess = tf.Session()</div><div class="line">sess.run(result)</div></pre></td></tr></table></figure></p>
-<p>及<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sess = tf.Session()</div><div class="line">result.eval(session=sess)</div></pre></td></tr></table></figure></p>
-<p>是一样的。<br>在交互式环境下，通过指定默认会话的方式来执行计算是十分方便的，但是指定默认会话的语句 <code>with sess.as_default()</code> 又带来缩进问题等比较麻烦，因此 <code>tf.InteractiveSession()</code> 应运而生，使用这个函数可以在交互式环境下将生成的会话直接指定为默认会话。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">sess = tf.InteractiveSession()</div><div class="line">result.eval()</div><div class="line"># 关闭会话释放资源</div><div class="line">sess.close()</div></pre></td></tr></table></figure></p>
+<h4 id="会话"><a href="#会话" class="headerlink" title="会话"></a>会话</h4><p>TensorFlow 不会自动生成一个默认的会话，但是可以在指定默认会话之后通过 <code>tf.Tensor.eval()</code>来获得张量所引用的运算结果的值。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sess = tf.Session()</span><br><span class="line"># 通过上下文管理器就可以完成默认会话的指定</span><br><span class="line">with sess.as_default():</span><br><span class="line">     print(result.eval())</span><br></pre></td></tr></table></figure></p>
+<p>上面的代码和<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sess = tf.Session()</span><br><span class="line">sess.run(result)</span><br></pre></td></tr></table></figure></p>
+<p>及<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sess = tf.Session()</span><br><span class="line">result.eval(session=sess)</span><br></pre></td></tr></table></figure></p>
+<p>是一样的。<br>在交互式环境下，通过指定默认会话的方式来执行计算是十分方便的，但是指定默认会话的语句 <code>with sess.as_default()</code> 又带来缩进问题等比较麻烦，因此 <code>tf.InteractiveSession()</code> 应运而生，使用这个函数可以在交互式环境下将生成的会话直接指定为默认会话。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sess = tf.InteractiveSession()</span><br><span class="line">result.eval()</span><br><span class="line"># 关闭会话释放资源</span><br><span class="line">sess.close()</span><br></pre></td></tr></table></figure></p>
 <h4 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h4><p><code>tf.Variable</code> 的作用就是保存和更新神经网络的参数。</p>
 <blockquote>
 <p>The Variable() constructor requires an initial value for the variable, which can be a Tensor of any type and shape. The initial value defines the <strong>type</strong> and <strong>shape</strong> of the variable. <strong>After construction, the type and shape of the variable are fixed. The value can be changed using one of the assign methods.</strong><br>If you want to change the shape of a variable later you have to use an assign Op with validate_shape=False.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">import tensorflow as tf</div><div class="line"></div><div class="line"># Create a variable.</div><div class="line">w = tf.Variable(&lt;initial-value&gt;, name=&lt;optional-name&gt;)</div><div class="line"></div><div class="line"># Use the variable in the graph like any Tensor.</div><div class="line">y = tf.matmul(w, ...another variable or tensor...)</div><div class="line"></div><div class="line"># The overloaded operators are available too.</div><div class="line">z = tf.sigmoid(w + y)</div><div class="line"></div><div class="line"># Assign a new value to the variable with `assign()` or a related method.</div><div class="line">w.assign(w + 1.0)</div><div class="line">w.assign_add(1.0)</div></pre></td></tr></table></figure>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">import tensorflow as tf</span><br><span class="line"></span><br><span class="line"># Create a variable.</span><br><span class="line">w = tf.Variable(&lt;initial-value&gt;, name=&lt;optional-name&gt;)</span><br><span class="line"></span><br><span class="line"># Use the variable in the graph like any Tensor.</span><br><span class="line">y = tf.matmul(w, ...another variable or tensor...)</span><br><span class="line"></span><br><span class="line"># The overloaded operators are available too.</span><br><span class="line">z = tf.sigmoid(w + y)</span><br><span class="line"></span><br><span class="line"># Assign a new value to the variable with `assign()` or a related method.</span><br><span class="line">w.assign(w + 1.0)</span><br><span class="line">w.assign_add(1.0)</span><br></pre></td></tr></table></figure>
+<blockquote>
 <p>When you launch the graph, variables have to be explicitly initialized before you can run Ops that use their value. You can initialize a variable by <strong>running its initializer op</strong>, <strong>restoring the variable from a save file</strong>, or <strong>simply running an assign Op that assigns a value to the variable</strong>. In fact, the variable initializer op is just an assign Op that assigns the variable’s initial value to the variable itself.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"># Launch the graph in a session.</div><div class="line">with tf.Session() as sess:</div><div class="line">  # Run the variable initializer.</div><div class="line">  sess.run(w.initializer)</div><div class="line">  # ...you now can run ops that use the value of &apos;w&apos;...</div></pre></td></tr></table></figure>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># Launch the graph in a session.</span><br><span class="line">with tf.Session() as sess:</span><br><span class="line">  # Run the variable initializer.</span><br><span class="line">  sess.run(w.initializer)</span><br><span class="line">  # ...you now can run ops that use the value of &apos;w&apos;...</span><br></pre></td></tr></table></figure>
+<blockquote>
 <p>The most common initialization pattern is to use the convenience function global_variables_initializer() to add an Op to the graph that initializes all the variables. You then run that Op after launching the graph.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"># Add an Op to initialize global variables.</div><div class="line">init_op = tf.global_variables_initializer()</div><div class="line"></div><div class="line"># Launch the graph in a session.</div><div class="line">with tf.Session() as sess:</div><div class="line">  # Run the Op that initializes global variables.</div><div class="line">  sess.run(init_op)</div><div class="line">  # ...you can now run any Op that uses variable values...</div></pre></td></tr></table></figure>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># Add an Op to initialize global variables.</span><br><span class="line">init_op = tf.global_variables_initializer()</span><br><span class="line"></span><br><span class="line"># Launch the graph in a session.</span><br><span class="line">with tf.Session() as sess:</span><br><span class="line">  # Run the Op that initializes global variables.</span><br><span class="line">  sess.run(init_op)</span><br><span class="line">  # ...you can now run any Op that uses variable values...</span><br></pre></td></tr></table></figure>
+<blockquote>
 <p>If you need to create a variable with an initial value dependent on another variable, use the other variable’s <code>initialized_value()</code>. This ensures that variables are initialized in the right order.<br>All variables are automatically collected in the graph where they are created. By default, the constructor adds the new variable to <strong>the graph collection GraphKeys.GLOBAL_VARIABLES</strong>. The convenience function <code>global_variables()</code> returns the contents of that collection.<br>When building a machine learning model it is often convenient to distinguish between variables holding the trainable model parameters and other variables such as a global step variable used to count training steps. To make this easier, the variable constructor supports a <code>trainable=&lt;bool&gt;</code> parameter. If True, the new variable is <code>also</code> added to <code>the graph collection GraphKeys.TRAINABLE_VARIABLES</code>. The convenience function <code>trainable_variables()</code> returns the contents of this collection. <strong>The various Optimizer classes use this collection as the default list of variables to optimize</strong>.</p>
 </blockquote>
 <p>变量初始化：</p>
@@ -206,23 +246,23 @@
 <li>tf.fill([2, 3], 9)</li>
 <li>tf.constant([1, 2, 3])</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">biases = tf.Variable(tf.ones([3]))</div><div class="line"># 除了使用随机数和常数，也支持通过其他变量的初始值来初始化新的变量。</div><div class="line"># tf.Variable(biases.initialized_value() * 0.2)</div></pre></td></tr></table></figure>
-<p>在TensorFlow中，一个变量在被运算使用之前， 这个变量的初始化需要被显式调用。<br>例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">w1 = tf.Variable(tf.random_normal([2, 3], stddev=1, seed=1))</div><div class="line">w2 = tf.Variable(tf.random_normal([3, 1], stddev=1, seed=1))</div><div class="line">x = tf.constant([[0.7, 0.9]])</div><div class="line">a = tf.matmul(x, w1)</div><div class="line">y = tf.matmul(a, w2)</div><div class="line"></div><div class="line">sess = tf.Session()</div><div class="line"># 这里不能直接通过sess.run(y)来获取y的取值</div><div class="line"># 在变量定义时，虽然给出了初始化方法，但是这个初始化方法并没有被真正运行</div><div class="line"># 一个一个地调用初始化方法</div><div class="line">sess.run(w1.initializer)</div><div class="line">sess.run(w2.initializer)</div><div class="line">print(sess.run(y))</div><div class="line">sess.close()</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">biases = tf.Variable(tf.ones([3]))</span><br><span class="line"># 除了使用随机数和常数，也支持通过其他变量的初始值来初始化新的变量。</span><br><span class="line"># tf.Variable(biases.initialized_value() * 0.2)</span><br></pre></td></tr></table></figure>
+<p>在TensorFlow中，一个变量在被运算使用之前， 这个变量的初始化需要被显式调用。<br>例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">w1 = tf.Variable(tf.random_normal([2, 3], stddev=1, seed=1))</span><br><span class="line">w2 = tf.Variable(tf.random_normal([3, 1], stddev=1, seed=1))</span><br><span class="line">x = tf.constant([[0.7, 0.9]])</span><br><span class="line">a = tf.matmul(x, w1)</span><br><span class="line">y = tf.matmul(a, w2)</span><br><span class="line"></span><br><span class="line">sess = tf.Session()</span><br><span class="line"># 这里不能直接通过sess.run(y)来获取y的取值</span><br><span class="line"># 在变量定义时，虽然给出了初始化方法，但是这个初始化方法并没有被真正运行</span><br><span class="line"># 一个一个地调用初始化方法</span><br><span class="line">sess.run(w1.initializer)</span><br><span class="line">sess.run(w2.initializer)</span><br><span class="line">print(sess.run(y))</span><br><span class="line">sess.close()</span><br></pre></td></tr></table></figure></p>
 <p>所有的变量都会被加入到 <code>GraphKeys.GLOBAL_VARIABLES</code> 这个集合，<code>global_variables</code> 函数可以拿到当前计算图的所有变量，拿到计算图的所有变量方便持久化整个计算图的运行状态。</p>
-<p>变量的类型是不可改变的<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">w1 = tf.Variable(tf.random_normal([2, 3], stddev=1, seed=1), name=&quot;w1&quot;) // 默认是tf.float32</div><div class="line">w2 = tf.Variable(tf.random_normal([2, 3], stddev=1, seed=1, dtype=tf.float64), name=&quot;w2&quot;)</div><div class="line">w1.assign(w2)</div></pre></td></tr></table></figure></p>
-<p>程序将报错<br>变量的维度是可以改变的，但是需要设置参数 <code>validate_shape=False</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">w1 = tf.Variable(tf.random_normal([2, 3], stddev=1, seed=1), name=&quot;w1&quot;)</div><div class="line">w2 = tf.Variable(tf.random_normal([2, 2], stddev=1, seed=1), name=&quot;w2&quot;)</div><div class="line">tf.assign(w1, w2)</div></pre></td></tr></table></figure></p>
+<p>变量的类型是不可改变的<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">w1 = tf.Variable(tf.random_normal([2, 3], stddev=1, seed=1), name=&quot;w1&quot;) // 默认是tf.float32</span><br><span class="line">w2 = tf.Variable(tf.random_normal([2, 3], stddev=1, seed=1, dtype=tf.float64), name=&quot;w2&quot;)</span><br><span class="line">w1.assign(w2)</span><br></pre></td></tr></table></figure></p>
+<p>程序将报错<br>变量的维度是可以改变的，但是需要设置参数 <code>validate_shape=False</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">w1 = tf.Variable(tf.random_normal([2, 3], stddev=1, seed=1), name=&quot;w1&quot;)</span><br><span class="line">w2 = tf.Variable(tf.random_normal([2, 2], stddev=1, seed=1), name=&quot;w2&quot;)</span><br><span class="line">tf.assign(w1, w2)</span><br></pre></td></tr></table></figure></p>
 <p>会报错：维度不匹配，使用 <code>tf.assign(w1, w2, validate_shape=False)</code> 就好了</p>
-<h4 id="占位符"><a href="#占位符" class="headerlink" title="占位符"></a>占位符</h4><p>可以通过 <code>x = tf.constant([[0.7, 0.9]])</code> 表达一个batch的数据，但是每生成一个常量，计算图中就会增加一个节点，一般来说，神经网络的训练过程需要经过几百万甚至几亿次迭代，如果都用常量的方式输入值，这个计算图就爆了。为了避免这个问题，TensorFLow 使用 <strong>placeholder</strong> 的机制来输入数据。这样就不需要生成大量的常量来提供数据，只需要将数据通过 placeholder 输入即可。<br>placeholder 的类型不可更改，但是维度可以通过提供的数据推导得到。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">w1 = tf.Variable(tf.random_normal([2, 3], stddev=1, seed=1))</div><div class="line">w2 = tf.Variable(tf.random_normal([3, 1], stddev=1, seed=1))</div><div class="line"></div><div class="line">// 这里的shape不一定给出，如果是确定的，给出维度可以降低出错的概率</div><div class="line">x = tf.placeholder(tf.float32, shape=(1, 2), name=&quot;input&quot;)</div><div class="line"></div><div class="line">a = tf.matmul(x, w1)</div><div class="line">y = tf.matmul(a, w2)</div><div class="line"></div><div class="line">sess = tf.Session()</div><div class="line">init_op = tf.global_variables_initializer()</div><div class="line">sess.run(init_op)</div><div class="line"></div><div class="line">// print(sess.run(y))</div><div class="line">// 将报错，必须 feed</div><div class="line"></div><div class="line">print(sess.run(y, feed_dict=&#123;x: [[0.7, 0.9]]&#125;))</div><div class="line">sess.close()</div></pre></td></tr></table></figure></p>
+<h4 id="占位符"><a href="#占位符" class="headerlink" title="占位符"></a>占位符</h4><p>可以通过 <code>x = tf.constant([[0.7, 0.9]])</code> 表达一个batch的数据，但是每生成一个常量，计算图中就会增加一个节点，一般来说，神经网络的训练过程需要经过几百万甚至几亿次迭代，如果都用常量的方式输入值，这个计算图就爆了。为了避免这个问题，TensorFLow 使用 <strong>placeholder</strong> 的机制来输入数据。这样就不需要生成大量的常量来提供数据，只需要将数据通过 placeholder 输入即可。<br>placeholder 的类型不可更改，但是维度可以通过提供的数据推导得到。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">w1 = tf.Variable(tf.random_normal([2, 3], stddev=1, seed=1))</span><br><span class="line">w2 = tf.Variable(tf.random_normal([3, 1], stddev=1, seed=1))</span><br><span class="line"></span><br><span class="line">// 这里的shape不一定给出，如果是确定的，给出维度可以降低出错的概率</span><br><span class="line">x = tf.placeholder(tf.float32, shape=(1, 2), name=&quot;input&quot;)</span><br><span class="line"></span><br><span class="line">a = tf.matmul(x, w1)</span><br><span class="line">y = tf.matmul(a, w2)</span><br><span class="line"></span><br><span class="line">sess = tf.Session()</span><br><span class="line">init_op = tf.global_variables_initializer()</span><br><span class="line">sess.run(init_op)</span><br><span class="line"></span><br><span class="line">// print(sess.run(y))</span><br><span class="line">// 将报错，必须 feed</span><br><span class="line"></span><br><span class="line">print(sess.run(y, feed_dict=&#123;x: [[0.7, 0.9]]&#125;))</span><br><span class="line">sess.close()</span><br></pre></td></tr></table></figure></p>
 <h4 id="损失函数"><a href="#损失函数" class="headerlink" title="损失函数"></a>损失函数</h4><p>在得到一个batch的前向传播结果之后，需要定义一个损失函数来刻画当前的预测值和真实值之间的差距，然后通过反向传播算法调整神经网络的参数使得差距被缩小。</p>
-<h5 id="交叉熵是分类问题中常用的损失函数"><a href="#交叉熵是分类问题中常用的损失函数" class="headerlink" title="交叉熵是分类问题中常用的损失函数"></a>交叉熵是分类问题中常用的损失函数</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">cross_entropy = -tf.reduce_mean(_y * tf.log(tf.clip_by_value(y, 1e-10, 1.0)))</div><div class="line">learning_rate = 0.001</div><div class="line">train_step = tf.train.AdamOptimizer(learning_rate).minimize(cross_entropy)</div></pre></td></tr></table></figure>
+<h5 id="交叉熵是分类问题中常用的损失函数"><a href="#交叉熵是分类问题中常用的损失函数" class="headerlink" title="交叉熵是分类问题中常用的损失函数"></a>交叉熵是分类问题中常用的损失函数</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cross_entropy = -tf.reduce_mean(_y * tf.log(tf.clip_by_value(y, 1e-10, 1.0)))</span><br><span class="line">learning_rate = 0.001</span><br><span class="line">train_step = tf.train.AdamOptimizer(learning_rate).minimize(cross_entropy)</span><br></pre></td></tr></table></figure>
 <p>通过运行 <code>sess.run(train_step)</code> 就可以对所有在 GraphKeys.TRAINABLE_VARIABLES 集合中的变量进行优化，使得当前 batch 下损失函数更小。<br><code>cross_entropy = -tf.reduce_mean(_y * tf.log(tf.clip_by_value(y, 1e-10, 1.0)))</code>包含四个不同的运算，因为交叉熵与 softmax 回归经常一起使用，因此对这两个功能进行了封装，<code>tf.nn.softmax_cross_entropy_with_logits(y, y_)</code> y 是神经网络的原始输出，y_是真实label。</p>
 <h5 id="均方误差是回归问题中常用的损失函数"><a href="#均方误差是回归问题中常用的损失函数" class="headerlink" title="均方误差是回归问题中常用的损失函数"></a>均方误差是回归问题中常用的损失函数</h5><p><code>mse = tf.reduce_mean(tf.square(y_ - y))</code> </p>
-<h4 id="学习率"><a href="#学习率" class="headerlink" title="学习率"></a>学习率</h4><p><code>tf.train.exponential_decay</code> 函数实现了指数衰减学习率，通过它可以先使用较大的学习率来快速得到一个比较优的解，然后随着迭代逐步减少学习率，使得模型在后期更加稳定，而不是振荡。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">global_step = tf.Variable(0)</div><div class="line">learning_rate = tf.train.exponential_decay(0.1, global_step, 100, 0.96, staircase=True)</div><div class="line"></div><div class="line"># 使用指数衰减学习率，在minimize中传入global_step将自动更新global_step参数，从而使得学习率也得到相应的更新。</div><div class="line">learning_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step)</div></pre></td></tr></table></figure></p>
-<h4 id="过拟合问题"><a href="#过拟合问题" class="headerlink" title="过拟合问题"></a>过拟合问题</h4><p>TensorFlow 可以优化带正则化的损失函数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">w = tf.Variable(tf.random_normal([2, 1], stddev=1, seed=1))</div><div class="line">y = tf.matmul(x, w)</div><div class="line"></div><div class="line">loss = tf.reduce_mean(tf.square(y_ - y)) + tf.contrib.layers.l2_regularizer(lambda)(w)</div></pre></td></tr></table></figure></p>
-<p>比如 L1 和 L2 正则化<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">weights = tf.constant([[1.0, -2.0], [-3.0, 4.0]])</div><div class="line">with tf.Session() as sess:</div><div class="line">     (|1| + |-2| + |-3| + |4|) * 0.5 = 5</div><div class="line">     print sess.run(tf.contrib.layers.l1_regularizer(0.5)(weights))</div><div class="line">     (1 + 4 + 9 + 16)/2 + 0.5 = 7.5</div><div class="line">     print sess.run(tf.contrib.layers.l2_regularizer(0.5)(weights))</div></pre></td></tr></table></figure></p>
-<h4 id="集合"><a href="#集合" class="headerlink" title="集合"></a>集合</h4><p>在简单的神经网络里，像 <code>loss = tf.reduce_mean(tf.square(y_ - y)) + tf.contrib.layers.l2_regularizer(lambda)(w)</code> 这样将权重的正则化加入损失函数就可以了，但是当网络复杂之后参数增多，首先会导致损失函数的定义很长，但是更重要的是网络结构的定义部分和损失函数的定义部分可能不在同一个函数里，这样通过变量来传递的方式就不方便了。为了解决这个问题，可以使用 TensorFlow 提供的集合， 它保存了一个计算图中的很多实体（比如张量）。<br>获取一层神经网络上的权重，并将这个权重的L2正则化损失加入到名为losses的集合中<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">def get_weight(shape, lambda):</div><div class="line">    var = tf.Variable(tf.random_normal(shape), dtype=tf.float32)</div><div class="line">    tf.add_to_collection(&quot;losses&quot;, tf.contrib.layers.l2_regularizer(lambda)(var))</div><div class="line">    return var</div><div class="line"></div><div class="line">x = tf.placeholder(tf.float32, shape=(None, 2))</div><div class="line">y_ = tf.placeholder(tf.float32, shape=(None, 1))</div><div class="line">batch_size = 8</div><div class="line"></div><div class="line">layer_dimension = [2, 10, 10, 10, 1]</div><div class="line">n_layers = len(layer_dimension)</div><div class="line"></div><div class="line"># 当前层</div><div class="line">cur_layer = x</div><div class="line"># 当前层的节点个数</div><div class="line">in_dimension = layer_dimension[0]</div><div class="line"></div><div class="line"># 全连接神经网络</div><div class="line">for i in range(1, n_layers):</div><div class="line">     out_dimension = layer_dimension[i]</div><div class="line">     weight = get_weight([in_dimension, out_dimension], 0.001)</div><div class="line">     bias = tf.Variable(tf.constant(0.1, shape=[out_dimension]))</div><div class="line">     cur_layer = tf.nn.relu(tf.matmul(cur_layer, weight) + bias)</div><div class="line">     in_dimension = layer_dimension[i]</div><div class="line"></div><div class="line">mse_loss = tf.reduce_mean(tf.square(y_ - cur_layer))</div><div class="line">tf.add_to_collection(&quot;losses&quot;, mse_loss)</div><div class="line">loss = tf.add_n(tf.get_collection(&quot;losses&quot;))</div></pre></td></tr></table></figure></p>
-<h4 id="name-scope-和-variable-scope"><a href="#name-scope-和-variable-scope" class="headerlink" title="name_scope 和 variable_scope"></a>name_scope 和 variable_scope</h4><p>经常使用 name_scope 做计算图可视化时的缩略控制，variable_scope 控制变量的命名，控制变量共享。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">import tensorflow as tf</div><div class="line">with tf.variable_scope(&apos;variable_scope_y&apos;) as scope:</div><div class="line">    var1 = tf.get_variable(name=&apos;var1&apos;, shape=[1], dtype=tf.float32)</div><div class="line">    scope.reuse_variables() # 设置共享变量</div><div class="line">    var1_reuse = tf.get_variable(name=&apos;var1&apos;)</div><div class="line">    var2 = tf.Variable(initial_value=[2.], name=&apos;var2&apos;, dtype=tf.float32)</div><div class="line">    var2_reuse = tf.Variable(initial_value=[2.], name=&apos;var2&apos;, dtype=tf.float32)</div><div class="line"></div><div class="line">with tf.Session() as sess:</div><div class="line">     sess.run(tf.global_variables_initializer())</div><div class="line">     print(var1.name, sess.run(var1))</div><div class="line">     print(var1_reuse.name, sess.run(var1_reuse))</div><div class="line">     print(var2.name, sess.run(var2))</div><div class="line">     print(var2_reuse.name, sess.run(var2_reuse))</div></pre></td></tr></table></figure></p>
-<p>输出结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">variable_scope_y/var1:0 [-1.59682846]</div><div class="line">variable_scope_y/var1:0 [-1.59682846]</div><div class="line">variable_scope_y/var2:0 [ 2.]</div><div class="line">variable_scope_y/var2_1:0 [ 2.]</div></pre></td></tr></table></figure></p>
+<h4 id="学习率"><a href="#学习率" class="headerlink" title="学习率"></a>学习率</h4><p><code>tf.train.exponential_decay</code> 函数实现了指数衰减学习率，通过它可以先使用较大的学习率来快速得到一个比较优的解，然后随着迭代逐步减少学习率，使得模型在后期更加稳定，而不是振荡。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">global_step = tf.Variable(0)</span><br><span class="line">learning_rate = tf.train.exponential_decay(0.1, global_step, 100, 0.96, staircase=True)</span><br><span class="line"></span><br><span class="line"># 使用指数衰减学习率，在minimize中传入global_step将自动更新global_step参数，从而使得学习率也得到相应的更新。</span><br><span class="line">learning_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step)</span><br></pre></td></tr></table></figure></p>
+<h4 id="过拟合问题"><a href="#过拟合问题" class="headerlink" title="过拟合问题"></a>过拟合问题</h4><p>TensorFlow 可以优化带正则化的损失函数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">w = tf.Variable(tf.random_normal([2, 1], stddev=1, seed=1))</span><br><span class="line">y = tf.matmul(x, w)</span><br><span class="line"></span><br><span class="line">loss = tf.reduce_mean(tf.square(y_ - y)) + tf.contrib.layers.l2_regularizer(lambda)(w)</span><br></pre></td></tr></table></figure></p>
+<p>比如 L1 和 L2 正则化<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">weights = tf.constant([[1.0, -2.0], [-3.0, 4.0]])</span><br><span class="line">with tf.Session() as sess:</span><br><span class="line">     (|1| + |-2| + |-3| + |4|) * 0.5 = 5</span><br><span class="line">     print sess.run(tf.contrib.layers.l1_regularizer(0.5)(weights))</span><br><span class="line">     (1 + 4 + 9 + 16)/2 + 0.5 = 7.5</span><br><span class="line">     print sess.run(tf.contrib.layers.l2_regularizer(0.5)(weights))</span><br></pre></td></tr></table></figure></p>
+<h4 id="集合"><a href="#集合" class="headerlink" title="集合"></a>集合</h4><p>在简单的神经网络里，像 <code>loss = tf.reduce_mean(tf.square(y_ - y)) + tf.contrib.layers.l2_regularizer(lambda)(w)</code> 这样将权重的正则化加入损失函数就可以了，但是当网络复杂之后参数增多，首先会导致损失函数的定义很长，但是更重要的是网络结构的定义部分和损失函数的定义部分可能不在同一个函数里，这样通过变量来传递的方式就不方便了。为了解决这个问题，可以使用 TensorFlow 提供的集合， 它保存了一个计算图中的很多实体（比如张量）。<br>获取一层神经网络上的权重，并将这个权重的L2正则化损失加入到名为losses的集合中<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">def get_weight(shape, lambda):</span><br><span class="line">    var = tf.Variable(tf.random_normal(shape), dtype=tf.float32)</span><br><span class="line">    tf.add_to_collection(&quot;losses&quot;, tf.contrib.layers.l2_regularizer(lambda)(var))</span><br><span class="line">    return var</span><br><span class="line"></span><br><span class="line">x = tf.placeholder(tf.float32, shape=(None, 2))</span><br><span class="line">y_ = tf.placeholder(tf.float32, shape=(None, 1))</span><br><span class="line">batch_size = 8</span><br><span class="line"></span><br><span class="line">layer_dimension = [2, 10, 10, 10, 1]</span><br><span class="line">n_layers = len(layer_dimension)</span><br><span class="line"></span><br><span class="line"># 当前层</span><br><span class="line">cur_layer = x</span><br><span class="line"># 当前层的节点个数</span><br><span class="line">in_dimension = layer_dimension[0]</span><br><span class="line"></span><br><span class="line"># 全连接神经网络</span><br><span class="line">for i in range(1, n_layers):</span><br><span class="line">     out_dimension = layer_dimension[i]</span><br><span class="line">     weight = get_weight([in_dimension, out_dimension], 0.001)</span><br><span class="line">     bias = tf.Variable(tf.constant(0.1, shape=[out_dimension]))</span><br><span class="line">     cur_layer = tf.nn.relu(tf.matmul(cur_layer, weight) + bias)</span><br><span class="line">     in_dimension = layer_dimension[i]</span><br><span class="line"></span><br><span class="line">mse_loss = tf.reduce_mean(tf.square(y_ - cur_layer))</span><br><span class="line">tf.add_to_collection(&quot;losses&quot;, mse_loss)</span><br><span class="line">loss = tf.add_n(tf.get_collection(&quot;losses&quot;))</span><br></pre></td></tr></table></figure></p>
+<h4 id="name-scope-和-variable-scope"><a href="#name-scope-和-variable-scope" class="headerlink" title="name_scope 和 variable_scope"></a>name_scope 和 variable_scope</h4><p>经常使用 name_scope 做计算图可视化时的缩略控制，variable_scope 控制变量的命名，控制变量共享。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">import tensorflow as tf</span><br><span class="line">with tf.variable_scope(&apos;variable_scope_y&apos;) as scope:</span><br><span class="line">    var1 = tf.get_variable(name=&apos;var1&apos;, shape=[1], dtype=tf.float32)</span><br><span class="line">    scope.reuse_variables() # 设置共享变量</span><br><span class="line">    var1_reuse = tf.get_variable(name=&apos;var1&apos;)</span><br><span class="line">    var2 = tf.Variable(initial_value=[2.], name=&apos;var2&apos;, dtype=tf.float32)</span><br><span class="line">    var2_reuse = tf.Variable(initial_value=[2.], name=&apos;var2&apos;, dtype=tf.float32)</span><br><span class="line"></span><br><span class="line">with tf.Session() as sess:</span><br><span class="line">     sess.run(tf.global_variables_initializer())</span><br><span class="line">     print(var1.name, sess.run(var1))</span><br><span class="line">     print(var1_reuse.name, sess.run(var1_reuse))</span><br><span class="line">     print(var2.name, sess.run(var2))</span><br><span class="line">     print(var2_reuse.name, sess.run(var2_reuse))</span><br></pre></td></tr></table></figure></p>
+<p>输出结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">variable_scope_y/var1:0 [-1.59682846]</span><br><span class="line">variable_scope_y/var1:0 [-1.59682846]</span><br><span class="line">variable_scope_y/var2:0 [ 2.]</span><br><span class="line">variable_scope_y/var2_1:0 [ 2.]</span><br></pre></td></tr></table></figure></p>
 <p>可以看到变量 <code>var1_reuse</code> 重复使用了 <code>var1</code>，如果使用 Variable 的话，每次都会新建变量，但是大多数时候我们希望一些变量复用，所以就有了 get_variable()。</p>
 <ul>
 <li>tf.get_variable() 会根据 variable_scope 的模式不同而具有不同的行为，当 reuse=True 时，只想着复用，如果之前没有定义过这个变量则会报错；当 reuse=False 时只想着新建，如果之前定义过同名变量则会报错。 </li>
@@ -231,8 +271,8 @@
 <li>tf.get_variable() 不受 name_scope 的命名空间的限制。</li>
 <li>name_scope 作用于运算，variable_scope 仅仅作用于变量。</li>
 </ul>
-<p>共享变量的例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">with tf.variable_scope(&apos;foo&apos;) as foo_scope:</div><div class="line">    v = tf.get_variable(&apos;v&apos;, [1])</div><div class="line">with tf.variable_scope(&apos;foo&apos;, reuse=True):</div><div class="line">    v1 = tf.get_variable(&apos;v&apos;)</div><div class="line">assert v1 == v</div></pre></td></tr></table></figure></p>
-<p>或者这样：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">with tf.variable_scope(&apos;foo&apos;) as foo_scope:</div><div class="line">    v = tf.get_variable(&apos;v&apos;, [1])</div><div class="line">with tf.variable_scope(foo_scope, reuse=True):</div><div class="line">    v1 = tf.get_variable(&apos;v&apos;)</div><div class="line">assert v1 == v</div></pre></td></tr></table></figure></p>
+<p>共享变量的例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">with tf.variable_scope(&apos;foo&apos;) as foo_scope:</span><br><span class="line">    v = tf.get_variable(&apos;v&apos;, [1])</span><br><span class="line">with tf.variable_scope(&apos;foo&apos;, reuse=True):</span><br><span class="line">    v1 = tf.get_variable(&apos;v&apos;)</span><br><span class="line">assert v1 == v</span><br></pre></td></tr></table></figure></p>
+<p>或者这样：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">with tf.variable_scope(&apos;foo&apos;) as foo_scope:</span><br><span class="line">    v = tf.get_variable(&apos;v&apos;, [1])</span><br><span class="line">with tf.variable_scope(foo_scope, reuse=True):</span><br><span class="line">    v1 = tf.get_variable(&apos;v&apos;)</span><br><span class="line">assert v1 == v</span><br></pre></td></tr></table></figure></p>
 <h4 id="miscellaneous"><a href="#miscellaneous" class="headerlink" title="miscellaneous"></a>miscellaneous</h4><ul>
 <li>var2:0 的意义是这个name为 var2 的运算（节点）的第一个结果</li>
 <li>一个回合： 就是全部的训练集数据都参与了运算就算是一次。</li>
@@ -242,122 +282,180 @@
     </div>
 
     
-
+    
     
 
-    <!-- Comments -->
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/11/21/Pandas-加载数据的I-O性能比较/" rel="prev" title="Pandas 加载数据的I/O性能比较">
+      <i class="fa fa-chevron-left"></i> Pandas 加载数据的I/O性能比较
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/12/07/循环神经网络的原理及-TensorFlow-实现/" rel="next" title="循环神经网络的原理及 TensorFlow 实现">
+      循环神经网络的原理及 TensorFlow 实现 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
     
+  </article>
+  
+  
+  
 
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Basic-Concepts"><span class="nav-number">1.</span> <span class="nav-text">Basic Concepts</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#张量"><span class="nav-number">1.0.1.</span> <span class="nav-text">张量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#运算-Operation"><span class="nav-number">1.0.2.</span> <span class="nav-text">运算 Operation</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#计算图"><span class="nav-number">1.0.3.</span> <span class="nav-text">计算图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#会话"><span class="nav-number">1.0.4.</span> <span class="nav-text">会话</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#变量"><span class="nav-number">1.0.5.</span> <span class="nav-text">变量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#占位符"><span class="nav-number">1.0.6.</span> <span class="nav-text">占位符</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#损失函数"><span class="nav-number">1.0.7.</span> <span class="nav-text">损失函数</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#交叉熵是分类问题中常用的损失函数"><span class="nav-number">1.0.7.1.</span> <span class="nav-text">交叉熵是分类问题中常用的损失函数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#均方误差是回归问题中常用的损失函数"><span class="nav-number">1.0.7.2.</span> <span class="nav-text">均方误差是回归问题中常用的损失函数</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#学习率"><span class="nav-number">1.0.8.</span> <span class="nav-text">学习率</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#过拟合问题"><span class="nav-number">1.0.9.</span> <span class="nav-text">过拟合问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#集合"><span class="nav-number">1.0.10.</span> <span class="nav-text">集合</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#name-scope-和-variable-scope"><span class="nav-number">1.0.11.</span> <span class="nav-text">name_scope 和 variable_scope</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#miscellaneous"><span class="nav-number">1.0.12.</span> <span class="nav-text">miscellaneous</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
 </div>
-        </section>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
 
     </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
 
-
-</div>
-
-<!-- Footer -->
-<div class="push"></div>
-
-<footer class="footer-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
-                <h2>About</h2>
-                <p>
-                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
-                </p>
-            </div>
-            
-    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
-        <h2>Recent Posts</h2>
-        <ul>
-            
-            <li>
-                <a class="footer-post" href="/2019/07/12/Unnamed-namespace/">Unnamed namespace</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/05/08/Static-variable-in-inlined-function/">Static variable in inline</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/04/23/Iterator-invalidation-rules/">Iterator invalidation rul</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/18/Emplace-back/">Emplace back</a>
-            </li>
-            
-        </ul>
-    </div>
+        
 
 
 
-            
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <ul class="list-inline footer-social-icons">
-                    
-                    <li class="list-inline-item">
-                        <a href="https://github.com/RobertLexis">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-github"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="mailto:robert_lexis@163.com">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-envelope-o"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="footer-copyright">
-                    @Untitled. All right reserved | Robert Lexis Loves Wenny
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<!-- After footer scripts -->
-
-<!-- jQuery -->
-<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-
-<!-- Tween Max -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
-
-<!-- Gallery -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
-
-<!-- Custom JavaScript -->
-<script src="/js/main.js"></script>
-
-<!-- Disqus Comments -->
 
 
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
 
 </body>
-
 </html>

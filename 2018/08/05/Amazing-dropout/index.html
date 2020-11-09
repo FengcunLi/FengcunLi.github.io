@@ -1,172 +1,205 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<!-- Head tag -->
+<html lang="zh-CN">
 <head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/main.css">
 
-    <!--Description-->
-    
-        <meta name="description" content="本文主要采摘、翻译、修改自 P. Galeone’s blog Analysis of Dropout。
-Overfitting is a problem in Deep Neural Networks (DNN): the model learns to classify only the training set, adapting itself to the training examples instead of learning decision boundaries capable of classifying generic instances. Many solutions to the overfitting problem have been presented during these years; one of them have overwhelmed the others due to its simplicity and its empirical good results: Dropout.">
-    
 
-    <!--Author-->
-    
-        <meta name="author" content="Robert Lexis">
-    
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-    <!--Open Graph Title-->
-    
-        <meta property="og:title" content="Amazing dropout"/>
-    
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
-    <!--Open Graph Description-->
-    
+  <meta name="description" content="本文主要采摘、翻译、修改自 P. Galeone’s blog Analysis of Dropout。 Overfitting is a problem in Deep Neural Networks (DNN): the model learns to classify only the training set, adapting itself to the training example">
+<meta name="keywords" content="DL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Amazing Dropout">
+<meta property="og:url" content="http://yoursite.com/2018/08/05/Amazing-dropout/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="本文主要采摘、翻译、修改自 P. Galeone’s blog Analysis of Dropout。 Overfitting is a problem in Deep Neural Networks (DNN): the model learns to classify only the training set, adapting itself to the training example">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2018/08/05/Amazing-dropout/dropout.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/08/05/Amazing-dropout/distributions.png">
+<meta property="og:updated_time" content="2018-08-28T02:49:26.636Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Amazing Dropout">
+<meta name="twitter:description" content="本文主要采摘、翻译、修改自 P. Galeone’s blog Analysis of Dropout。 Overfitting is a problem in Deep Neural Networks (DNN): the model learns to classify only the training set, adapting itself to the training example">
+<meta name="twitter:image" content="http://yoursite.com/2018/08/05/Amazing-dropout/dropout.jpg">
 
-    <!--Open Graph Site Name-->
-    <meta property="og:site_name" content="This is Robert Lexis."/>
+<link rel="canonical" href="http://yoursite.com/2018/08/05/Amazing-dropout/">
 
-    <!--Type page-->
-    
-        <meta property="og:type" content="article" />
-    
 
-    <!--Page Cover-->
-    
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
 
-    <meta name="twitter:card" content="summary" />
-    
+  <title>Amazing Dropout | The next stop - Antarctica</title>
+  
 
-    <!-- Title -->
-    
-    <title>Amazing dropout - This is Robert Lexis.</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 
-    <!-- Custom Fonts -->
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 
-    <!-- Gallery -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
 
-    <!-- Google Analytics -->
-    
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
 
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
 
 </head>
 
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
 
-<body>
-
-<div class="bg-gradient"></div>
-<div class="bg-pattern"></div>
-
-<!-- Menu -->
-<!--Menu Links and Overlay-->
-<div class="menu-bg">
-    <div class="menu-container">
-        <ul>
-            
-            <li class="menu-item">
-                <a href="/">
-                    Home
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/archives">
-                    Archives
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/about">
-                    About
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/tags">
-                    Tags
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/categories">
-                    Categories
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/contact">
-                    Contact
-                </a>
-            </li>
-            
-        </ul>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
 </div>
 
-<!--Hamburger Icon-->
-<nav>
-    <a href="#menu"></a>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
 </nav>
 
-<div class="container">
 
-    <!-- Main Content -->
-    <div class="row">
-    <div class="col-sm-12">
 
-        <!--Title and Logo-->
-        <header>
-    <div class="logo">
-        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
-        
-    </div>
-</header>
 
-        <section class="main">
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
             
-<div class="post">
 
-    <div class="post-header">
-        <h1 class="title">
-            <a href="/2018/08/05/Amazing-dropout/">
-                Amazing dropout
-            </a>
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/05/Amazing-dropout/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Amazing Dropout
         </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-08-05</span>
-            
-            
-            
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-08-05 20:49:00" itemprop="dateCreated datePublished" datetime="2018-08-05T20:49:00+08:00">2018-08-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-08-28 10:49:26" itemprop="dateModified" datetime="2018-08-28T10:49:26+08:00">2018-08-28</time>
+              </span>
+
+          
+
         </div>
-    </div>
+      </header>
 
-    <div class="content">
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
-        <!-- Gallery -->
-        
-
-        <!-- Post Content -->
-        <p>本文主要采摘、翻译、修改自 P. Galeone’s blog <a href="https://pgaleone.eu/deep-learning/regularization/2017/01/10/anaysis-of-dropout/" target="_blank" rel="external">Analysis of Dropout</a>。</p>
+      
+        <p>本文主要采摘、翻译、修改自 P. Galeone’s blog <a href="https://pgaleone.eu/deep-learning/regularization/2017/01/10/anaysis-of-dropout/" target="_blank" rel="noopener">Analysis of Dropout</a>。</p>
 <p>Overfitting is a problem in Deep Neural Networks (DNN): the model learns to classify only the training set, adapting itself to the training examples instead of learning decision boundaries capable of classifying generic instances. Many solutions to the overfitting problem have been presented during these years; one of them have overwhelmed the others due to its simplicity and its empirical good results: <strong>Dropout</strong>.</p>
 <p><img src="/2018/08/05/Amazing-dropout/dropout.jpg" alt="dropout"><br><a id="more"></a><br>Visual representation of Dropout, right from the paper. On the left there’s the network before applying Dropout, on the right the same network with Dropout applied.The network on the left it’s the same network used at test time, once the parameters have been learned.</p>
 <p>The idea behind Dropout is to train an ensemble of DNNs and average the results of the whole ensemble instead of train a single DNN.<strong>(Dropout 背后的思想是训练一个含有多个 DNN 的集成学习器。)</strong></p>
@@ -183,12 +216,12 @@ Overfitting is a problem in Deep Neural Networks (DNN): the model learns to clas
 <li>\( h(x) = Wx + b \) a linear projection of a \( d_i \)-dimensional input x into a \( d_h \)-dimensional output space.</li>
 <li>\( a(h) \) an activation function<br>it’s possible to model the application of Dropout, in the training phase only, to the given projection as a modified activation function (可以将 Dropout 建模为一个特殊的激活函数（element-wise）):<br>\[<br>f(h) = D \bigodot a(h)<br>\]<br>Where \( D=(X_1, …, X_{d_h}) \) is a \( d_h \)-dimensional vector of Bernoulli variables \( X_i \) （\( d_h \) 维伯努利随机变量的向量）.</li>
 </ul>
-<h5 id="伯努利随机变量"><a href="#伯努利随机变量" class="headerlink" title="伯努利随机变量"></a>伯努利随机变量</h5><p>A Bernoulli random variable(伯努利随机变量) has the following probability mass distribution（pdf，概率质量函数）:<br>\[<br>f(k; p) = p^k (1-p)^{(1-k)} =<br>\begin{cases}<br>    p \text{ if } k = 1 \\\\<br>    (1-p) \text{ if } k = 0<br>\end{cases}<br>\]<br>Where k are the possible outcomes.</p>
+<h5 id="伯努利随机变量"><a href="#伯努利随机变量" class="headerlink" title="伯努利随机变量"></a>伯努利随机变量</h5><p>A Bernoulli random variable(伯努利随机变量) has the following probability mass distribution（pdf，概率质量函数）:<br>\[<br>f(k; p) = p^k (1-p)^{(1-k)} =<br>\begin{cases}<br>    p \text{ if } k = 1 \\<br>    (1-p) \text{ if } k = 0<br>\end{cases}<br>\]<br>Where k are the possible outcomes.</p>
 <blockquote>
 <p>伯努利分布 Bernoulli distribution，又名两点分布或者0-1分布，是一个离散型概率分布；若伯努利试验成功，则伯努利随机变量取值为1。若伯努利试验失败，则伯努利随机变量取值为0。</p>
 </blockquote>
 <p><strong> 设 drop rate 为 \( p \)。</strong><br>It’s evident that this random variable perfectly models the Dropout application on a single neuron. In fact, the neuron is turned off with probability \( p = P(X_i = 0) \) and kept on otherwise.<br><strong> 伯努利试验成功的概率是 \( P( X_i = 1) = 1 - p \)。伯努利试验成功，则神经元被保留。伯努利试验失败，则神经元被关闭。</strong></p>
-<p>It can be useful to see the application of Dropout on a generic i-th neuron:<br>\[<br>O_i = X_i a(\sum_{k=1}^{d_i} w_k x_k +b) = \begin{cases}<br>a(\sum_{k=1}^{d_i} w_k x_k +b) \text{ if } X_i = 1 \\\\<br>0 \text{ if } X_i = 0<br>\end{cases}<br>\]<br>where \( P(X_i = 0) = p \) （即 \(X_i \thicksim Bernoulli(1-p) \)，\( X_i \) 服从成功概率为 \( (1-p) \) 的伯努利分布。）</p>
+<p>It can be useful to see the application of Dropout on a generic i-th neuron:<br>\[<br>O_i = X_i a(\sum_{k=1}^{d_i} w_k x_k +b) = \begin{cases}<br>a(\sum_{k=1}^{d_i} w_k x_k +b) \text{ if } X_i = 1 \\<br>0 \text{ if } X_i = 0<br>\end{cases}<br>\]<br>where \( P(X_i = 0) = p \) （即 \(X_i \thicksim Bernoulli(1-p) \)，\( X_i \) 服从成功概率为 \( (1-p) \) 的伯努利分布。）</p>
 <p>Since during train phase a neuron is kept on with probability \( q \), during the testing phase we have to emulate the behavior of the ensemble of networks used in the training phase.</p>
 <p>To do this, the authors suggest <strong> scaling the activation function by a factor of \( q \) </strong> during the test phase in order to use the expected output produced in the training phase as the single output required in the test phase. Thus:</p>
 <p>Train phase:<br>\[<br>O_i = X_i a(\sum_{k=1}^{d_i} w_k x_k + b)<br>\]<br>Test phase:<br>\[<br>O_i= q a(\sum_{k=1}^{d_i} w_k x_k + b)<br>\]</p>
@@ -200,9 +233,9 @@ Overfitting is a problem in Deep Neural Networks (DNN): the model learns to clas
 <p><strong>Inverted Dropout is how Dropout is implemented in practice in the various deep learning frameworks</strong> because it helps to define the model once and just change a parameter (the keep/drop probability) to run train and test on the same model.</p>
 <p>Direct Dropout, instead, force you to modify the network during the test phase because if you don’t multiply by \( q \) the output the neuron will produce values that are higher respect to the one expected by the successive neurons (thus the following neurons can saturate or explode): that’s why Inverted Dropout is the more common implementation.</p>
 <h3 id="Dropout-of-a-set-of-neurons"><a href="#Dropout-of-a-set-of-neurons" class="headerlink" title="Dropout of a set of neurons"></a>Dropout of a set of neurons</h3><p><strong> 设 drop rate 为 \( p \)。</strong><br>It can be easily noticed that a layer \( h \) with \( n \)  neurons, in a single train step, can be seen as an ensemble of \( n \) Bernoulli experiments, each one with a probability of success equals to \( 1 - p \). (可以看成是 \( n \) 次成功概率为 \( 1 - p \) 伯努利试验)。<br>Thus, the output of the layer h have a number of dropped neurons equals to (被关闭的神经元的数目为):<br>\[<br>Y = \sum_{k=1}^{d_h} 1 - X_i<br>\]</p>
-<p>Since every neuron is now modeled as a Bernoulli random variable and all these random variables are independent and identically distributed, the total number of dropped neuron is a random variable too, called Binomial(二项分布):<br>\[<br>Y \thicksim Bi(d_h, p)<br>\]<br>Where the probability of getting exactly k shutdown neurons in n is given by the probability mass distribution:<br>\[<br>f(k;n, p) = \left( \begin{matrix} k \\\ n \end{matrix} \right) p^k (1-p)^{(n-k)}<br>\]</p>
-<p>We can now use this distribution to analyze the probability of dropping a specified number of neurons.<br>When using Dropout, we define a fixed Dropout probability \( p \) for a chosen layer and we expect that a proportional number of neurons are dropped from it.<br>For example, if the layer we apply Dropout to has \( n=1024 \) neurons and \( p=0.5 \), we expect that 512 get dropped. Let’s verify this statement:<br>\[<br>Y = \sum_{i=1}^{1024} X_i \\\\<br>Y \thicksim Bi(1024, 0.5) \\\\<br>P(Y=512) = \left( \begin{matrix} 512 \\\ 1024 \end{matrix} \right) 0.5^{512} \times (1−0.5)^{(1024−512)} \approx 0.025<br>\]<br>Thus, the probability of dropping out exactly \( np=512 \) neurons is of only 0.025!</p>
-<p>A python 3 script can help us to visualize how neurons are dropped for different values of p and a fixed value of n. The code is commented.<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</div><div class="line"><span class="keyword">from</span> scipy.stats <span class="keyword">import</span> binom</div><div class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</div><div class="line"></div><div class="line"><span class="comment"># number of neurons</span></div><div class="line">n = <span class="number">1024</span></div><div class="line"><span class="comment"># number of tests (input examples)</span></div><div class="line">size = <span class="number">500</span></div><div class="line"><span class="comment"># histogram bin width, for data visualization</span></div><div class="line">binwidth = <span class="number">5</span></div><div class="line"></div><div class="line"><span class="keyword">for</span> p <span class="keyword">in</span> range(<span class="number">1</span>, <span class="number">10</span>):</div><div class="line">    <span class="comment"># per layer probability</span></div><div class="line">    prob = p / <span class="number">10</span></div><div class="line">    <span class="comment"># generate size values from a bi(n, prob)</span></div><div class="line">    rnd_values = binom.rvs(n, prob, size=size)</div><div class="line">    <span class="comment"># draw histogram of rnd values</span></div><div class="line">    plt.hist(</div><div class="line">        rnd_values,</div><div class="line">        bins=[x <span class="keyword">for</span> x <span class="keyword">in</span> range(<span class="number">0</span>, n, binwidth)],</div><div class="line">        <span class="comment"># normalize = extract the probabilities</span></div><div class="line">        normed=<span class="number">1</span>,</div><div class="line">        <span class="comment"># pick a random color</span></div><div class="line">        color=np.random.rand(<span class="number">3</span>, <span class="number">1</span>),</div><div class="line">        <span class="comment"># label the histogram with its probability</span></div><div class="line">        label=str(prob))</div><div class="line"></div><div class="line">plt.legend(loc=<span class="string">'upper right'</span>)</div><div class="line">plt.show()</div></pre></td></tr></table></figure></p>
+<p>Since every neuron is now modeled as a Bernoulli random variable and all these random variables are independent and identically distributed, the total number of dropped neuron is a random variable too, called Binomial(二项分布):<br>\[<br>Y \thicksim Bi(d_h, p)<br>\]<br>Where the probability of getting exactly k shutdown neurons in n is given by the probability mass distribution:<br>\[<br>f(k;n, p) = \left( \begin{matrix} k \\ n \end{matrix} \right) p^k (1-p)^{(n-k)}<br>\]</p>
+<p>We can now use this distribution to analyze the probability of dropping a specified number of neurons.<br>When using Dropout, we define a fixed Dropout probability \( p \) for a chosen layer and we expect that a proportional number of neurons are dropped from it.<br>For example, if the layer we apply Dropout to has \( n=1024 \) neurons and \( p=0.5 \), we expect that 512 get dropped. Let’s verify this statement:<br>\[<br>Y = \sum_{i=1}^{1024} X_i \\<br>Y \thicksim Bi(1024, 0.5) \\<br>P(Y=512) = \left( \begin{matrix} 512 \\ 1024 \end{matrix} \right) 0.5^{512} \times (1−0.5)^{(1024−512)} \approx 0.025<br>\]<br>Thus, the probability of dropping out exactly \( np=512 \) neurons is of only 0.025!</p>
+<p>A python 3 script can help us to visualize how neurons are dropped for different values of p and a fixed value of n. The code is commented.<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> scipy.stats <span class="keyword">import</span> binom</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="comment"># number of neurons</span></span><br><span class="line">n = <span class="number">1024</span></span><br><span class="line"><span class="comment"># number of tests (input examples)</span></span><br><span class="line">size = <span class="number">500</span></span><br><span class="line"><span class="comment"># histogram bin width, for data visualization</span></span><br><span class="line">binwidth = <span class="number">5</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> p <span class="keyword">in</span> range(<span class="number">1</span>, <span class="number">10</span>):</span><br><span class="line">    <span class="comment"># per layer probability</span></span><br><span class="line">    prob = p / <span class="number">10</span></span><br><span class="line">    <span class="comment"># generate size values from a bi(n, prob)</span></span><br><span class="line">    rnd_values = binom.rvs(n, prob, size=size)</span><br><span class="line">    <span class="comment"># draw histogram of rnd values</span></span><br><span class="line">    plt.hist(</span><br><span class="line">        rnd_values,</span><br><span class="line">        bins=[x <span class="keyword">for</span> x <span class="keyword">in</span> range(<span class="number">0</span>, n, binwidth)],</span><br><span class="line">        <span class="comment"># normalize = extract the probabilities</span></span><br><span class="line">        normed=<span class="number">1</span>,</span><br><span class="line">        <span class="comment"># pick a random color</span></span><br><span class="line">        color=np.random.rand(<span class="number">3</span>, <span class="number">1</span>),</span><br><span class="line">        <span class="comment"># label the histogram with its probability</span></span><br><span class="line">        label=str(prob))</span><br><span class="line"></span><br><span class="line">plt.legend(loc=<span class="string">'upper right'</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure></p>
 <p>The binomial distribution is very peaked around \( np \). As we can see from the image above no matter what the p value is, the number of neurons dropped on average is proportional to \( np \), in fact:<br>\[<br>E[Bi(n,p)]=np<br>\]<br><img src="/2018/08/05/Amazing-dropout/distributions.png" alt="distributions"><br>Moreover, we can notice that the distribution of values is almost symmetric around \( p=0.5 \) and the probability of dropping \( np \) neurons increase as the distance from \( p=0.5 \) increase.</p>
 <p>The scaling factor has been added by the authors to compensate(补偿) the activation values, because they expect that during the training phase only a percentage of \( 1−p \) neurons have been kept. During the testing phase, instead, the 100% of neurons are kept on, thus the value should be scaled down accordingly.</p>
 <h3 id="Dropout-amp-other-regularizers"><a href="#Dropout-amp-other-regularizers" class="headerlink" title="Dropout &amp; other regularizers"></a>Dropout &amp; other regularizers</h3><p>Dropout is often used with <strong>L2 normalization</strong> and other parameter constraint techniques (such as Max Norm), this is not a case. Normalizations help to keep model parameters value low, in this way a parameter can’t grow too much.（将权重参数保持在较小的数值。）</p>
@@ -224,127 +257,183 @@ Overfitting is a problem in Deep Neural Networks (DNN): the model learns to clas
     </div>
 
     
-
     
-        <div class="post-tags">
-            <i class="fa fa-tags" aria-hidden="true"></i>
-            <a href="/tags/DL/">#DL</a>
-        </div>
     
 
-    <!-- Comments -->
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/DL/" rel="tag"># DL</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/08/03/TensorRT-加速-Keras-模型在-Jetson-上的推理/" rel="prev" title="TensorRT 加速 Keras 模型在 Jetson 上的推理">
+      <i class="fa fa-chevron-left"></i> TensorRT 加速 Keras 模型在 Jetson 上的推理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/08/08/OpenCV-Python-C-与Scikit-image在BGR-RGB转灰度图上的不同/" rel="next" title="OpenCV(Python & C++)与Scikit-image在BGR/RGB转灰度图上的不同">
+      OpenCV(Python & C++)与Scikit-image在BGR/RGB转灰度图上的不同 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
     
+  </article>
+  
+  
+  
 
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#How-Dropout-works"><span class="nav-number">1.</span> <span class="nav-text">How Dropout works</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#伯努利随机变量"><span class="nav-number">1.0.1.</span> <span class="nav-text">伯努利随机变量</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Inverted-Dropout"><span class="nav-number">2.</span> <span class="nav-text">Inverted Dropout</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dropout-of-a-set-of-neurons"><span class="nav-number">3.</span> <span class="nav-text">Dropout of a set of neurons</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dropout-amp-other-regularizers"><span class="nav-number">4.</span> <span class="nav-text">Dropout &amp; other regularizers</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Inverted-Dropout-and-other-regularizers"><span class="nav-number">4.0.1.</span> <span class="nav-text">Inverted Dropout and other regularizers</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Summary"><span class="nav-number">5.</span> <span class="nav-text">Summary</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
 </div>
-        </section>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
 
     </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
 
-
-</div>
-
-<!-- Footer -->
-<div class="push"></div>
-
-<footer class="footer-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
-                <h2>About</h2>
-                <p>
-                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
-                </p>
-            </div>
-            
-    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
-        <h2>Recent Posts</h2>
-        <ul>
-            
-            <li>
-                <a class="footer-post" href="/2019/07/12/Unnamed-namespace/">Unnamed namespace</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/05/08/Static-variable-in-inlined-function/">Static variable in inline</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/04/23/Iterator-invalidation-rules/">Iterator invalidation rul</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/18/Emplace-back/">Emplace back</a>
-            </li>
-            
-        </ul>
-    </div>
+        
 
 
 
-            
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <ul class="list-inline footer-social-icons">
-                    
-                    <li class="list-inline-item">
-                        <a href="https://github.com/RobertLexis">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-github"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="mailto:robert_lexis@163.com">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-envelope-o"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="footer-copyright">
-                    @Untitled. All right reserved | Robert Lexis Loves Wenny
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<!-- After footer scripts -->
-
-<!-- jQuery -->
-<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-
-<!-- Tween Max -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
-
-<!-- Gallery -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
-
-<!-- Custom JavaScript -->
-<script src="/js/main.js"></script>
-
-<!-- Disqus Comments -->
 
 
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
 
 </body>
-
 </html>

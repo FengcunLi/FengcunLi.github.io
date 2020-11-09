@@ -1,177 +1,203 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<!-- Head tag -->
+<html lang="zh-CN">
 <head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/main.css">
 
-    <!--Description-->
-    
-        <meta name="description" content="强化学习 3 估值网络及其 TensorFlow 实现估值网络概念：
-Q-learning 中的期望价值指从当前的这一步到后续的所有步骤，总共可以期望获得的最大价值。也就说是对未来进行了断言，这一步采取这样的动作，不管未来采取什么样的动作，可以期望获得的价值不会超过这个Q值。Q值的意义就是最大价值，当前最大 = 当前 + gamma * 以后续一步为当前的最大。
-Q-learning 的目的就是求解 \(Q(s_t, a_t)\)，可以将其看作一个表格，每一行是不同的状态，每一列是不同的动作，学习的过程就是把这个表用合适的值填充起来。
-Q-learning 的训练思路也很简单，以（状态，动作，奖励，下一状态）四元组（\((s_t, a_t, r_{t+1}, s_{t+1})\)）作为样本进行训练。
-学习目标 \(r_{t+1} + \gamma \cdot \max\limits_{a} Q(s_{t+1}, a)\)，即相当于 label。
-学习过程 \(Q_{new}(s_t, a_t) \gets (1-\alpha) \cdot Q_{old}(s_t, a_t) + \alpha \cdot (r_{t+1} + \gamma \cdot \max\limits_{a} Q_{old}(s_{t+1}, a))\)
-Q-learning 的模型是神经网络时，即将\(Q(s_t, a_t)\)表达为神经网络，就是估值网络。
-DQN 是 DeepMind 在 Human-level control through deep reinforcement learning 中提出的。">
-    
 
-    <!--Author-->
-    
-        <meta name="author" content="Robert Lexis">
-    
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-    <!--Open Graph Title-->
-    
-        <meta property="og:title" content="强化学习 3 估值网络及其 TensorFlow 实现"/>
-    
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
-    <!--Open Graph Description-->
-    
+  <meta name="description" content="强化学习 3 估值网络及其 TensorFlow 实现估值网络概念： Q-learning 中的期望价值指从当前的这一步到后续的所有步骤，总共可以期望获得的最大价值。也就说是对未来进行了断言，这一步采取这样的动作，不管未来采取什么样的动作，可以期望获得的价值不会超过这个Q值。Q值的意义就是最大价值，当前最大 = 当前 + gamma * 以后续一步为当前的最大。 Q-learning 的目的就是求">
+<meta property="og:type" content="article">
+<meta property="og:title" content="强化学习 3 估值网络及其 TensorFlow 实现">
+<meta property="og:url" content="http://yoursite.com/2017/12/09/强化学习-3-估值网络及其-TensorFlow-实现/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="强化学习 3 估值网络及其 TensorFlow 实现估值网络概念： Q-learning 中的期望价值指从当前的这一步到后续的所有步骤，总共可以期望获得的最大价值。也就说是对未来进行了断言，这一步采取这样的动作，不管未来采取什么样的动作，可以期望获得的价值不会超过这个Q值。Q值的意义就是最大价值，当前最大 = 当前 + gamma * 以后续一步为当前的最大。 Q-learning 的目的就是求">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/dueling.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/gw.png">
+<meta property="og:updated_time" content="2018-08-26T11:16:28.007Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="强化学习 3 估值网络及其 TensorFlow 实现">
+<meta name="twitter:description" content="强化学习 3 估值网络及其 TensorFlow 实现估值网络概念： Q-learning 中的期望价值指从当前的这一步到后续的所有步骤，总共可以期望获得的最大价值。也就说是对未来进行了断言，这一步采取这样的动作，不管未来采取什么样的动作，可以期望获得的价值不会超过这个Q值。Q值的意义就是最大价值，当前最大 = 当前 + gamma * 以后续一步为当前的最大。 Q-learning 的目的就是求">
+<meta name="twitter:image" content="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/dueling.png">
 
-    <!--Open Graph Site Name-->
-    <meta property="og:site_name" content="This is Robert Lexis."/>
+<link rel="canonical" href="http://yoursite.com/2017/12/09/强化学习-3-估值网络及其-TensorFlow-实现/">
 
-    <!--Type page-->
-    
-        <meta property="og:type" content="article" />
-    
 
-    <!--Page Cover-->
-    
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
 
-    <meta name="twitter:card" content="summary" />
-    
+  <title>强化学习 3 估值网络及其 TensorFlow 实现 | The next stop - Antarctica</title>
+  
 
-    <!-- Title -->
-    
-    <title>强化学习 3 估值网络及其 TensorFlow 实现 - This is Robert Lexis.</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 
-    <!-- Custom Fonts -->
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 
-    <!-- Gallery -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
 
-    <!-- Google Analytics -->
-    
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
 
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
 
 </head>
 
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
 
-<body>
-
-<div class="bg-gradient"></div>
-<div class="bg-pattern"></div>
-
-<!-- Menu -->
-<!--Menu Links and Overlay-->
-<div class="menu-bg">
-    <div class="menu-container">
-        <ul>
-            
-            <li class="menu-item">
-                <a href="/">
-                    Home
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/archives">
-                    Archives
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/about">
-                    About
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/tags">
-                    Tags
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/categories">
-                    Categories
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/contact">
-                    Contact
-                </a>
-            </li>
-            
-        </ul>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
 </div>
 
-<!--Hamburger Icon-->
-<nav>
-    <a href="#menu"></a>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
 </nav>
 
-<div class="container">
 
-    <!-- Main Content -->
-    <div class="row">
-    <div class="col-sm-12">
 
-        <!--Title and Logo-->
-        <header>
-    <div class="logo">
-        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
-        
-    </div>
-</header>
 
-        <section class="main">
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
             
-<div class="post">
 
-    <div class="post-header">
-        <h1 class="title">
-            <a href="/2017/12/09/强化学习-3-估值网络及其-TensorFlow-实现/">
-                强化学习 3 估值网络及其 TensorFlow 实现
-            </a>
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/09/强化学习-3-估值网络及其-TensorFlow-实现/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          强化学习 3 估值网络及其 TensorFlow 实现
         </h1>
-        <div class="post-info">
-            
-                <span class="date">2017-12-09</span>
-            
-            
-            
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-12-09 16:15:44" itemprop="dateCreated datePublished" datetime="2017-12-09T16:15:44+08:00">2017-12-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-08-26 19:16:28" itemprop="dateModified" datetime="2018-08-26T19:16:28+08:00">2018-08-26</time>
+              </span>
+
+          
+
         </div>
-    </div>
+      </header>
 
-    <div class="content">
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
-        <!-- Gallery -->
-        
-
-        <!-- Post Content -->
+      
         <h1 id="强化学习-3-估值网络及其-TensorFlow-实现"><a href="#强化学习-3-估值网络及其-TensorFlow-实现" class="headerlink" title="强化学习 3 估值网络及其 TensorFlow 实现"></a>强化学习 3 估值网络及其 TensorFlow 实现</h1><h2 id="估值网络"><a href="#估值网络" class="headerlink" title="估值网络"></a>估值网络</h2><h4 id="概念："><a href="#概念：" class="headerlink" title="概念："></a>概念：</h4><ol>
 <li>Q-learning 中的期望价值指从当前的这一步到后续的所有步骤，总共可以期望获得的最大价值。也就说是对未来进行了断言，这一步采取这样的动作，不管未来采取什么样的动作，可以期望获得的价值不会超过这个Q值。Q值的意义就是最大价值，当前最大 = 当前 + gamma * 以后续一步为当前的最大。</li>
 <li>Q-learning 的目的就是求解 \(Q(s_t, a_t)\)，可以将其看作一个表格，每一行是不同的状态，每一列是不同的动作，学习的过程就是把这个表用合适的值填充起来。</li>
@@ -188,129 +214,187 @@ DQN 是 DeepMind 在 Human-level control through deep reinforcement learning 中
 <li>Double DQN 是在拆分出target DQN 的基础上更近一步，DeepMind 的研究者在 Deep Reinforcement Learning with Double Q-learning 中指出，传统的DQN通常会高估 Action 的Q值，如果这中高估是不均匀的，可能会导致本来次优的 Action 总是被高估而超过最后的 Action，这样就可能永远发现不了最优的 Action。之前，target DQN 完全负责生成目标Q值，先产生\(Q(s_{t+1}, a)\),再通过\(\max\limits_{a}\)选择那个最大的Q值。Double DQN 改变了第二步，不是直接选择 target DQN 输出中的最大Q值，而是在主DQN的输出中找到最大Q值对应的 Action，再找到 target DQN 的输出中这个 Action 对应的Q值，这个Q值作为目标Q值（即label）。使用的目标Q值不一定总是 target DQN 输出中的最大Q值，这样就避免了总是从 target DQN 的输出中选择被高估的同一个 Action 对应的Q值作为 label。此时学习目标就可以写成 $$Target=r_{t+1} + \gamma \cdot Q_{target}(s_{t+1}, argmax_{a}(Q_{main}(s_{t+1}, a)))$$</li>
 <li>Dueling DQN 是 DQN 一大改进，在 Dueling Network Architectures for Deep Reinforcement Learning 中提出，将Q值函数\(Q(s_{t}, a)\)拆分成两部分，一部分是静态的环境本身具有的价值\(V(s_{t})\)，称为 Value；另外一部分是通过执行 Action 额外带来的价值\(A(a_{t})\)，称为 Advantage，即 \(Q(s_{t}, a_{t})=V(s_{t})+A(a_{t})\)。Dueling 的目的就是让网络分别计算环境本身的 Value 和 Action 带来的 Advantage，Advantage 或好或坏，设计成零均值。<br><img src="http://oytnj8g2y.bkt.clouddn.com/image/png/2017/12/dueling.png" alt="传统DQN和Dueling DQN 的对比"><br>Dueling DQN 的输出是一个标量和向量，分别代表 Value 和每个 Action 的 Advantage。</li>
 </ol>
-<h4 id="仿真环境-GridWorld"><a href="#仿真环境-GridWorld" class="headerlink" title="仿真环境 GridWorld"></a>仿真环境 GridWorld</h4><p>grid_world.py<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</div><div class="line"><span class="keyword">import</span> scipy.misc</div><div class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot <span class="keyword">as</span> plt</div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Block</span><span class="params">(object)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, coordinates, size, intensity, channel, reward, name)</span>:</span></div><div class="line">        self.x, self.y = coordinates[<span class="number">0</span>], coordinates[<span class="number">1</span>]</div><div class="line">        self.size = size</div><div class="line">        self.intensity = intensity</div><div class="line">        self.channel = channel</div><div class="line">        self.reward = reward</div><div class="line">        self.name = name</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">GridWorld</span><span class="params">()</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, size)</span>:</span></div><div class="line">        self.x_size = size</div><div class="line">        self.y_size = size</div><div class="line">        self.action_num = <span class="number">4</span></div><div class="line">        self.block_num = <span class="number">7</span></div><div class="line">        self.blocks = <span class="keyword">None</span></div><div class="line">        self.available_grids = <span class="keyword">None</span></div><div class="line">        self.state = <span class="keyword">None</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_positions</span><span class="params">(self, num)</span>:</span></div><div class="line">        indices = np.random.choice(np.arange(len(self.available_grids)), size=num, replace=<span class="keyword">False</span>)</div><div class="line">        grids = [self.available_grids[index] <span class="keyword">for</span> index <span class="keyword">in</span> indices]</div><div class="line">        <span class="keyword">for</span> grid <span class="keyword">in</span> grids:</div><div class="line">            self.available_grids.remove(grid)</div><div class="line">        <span class="keyword">return</span> grids</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">reset</span><span class="params">(self)</span>:</span></div><div class="line">        self.available_grids = [(x, y) <span class="keyword">for</span> x <span class="keyword">in</span> range(self.x_size) <span class="keyword">for</span> y <span class="keyword">in</span> range(self.y_size)]</div><div class="line">        postions = self.get_positions(self.block_num)</div><div class="line">        size = [<span class="number">1</span>] * self.block_num</div><div class="line">        intensity = [<span class="number">1</span>] * self.block_num</div><div class="line">        channel = [<span class="number">2</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>]</div><div class="line">        reward = [<span class="keyword">None</span>, <span class="number">1</span>, <span class="number">-1</span>, <span class="number">1</span>, <span class="number">-1</span>, <span class="number">1</span>, <span class="number">1</span>]</div><div class="line">        name = [<span class="string">"hero"</span>, <span class="string">"goal"</span>, <span class="string">"fire"</span>, <span class="string">"goal"</span>, <span class="string">"fire"</span>, <span class="string">"goal"</span>, <span class="string">"goal"</span>]</div><div class="line">        self.blocks = [Block(*args) <span class="keyword">for</span> args <span class="keyword">in</span> zip(postions, size, intensity, channel, reward, name)]</div><div class="line">        self.state = self.render()</div><div class="line">        <span class="keyword">return</span> self.state</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">move</span><span class="params">(self, direction)</span>:</span></div><div class="line">        hero = self.blocks[<span class="number">0</span>]</div><div class="line">        <span class="keyword">if</span> direction == <span class="number">0</span> <span class="keyword">and</span> hero.y &gt;=<span class="number">1</span>:</div><div class="line">            hero.y -= <span class="number">1</span></div><div class="line">        <span class="keyword">elif</span> direction == <span class="number">1</span> <span class="keyword">and</span> hero.y &lt;= self.y_size - <span class="number">2</span>:</div><div class="line">            hero.y += <span class="number">1</span></div><div class="line">        <span class="keyword">elif</span> direction == <span class="number">2</span> <span class="keyword">and</span> hero.x &gt;= <span class="number">1</span>:</div><div class="line">            hero.x -= <span class="number">1</span></div><div class="line">        <span class="keyword">elif</span> direction == <span class="number">3</span> <span class="keyword">and</span> hero.x &lt;= self.x_size - <span class="number">2</span>:</div><div class="line">            hero.x += <span class="number">1</span></div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            <span class="keyword">pass</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">check_hit</span><span class="params">(self)</span>:</span></div><div class="line">        hero = self.blocks.pop(<span class="number">0</span>)</div><div class="line">        <span class="keyword">for</span> block <span class="keyword">in</span> self.blocks:</div><div class="line">            <span class="keyword">if</span> (hero.x == block.x) <span class="keyword">and</span> (hero.y == block.y):</div><div class="line">                self.available_grids.append([block.x, block.y])</div><div class="line">                self.blocks.remove(block)</div><div class="line">                <span class="keyword">if</span> block.name == <span class="string">"goal"</span>:</div><div class="line">                    self.blocks.append(Block(*self.get_positions(<span class="number">1</span>), <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="string">"goal"</span>))</div><div class="line">                <span class="keyword">elif</span> block.name == <span class="string">"fire"</span>:</div><div class="line">                    self.blocks.append(Block(*self.get_positions(<span class="number">1</span>), <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">-1</span>, <span class="string">"fire"</span>))</div><div class="line">                <span class="keyword">else</span>:</div><div class="line">                    <span class="keyword">raise</span></div><div class="line">                self.blocks.insert(<span class="number">0</span>, hero)</div><div class="line">                <span class="keyword">return</span> block.reward, <span class="keyword">False</span></div><div class="line">        </div><div class="line">        self.blocks.insert(<span class="number">0</span>, hero)</div><div class="line">        <span class="keyword">return</span> <span class="number">0.0</span>, <span class="keyword">False</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">render</span><span class="params">(self)</span>:</span></div><div class="line">        canvas = np.ones([self.y_size+<span class="number">2</span>, self.x_size+<span class="number">2</span>, <span class="number">3</span>])</div><div class="line">        canvas[<span class="number">1</span>:<span class="number">-1</span>,<span class="number">1</span>:<span class="number">-1</span>,:] = <span class="number">0</span></div><div class="line">        <span class="keyword">for</span> block <span class="keyword">in</span> self.blocks:</div><div class="line">            canvas[block.y+<span class="number">1</span>:block.y+block.size+<span class="number">1</span>,block.x+<span class="number">1</span>:block.x+block.size+<span class="number">1</span>,block.channel] = block.intensity</div><div class="line">        r = scipy.misc.imresize(canvas[:,:,<span class="number">0</span>], [<span class="number">84</span>,<span class="number">84</span>,<span class="number">1</span>], interp=<span class="string">'nearest'</span>)</div><div class="line">        g = scipy.misc.imresize(canvas[:,:,<span class="number">1</span>], [<span class="number">84</span>,<span class="number">84</span>,<span class="number">1</span>], interp=<span class="string">'nearest'</span>)</div><div class="line">        b = scipy.misc.imresize(canvas[:,:,<span class="number">2</span>], [<span class="number">84</span>,<span class="number">84</span>,<span class="number">1</span>], interp=<span class="string">'nearest'</span>)</div><div class="line">        <span class="keyword">return</span> np.stack([r, g, b],axis=<span class="number">2</span>)</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">step</span><span class="params">(self, action)</span>:</span></div><div class="line">        self.move(action)</div><div class="line">        reward, done = self.check_hit()</div><div class="line">        self.state = self.render()</div><div class="line">        <span class="keyword">return</span> self.state, reward, done</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">plot</span><span class="params">(self)</span>:</span></div><div class="line">        plt.imshow(self.state, interpolation=<span class="string">"nearest"</span>)</div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</div><div class="line">    env = GridWorld(size=<span class="number">5</span>)</div><div class="line">    _ = env.reset()</div><div class="line">    env.plot()</div></pre></td></tr></table></figure></p>
-<p>上面的模块定义了 GridWorld，效果图如下：<br><img src="http://oytnj8g2y.bkt.clouddn.com/gw.png" alt="gw"><br>其中蓝色是英雄，绿色是目标（奖励为1），红色是火焰（惩罚为1），英雄在这个 GridWorld 中游走获得尽可能多分数。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#coding: utf-8</span></div><div class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</div><div class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf </div><div class="line"><span class="keyword">import</span> os</div><div class="line"><span class="keyword">from</span> grid_world <span class="keyword">import</span> GridWorld</div><div class="line">os.environ[<span class="string">'CUDA_VISIBLE_DEVICES'</span>] = <span class="string">"1"</span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">DQN</span><span class="params">()</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, env, name)</span>:</span></div><div class="line">        self.name = name</div><div class="line">        self.env = env</div><div class="line">        <span class="comment">################## 网络结构 ##############</span></div><div class="line">        self.scalar_input =  tf.placeholder(shape=[<span class="keyword">None</span>,<span class="number">21168</span>],dtype=tf.float32)</div><div class="line">        self.image = tf.reshape(self.scalar_input,shape=[<span class="number">-1</span>,<span class="number">84</span>,<span class="number">84</span>,<span class="number">3</span>])</div><div class="line">        self.conv1 = tf.contrib.layers.convolution2d(inputs=self.image, num_outputs=<span class="number">32</span>, </div><div class="line">            kernel_size=[<span class="number">8</span>,<span class="number">8</span>], stride=[<span class="number">4</span>,<span class="number">4</span>], padding=<span class="string">'VALID'</span>, biases_initializer=<span class="keyword">None</span>)</div><div class="line">        self.conv2 = tf.contrib.layers.convolution2d(inputs=self.conv1, num_outputs=<span class="number">64</span>, </div><div class="line">            kernel_size=[<span class="number">4</span>,<span class="number">4</span>], stride=[<span class="number">2</span>,<span class="number">2</span>],padding=<span class="string">'VALID'</span>, biases_initializer=<span class="keyword">None</span>)</div><div class="line">        self.conv3 = tf.contrib.layers.convolution2d(inputs=self.conv2, num_outputs=<span class="number">64</span>, </div><div class="line">            kernel_size=[<span class="number">3</span>,<span class="number">3</span>], stride=[<span class="number">1</span>,<span class="number">1</span>], padding=<span class="string">'VALID'</span>, biases_initializer=<span class="keyword">None</span>)</div><div class="line">        self.conv4 = tf.contrib.layers.convolution2d(inputs=self.conv3, num_outputs=<span class="number">512</span>, </div><div class="line">            kernel_size=[<span class="number">7</span>,<span class="number">7</span>], stride=[<span class="number">1</span>,<span class="number">1</span>], padding=<span class="string">'VALID'</span>, biases_initializer=<span class="keyword">None</span>)</div><div class="line"></div><div class="line">        self.conv4_1, self.conv4_2 = tf.split(self.conv4, <span class="number">2</span>, <span class="number">3</span>)</div><div class="line">        self.flat_1 = tf.contrib.layers.flatten(self.conv4_1)</div><div class="line">        self.flat_2 = tf.contrib.layers.flatten(self.conv4_2)</div><div class="line">        self.advantage_weight = tf.Variable(tf.random_normal([<span class="number">256</span>, self.env.action_num]), </div><div class="line">            name=<span class="string">"advantage_weight"</span>)</div><div class="line">        self.value_weight = tf.Variable(tf.random_normal([<span class="number">256</span>, <span class="number">1</span>]), name=<span class="string">"value_weight"</span>)</div><div class="line">        self.advantage = tf.matmul(self.flat_1, self.advantage_weight)</div><div class="line">        self.value = tf.matmul(self.flat_2, self.value_weight)</div><div class="line">        </div><div class="line">        self.q_value = self.value + tf.subtract(self.advantage, </div><div class="line">            tf.reduce_mean(self.advantage, reduction_indices=<span class="number">1</span>, keep_dims=<span class="keyword">True</span>))</div><div class="line">        self.action = tf.argmax(self.q_value, <span class="number">1</span>)</div><div class="line"></div><div class="line">        <span class="comment"># self.actions 是一维的，类似于[1,1,2,3,1,0.....]</span></div><div class="line">        self.actions = tf.placeholder(shape=[<span class="keyword">None</span>], dtype=tf.int32)</div><div class="line">        <span class="comment"># self.target_q 是一维的，是self.actions 中每个动作对应的q值</span></div><div class="line">        self.target_q = tf.placeholder(shape=[<span class="keyword">None</span>], dtype=tf.float32)</div><div class="line">        <span class="comment"># self.q_value_of_action 是一维的，是self.actions 中每个动作对应的预测q值</span></div><div class="line">        self.actions_onehot = tf.one_hot(self.actions, self.env.action_num, dtype=tf.float32)</div><div class="line">        self.q_value_on_action = tf.reduce_sum(tf.multiply(self.q_value, self.actions_onehot), </div><div class="line">            reduction_indices=<span class="number">1</span>)</div><div class="line">        </div><div class="line">        self.loss = tf.reduce_mean(tf.square(self.target_q - self.q_value_on_action))</div><div class="line">        self.trainer = tf.train.AdamOptimizer(learning_rate=<span class="number">0.00001</span>)</div><div class="line">        self.update_model = self.trainer.minimize(self.loss)</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExperienceBuffer</span><span class="params">()</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, buffer_size=<span class="number">50000</span>)</span>:</span></div><div class="line">        self.buffer = []</div><div class="line">        self.buffer_size = buffer_size</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">add</span><span class="params">(self, experience)</span>:</span></div><div class="line">        num_to_remove = len(self.buffer) + len(experience) - self.buffer_size</div><div class="line">        <span class="keyword">if</span> num_to_remove &gt; <span class="number">0</span>:</div><div class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> range(num_to_remove):</div><div class="line">                self.buffer.pop(<span class="number">0</span>)</div><div class="line">        self.buffer.extend(experience)</div><div class="line">            </div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">sample</span><span class="params">(self, size)</span>:</span></div><div class="line">        indices = np.random.choice(np.arange(len(self.buffer)), size=size)</div><div class="line">        <span class="keyword">return</span> [self.buffer[index] <span class="keyword">for</span> index <span class="keyword">in</span> indices]</div><div class="line"></div><div class="line">     </div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_update_target_ops</span><span class="params">(variables, tau)</span>:</span></div><div class="line">    main_DQN_vars = variables[<span class="number">0</span>:len(variables)//<span class="number">2</span>]</div><div class="line">    target_DQN_vars = variables[len(variables)//<span class="number">2</span>:]</div><div class="line">    ops = []</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(target_DQN_vars)):</div><div class="line">        ops.append(target_DQN_vars[i].assign(</div><div class="line">            main_DQN_vars[i].value() * tau + (<span class="number">1</span> - tau) * target_DQN_vars[i].value()</div><div class="line">            ))</div><div class="line">    <span class="keyword">return</span> ops</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">update_target</span><span class="params">(ops, sess)</span>:</span></div><div class="line">    <span class="keyword">for</span> op <span class="keyword">in</span> ops:</div><div class="line">        sess.run(op)</div><div class="line"></div><div class="line"><span class="comment">########################## 超参数 #####################</span></div><div class="line">batch_size = <span class="number">32</span></div><div class="line"></div><div class="line"><span class="comment">#How often to perform a training step.</span></div><div class="line">update_freq = <span class="number">4</span></div><div class="line">gamma = <span class="number">.99</span></div><div class="line">random_upper_bound = <span class="number">1</span></div><div class="line">random_lower_bound = <span class="number">0.1</span></div><div class="line">annealing_steps = <span class="number">10000</span></div><div class="line">random_threshold = random_upper_bound</div><div class="line">drop_step = (random_upper_bound - random_lower_bound) / annealing_steps</div><div class="line"></div><div class="line"><span class="comment">#How many episodes of game environment to train network with.</span></div><div class="line">num_episodes = <span class="number">10000</span></div><div class="line"><span class="comment">#How many steps of random actions before training begins.</span></div><div class="line">pre_train_steps = <span class="number">10000</span></div><div class="line"><span class="comment">#The max allowed length for one episode.</span></div><div class="line">max_episode_length = <span class="number">50</span></div><div class="line">load_model = <span class="keyword">False</span> </div><div class="line">path = <span class="string">"./dqn"</span></div><div class="line"><span class="comment">#Rate to update target network toward primary network</span></div><div class="line">tau = <span class="number">0.001</span></div><div class="line"></div><div class="line"><span class="comment">########################## 训练 #####################</span></div><div class="line">env = GridWorld(size=<span class="number">5</span>)</div><div class="line">tf.reset_default_graph()</div><div class="line">main_DQN = DQN(env, <span class="string">"main"</span>)</div><div class="line">target_DQN = DQN(env, <span class="string">"target"</span>)</div><div class="line"></div><div class="line">init_op = tf.global_variables_initializer()</div><div class="line">update_target_ops_1 = get_update_target_ops(tf.trainable_variables(), <span class="number">1</span>)</div><div class="line">update_target_ops_2 = get_update_target_ops(tf.trainable_variables(), tau)</div><div class="line"></div><div class="line">saver = tf.train.Saver()</div><div class="line"><span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(path):</div><div class="line">    os.makedirs(path)</div><div class="line"></div><div class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</div><div class="line">    <span class="keyword">if</span> load_model == <span class="keyword">True</span>:</div><div class="line">        print(<span class="string">'Loading Model...'</span>)</div><div class="line">        ckpt = tf.train.get_checkpoint_state(path)</div><div class="line">        saver.restore(sess,ckpt.model_checkpoint_path)</div><div class="line">    sess.run(init_op)</div><div class="line">    </div><div class="line">    <span class="comment">#Set the target network to be equal to the main network.</span></div><div class="line">    update_target(update_target_ops_2, sess)</div><div class="line">    global_experience_buffer = ExperienceBuffer()</div><div class="line">    </div><div class="line">    <span class="comment">#create list to contain total rewards per episode</span></div><div class="line">    total_reward_list = []</div><div class="line">    steps = <span class="number">0</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(num_episodes + <span class="number">1</span>):</div><div class="line">        episode_buffer = ExperienceBuffer()</div><div class="line">        observation = env.reset()</div><div class="line">        observation = np.reshape(observation, [<span class="number">21168</span>])</div><div class="line">        done = <span class="keyword">False</span></div><div class="line">        total_reward_in_episode = <span class="number">0</span></div><div class="line">        steps_in_episode = <span class="number">0</span></div><div class="line">        <span class="keyword">while</span> steps_in_episode &lt; max_episode_length:</div><div class="line">            <span class="comment"># 积累样本</span></div><div class="line">            steps_in_episode += <span class="number">1</span></div><div class="line">            steps += <span class="number">1</span></div><div class="line">            <span class="keyword">if</span> np.random.rand(<span class="number">1</span>) &lt; random_threshold <span class="keyword">or</span> steps &lt; pre_train_steps:</div><div class="line">                action = np.random.randint(<span class="number">0</span>, <span class="number">4</span>)</div><div class="line">            <span class="keyword">else</span>:</div><div class="line">                action = sess.run(main_DQN.action, feed_dict=&#123;main_DQN.scalar_input: [observation]&#125;)[<span class="number">0</span>]</div><div class="line">            new_observation, reward, done = env.step(action)</div><div class="line">            new_observation = np.reshape(new_observation, [<span class="number">21168</span>])</div><div class="line">            <span class="comment">#Save the experience to episode buffer</span></div><div class="line">            episode_buffer.add([[observation, action, reward, new_observation, done]])</div><div class="line">            </div><div class="line">            total_reward_in_episode += reward</div><div class="line">            observation = new_observation</div><div class="line">            <span class="comment"># 积累了 pre_train_steps/max_episode_length 次经历的pre_train_steps个样本之后，</span></div><div class="line">            <span class="comment"># 才会第一次开始衰减随机门限，进行第一次训练。</span></div><div class="line">            <span class="keyword">if</span> steps &gt;= pre_train_steps:</div><div class="line">                <span class="keyword">if</span> random_threshold &gt; random_lower_bound:</div><div class="line">                    random_threshold -= drop_step</div><div class="line">                <span class="keyword">if</span> steps % (update_freq) == <span class="number">0</span>:</div><div class="line">                    train_batch = global_experience_buffer.sample(batch_size)</div><div class="line">                    <span class="comment">#Below we perform the Double-DQN update to the target Q-values</span></div><div class="line">                    observations = np.vstack([record[<span class="number">0</span>] <span class="keyword">for</span> record <span class="keyword">in</span> train_batch])</div><div class="line">                    actions = np.array([record[<span class="number">1</span>] <span class="keyword">for</span> record <span class="keyword">in</span> train_batch])</div><div class="line">                    instant_rewards = np.array([record[<span class="number">2</span>] <span class="keyword">for</span> record <span class="keyword">in</span> train_batch])</div><div class="line">                    new_observations = np.vstack([record[<span class="number">3</span>] <span class="keyword">for</span> record <span class="keyword">in</span> train_batch])</div><div class="line">                    </div><div class="line">                    action = sess.run(main_DQN.action, feed_dict=&#123;main_DQN.scalar_input: new_observations&#125;)</div><div class="line">                    q_value, value, advantage = sess.run([target_DQN.q_value, target_DQN.value, target_DQN.advantage], </div><div class="line">                        feed_dict=&#123;target_DQN.scalar_input: new_observations&#125;)</div><div class="line">                    labels = instant_rewards + gamma * q_value[range(batch_size) ,action]</div><div class="line"></div><div class="line">                    <span class="comment"># Update the network with our target values.</span></div><div class="line">                    _ = sess.run(main_DQN.update_model, feed_dict=&#123;</div><div class="line">                        main_DQN.scalar_input: observations,</div><div class="line">                        main_DQN.target_q: labels,</div><div class="line">                        main_DQN.actions: actions&#125;)</div><div class="line"></div><div class="line">                    <span class="comment">#update the target network towards the main network.</span></div><div class="line">                    update_target(update_target_ops_2, sess)</div><div class="line">        </div><div class="line">        <span class="comment">#Get all experiences from this episode</span></div><div class="line">        global_experience_buffer.add(episode_buffer.buffer)</div><div class="line">        total_reward_list.append(total_reward_in_episode)</div><div class="line">        </div><div class="line">        <span class="keyword">if</span> i&gt;<span class="number">0</span> <span class="keyword">and</span> i % <span class="number">25</span> == <span class="number">0</span>:</div><div class="line">            print(<span class="string">'episode'</span>,i,<span class="string">', average reward of last 25 episode'</span>, np.mean(total_reward_list[<span class="number">-25</span>:]))</div><div class="line">        <span class="comment">#Periodically save the model.</span></div><div class="line">        <span class="keyword">if</span> i&gt;<span class="number">0</span> <span class="keyword">and</span> i % <span class="number">1000</span> == <span class="number">0</span>:</div><div class="line">            saver.save(sess,path+<span class="string">'/model-'</span>+str(i)+<span class="string">'.cptk'</span>)</div><div class="line">            print(<span class="string">"Saved Model"</span>)</div><div class="line">    saver.save(sess,path+<span class="string">'/model-'</span>+str(i)+<span class="string">'.cptk'</span>)</div></pre></td></tr></table></figure></p>
+<h4 id="仿真环境-GridWorld"><a href="#仿真环境-GridWorld" class="headerlink" title="仿真环境 GridWorld"></a>仿真环境 GridWorld</h4><p>grid_world.py<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> scipy.misc</span><br><span class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Block</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, coordinates, size, intensity, channel, reward, name)</span>:</span></span><br><span class="line">        self.x, self.y = coordinates[<span class="number">0</span>], coordinates[<span class="number">1</span>]</span><br><span class="line">        self.size = size</span><br><span class="line">        self.intensity = intensity</span><br><span class="line">        self.channel = channel</span><br><span class="line">        self.reward = reward</span><br><span class="line">        self.name = name</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">GridWorld</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, size)</span>:</span></span><br><span class="line">        self.x_size = size</span><br><span class="line">        self.y_size = size</span><br><span class="line">        self.action_num = <span class="number">4</span></span><br><span class="line">        self.block_num = <span class="number">7</span></span><br><span class="line">        self.blocks = <span class="keyword">None</span></span><br><span class="line">        self.available_grids = <span class="keyword">None</span></span><br><span class="line">        self.state = <span class="keyword">None</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_positions</span><span class="params">(self, num)</span>:</span></span><br><span class="line">        indices = np.random.choice(np.arange(len(self.available_grids)), size=num, replace=<span class="keyword">False</span>)</span><br><span class="line">        grids = [self.available_grids[index] <span class="keyword">for</span> index <span class="keyword">in</span> indices]</span><br><span class="line">        <span class="keyword">for</span> grid <span class="keyword">in</span> grids:</span><br><span class="line">            self.available_grids.remove(grid)</span><br><span class="line">        <span class="keyword">return</span> grids</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">reset</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.available_grids = [(x, y) <span class="keyword">for</span> x <span class="keyword">in</span> range(self.x_size) <span class="keyword">for</span> y <span class="keyword">in</span> range(self.y_size)]</span><br><span class="line">        postions = self.get_positions(self.block_num)</span><br><span class="line">        size = [<span class="number">1</span>] * self.block_num</span><br><span class="line">        intensity = [<span class="number">1</span>] * self.block_num</span><br><span class="line">        channel = [<span class="number">2</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>]</span><br><span class="line">        reward = [<span class="keyword">None</span>, <span class="number">1</span>, <span class="number">-1</span>, <span class="number">1</span>, <span class="number">-1</span>, <span class="number">1</span>, <span class="number">1</span>]</span><br><span class="line">        name = [<span class="string">"hero"</span>, <span class="string">"goal"</span>, <span class="string">"fire"</span>, <span class="string">"goal"</span>, <span class="string">"fire"</span>, <span class="string">"goal"</span>, <span class="string">"goal"</span>]</span><br><span class="line">        self.blocks = [Block(*args) <span class="keyword">for</span> args <span class="keyword">in</span> zip(postions, size, intensity, channel, reward, name)]</span><br><span class="line">        self.state = self.render()</span><br><span class="line">        <span class="keyword">return</span> self.state</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">move</span><span class="params">(self, direction)</span>:</span></span><br><span class="line">        hero = self.blocks[<span class="number">0</span>]</span><br><span class="line">        <span class="keyword">if</span> direction == <span class="number">0</span> <span class="keyword">and</span> hero.y &gt;=<span class="number">1</span>:</span><br><span class="line">            hero.y -= <span class="number">1</span></span><br><span class="line">        <span class="keyword">elif</span> direction == <span class="number">1</span> <span class="keyword">and</span> hero.y &lt;= self.y_size - <span class="number">2</span>:</span><br><span class="line">            hero.y += <span class="number">1</span></span><br><span class="line">        <span class="keyword">elif</span> direction == <span class="number">2</span> <span class="keyword">and</span> hero.x &gt;= <span class="number">1</span>:</span><br><span class="line">            hero.x -= <span class="number">1</span></span><br><span class="line">        <span class="keyword">elif</span> direction == <span class="number">3</span> <span class="keyword">and</span> hero.x &lt;= self.x_size - <span class="number">2</span>:</span><br><span class="line">            hero.x += <span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">check_hit</span><span class="params">(self)</span>:</span></span><br><span class="line">        hero = self.blocks.pop(<span class="number">0</span>)</span><br><span class="line">        <span class="keyword">for</span> block <span class="keyword">in</span> self.blocks:</span><br><span class="line">            <span class="keyword">if</span> (hero.x == block.x) <span class="keyword">and</span> (hero.y == block.y):</span><br><span class="line">                self.available_grids.append([block.x, block.y])</span><br><span class="line">                self.blocks.remove(block)</span><br><span class="line">                <span class="keyword">if</span> block.name == <span class="string">"goal"</span>:</span><br><span class="line">                    self.blocks.append(Block(*self.get_positions(<span class="number">1</span>), <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="string">"goal"</span>))</span><br><span class="line">                <span class="keyword">elif</span> block.name == <span class="string">"fire"</span>:</span><br><span class="line">                    self.blocks.append(Block(*self.get_positions(<span class="number">1</span>), <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">-1</span>, <span class="string">"fire"</span>))</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    <span class="keyword">raise</span></span><br><span class="line">                self.blocks.insert(<span class="number">0</span>, hero)</span><br><span class="line">                <span class="keyword">return</span> block.reward, <span class="keyword">False</span></span><br><span class="line">        </span><br><span class="line">        self.blocks.insert(<span class="number">0</span>, hero)</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0.0</span>, <span class="keyword">False</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">render</span><span class="params">(self)</span>:</span></span><br><span class="line">        canvas = np.ones([self.y_size+<span class="number">2</span>, self.x_size+<span class="number">2</span>, <span class="number">3</span>])</span><br><span class="line">        canvas[<span class="number">1</span>:<span class="number">-1</span>,<span class="number">1</span>:<span class="number">-1</span>,:] = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> block <span class="keyword">in</span> self.blocks:</span><br><span class="line">            canvas[block.y+<span class="number">1</span>:block.y+block.size+<span class="number">1</span>,block.x+<span class="number">1</span>:block.x+block.size+<span class="number">1</span>,block.channel] = block.intensity</span><br><span class="line">        r = scipy.misc.imresize(canvas[:,:,<span class="number">0</span>], [<span class="number">84</span>,<span class="number">84</span>,<span class="number">1</span>], interp=<span class="string">'nearest'</span>)</span><br><span class="line">        g = scipy.misc.imresize(canvas[:,:,<span class="number">1</span>], [<span class="number">84</span>,<span class="number">84</span>,<span class="number">1</span>], interp=<span class="string">'nearest'</span>)</span><br><span class="line">        b = scipy.misc.imresize(canvas[:,:,<span class="number">2</span>], [<span class="number">84</span>,<span class="number">84</span>,<span class="number">1</span>], interp=<span class="string">'nearest'</span>)</span><br><span class="line">        <span class="keyword">return</span> np.stack([r, g, b],axis=<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">step</span><span class="params">(self, action)</span>:</span></span><br><span class="line">        self.move(action)</span><br><span class="line">        reward, done = self.check_hit()</span><br><span class="line">        self.state = self.render()</span><br><span class="line">        <span class="keyword">return</span> self.state, reward, done</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">plot</span><span class="params">(self)</span>:</span></span><br><span class="line">        plt.imshow(self.state, interpolation=<span class="string">"nearest"</span>)</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    env = GridWorld(size=<span class="number">5</span>)</span><br><span class="line">    _ = env.reset()</span><br><span class="line">    env.plot()</span><br></pre></td></tr></table></figure></p>
+<p>上面的模块定义了 GridWorld，效果图如下：<br><img src="http://oytnj8g2y.bkt.clouddn.com/gw.png" alt="gw"><br>其中蓝色是英雄，绿色是目标（奖励为1），红色是火焰（惩罚为1），英雄在这个 GridWorld 中游走获得尽可能多分数。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#coding: utf-8</span></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf </span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">from</span> grid_world <span class="keyword">import</span> GridWorld</span><br><span class="line">os.environ[<span class="string">'CUDA_VISIBLE_DEVICES'</span>] = <span class="string">"1"</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DQN</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, env, name)</span>:</span></span><br><span class="line">        self.name = name</span><br><span class="line">        self.env = env</span><br><span class="line">        <span class="comment">################## 网络结构 ##############</span></span><br><span class="line">        self.scalar_input =  tf.placeholder(shape=[<span class="keyword">None</span>,<span class="number">21168</span>],dtype=tf.float32)</span><br><span class="line">        self.image = tf.reshape(self.scalar_input,shape=[<span class="number">-1</span>,<span class="number">84</span>,<span class="number">84</span>,<span class="number">3</span>])</span><br><span class="line">        self.conv1 = tf.contrib.layers.convolution2d(inputs=self.image, num_outputs=<span class="number">32</span>, </span><br><span class="line">            kernel_size=[<span class="number">8</span>,<span class="number">8</span>], stride=[<span class="number">4</span>,<span class="number">4</span>], padding=<span class="string">'VALID'</span>, biases_initializer=<span class="keyword">None</span>)</span><br><span class="line">        self.conv2 = tf.contrib.layers.convolution2d(inputs=self.conv1, num_outputs=<span class="number">64</span>, </span><br><span class="line">            kernel_size=[<span class="number">4</span>,<span class="number">4</span>], stride=[<span class="number">2</span>,<span class="number">2</span>],padding=<span class="string">'VALID'</span>, biases_initializer=<span class="keyword">None</span>)</span><br><span class="line">        self.conv3 = tf.contrib.layers.convolution2d(inputs=self.conv2, num_outputs=<span class="number">64</span>, </span><br><span class="line">            kernel_size=[<span class="number">3</span>,<span class="number">3</span>], stride=[<span class="number">1</span>,<span class="number">1</span>], padding=<span class="string">'VALID'</span>, biases_initializer=<span class="keyword">None</span>)</span><br><span class="line">        self.conv4 = tf.contrib.layers.convolution2d(inputs=self.conv3, num_outputs=<span class="number">512</span>, </span><br><span class="line">            kernel_size=[<span class="number">7</span>,<span class="number">7</span>], stride=[<span class="number">1</span>,<span class="number">1</span>], padding=<span class="string">'VALID'</span>, biases_initializer=<span class="keyword">None</span>)</span><br><span class="line"></span><br><span class="line">        self.conv4_1, self.conv4_2 = tf.split(self.conv4, <span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line">        self.flat_1 = tf.contrib.layers.flatten(self.conv4_1)</span><br><span class="line">        self.flat_2 = tf.contrib.layers.flatten(self.conv4_2)</span><br><span class="line">        self.advantage_weight = tf.Variable(tf.random_normal([<span class="number">256</span>, self.env.action_num]), </span><br><span class="line">            name=<span class="string">"advantage_weight"</span>)</span><br><span class="line">        self.value_weight = tf.Variable(tf.random_normal([<span class="number">256</span>, <span class="number">1</span>]), name=<span class="string">"value_weight"</span>)</span><br><span class="line">        self.advantage = tf.matmul(self.flat_1, self.advantage_weight)</span><br><span class="line">        self.value = tf.matmul(self.flat_2, self.value_weight)</span><br><span class="line">        </span><br><span class="line">        self.q_value = self.value + tf.subtract(self.advantage, </span><br><span class="line">            tf.reduce_mean(self.advantage, reduction_indices=<span class="number">1</span>, keep_dims=<span class="keyword">True</span>))</span><br><span class="line">        self.action = tf.argmax(self.q_value, <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># self.actions 是一维的，类似于[1,1,2,3,1,0.....]</span></span><br><span class="line">        self.actions = tf.placeholder(shape=[<span class="keyword">None</span>], dtype=tf.int32)</span><br><span class="line">        <span class="comment"># self.target_q 是一维的，是self.actions 中每个动作对应的q值</span></span><br><span class="line">        self.target_q = tf.placeholder(shape=[<span class="keyword">None</span>], dtype=tf.float32)</span><br><span class="line">        <span class="comment"># self.q_value_of_action 是一维的，是self.actions 中每个动作对应的预测q值</span></span><br><span class="line">        self.actions_onehot = tf.one_hot(self.actions, self.env.action_num, dtype=tf.float32)</span><br><span class="line">        self.q_value_on_action = tf.reduce_sum(tf.multiply(self.q_value, self.actions_onehot), </span><br><span class="line">            reduction_indices=<span class="number">1</span>)</span><br><span class="line">        </span><br><span class="line">        self.loss = tf.reduce_mean(tf.square(self.target_q - self.q_value_on_action))</span><br><span class="line">        self.trainer = tf.train.AdamOptimizer(learning_rate=<span class="number">0.00001</span>)</span><br><span class="line">        self.update_model = self.trainer.minimize(self.loss)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExperienceBuffer</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, buffer_size=<span class="number">50000</span>)</span>:</span></span><br><span class="line">        self.buffer = []</span><br><span class="line">        self.buffer_size = buffer_size</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">add</span><span class="params">(self, experience)</span>:</span></span><br><span class="line">        num_to_remove = len(self.buffer) + len(experience) - self.buffer_size</span><br><span class="line">        <span class="keyword">if</span> num_to_remove &gt; <span class="number">0</span>:</span><br><span class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> range(num_to_remove):</span><br><span class="line">                self.buffer.pop(<span class="number">0</span>)</span><br><span class="line">        self.buffer.extend(experience)</span><br><span class="line">            </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">sample</span><span class="params">(self, size)</span>:</span></span><br><span class="line">        indices = np.random.choice(np.arange(len(self.buffer)), size=size)</span><br><span class="line">        <span class="keyword">return</span> [self.buffer[index] <span class="keyword">for</span> index <span class="keyword">in</span> indices]</span><br><span class="line"></span><br><span class="line">     </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_update_target_ops</span><span class="params">(variables, tau)</span>:</span></span><br><span class="line">    main_DQN_vars = variables[<span class="number">0</span>:len(variables)//<span class="number">2</span>]</span><br><span class="line">    target_DQN_vars = variables[len(variables)//<span class="number">2</span>:]</span><br><span class="line">    ops = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(target_DQN_vars)):</span><br><span class="line">        ops.append(target_DQN_vars[i].assign(</span><br><span class="line">            main_DQN_vars[i].value() * tau + (<span class="number">1</span> - tau) * target_DQN_vars[i].value()</span><br><span class="line">            ))</span><br><span class="line">    <span class="keyword">return</span> ops</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">update_target</span><span class="params">(ops, sess)</span>:</span></span><br><span class="line">    <span class="keyword">for</span> op <span class="keyword">in</span> ops:</span><br><span class="line">        sess.run(op)</span><br><span class="line"></span><br><span class="line"><span class="comment">########################## 超参数 #####################</span></span><br><span class="line">batch_size = <span class="number">32</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#How often to perform a training step.</span></span><br><span class="line">update_freq = <span class="number">4</span></span><br><span class="line">gamma = <span class="number">.99</span></span><br><span class="line">random_upper_bound = <span class="number">1</span></span><br><span class="line">random_lower_bound = <span class="number">0.1</span></span><br><span class="line">annealing_steps = <span class="number">10000</span></span><br><span class="line">random_threshold = random_upper_bound</span><br><span class="line">drop_step = (random_upper_bound - random_lower_bound) / annealing_steps</span><br><span class="line"></span><br><span class="line"><span class="comment">#How many episodes of game environment to train network with.</span></span><br><span class="line">num_episodes = <span class="number">10000</span></span><br><span class="line"><span class="comment">#How many steps of random actions before training begins.</span></span><br><span class="line">pre_train_steps = <span class="number">10000</span></span><br><span class="line"><span class="comment">#The max allowed length for one episode.</span></span><br><span class="line">max_episode_length = <span class="number">50</span></span><br><span class="line">load_model = <span class="keyword">False</span> </span><br><span class="line">path = <span class="string">"./dqn"</span></span><br><span class="line"><span class="comment">#Rate to update target network toward primary network</span></span><br><span class="line">tau = <span class="number">0.001</span></span><br><span class="line"></span><br><span class="line"><span class="comment">########################## 训练 #####################</span></span><br><span class="line">env = GridWorld(size=<span class="number">5</span>)</span><br><span class="line">tf.reset_default_graph()</span><br><span class="line">main_DQN = DQN(env, <span class="string">"main"</span>)</span><br><span class="line">target_DQN = DQN(env, <span class="string">"target"</span>)</span><br><span class="line"></span><br><span class="line">init_op = tf.global_variables_initializer()</span><br><span class="line">update_target_ops_1 = get_update_target_ops(tf.trainable_variables(), <span class="number">1</span>)</span><br><span class="line">update_target_ops_2 = get_update_target_ops(tf.trainable_variables(), tau)</span><br><span class="line"></span><br><span class="line">saver = tf.train.Saver()</span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(path):</span><br><span class="line">    os.makedirs(path)</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</span><br><span class="line">    <span class="keyword">if</span> load_model == <span class="keyword">True</span>:</span><br><span class="line">        print(<span class="string">'Loading Model...'</span>)</span><br><span class="line">        ckpt = tf.train.get_checkpoint_state(path)</span><br><span class="line">        saver.restore(sess,ckpt.model_checkpoint_path)</span><br><span class="line">    sess.run(init_op)</span><br><span class="line">    </span><br><span class="line">    <span class="comment">#Set the target network to be equal to the main network.</span></span><br><span class="line">    update_target(update_target_ops_2, sess)</span><br><span class="line">    global_experience_buffer = ExperienceBuffer()</span><br><span class="line">    </span><br><span class="line">    <span class="comment">#create list to contain total rewards per episode</span></span><br><span class="line">    total_reward_list = []</span><br><span class="line">    steps = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(num_episodes + <span class="number">1</span>):</span><br><span class="line">        episode_buffer = ExperienceBuffer()</span><br><span class="line">        observation = env.reset()</span><br><span class="line">        observation = np.reshape(observation, [<span class="number">21168</span>])</span><br><span class="line">        done = <span class="keyword">False</span></span><br><span class="line">        total_reward_in_episode = <span class="number">0</span></span><br><span class="line">        steps_in_episode = <span class="number">0</span></span><br><span class="line">        <span class="keyword">while</span> steps_in_episode &lt; max_episode_length:</span><br><span class="line">            <span class="comment"># 积累样本</span></span><br><span class="line">            steps_in_episode += <span class="number">1</span></span><br><span class="line">            steps += <span class="number">1</span></span><br><span class="line">            <span class="keyword">if</span> np.random.rand(<span class="number">1</span>) &lt; random_threshold <span class="keyword">or</span> steps &lt; pre_train_steps:</span><br><span class="line">                action = np.random.randint(<span class="number">0</span>, <span class="number">4</span>)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                action = sess.run(main_DQN.action, feed_dict=&#123;main_DQN.scalar_input: [observation]&#125;)[<span class="number">0</span>]</span><br><span class="line">            new_observation, reward, done = env.step(action)</span><br><span class="line">            new_observation = np.reshape(new_observation, [<span class="number">21168</span>])</span><br><span class="line">            <span class="comment">#Save the experience to episode buffer</span></span><br><span class="line">            episode_buffer.add([[observation, action, reward, new_observation, done]])</span><br><span class="line">            </span><br><span class="line">            total_reward_in_episode += reward</span><br><span class="line">            observation = new_observation</span><br><span class="line">            <span class="comment"># 积累了 pre_train_steps/max_episode_length 次经历的pre_train_steps个样本之后，</span></span><br><span class="line">            <span class="comment"># 才会第一次开始衰减随机门限，进行第一次训练。</span></span><br><span class="line">            <span class="keyword">if</span> steps &gt;= pre_train_steps:</span><br><span class="line">                <span class="keyword">if</span> random_threshold &gt; random_lower_bound:</span><br><span class="line">                    random_threshold -= drop_step</span><br><span class="line">                <span class="keyword">if</span> steps % (update_freq) == <span class="number">0</span>:</span><br><span class="line">                    train_batch = global_experience_buffer.sample(batch_size)</span><br><span class="line">                    <span class="comment">#Below we perform the Double-DQN update to the target Q-values</span></span><br><span class="line">                    observations = np.vstack([record[<span class="number">0</span>] <span class="keyword">for</span> record <span class="keyword">in</span> train_batch])</span><br><span class="line">                    actions = np.array([record[<span class="number">1</span>] <span class="keyword">for</span> record <span class="keyword">in</span> train_batch])</span><br><span class="line">                    instant_rewards = np.array([record[<span class="number">2</span>] <span class="keyword">for</span> record <span class="keyword">in</span> train_batch])</span><br><span class="line">                    new_observations = np.vstack([record[<span class="number">3</span>] <span class="keyword">for</span> record <span class="keyword">in</span> train_batch])</span><br><span class="line">                    </span><br><span class="line">                    action = sess.run(main_DQN.action, feed_dict=&#123;main_DQN.scalar_input: new_observations&#125;)</span><br><span class="line">                    q_value, value, advantage = sess.run([target_DQN.q_value, target_DQN.value, target_DQN.advantage], </span><br><span class="line">                        feed_dict=&#123;target_DQN.scalar_input: new_observations&#125;)</span><br><span class="line">                    labels = instant_rewards + gamma * q_value[range(batch_size) ,action]</span><br><span class="line"></span><br><span class="line">                    <span class="comment"># Update the network with our target values.</span></span><br><span class="line">                    _ = sess.run(main_DQN.update_model, feed_dict=&#123;</span><br><span class="line">                        main_DQN.scalar_input: observations,</span><br><span class="line">                        main_DQN.target_q: labels,</span><br><span class="line">                        main_DQN.actions: actions&#125;)</span><br><span class="line"></span><br><span class="line">                    <span class="comment">#update the target network towards the main network.</span></span><br><span class="line">                    update_target(update_target_ops_2, sess)</span><br><span class="line">        </span><br><span class="line">        <span class="comment">#Get all experiences from this episode</span></span><br><span class="line">        global_experience_buffer.add(episode_buffer.buffer)</span><br><span class="line">        total_reward_list.append(total_reward_in_episode)</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> i&gt;<span class="number">0</span> <span class="keyword">and</span> i % <span class="number">25</span> == <span class="number">0</span>:</span><br><span class="line">            print(<span class="string">'episode'</span>,i,<span class="string">', average reward of last 25 episode'</span>, np.mean(total_reward_list[<span class="number">-25</span>:]))</span><br><span class="line">        <span class="comment">#Periodically save the model.</span></span><br><span class="line">        <span class="keyword">if</span> i&gt;<span class="number">0</span> <span class="keyword">and</span> i % <span class="number">1000</span> == <span class="number">0</span>:</span><br><span class="line">            saver.save(sess,path+<span class="string">'/model-'</span>+str(i)+<span class="string">'.cptk'</span>)</span><br><span class="line">            print(<span class="string">"Saved Model"</span>)</span><br><span class="line">    saver.save(sess,path+<span class="string">'/model-'</span>+str(i)+<span class="string">'.cptk'</span>)</span><br></pre></td></tr></table></figure></p>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 
     </div>
 
     
-
+    
     
 
-    <!-- Comments -->
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/12/09/强化学习-2-策略网络及其-TensorFlow-实现/" rel="prev" title="强化学习 2 策略网络及其 TensorFlow 实现">
+      <i class="fa fa-chevron-left"></i> 强化学习 2 策略网络及其 TensorFlow 实现
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/12/12/RLAI-Monte-Carlo-Methods-学习笔记/" rel="next" title="RLAI Monte Carlo Methods 学习笔记">
+      RLAI Monte Carlo Methods 学习笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
     
+  </article>
+  
+  
+  
 
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#强化学习-3-估值网络及其-TensorFlow-实现"><span class="nav-number">1.</span> <span class="nav-text">强化学习 3 估值网络及其 TensorFlow 实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#估值网络"><span class="nav-number">1.1.</span> <span class="nav-text">估值网络</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#概念："><span class="nav-number">1.1.0.1.</span> <span class="nav-text">概念：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Tricks："><span class="nav-number">1.1.0.2.</span> <span class="nav-text">Tricks：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#仿真环境-GridWorld"><span class="nav-number">1.1.0.3.</span> <span class="nav-text">仿真环境 GridWorld</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
 </div>
-        </section>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
 
     </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
 
-
-</div>
-
-<!-- Footer -->
-<div class="push"></div>
-
-<footer class="footer-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
-                <h2>About</h2>
-                <p>
-                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
-                </p>
-            </div>
-            
-    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
-        <h2>Recent Posts</h2>
-        <ul>
-            
-            <li>
-                <a class="footer-post" href="/2019/07/12/Unnamed-namespace/">Unnamed namespace</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/05/08/Static-variable-in-inlined-function/">Static variable in inline</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/04/23/Iterator-invalidation-rules/">Iterator invalidation rul</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/18/Emplace-back/">Emplace back</a>
-            </li>
-            
-        </ul>
-    </div>
+        
 
 
 
-            
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <ul class="list-inline footer-social-icons">
-                    
-                    <li class="list-inline-item">
-                        <a href="https://github.com/RobertLexis">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-github"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="mailto:robert_lexis@163.com">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-envelope-o"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="footer-copyright">
-                    @Untitled. All right reserved | Robert Lexis Loves Wenny
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<!-- After footer scripts -->
-
-<!-- jQuery -->
-<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-
-<!-- Tween Max -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
-
-<!-- Gallery -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
-
-<!-- Custom JavaScript -->
-<script src="/js/main.js"></script>
-
-<!-- Disqus Comments -->
 
 
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
 
 </body>
-
 </html>

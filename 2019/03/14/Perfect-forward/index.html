@@ -1,309 +1,390 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<!-- Head tag -->
+<html lang="zh-CN">
 <head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/main.css">
 
-    <!--Description-->
-    
-        <meta name="description" content="std::move123456template &amp;lt;typename T&amp;gt;decltype(auto) move(T&amp;amp;&amp;amp; param)&amp;#123;   using return_type = std::remove_reference&amp;lt;T&amp;gt;::type&amp;amp;&amp;amp;;   return static_cast&amp;lt;return_type&amp;gt;(param);&amp;#125;">
-    
 
-    <!--Author-->
-    
-        <meta name="author" content="Robert Lexis">
-    
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-    <!--Open Graph Title-->
-    
-        <meta property="og:title" content="Perfect forward"/>
-    
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
-    <!--Open Graph Description-->
-    
+  <meta name="description" content="std::move123456template &amp;lt;typename T&amp;gt;decltype(auto) move(T&amp;amp;&amp;amp; param)&amp;#123;   using return_type = std::remove_reference&amp;lt;T&amp;gt;::type&amp;amp;&amp;amp;;   return static_cast&amp;lt;return_type&amp;gt;(par">
+<meta name="keywords" content="C++">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Perfect Forward">
+<meta property="og:url" content="http://yoursite.com/2019/03/14/Perfect-forward/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="std::move123456template &amp;lt;typename T&amp;gt;decltype(auto) move(T&amp;amp;&amp;amp; param)&amp;#123;   using return_type = std::remove_reference&amp;lt;T&amp;gt;::type&amp;amp;&amp;amp;;   return static_cast&amp;lt;return_type&amp;gt;(par">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-03-14T13:52:00.798Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Perfect Forward">
+<meta name="twitter:description" content="std::move123456template &amp;lt;typename T&amp;gt;decltype(auto) move(T&amp;amp;&amp;amp; param)&amp;#123;   using return_type = std::remove_reference&amp;lt;T&amp;gt;::type&amp;amp;&amp;amp;;   return static_cast&amp;lt;return_type&amp;gt;(par">
 
-    <!--Open Graph Site Name-->
-    <meta property="og:site_name" content="This is Robert Lexis."/>
+<link rel="canonical" href="http://yoursite.com/2019/03/14/Perfect-forward/">
 
-    <!--Type page-->
-    
-        <meta property="og:type" content="article" />
-    
 
-    <!--Page Cover-->
-    
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
 
-    <meta name="twitter:card" content="summary" />
-    
+  <title>Perfect Forward | The next stop - Antarctica</title>
+  
 
-    <!-- Title -->
-    
-    <title>Perfect forward - This is Robert Lexis.</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 
-    <!-- Custom Fonts -->
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 
-    <!-- Gallery -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
 
-    <!-- Google Analytics -->
-    
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
 
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
 
 </head>
 
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
 
-<body>
-
-<div class="bg-gradient"></div>
-<div class="bg-pattern"></div>
-
-<!-- Menu -->
-<!--Menu Links and Overlay-->
-<div class="menu-bg">
-    <div class="menu-container">
-        <ul>
-            
-            <li class="menu-item">
-                <a href="/">
-                    Home
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/archives">
-                    Archives
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/about">
-                    About
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/tags">
-                    Tags
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/categories">
-                    Categories
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/contact">
-                    Contact
-                </a>
-            </li>
-            
-        </ul>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
 </div>
 
-<!--Hamburger Icon-->
-<nav>
-    <a href="#menu"></a>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
 </nav>
 
-<div class="container">
 
-    <!-- Main Content -->
-    <div class="row">
-    <div class="col-sm-12">
 
-        <!--Title and Logo-->
-        <header>
-    <div class="logo">
-        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
-        
-    </div>
-</header>
 
-        <section class="main">
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
             
-<div class="post">
 
-    <div class="post-header">
-        <h1 class="title">
-            <a href="/2019/03/14/Perfect-forward/">
-                Perfect forward
-            </a>
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/14/Perfect-forward/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Perfect Forward
         </h1>
-        <div class="post-info">
-            
-                <span class="date">2019-03-14</span>
-            
-            
-            
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-03-14 20:46:30 / 修改时间：21:52:00" itemprop="dateCreated datePublished" datetime="2019-03-14T20:46:30+08:00">2019-03-14</time>
+            </span>
+
+          
+
         </div>
-    </div>
+      </header>
 
-    <div class="content">
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
-        <!-- Gallery -->
-        
-
-        <!-- Post Content -->
-        <h3 id="std-move"><a href="#std-move" class="headerlink" title="std::move"></a>std::move</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="keyword">decltype</span>(<span class="keyword">auto</span>) move(T&amp;&amp; param)</div><div class="line">&#123;</div><div class="line">   <span class="keyword">using</span> return_type = <span class="built_in">std</span>::remove_reference&lt;T&gt;::type&amp;&amp;;</div><div class="line">   <span class="keyword">return</span> <span class="keyword">static_cast</span>&lt;return_type&gt;(param);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+      
+        <h3 id="std-move"><a href="#std-move" class="headerlink" title="std::move"></a>std::move</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">decltype</span>(<span class="keyword">auto</span>) move(T&amp;&amp; param)</span><br><span class="line">&#123;</span><br><span class="line">   <span class="keyword">using</span> return_type = <span class="built_in">std</span>::remove_reference&lt;T&gt;::type&amp;&amp;;</span><br><span class="line">   <span class="keyword">return</span> <span class="keyword">static_cast</span>&lt;return_type&gt;(param);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <a id="more"></a>
 <p>于是，我们可以看见这里面的逻辑其实是无论你的 param 是何种类型，都会被强制转为右值引用类型。而唯一需要注意的是模版这里的 <code>T&amp;&amp;</code> 类型，Meyers 把这样的类型叫做 Universal Reference。对于 Universal Reference 来说，若你传递的 param 是一个左值，那么 T 将会被 deduce 成 Lvalue Reference（左值引用），Param Type 也是左值引用。若你传递进来的 param 是右值，那么 T 则是正常的 param 类型，如 int 等，其 Param Type 结果是 T&amp;&amp;。</p>
-<p>举一个简单的例子：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(T&amp;&amp; param)</span></span>;</div><div class="line"></div><div class="line"><span class="keyword">int</span> i = <span class="number">7</span>;</div><div class="line">foo(i);</div><div class="line">foo(<span class="number">47</span>);</div></pre></td></tr></table></figure></p>
+<p>举一个简单的例子：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(T&amp;&amp; param)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> i = <span class="number">7</span>;</span><br><span class="line">foo(i);</span><br><span class="line">foo(<span class="number">47</span>);</span><br></pre></td></tr></table></figure></p>
 <p>i 是一个左值，于是 T 被 deduce 成 int&amp;，于是变为了foo(int&amp; &amp;&amp;); 而整个参数的结果类型，即 Param Type 为 int&amp;，C++不允许 reference to reference，会进行引用折叠，这也是后面谈到的forward的核心。而对于foo(47)，由于47是右值，那么 T 被正常 deduce 成 int，于是变为了 foo(int &amp;&amp;);</p>
-<h3 id="std-forward"><a href="#std-forward" class="headerlink" title="std::forward"></a>std::forward</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="function">T&amp;&amp; <span class="title">forward</span><span class="params">(<span class="keyword">typename</span> remove_reference&lt;T&gt;::type&amp; param)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">static_cast</span>&lt;T&amp;&amp;&gt;(param);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>那么这里面是如何达到完美转发的呢？举一个例子：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(T&amp;&amp; fparam)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    <span class="built_in">std</span>::forward&lt;T&gt;(fparam);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">int</span> i = <span class="number">7</span>;</div><div class="line">foo(i);</div><div class="line">foo(<span class="number">47</span>);</div></pre></td></tr></table></figure></p>
-<p>如上文所述，这里的 i 是一个左值，于是，我们在 void foo(T&amp;&amp; fparam) 这里的话，T 将会被 deduce 成 int&amp; 然后 Param Type 为 int&amp;。那么为什么Param Type会是int&amp;呢？因为按照正常的 deduce，我们将会得到 void foo(int&amp; &amp;&amp;fparam); C++不允许 reference to reference，Param Type int&amp; &amp;&amp; 被折叠为左值引用。<br>T 为 int&amp;，经过了 remove_reference 变为了 int，结合后面跟上的 &amp;，则变为了int &amp;。然后我们再次替换 static_cast和return type的T为int&amp;，都得到了 int&amp; &amp;&amp;：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span>&amp; &amp;&amp; <span class="title">forward</span><span class="params">(<span class="keyword">int</span>&amp; param)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&amp; &amp;&amp;&gt;(param);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>于是再应用引用折叠规则，int&amp; &amp;&amp;都折叠为 int&amp;：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span>&amp; <span class="title">forward</span><span class="params">(<span class="keyword">int</span>&amp; param)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&amp;&gt;(param);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="std-forward"><a href="#std-forward" class="headerlink" title="std::forward"></a>std::forward</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function">T&amp;&amp; <span class="title">forward</span><span class="params">(<span class="keyword">typename</span> remove_reference&lt;T&gt;::type&amp; param)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">static_cast</span>&lt;T&amp;&amp;&gt;(param);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>那么这里面是如何达到完美转发的呢？举一个例子：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(T&amp;&amp; fparam)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::forward&lt;T&gt;(fparam);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> i = <span class="number">7</span>;</span><br><span class="line">foo(i);</span><br><span class="line">foo(<span class="number">47</span>);</span><br></pre></td></tr></table></figure></p>
+<p>如上文所述，这里的 i 是一个左值，于是，我们在 void foo(T&amp;&amp; fparam) 这里的话，T 将会被 deduce 成 int&amp; 然后 Param Type 为 int&amp;。那么为什么Param Type会是int&amp;呢？因为按照正常的 deduce，我们将会得到 void foo(int&amp; &amp;&amp;fparam); C++不允许 reference to reference，Param Type int&amp; &amp;&amp; 被折叠为左值引用。<br>T 为 int&amp;，经过了 remove_reference 变为了 int，结合后面跟上的 &amp;，则变为了int &amp;。然后我们再次替换 static_cast和return type的T为int&amp;，都得到了 int&amp; &amp;&amp;：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span>&amp; &amp;&amp; <span class="title">forward</span><span class="params">(<span class="keyword">int</span>&amp; param)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&amp; &amp;&amp;&gt;(param);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>于是再应用引用折叠规则，int&amp; &amp;&amp;都折叠为 int&amp;：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span>&amp; <span class="title">forward</span><span class="params">(<span class="keyword">int</span>&amp; param)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&amp;&gt;(param);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>于是，我们可以发现 fparam 变量的左值引用类型被保留了下来。这里也需要注意，我们到达 forward 的时候就已经是左值引用了，所以 forward 并没有改变什么。</p>
-<p>如我们这时候是 47 这样的右值，我们知道了 T 会被 deduce 成 int，经过了 remove_reference，变为了 int，跟上后面的 &amp;，成为了 int&amp;，然后再次替换 static_cast 和返回类型的 T 为 int&amp;&amp;:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> &amp;&amp; <span class="title">forward</span><span class="params">(<span class="keyword">int</span>&amp; param)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&amp;&amp;)(param);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>如我们这时候是 47 这样的右值，我们知道了 T 会被 deduce 成 int，经过了 remove_reference，变为了 int，跟上后面的 &amp;，成为了 int&amp;，然后再次替换 static_cast 和返回类型的 T 为 int&amp;&amp;:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> &amp;&amp; <span class="title">forward</span><span class="params">(<span class="keyword">int</span>&amp; param)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&amp;&amp;)(param);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>于是，我们也可以发现，fparam 由右值出发，移动构造变为右值引用（一个左值），传入 forward 做转型，然后得到依然是一个右值，因此这个右值可以接着传入另外一个函数。</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="function">T&amp;&amp; <span class="title">forward</span><span class="params">(<span class="keyword">typename</span> remove_reference&lt;T&gt;::type&amp; param)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">static_cast</span>&lt;T&amp;&amp;&gt;(param);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function">T&amp;&amp; <span class="title">forward</span><span class="params">(<span class="keyword">typename</span> remove_reference&lt;T&gt;::type&amp; param)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">static_cast</span>&lt;T&amp;&amp;&gt;(param);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>forward 时 <code>forward</code> 的参数类型都是 int &amp;，只不过由于 T 推导出来的类型可能为 int 或者 int &amp;，而导致传出来的是两种不同的引用类型（都是引用，都没有构造函数的调用），int&amp;&amp; 或者 int&amp;。</p>
 
     </div>
 
     
-
     
-        <div class="post-tags">
-            <i class="fa fa-tags" aria-hidden="true"></i>
-            <a href="/tags/C/">#C++</a>
-        </div>
     
 
-    <!-- Comments -->
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C/" rel="tag"># C++</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/03/14/Move-semantic-perfect-forward/" rel="prev" title="Move Semantic & Perfect Forward">
+      <i class="fa fa-chevron-left"></i> Move Semantic & Perfect Forward
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/03/18/Emplace-back/" rel="next" title="Emplace Back">
+      Emplace Back <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
     
+  </article>
+  
+  
+  
 
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#std-move"><span class="nav-number">1.</span> <span class="nav-text">std::move</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#std-forward"><span class="nav-number">2.</span> <span class="nav-text">std::forward</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
 </div>
-        </section>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
 
     </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
 
-
-</div>
-
-<!-- Footer -->
-<div class="push"></div>
-
-<footer class="footer-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
-                <h2>About</h2>
-                <p>
-                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
-                </p>
-            </div>
-            
-    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
-        <h2>Recent Posts</h2>
-        <ul>
-            
-            <li>
-                <a class="footer-post" href="/2019/07/12/Unnamed-namespace/">Unnamed namespace</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/05/08/Static-variable-in-inlined-function/">Static variable in inline</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/04/23/Iterator-invalidation-rules/">Iterator invalidation rul</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/18/Emplace-back/">Emplace back</a>
-            </li>
-            
-        </ul>
-    </div>
+        
 
 
 
-            
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <ul class="list-inline footer-social-icons">
-                    
-                    <li class="list-inline-item">
-                        <a href="https://github.com/RobertLexis">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-github"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="mailto:robert_lexis@163.com">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-envelope-o"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="footer-copyright">
-                    @Untitled. All right reserved | Robert Lexis Loves Wenny
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<!-- After footer scripts -->
-
-<!-- jQuery -->
-<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-
-<!-- Tween Max -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
-
-<!-- Gallery -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
-
-<!-- Custom JavaScript -->
-<script src="/js/main.js"></script>
-
-<!-- Disqus Comments -->
 
 
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
 
 </body>
-
 </html>

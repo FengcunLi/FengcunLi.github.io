@@ -1,173 +1,211 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<!-- Head tag -->
+<html lang="zh-CN">
 <head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/main.css">
 
-    <!--Description-->
-    
-        <meta name="description" content="本博文主要是在学习 CS231n: Convolutional Neural Networks for Visual Recognition Spring 2017 Lecture 3: Loss Functions and Optimization 之后的总结。">
-    
 
-    <!--Author-->
-    
-        <meta name="author" content="Robert Lexis">
-    
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-    <!--Open Graph Title-->
-    
-        <meta property="og:title" content="Loss functions 推导及理解"/>
-    
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
-    <!--Open Graph Description-->
-    
+  <meta name="description" content="本博文主要是在学习 CS231n: Convolutional Neural Networks for Visual Recognition Spring 2017 Lecture 3: Loss Functions and Optimization 之后的总结。">
+<meta name="keywords" content="DL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Loss Functions 推导及理解">
+<meta property="og:url" content="http://yoursite.com/2018/04/12/Loss-functions-推导及理解/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="本博文主要是在学习 CS231n: Convolutional Neural Networks for Visual Recognition Spring 2017 Lecture 3: Loss Functions and Optimization 之后的总结。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2018/04/12/Loss-functions-推导及理解/problem.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/04/12/Loss-functions-推导及理解/hinge_loss.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/04/12/Loss-functions-推导及理解/losses.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/04/12/Loss-functions-推导及理解/not_unique_W.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/04/12/Loss-functions-推导及理解/softmax_ce_with_logits.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/04/12/Loss-functions-推导及理解/sigmoid_ce_with_logtis.jpg">
+<meta property="og:updated_time" content="2018-09-04T09:15:32.229Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Loss Functions 推导及理解">
+<meta name="twitter:description" content="本博文主要是在学习 CS231n: Convolutional Neural Networks for Visual Recognition Spring 2017 Lecture 3: Loss Functions and Optimization 之后的总结。">
+<meta name="twitter:image" content="http://yoursite.com/2018/04/12/Loss-functions-推导及理解/problem.jpg">
 
-    <!--Open Graph Site Name-->
-    <meta property="og:site_name" content="This is Robert Lexis."/>
+<link rel="canonical" href="http://yoursite.com/2018/04/12/Loss-functions-推导及理解/">
 
-    <!--Type page-->
-    
-        <meta property="og:type" content="article" />
-    
 
-    <!--Page Cover-->
-    
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
 
-    <meta name="twitter:card" content="summary" />
-    
+  <title>Loss Functions 推导及理解 | The next stop - Antarctica</title>
+  
 
-    <!-- Title -->
-    
-    <title>Loss functions 推导及理解 - This is Robert Lexis.</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 
-    <!-- Custom Fonts -->
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 
-    <!-- Gallery -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
 
-    <!-- Google Analytics -->
-    
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
 
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
 
 </head>
 
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
 
-<body>
-
-<div class="bg-gradient"></div>
-<div class="bg-pattern"></div>
-
-<!-- Menu -->
-<!--Menu Links and Overlay-->
-<div class="menu-bg">
-    <div class="menu-container">
-        <ul>
-            
-            <li class="menu-item">
-                <a href="/">
-                    Home
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/archives">
-                    Archives
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/about">
-                    About
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/tags">
-                    Tags
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/categories">
-                    Categories
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/contact">
-                    Contact
-                </a>
-            </li>
-            
-        </ul>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
 </div>
 
-<!--Hamburger Icon-->
-<nav>
-    <a href="#menu"></a>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
 </nav>
 
-<div class="container">
 
-    <!-- Main Content -->
-    <div class="row">
-    <div class="col-sm-12">
 
-        <!--Title and Logo-->
-        <header>
-    <div class="logo">
-        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
-        
-    </div>
-</header>
 
-        <section class="main">
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
             
-<div class="post">
 
-    <div class="post-header">
-        <h1 class="title">
-            <a href="/2018/04/12/Loss-functions-推导及理解/">
-                Loss functions 推导及理解
-            </a>
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/12/Loss-functions-推导及理解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Loss Functions 推导及理解
         </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-04-12</span>
-            
-            
-            
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-04-12 11:17:03" itemprop="dateCreated datePublished" datetime="2018-04-12T11:17:03+08:00">2018-04-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-09-04 17:15:32" itemprop="dateModified" datetime="2018-09-04T17:15:32+08:00">2018-09-04</time>
+              </span>
+
+          
+
         </div>
-    </div>
+      </header>
 
-    <div class="content">
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
-        <!-- Gallery -->
-        
-
-        <!-- Post Content -->
-        <p>本博文主要是在学习 <a href="http://cs231n.stanford.edu/2017/" target="_blank" rel="external">CS231n: Convolutional Neural Networks for Visual Recognition Spring 2017</a> Lecture 3: Loss Functions and Optimization 之后的总结。<br><a id="more"></a></p>
+      
+        <p>本博文主要是在学习 <a href="http://cs231n.stanford.edu/2017/" target="_blank" rel="noopener">CS231n: Convolutional Neural Networks for Visual Recognition Spring 2017</a> Lecture 3: Loss Functions and Optimization 之后的总结。<br><a id="more"></a></p>
 <h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><p><img src="/2018/04/12/Loss-functions-推导及理解/problem.jpg" alt="problem"><br>Suppose: 3 training examples, 3 classes. With some \(W\) the scores \( f(x, W) = Wx\) are:<br>损失函数告诉我们目前模型性能的好坏（A loss function tells how<br>good our current classifier is）。<br>Loss function takes in the \(W\), looks at the scores, then tell us how bad quantitatively the \(W\) is.<br>Optimizer comes up a procedure for searching through the space of all possible \(Ws\) to get the least bad W.<br>给定数据集 \(\lbrace (x_i, y_i) \rbrace_{i=1}^N\)，其中 \(x_i\) 是图片，\(y_i\) 是一个整数标签，在整个数据集上损失是：<br>$$<br>L = \frac{1}{N} \sum_i L_i(f(x_i, W), y_i)<br>$$</p>
-<h3 id="Multiclass-SVM-loss"><a href="#Multiclass-SVM-loss" class="headerlink" title="Multiclass SVM loss"></a>Multiclass SVM loss</h3><p>$$<br>\begin{split}<br>L_i &amp; = \sum_{j \not= y_i} \begin{cases}<br>    0 &amp; s_{y_i} \geq s_j + 1 \\\<br>    s_j - s_{y_i} + 1 &amp; otherwise<br>    \end{cases} \\\<br>    &amp; = \sum_{j \not= y_i} max(0, s_j - s_{y_i} + 1)<br>\end{split}<br>$$</p>
+<h3 id="Multiclass-SVM-loss"><a href="#Multiclass-SVM-loss" class="headerlink" title="Multiclass SVM loss"></a>Multiclass SVM loss</h3><p>$$<br>\begin{split}<br>L_i &amp; = \sum_{j \not= y_i} \begin{cases}<br>    0 &amp; s_{y_i} \geq s_j + 1 \\<br>    s_j - s_{y_i} + 1 &amp; otherwise<br>    \end{cases} \\<br>    &amp; = \sum_{j \not= y_i} max(0, s_j - s_{y_i} + 1)<br>\end{split}<br>$$</p>
 <p>对一个样本 \(i\) 而言，我们可以得到其在各个类别上的 score，如上图所示，仅在不是真实标签类别 \(y_i\) 的其他类别上 \(j\) 上计算损失，仅当其他类别上的 score \(s_j\) 加上一个 safety margin 值之后还小于真实类别上的 score \(s_{y_i}\)时，损失才为0。即不仅仅要求真实类别 score \(s_{y_i}\) 大于其他类别 score \(s_j\)，而且更进一步要求优化器使得前者大于后者加上一个 safety margin。<br>在 otherwise 分支，\(s_j\) 比 \(s_{y_i}\) 大的值再加上 safety margin 就是损失值。<br>$$<br>HingeLoss_{i, j} = max(0, s_j - s_{y_i} + 1)<br>$$<br>\( HingeLoss_{i, j} \) 作为 \( s_{y_i} \) 的函数斜率为 -1，必过点 \( (s_j + 1, 0) \)。<br><img src="/2018/04/12/Loss-functions-推导及理解/hinge_loss.jpg" alt="hinge_loss"></p>
 <p><img src="/2018/04/12/Loss-functions-推导及理解/losses.jpg" alt="losses"><br>$$<br>L = (2.9 + 0 + 12.9) / 3 = 5.27<br>$$</p>
 <h5 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h5><ul>
@@ -180,7 +218,7 @@
 </li>
 <li><p>\( f(x, W) = Wx \), \( L = \frac{1}{N} \sum_{i=1}^{N} \sum_{j \neq y_i} max(0, f(x_i;W)_j - f(x_i;W)_{y_i} + 1) \)<br>Suppose that we found a \( W \) such that \( L = 0 \). Is this W unique?<br>No! 2W is also has L = 0!<br><img src="/2018/04/12/Loss-functions-推导及理解/not_unique_W.jpg" alt="not_unique_W"><br>那么如何在这些不同的 \( W \) 中做出选择，我们必须告诉优化器如何去做，这一点是通过正则化做到的。<br>\( L = \frac{1}{N} \sum_{i=1}^{N} L_i(f(x_i;W), y_i) + \lambda R(W) \)</p>
 </li>
-<li><p>How does L2 regularization measure the complexity of the model?<br>\[<br>R_{L2}(W) = \sum_{k}\sum_{l} W_{k, l}^2 \\\\<br>R_{L1}(W) = \sum_{k}\sum_{l} \left\vert W_{k, l}  \right\vert<br>\]<br>\[<br>x = [1, 1, 1, 1] \\\\<br>W_1 = [0.25, 0.25, 0.25, 0.25] \\\\<br>W_2 = [1, 0, 0, 0] \\\\<br>\]<br>The score of the \( W_1 \) and \( W_2 \) is same, The L2 regularization prefers \( W_1 \), L1 regularization (may) prefers \( W_2 \).<br>L2 regularization prefers to spread influence across all the different values in \( x \), L1 regularization has opposite interpretation. L1 regularization thinks that the model is less complexity when \( W \) has more zeros.<br><img src="/2018/04/12/Loss-functions-推导及理解/softmax_ce_with_logits.jpg" alt="softmax_ce_with_logits"><br><img src="/2018/04/12/Loss-functions-推导及理解/sigmoid_ce_with_logtis.jpg" alt="sigmoid_ce_with_logtis"></p>
+<li><p>How does L2 regularization measure the complexity of the model?<br>\[<br>R_{L2}(W) = \sum_{k}\sum_{l} W_{k, l}^2 \\<br>R_{L1}(W) = \sum_{k}\sum_{l} \left\vert W_{k, l}  \right\vert<br>\]<br>\[<br>x = [1, 1, 1, 1] \\<br>W_1 = [0.25, 0.25, 0.25, 0.25] \\<br>W_2 = [1, 0, 0, 0] \\<br>\]<br>The score of the \( W_1 \) and \( W_2 \) is same, The L2 regularization prefers \( W_1 \), L1 regularization (may) prefers \( W_2 \).<br>L2 regularization prefers to spread influence across all the different values in \( x \), L1 regularization has opposite interpretation. L1 regularization thinks that the model is less complexity when \( W \) has more zeros.<br><img src="/2018/04/12/Loss-functions-推导及理解/softmax_ce_with_logits.jpg" alt="softmax_ce_with_logits"><br><img src="/2018/04/12/Loss-functions-推导及理解/sigmoid_ce_with_logtis.jpg" alt="sigmoid_ce_with_logtis"></p>
 </li>
 </ul>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -188,127 +226,183 @@
     </div>
 
     
-
     
-        <div class="post-tags">
-            <i class="fa fa-tags" aria-hidden="true"></i>
-            <a href="/tags/DL/">#DL</a>
-        </div>
     
 
-    <!-- Comments -->
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/DL/" rel="tag"># DL</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/04/01/C-多态/" rel="prev" title="C++多态">
+      <i class="fa fa-chevron-left"></i> C++多态
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/05/05/喂饱GPU：多线程加载图像数据/" rel="next" title="喂饱GPU：多线程加载图像数据">
+      喂饱GPU：多线程加载图像数据 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
     
+  </article>
+  
+  
+  
 
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题描述"><span class="nav-number">1.</span> <span class="nav-text">问题描述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Multiclass-SVM-loss"><span class="nav-number">2.</span> <span class="nav-text">Multiclass SVM loss</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Q-amp-A"><span class="nav-number">2.0.1.</span> <span class="nav-text">Q&amp;A</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
 </div>
-        </section>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
 
     </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
 
-
-</div>
-
-<!-- Footer -->
-<div class="push"></div>
-
-<footer class="footer-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
-                <h2>About</h2>
-                <p>
-                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
-                </p>
-            </div>
-            
-    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
-        <h2>Recent Posts</h2>
-        <ul>
-            
-            <li>
-                <a class="footer-post" href="/2019/07/12/Unnamed-namespace/">Unnamed namespace</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/05/08/Static-variable-in-inlined-function/">Static variable in inline</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/04/23/Iterator-invalidation-rules/">Iterator invalidation rul</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/18/Emplace-back/">Emplace back</a>
-            </li>
-            
-        </ul>
-    </div>
+        
 
 
 
-            
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <ul class="list-inline footer-social-icons">
-                    
-                    <li class="list-inline-item">
-                        <a href="https://github.com/RobertLexis">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-github"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="mailto:robert_lexis@163.com">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-envelope-o"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="footer-copyright">
-                    @Untitled. All right reserved | Robert Lexis Loves Wenny
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<!-- After footer scripts -->
-
-<!-- jQuery -->
-<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-
-<!-- Tween Max -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
-
-<!-- Gallery -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
-
-<!-- Custom JavaScript -->
-<script src="/js/main.js"></script>
-
-<!-- Disqus Comments -->
 
 
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
 
 </body>
-
 </html>

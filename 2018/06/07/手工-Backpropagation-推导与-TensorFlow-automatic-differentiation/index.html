@@ -1,208 +1,234 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<!-- Head tag -->
+<html lang="zh-CN">
 <head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/main.css">
 
-    <!--Description-->
-    
-        <meta name="description" content="主要对比梯度反向传播手工推导与TensorFLow 自动差分关于梯度反向传播手工推导的学习可以参考斯坦福大学的 CS231n: Convolutional Neural Networks for Visual Recognition 的 Lecture 4。下面通过代码对这两者进行对比，代码的Jupyter NoteBook 可以在我的 GitHub 仓库中找到。
-imports123import osos.environ[&amp;apos;TF_CPP_MIN_LOG_LEVEL&amp;apos;]=&amp;apos;3&amp;apos;import tensorflow as tf
-定义变量123with tf.variable_scope(&amp;quot;params&amp;quot;, reuse=tf.AUTO_REUSE):    w = tf.get_variable(&amp;quot;w&amp;quot;, initializer=tf.constant([2.0]))    b = tf.get_variable(&amp;quot;b&amp;quot;, initializer=tf.constant([0.0]))
-定义占位符12x = tf.placeholder(tf.float32, shape=[None], name=&amp;quot;x&amp;quot;)y = tf.placeholder(tf.float32, shape=[None], name=&amp;quot;y&amp;quot;)
-定义表达式1y_pred = w*x + b
-定义代价函数1loss = tf.reduce_mean(tf.square(y_pred - y))
-定义优化器123optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.001)grads_and_vars = optimizer.compute_gradients(loss)train_op = optimizer.apply_gradients(grads_and_vars)
-创建会话并初始化变量1234init_op = tf.global_variables_initializer()sess = tf.InteractiveSession()sess.run(init_op)
-根据函数 y = 4x + 3 给出训练数据对于单个数据点输入，对比 TensorFlow automatic differentiation 与手工推导123# y_ = 4 * 2 + 3x_ = [2]y_ = [11] # y_ = 4 * 2 + 3
-手工推导 Backpropagation 过程">
-    
 
-    <!--Author-->
-    
-        <meta name="author" content="Robert Lexis">
-    
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-    <!--Open Graph Title-->
-    
-        <meta property="og:title" content="手工 Backpropagation 推导与 TensorFlow automatic differentiation"/>
-    
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
-    <!--Open Graph Description-->
-    
+  <meta name="description" content="主要对比梯度反向传播手工推导与TensorFLow 自动差分关于梯度反向传播手工推导的学习可以参考斯坦福大学的 CS231n: Convolutional Neural Networks for Visual Recognition 的 Lecture 4。下面通过代码对这两者进行对比，代码的Jupyter NoteBook 可以在我的 GitHub 仓库中找到。 imports123import">
+<meta name="keywords" content="DL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="手工 Backpropagation 推导与 TensorFlow Automatic Differentiation">
+<meta property="og:url" content="http://yoursite.com/2018/06/07/手工-Backpropagation-推导与-TensorFlow-automatic-differentiation/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="主要对比梯度反向传播手工推导与TensorFLow 自动差分关于梯度反向传播手工推导的学习可以参考斯坦福大学的 CS231n: Convolutional Neural Networks for Visual Recognition 的 Lecture 4。下面通过代码对这两者进行对比，代码的Jupyter NoteBook 可以在我的 GitHub 仓库中找到。 imports123import">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/backwards/backward_1.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/backwards/backward_1.png">
+<meta property="og:image" content="http://oytnj8g2y.bkt.clouddn.com/backwards/backward_2.png">
+<meta property="og:updated_time" content="2018-08-26T10:50:54.462Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="手工 Backpropagation 推导与 TensorFlow Automatic Differentiation">
+<meta name="twitter:description" content="主要对比梯度反向传播手工推导与TensorFLow 自动差分关于梯度反向传播手工推导的学习可以参考斯坦福大学的 CS231n: Convolutional Neural Networks for Visual Recognition 的 Lecture 4。下面通过代码对这两者进行对比，代码的Jupyter NoteBook 可以在我的 GitHub 仓库中找到。 imports123import">
+<meta name="twitter:image" content="http://oytnj8g2y.bkt.clouddn.com/backwards/backward_1.png">
 
-    <!--Open Graph Site Name-->
-    <meta property="og:site_name" content="This is Robert Lexis."/>
+<link rel="canonical" href="http://yoursite.com/2018/06/07/手工-Backpropagation-推导与-TensorFlow-automatic-differentiation/">
 
-    <!--Type page-->
-    
-        <meta property="og:type" content="article" />
-    
 
-    <!--Page Cover-->
-    
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
 
-    <meta name="twitter:card" content="summary" />
-    
+  <title>手工 Backpropagation 推导与 TensorFlow Automatic Differentiation | The next stop - Antarctica</title>
+  
 
-    <!-- Title -->
-    
-    <title>手工 Backpropagation 推导与 TensorFlow automatic differentiation - This is Robert Lexis.</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 
-    <!-- Custom Fonts -->
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 
-    <!-- Gallery -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
 
-    <!-- Google Analytics -->
-    
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
 
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
 
 </head>
 
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
 
-<body>
-
-<div class="bg-gradient"></div>
-<div class="bg-pattern"></div>
-
-<!-- Menu -->
-<!--Menu Links and Overlay-->
-<div class="menu-bg">
-    <div class="menu-container">
-        <ul>
-            
-            <li class="menu-item">
-                <a href="/">
-                    Home
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/archives">
-                    Archives
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/about">
-                    About
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/tags">
-                    Tags
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/categories">
-                    Categories
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/contact">
-                    Contact
-                </a>
-            </li>
-            
-        </ul>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
 </div>
 
-<!--Hamburger Icon-->
-<nav>
-    <a href="#menu"></a>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
 </nav>
 
-<div class="container">
 
-    <!-- Main Content -->
-    <div class="row">
-    <div class="col-sm-12">
 
-        <!--Title and Logo-->
-        <header>
-    <div class="logo">
-        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
-        
-    </div>
-</header>
 
-        <section class="main">
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
             
-<div class="post">
 
-    <div class="post-header">
-        <h1 class="title">
-            <a href="/2018/06/07/手工-Backpropagation-推导与-TensorFlow-automatic-differentiation/">
-                手工 Backpropagation 推导与 TensorFlow automatic differentiation
-            </a>
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/07/手工-Backpropagation-推导与-TensorFlow-automatic-differentiation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          手工 Backpropagation 推导与 TensorFlow Automatic Differentiation
         </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-06-07</span>
-            
-            
-            
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-06-07 20:47:49" itemprop="dateCreated datePublished" datetime="2018-06-07T20:47:49+08:00">2018-06-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-08-26 18:50:54" itemprop="dateModified" datetime="2018-08-26T18:50:54+08:00">2018-08-26</time>
+              </span>
+
+          
+
         </div>
-    </div>
+      </header>
 
-    <div class="content">
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
-        <!-- Gallery -->
-        
-
-        <!-- Post Content -->
-        <h3 id="主要对比梯度反向传播手工推导与TensorFLow-自动差分"><a href="#主要对比梯度反向传播手工推导与TensorFLow-自动差分" class="headerlink" title="主要对比梯度反向传播手工推导与TensorFLow 自动差分"></a>主要对比梯度反向传播手工推导与TensorFLow 自动差分</h3><p>关于梯度反向传播手工推导的学习可以参考斯坦福大学的 <a href="http://cs231n.stanford.edu/" target="_blank" rel="external">CS231n: Convolutional Neural Networks for Visual Recognition</a> 的 Lecture 4。<br>下面通过代码对这两者进行对比，代码的Jupyter NoteBook 可以在我的 <a href="https://github.com/RobertLexis/TensorFlow-automatic-differentiation" target="_blank" rel="external">GitHub 仓库</a>中找到。</p>
-<h4 id="imports"><a href="#imports" class="headerlink" title="imports"></a>imports</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">import os</div><div class="line">os.environ[&apos;TF_CPP_MIN_LOG_LEVEL&apos;]=&apos;3&apos;</div><div class="line">import tensorflow as tf</div></pre></td></tr></table></figure>
-<h4 id="定义变量"><a href="#定义变量" class="headerlink" title="定义变量"></a>定义变量</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">with tf.variable_scope(&quot;params&quot;, reuse=tf.AUTO_REUSE):</div><div class="line">    w = tf.get_variable(&quot;w&quot;, initializer=tf.constant([2.0]))</div><div class="line">    b = tf.get_variable(&quot;b&quot;, initializer=tf.constant([0.0]))</div></pre></td></tr></table></figure>
-<h4 id="定义占位符"><a href="#定义占位符" class="headerlink" title="定义占位符"></a>定义占位符</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">x = tf.placeholder(tf.float32, shape=[None], name=&quot;x&quot;)</div><div class="line">y = tf.placeholder(tf.float32, shape=[None], name=&quot;y&quot;)</div></pre></td></tr></table></figure>
-<h4 id="定义表达式"><a href="#定义表达式" class="headerlink" title="定义表达式"></a>定义表达式</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">y_pred = w*x + b</div></pre></td></tr></table></figure>
-<h4 id="定义代价函数"><a href="#定义代价函数" class="headerlink" title="定义代价函数"></a>定义代价函数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">loss = tf.reduce_mean(tf.square(y_pred - y))</div></pre></td></tr></table></figure>
-<h4 id="定义优化器"><a href="#定义优化器" class="headerlink" title="定义优化器"></a>定义优化器</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.001)</div><div class="line">grads_and_vars = optimizer.compute_gradients(loss)</div><div class="line">train_op = optimizer.apply_gradients(grads_and_vars)</div></pre></td></tr></table></figure>
-<h4 id="创建会话并初始化变量"><a href="#创建会话并初始化变量" class="headerlink" title="创建会话并初始化变量"></a>创建会话并初始化变量</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">init_op = tf.global_variables_initializer()</div><div class="line"></div><div class="line">sess = tf.InteractiveSession()</div><div class="line">sess.run(init_op)</div></pre></td></tr></table></figure>
-<h4 id="根据函数-y-4x-3-给出训练数据"><a href="#根据函数-y-4x-3-给出训练数据" class="headerlink" title="根据函数 y = 4x + 3 给出训练数据"></a>根据函数 y = 4x + 3 给出训练数据</h4><h4 id="对于单个数据点输入，对比-TensorFlow-automatic-differentiation-与手工推导"><a href="#对于单个数据点输入，对比-TensorFlow-automatic-differentiation-与手工推导" class="headerlink" title="对于单个数据点输入，对比 TensorFlow automatic differentiation 与手工推导"></a>对于单个数据点输入，对比 TensorFlow automatic differentiation 与手工推导</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"># y_ = 4 * 2 + 3</div><div class="line">x_ = [2]</div><div class="line">y_ = [11] # y_ = 4 * 2 + 3</div></pre></td></tr></table></figure>
+      
+        <h3 id="主要对比梯度反向传播手工推导与TensorFLow-自动差分"><a href="#主要对比梯度反向传播手工推导与TensorFLow-自动差分" class="headerlink" title="主要对比梯度反向传播手工推导与TensorFLow 自动差分"></a>主要对比梯度反向传播手工推导与TensorFLow 自动差分</h3><p>关于梯度反向传播手工推导的学习可以参考斯坦福大学的 <a href="http://cs231n.stanford.edu/" target="_blank" rel="noopener">CS231n: Convolutional Neural Networks for Visual Recognition</a> 的 Lecture 4。<br>下面通过代码对这两者进行对比，代码的Jupyter NoteBook 可以在我的 <a href="https://github.com/RobertLexis/TensorFlow-automatic-differentiation" target="_blank" rel="noopener">GitHub 仓库</a>中找到。</p>
+<h4 id="imports"><a href="#imports" class="headerlink" title="imports"></a>imports</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">import os</span><br><span class="line">os.environ[&apos;TF_CPP_MIN_LOG_LEVEL&apos;]=&apos;3&apos;</span><br><span class="line">import tensorflow as tf</span><br></pre></td></tr></table></figure>
+<h4 id="定义变量"><a href="#定义变量" class="headerlink" title="定义变量"></a>定义变量</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">with tf.variable_scope(&quot;params&quot;, reuse=tf.AUTO_REUSE):</span><br><span class="line">    w = tf.get_variable(&quot;w&quot;, initializer=tf.constant([2.0]))</span><br><span class="line">    b = tf.get_variable(&quot;b&quot;, initializer=tf.constant([0.0]))</span><br></pre></td></tr></table></figure>
+<h4 id="定义占位符"><a href="#定义占位符" class="headerlink" title="定义占位符"></a>定义占位符</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x = tf.placeholder(tf.float32, shape=[None], name=&quot;x&quot;)</span><br><span class="line">y = tf.placeholder(tf.float32, shape=[None], name=&quot;y&quot;)</span><br></pre></td></tr></table></figure>
+<h4 id="定义表达式"><a href="#定义表达式" class="headerlink" title="定义表达式"></a>定义表达式</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">y_pred = w*x + b</span><br></pre></td></tr></table></figure>
+<h4 id="定义代价函数"><a href="#定义代价函数" class="headerlink" title="定义代价函数"></a>定义代价函数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">loss = tf.reduce_mean(tf.square(y_pred - y))</span><br></pre></td></tr></table></figure>
+<h4 id="定义优化器"><a href="#定义优化器" class="headerlink" title="定义优化器"></a>定义优化器</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.001)</span><br><span class="line">grads_and_vars = optimizer.compute_gradients(loss)</span><br><span class="line">train_op = optimizer.apply_gradients(grads_and_vars)</span><br></pre></td></tr></table></figure>
+<h4 id="创建会话并初始化变量"><a href="#创建会话并初始化变量" class="headerlink" title="创建会话并初始化变量"></a>创建会话并初始化变量</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">init_op = tf.global_variables_initializer()</span><br><span class="line"></span><br><span class="line">sess = tf.InteractiveSession()</span><br><span class="line">sess.run(init_op)</span><br></pre></td></tr></table></figure>
+<h4 id="根据函数-y-4x-3-给出训练数据"><a href="#根据函数-y-4x-3-给出训练数据" class="headerlink" title="根据函数 y = 4x + 3 给出训练数据"></a>根据函数 y = 4x + 3 给出训练数据</h4><h4 id="对于单个数据点输入，对比-TensorFlow-automatic-differentiation-与手工推导"><a href="#对于单个数据点输入，对比-TensorFlow-automatic-differentiation-与手工推导" class="headerlink" title="对于单个数据点输入，对比 TensorFlow automatic differentiation 与手工推导"></a>对于单个数据点输入，对比 TensorFlow automatic differentiation 与手工推导</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># y_ = 4 * 2 + 3</span><br><span class="line">x_ = [2]</span><br><span class="line">y_ = [11] # y_ = 4 * 2 + 3</span><br></pre></td></tr></table></figure>
 <h6 id="手工推导-Backpropagation-过程"><a href="#手工推导-Backpropagation-过程" class="headerlink" title="手工推导 Backpropagation 过程"></a>手工推导 Backpropagation 过程</h6><p><img src="http://oytnj8g2y.bkt.clouddn.com/backwards/backward_1.png" alt="backward_1"><br><a id="more"></a></p>
-<h6 id="用-TensorFlow-计算-loss-及梯度"><a href="#用-TensorFlow-计算-loss-及梯度" class="headerlink" title="用 TensorFlow 计算 loss 及梯度"></a>用 TensorFlow 计算 loss 及梯度</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sess.run([loss, grads_and_vars], feed_dict=&#123;x: x_, y: y_&#125;)</div></pre></td></tr></table></figure>
-<p>Output:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[49.0,</div><div class="line"> [(array([-28.], dtype=float32), array([2.], dtype=float32)),</div><div class="line">  (array([-14.], dtype=float32), array([0.], dtype=float32))]]</div></pre></td></tr></table></figure></p>
-<h4 id="对于-batch-输入，对比-TensorFlow-automatic-differentiation-与手工推导"><a href="#对于-batch-输入，对比-TensorFlow-automatic-differentiation-与手工推导" class="headerlink" title="对于 batch 输入，对比 TensorFlow automatic differentiation 与手工推导"></a>对于 batch 输入，对比 TensorFlow automatic differentiation 与手工推导</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">x_ = [2, 3]</div><div class="line">y_ = [11, 15]</div></pre></td></tr></table></figure>
+<h6 id="用-TensorFlow-计算-loss-及梯度"><a href="#用-TensorFlow-计算-loss-及梯度" class="headerlink" title="用 TensorFlow 计算 loss 及梯度"></a>用 TensorFlow 计算 loss 及梯度</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sess.run([loss, grads_and_vars], feed_dict=&#123;x: x_, y: y_&#125;)</span><br></pre></td></tr></table></figure>
+<p>Output:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[49.0,</span><br><span class="line"> [(array([-28.], dtype=float32), array([2.], dtype=float32)),</span><br><span class="line">  (array([-14.], dtype=float32), array([0.], dtype=float32))]]</span><br></pre></td></tr></table></figure></p>
+<h4 id="对于-batch-输入，对比-TensorFlow-automatic-differentiation-与手工推导"><a href="#对于-batch-输入，对比-TensorFlow-automatic-differentiation-与手工推导" class="headerlink" title="对于 batch 输入，对比 TensorFlow automatic differentiation 与手工推导"></a>对于 batch 输入，对比 TensorFlow automatic differentiation 与手工推导</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x_ = [2, 3]</span><br><span class="line">y_ = [11, 15]</span><br></pre></td></tr></table></figure>
 <p><img src="http://oytnj8g2y.bkt.clouddn.com/backwards/backward_1.png" alt="backward_1"><br><img src="http://oytnj8g2y.bkt.clouddn.com/backwards/backward_2.png" alt="backward_2"></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sess.run([loss, grads_and_vars], feed_dict=&#123;x: x_, y: y_&#125;)</div></pre></td></tr></table></figure>
-<p>Output:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[65.0,</div><div class="line"> [(array([-41.], dtype=float32), array([2.], dtype=float32)),</div><div class="line">  (array([-16.], dtype=float32), array([0.], dtype=float32))]]</div></pre></td></tr></table></figure></p>
-<h6 id="结果分析"><a href="#结果分析" class="headerlink" title="结果分析"></a>结果分析</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">65 == (81+49)/2</div><div class="line">-41 == (-28-54)/2</div><div class="line">-16 == (-14-18)/2</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sess.run([loss, grads_and_vars], feed_dict=&#123;x: x_, y: y_&#125;)</span><br></pre></td></tr></table></figure>
+<p>Output:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[65.0,</span><br><span class="line"> [(array([-41.], dtype=float32), array([2.], dtype=float32)),</span><br><span class="line">  (array([-16.], dtype=float32), array([0.], dtype=float32))]]</span><br></pre></td></tr></table></figure></p>
+<h6 id="结果分析"><a href="#结果分析" class="headerlink" title="结果分析"></a>结果分析</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">65 == (81+49)/2</span><br><span class="line">-41 == (-28-54)/2</span><br><span class="line">-16 == (-14-18)/2</span><br></pre></td></tr></table></figure>
 <p>可以看出 TensorFlow 计算出的 loss 是两次 loss 的均值，两个变量上的梯度也是各自两次梯度值的均值。</p>
-<h4 id="以-learning-rate-为步幅对-w，b进行一次更新"><a href="#以-learning-rate-为步幅对-w，b进行一次更新" class="headerlink" title="以 learning_rate 为步幅对 w，b进行一次更新"></a>以 learning_rate 为步幅对 w，b进行一次更新</h4><h6 id="手工计算"><a href="#手工计算" class="headerlink" title="手工计算"></a>手工计算</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">2 - 0.001 * (-41) = 2.041</div><div class="line">0 - 0.001 * (-16) = 0.016</div></pre></td></tr></table></figure>
-<h6 id="TensorFlow-计算结果"><a href="#TensorFlow-计算结果" class="headerlink" title="TensorFlow 计算结果"></a>TensorFlow 计算结果</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sess.run(train_op, feed_dict=&#123;x: x_, y: y_&#125;)</div><div class="line">sess.run([w, b])</div></pre></td></tr></table></figure>
-<p>Output:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[array([2.041], dtype=float32), array([0.016], dtype=float32)]</div></pre></td></tr></table></figure></p>
-<h4 id="下面对模型进行训练并观察-w，b-的变化过程"><a href="#下面对模型进行训练并观察-w，b-的变化过程" class="headerlink" title="下面对模型进行训练并观察 w，b 的变化过程"></a>下面对模型进行训练并观察 w，b 的变化过程</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">for _ in range(1000):</div><div class="line">    sess.run(train_op, feed_dict=&#123;x: x_, y: y_&#125;)</div><div class="line">sess.run([w, b])</div><div class="line">[array([4.700393], dtype=float32), array([1.1883683], dtype=float32)]</div><div class="line"></div><div class="line"></div><div class="line">for _ in range(1000):</div><div class="line">    sess.run(train_op, feed_dict=&#123;x: x_, y: y_&#125;)</div><div class="line">sess.run([w, b])</div><div class="line">[array([4.6550403], dtype=float32), array([1.3056908], dtype=float32)]</div><div class="line"></div><div class="line"></div><div class="line">for _ in range(1000):</div><div class="line">    sess.run(train_op, feed_dict=&#123;x: x_, y: y_&#125;)</div><div class="line">sess.run([w, b])</div><div class="line">[array([4.6126213], dtype=float32), array([1.4154125], dtype=float32)]</div><div class="line"></div><div class="line"></div><div class="line">for _ in range(10000):</div><div class="line">    sess.run(train_op, feed_dict=&#123;x: x_, y: y_&#125;)</div><div class="line">sess.run([w, b])</div><div class="line">[array([4.3136806], dtype=float32), array([2.1886632], dtype=float32)]</div><div class="line"></div><div class="line"></div><div class="line">for _ in range(10000):</div><div class="line">    sess.run(train_op, feed_dict=&#123;x: x_, y: y_&#125;)</div><div class="line">sess.run([w, b])</div><div class="line">[array([4.1606426], dtype=float32), array([2.5844746], dtype=float32)]</div></pre></td></tr></table></figure>
+<h4 id="以-learning-rate-为步幅对-w，b进行一次更新"><a href="#以-learning-rate-为步幅对-w，b进行一次更新" class="headerlink" title="以 learning_rate 为步幅对 w，b进行一次更新"></a>以 learning_rate 为步幅对 w，b进行一次更新</h4><h6 id="手工计算"><a href="#手工计算" class="headerlink" title="手工计算"></a>手工计算</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">2 - 0.001 * (-41) = 2.041</span><br><span class="line">0 - 0.001 * (-16) = 0.016</span><br></pre></td></tr></table></figure>
+<h6 id="TensorFlow-计算结果"><a href="#TensorFlow-计算结果" class="headerlink" title="TensorFlow 计算结果"></a>TensorFlow 计算结果</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sess.run(train_op, feed_dict=&#123;x: x_, y: y_&#125;)</span><br><span class="line">sess.run([w, b])</span><br></pre></td></tr></table></figure>
+<p>Output:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[array([2.041], dtype=float32), array([0.016], dtype=float32)]</span><br></pre></td></tr></table></figure></p>
+<h4 id="下面对模型进行训练并观察-w，b-的变化过程"><a href="#下面对模型进行训练并观察-w，b-的变化过程" class="headerlink" title="下面对模型进行训练并观察 w，b 的变化过程"></a>下面对模型进行训练并观察 w，b 的变化过程</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">for _ in range(1000):</span><br><span class="line">    sess.run(train_op, feed_dict=&#123;x: x_, y: y_&#125;)</span><br><span class="line">sess.run([w, b])</span><br><span class="line">[array([4.700393], dtype=float32), array([1.1883683], dtype=float32)]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">for _ in range(1000):</span><br><span class="line">    sess.run(train_op, feed_dict=&#123;x: x_, y: y_&#125;)</span><br><span class="line">sess.run([w, b])</span><br><span class="line">[array([4.6550403], dtype=float32), array([1.3056908], dtype=float32)]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">for _ in range(1000):</span><br><span class="line">    sess.run(train_op, feed_dict=&#123;x: x_, y: y_&#125;)</span><br><span class="line">sess.run([w, b])</span><br><span class="line">[array([4.6126213], dtype=float32), array([1.4154125], dtype=float32)]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">for _ in range(10000):</span><br><span class="line">    sess.run(train_op, feed_dict=&#123;x: x_, y: y_&#125;)</span><br><span class="line">sess.run([w, b])</span><br><span class="line">[array([4.3136806], dtype=float32), array([2.1886632], dtype=float32)]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">for _ in range(10000):</span><br><span class="line">    sess.run(train_op, feed_dict=&#123;x: x_, y: y_&#125;)</span><br><span class="line">sess.run([w, b])</span><br><span class="line">[array([4.1606426], dtype=float32), array([2.5844746], dtype=float32)]</span><br></pre></td></tr></table></figure>
 <p>可以看出随着训练步骤的增多，w，b 逐渐逼近目标值 4， 3</p>
-<h4 id="关闭会话，释放资源"><a href="#关闭会话，释放资源" class="headerlink" title="关闭会话，释放资源"></a>关闭会话，释放资源</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sess.close()</div></pre></td></tr></table></figure>
-<h3 id="Caveats"><a href="#Caveats" class="headerlink" title="Caveats"></a>Caveats</h3><p>在上面我们定义的loss是如下的均值（0-d Tensor/scalar/shape ()）形式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">loss = tf.reduce_mean(tf.square(y_pred - y))</div></pre></td></tr></table></figure></p>
-<p>假设我们没有进行 <code>reduce_mean</code>，即 loss 是如下的形式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">loss = tf.square(y_pred - y)</div></pre></td></tr></table></figure></p>
-<p>当 <code>x_ = [2, 3]</code>、<code>y_ = [11, 15]</code>时，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sess.run([loss, grads_and_vars], feed_dict=&#123;x: x_, y: y_&#125;)</div></pre></td></tr></table></figure></p>
-<p>输出为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[array([49., 81.], dtype=float32),</div><div class="line"> [(array([-82.], dtype=float32), array([2.], dtype=float32)),</div><div class="line">  (array([-32.], dtype=float32), array([0.], dtype=float32))]]</div></pre></td></tr></table></figure></p>
-<p>有两个 loss 值分别为49 和 81，和我们手工计算出的值是一致的，而两个变量的梯度为各自的两次梯度值的加和。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">-82 == (-28) + (-54)</div><div class="line">-32 == (-14) + (-18)</div></pre></td></tr></table></figure></p>
+<h4 id="关闭会话，释放资源"><a href="#关闭会话，释放资源" class="headerlink" title="关闭会话，释放资源"></a>关闭会话，释放资源</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sess.close()</span><br></pre></td></tr></table></figure>
+<h3 id="Caveats"><a href="#Caveats" class="headerlink" title="Caveats"></a>Caveats</h3><p>在上面我们定义的loss是如下的均值（0-d Tensor/scalar/shape ()）形式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">loss = tf.reduce_mean(tf.square(y_pred - y))</span><br></pre></td></tr></table></figure></p>
+<p>假设我们没有进行 <code>reduce_mean</code>，即 loss 是如下的形式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">loss = tf.square(y_pred - y)</span><br></pre></td></tr></table></figure></p>
+<p>当 <code>x_ = [2, 3]</code>、<code>y_ = [11, 15]</code>时，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sess.run([loss, grads_and_vars], feed_dict=&#123;x: x_, y: y_&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>输出为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[array([49., 81.], dtype=float32),</span><br><span class="line"> [(array([-82.], dtype=float32), array([2.], dtype=float32)),</span><br><span class="line">  (array([-32.], dtype=float32), array([0.], dtype=float32))]]</span><br></pre></td></tr></table></figure></p>
+<p>有两个 loss 值分别为49 和 81，和我们手工计算出的值是一致的，而两个变量的梯度为各自的两次梯度值的加和。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-82 == (-28) + (-54)</span><br><span class="line">-32 == (-14) + (-18)</span><br></pre></td></tr></table></figure></p>
 <p>即有两个 loss，相当于更新了两次。</p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
 <li>Loss 仅仅是一个度量指标，其均值是对模型性能的一个更有意义的评价，是为此而求的均值，这个均值也仅仅用于模型性能的评价，其具体数值并不实际参与到反向传播更新各个参数的过程。loss 的具体数值意义不大，因为反向传播最起始的upstream gradient总是1。<br>这也就解释了我之前遇到过的一个问题，为什么单纯给优化器传入一个loss 的数值，TF 会报错，无法计算梯度，因为真正重要的不是这个末端的loss 数值，而是在计算这个末端loss 数值的过程中的每一个中间值及涉及到的操作类型（add mul max sub square ）。利用这些中间值和操作类型结合，反向进行梯度的传播。</li>
@@ -234,127 +260,183 @@ imports123import osos.environ[&amp;apos;TF_CPP_MIN_LOG_LEVEL&amp;apos;]=&amp;apo
     </div>
 
     
-
     
-        <div class="post-tags">
-            <i class="fa fa-tags" aria-hidden="true"></i>
-            <a href="/tags/DL/">#DL</a>
-        </div>
     
 
-    <!-- Comments -->
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/DL/" rel="tag"># DL</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/05/28/Deep-learning-资料汇总/" rel="prev" title="Deep Learning 资料汇总">
+      <i class="fa fa-chevron-left"></i> Deep Learning 资料汇总
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/06/08/笔记-for-PyData-2015-Introduction-to-scikit-image/" rel="next" title="笔记 for PyData 2015 - Introduction to Scikit-Image">
+      笔记 for PyData 2015 - Introduction to Scikit-Image <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
     
+  </article>
+  
+  
+  
 
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#主要对比梯度反向传播手工推导与TensorFLow-自动差分"><span class="nav-number">1.</span> <span class="nav-text">主要对比梯度反向传播手工推导与TensorFLow 自动差分</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#imports"><span class="nav-number">1.1.</span> <span class="nav-text">imports</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#定义变量"><span class="nav-number">1.2.</span> <span class="nav-text">定义变量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#定义占位符"><span class="nav-number">1.3.</span> <span class="nav-text">定义占位符</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#定义表达式"><span class="nav-number">1.4.</span> <span class="nav-text">定义表达式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#定义代价函数"><span class="nav-number">1.5.</span> <span class="nav-text">定义代价函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#定义优化器"><span class="nav-number">1.6.</span> <span class="nav-text">定义优化器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建会话并初始化变量"><span class="nav-number">1.7.</span> <span class="nav-text">创建会话并初始化变量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#根据函数-y-4x-3-给出训练数据"><span class="nav-number">1.8.</span> <span class="nav-text">根据函数 y = 4x + 3 给出训练数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#对于单个数据点输入，对比-TensorFlow-automatic-differentiation-与手工推导"><span class="nav-number">1.9.</span> <span class="nav-text">对于单个数据点输入，对比 TensorFlow automatic differentiation 与手工推导</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#手工推导-Backpropagation-过程"><span class="nav-number">1.9.0.1.</span> <span class="nav-text">手工推导 Backpropagation 过程</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#用-TensorFlow-计算-loss-及梯度"><span class="nav-number">1.9.0.2.</span> <span class="nav-text">用 TensorFlow 计算 loss 及梯度</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#对于-batch-输入，对比-TensorFlow-automatic-differentiation-与手工推导"><span class="nav-number">1.10.</span> <span class="nav-text">对于 batch 输入，对比 TensorFlow automatic differentiation 与手工推导</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#结果分析"><span class="nav-number">1.10.0.1.</span> <span class="nav-text">结果分析</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#以-learning-rate-为步幅对-w，b进行一次更新"><span class="nav-number">1.11.</span> <span class="nav-text">以 learning_rate 为步幅对 w，b进行一次更新</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#手工计算"><span class="nav-number">1.11.0.1.</span> <span class="nav-text">手工计算</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#TensorFlow-计算结果"><span class="nav-number">1.11.0.2.</span> <span class="nav-text">TensorFlow 计算结果</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#下面对模型进行训练并观察-w，b-的变化过程"><span class="nav-number">1.12.</span> <span class="nav-text">下面对模型进行训练并观察 w，b 的变化过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#关闭会话，释放资源"><span class="nav-number">1.13.</span> <span class="nav-text">关闭会话，释放资源</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Caveats"><span class="nav-number">2.</span> <span class="nav-text">Caveats</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Reminder-from-cs231n"><span class="nav-number">4.</span> <span class="nav-text">Reminder from cs231n</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
 </div>
-        </section>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
 
     </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
 
-
-</div>
-
-<!-- Footer -->
-<div class="push"></div>
-
-<footer class="footer-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
-                <h2>About</h2>
-                <p>
-                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
-                </p>
-            </div>
-            
-    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
-        <h2>Recent Posts</h2>
-        <ul>
-            
-            <li>
-                <a class="footer-post" href="/2019/07/12/Unnamed-namespace/">Unnamed namespace</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/05/08/Static-variable-in-inlined-function/">Static variable in inline</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/04/23/Iterator-invalidation-rules/">Iterator invalidation rul</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/18/Emplace-back/">Emplace back</a>
-            </li>
-            
-        </ul>
-    </div>
+        
 
 
 
-            
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <ul class="list-inline footer-social-icons">
-                    
-                    <li class="list-inline-item">
-                        <a href="https://github.com/RobertLexis">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-github"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="mailto:robert_lexis@163.com">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-envelope-o"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="footer-copyright">
-                    @Untitled. All right reserved | Robert Lexis Loves Wenny
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<!-- After footer scripts -->
-
-<!-- jQuery -->
-<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-
-<!-- Tween Max -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
-
-<!-- Gallery -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
-
-<!-- Custom JavaScript -->
-<script src="/js/main.js"></script>
-
-<!-- Disqus Comments -->
 
 
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
 
 </body>
-
 </html>

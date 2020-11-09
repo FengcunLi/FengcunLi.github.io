@@ -1,560 +1,990 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<!-- Head tag -->
+<html lang="zh-CN">
 <head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/main.css">
 
-    <!--Description-->
-    
 
-    <!--Author-->
-    
-        <meta name="author" content="Robert Lexis">
-    
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-    <!--Open Graph Title-->
-    
-        <meta property="og:title" content="This is Robert Lexis."/>
-    
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
-    <!--Open Graph Description-->
-    
+  <meta property="og:type" content="website">
+<meta property="og:title" content="The next stop - Antarctica">
+<meta property="og:url" content="http://yoursite.com/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:locale" content="zh-CN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="The next stop - Antarctica">
 
-    <!--Open Graph Site Name-->
-    <meta property="og:site_name" content="This is Robert Lexis."/>
+<link rel="canonical" href="http://yoursite.com/">
 
-    <!--Type page-->
-    
-        <meta property="og:type" content="website" />
-    
 
-    <!--Page Cover-->
-    
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
 
-    <meta name="twitter:card" content="summary" />
-    
+  <title>The next stop - Antarctica</title>
+  
 
-    <!-- Title -->
-    
-    <title>This is Robert Lexis.</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 
-    <!-- Custom Fonts -->
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 
-    <!-- Gallery -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
 
-    <!-- Google Analytics -->
-    
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
 
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
 
 </head>
 
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
 
-<body>
-
-<div class="bg-gradient"></div>
-<div class="bg-pattern"></div>
-
-<!-- Menu -->
-<!--Menu Links and Overlay-->
-<div class="menu-bg">
-    <div class="menu-container">
-        <ul>
-            
-            <li class="menu-item">
-                <a href="/">
-                    Home
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/archives">
-                    Archives
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/about">
-                    About
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/tags">
-                    Tags
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/categories">
-                    Categories
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/contact">
-                    Contact
-                </a>
-            </li>
-            
-        </ul>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
 </div>
 
-<!--Hamburger Icon-->
-<nav>
-    <a href="#menu"></a>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
 </nav>
 
-<div class="container">
 
-    <!-- Main Content -->
-    <div class="row">
-    <div class="col-sm-12">
 
-        <!--Title and Logo-->
-        <header>
-    <div class="logo">
-        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content index posts-expand">
+            
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/12/Unnamed-namespace/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/07/12/Unnamed-namespace/" class="post-title-link" itemprop="url">Unnamed Namespace</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-07-12 10:37:23 / 修改时间：11:07:35" itemprop="dateCreated datePublished" datetime="2019-07-12T10:37:23+08:00">2019-07-12</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="匿名命名空间的-external-linkage-与-internal-linkage"><a href="#匿名命名空间的-external-linkage-与-internal-linkage" class="headerlink" title="匿名命名空间的 external linkage 与 internal linkage"></a>匿名命名空间的 external linkage 与 internal linkage</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">namespace &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/07/12/Unnamed-namespace/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
         
-            <h1 id="main-title" class="title">This is Robert Lexis.</h1>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/08/Static-variable-in-inlined-function/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/05/08/Static-variable-in-inlined-function/" class="post-title-link" itemprop="url">Static Variable in Inlined Function</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-05-08 00:28:12 / 修改时间：02:02:40" itemprop="dateCreated datePublished" datetime="2019-05-08T00:28:12+08:00">2019-05-08</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="static-function-static-local-variable"><a href="#static-function-static-local-variable" class="headerlink" title="static function + static local variable"></a>static function + static local variable</h3><p>Declaring a function static will make it “hidden” in its compilation unit.<br></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/05/08/Static-variable-in-inlined-function/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
         
-    </div>
-</header>
-
-        <section class="main">
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2019/07/12/Unnamed-namespace/">
-                Unnamed namespace
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2019-07-12</span>
-            
-            
-            
-        </div>
+      
     </div>
 
     
-        <div class="content">
-            <h3 id="匿名命名空间的-external-linkage-与-internal-linkage"><a href="#匿名命名空间的-external-linkage-与-internal-linkage" class="headerlink" title="匿名命名空间的 external linkage 与 internal linkage"></a>匿名命名空间的 external linkage 与 internal linkage</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">namespace &#123;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-        </div>
-        <a href="/2019/07/12/Unnamed-namespace/" class="read-more">Read More</a>
     
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
 
-</div>
-            
-                
-<div class="post">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/23/Iterator-invalidation-rules/">
 
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2019/05/08/Static-variable-in-inlined-function/">
-                Static variable in inlined function
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2019-05-08</span>
-            
-            
-            
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/04/23/Iterator-invalidation-rules/" class="post-title-link" itemprop="url">Iterator Invalidation Rules</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-04-23 22:57:55 / 修改时间：23:03:38" itemprop="dateCreated datePublished" datetime="2019-04-23T22:57:55+08:00">2019-04-23</time>
+            </span>
+
+          
+
         </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><a href="https://stackoverflow.com/questions/6438086/iterator-invalidation-rules" target="_blank" rel="noopener">Iterator invalidation rules</a><br></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/04/23/Iterator-invalidation-rules/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
     </div>
 
     
-        <div class="content">
-            <h3 id="static-function-static-local-variable"><a href="#static-function-static-local-variable" class="headerlink" title="static function + static local variable"></a>static function + static local variable</h3><p>Declaring a function static will make it “hidden” in its compilation unit.<br></p>
-        </div>
-        <a href="/2019/05/08/Static-variable-in-inlined-function/" class="read-more">Read More</a>
     
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2019/04/23/Iterator-invalidation-rules/">
-                Iterator invalidation rules
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2019-04-23</span>
-            
-            
-            
-        </div>
-    </div>
-
     
-        <div class="content">
-            <p><a href="https://stackoverflow.com/questions/6438086/iterator-invalidation-rules" target="_blank" rel="external">Iterator invalidation rules</a><br></p>
-        </div>
-        <a href="/2019/04/23/Iterator-invalidation-rules/" class="read-more">Read More</a>
-    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
 
-</div>
-            
-                
-<div class="post">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/18/Emplace-back/">
 
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2019/03/18/Emplace-back/">
-                Emplace back
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2019-03-18</span>
-            
-            
-            
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/03/18/Emplace-back/" class="post-title-link" itemprop="url">Emplace Back</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-03-18 10:20:00 / 修改时间：11:48:17" itemprop="dateCreated datePublished" datetime="2019-03-18T10:20:00+08:00">2019-03-18</time>
+            </span>
+
+          
+
         </div>
-    </div>
+      </header>
 
     
-        <div class="content">
-            <h3 id="Why-emplace-back-is-faster-than-push-back"><a href="#Why-emplace-back-is-faster-than-push-back" class="headerlink" title="Why emplace_back is faster than push_back?"></a>Why emplace_back is faster than push_back?</h3><ul>
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="Why-emplace-back-is-faster-than-push-back"><a href="#Why-emplace-back-is-faster-than-push-back" class="headerlink" title="Why emplace_back is faster than push_back?"></a>Why emplace_back is faster than push_back?</h3><ul>
 <li><p>since C++ 11 until C++17</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span>&lt;<span class="class"><span class="keyword">class</span>... <span class="title">Args</span>&gt;</span></div><div class="line"><span class="class"><span class="title">void</span> <span class="title">emplace_back</span>(<span class="title">Args</span>&amp;&amp;... <span class="title">args</span>);</span></div></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="class"><span class="keyword">class</span>... <span class="title">Args</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">void</span> <span class="title">emplace_back</span>(<span class="title">Args</span>&amp;&amp;... <span class="title">args</span>);</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>since C++17</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span>&lt;<span class="class"><span class="keyword">class</span>... <span class="title">Args</span>&gt;</span></div><div class="line"><span class="class"><span class="title">reference</span> <span class="title">emplace_back</span>(<span class="title">Args</span>&amp;&amp;... <span class="title">args</span>);</span></div></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="class"><span class="keyword">class</span>... <span class="title">Args</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">reference</span> <span class="title">emplace_back</span>(<span class="title">Args</span>&amp;&amp;... <span class="title">args</span>);</span></span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-        </div>
-        <a href="/2019/03/18/Emplace-back/" class="read-more">Read More</a>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2019/03/14/Perfect-forward/">
-                Perfect forward
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2019-03-14</span>
-            
-            
-            
-        </div>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/03/18/Emplace-back/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
     </div>
 
     
-        <div class="content">
-            <h3 id="std-move"><a href="#std-move" class="headerlink" title="std::move"></a>std::move</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="keyword">decltype</span>(<span class="keyword">auto</span>) move(T&amp;&amp; param)</div><div class="line">&#123;</div><div class="line">   <span class="keyword">using</span> return_type = <span class="built_in">std</span>::remove_reference&lt;T&gt;::type&amp;&amp;;</div><div class="line">   <span class="keyword">return</span> <span class="keyword">static_cast</span>&lt;return_type&gt;(param);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-        </div>
-        <a href="/2019/03/14/Perfect-forward/" class="read-more">Read More</a>
     
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
 
-</div>
-            
-                
-<div class="post">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/14/Perfect-forward/">
 
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2019/03/14/Move-semantic-perfect-forward/">
-                Move semantic & perfect forward
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2019-03-14</span>
-            
-            
-            
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/03/14/Perfect-forward/" class="post-title-link" itemprop="url">Perfect Forward</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-03-14 20:46:30 / 修改时间：21:52:00" itemprop="dateCreated datePublished" datetime="2019-03-14T20:46:30+08:00">2019-03-14</time>
+            </span>
+
+          
+
         </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="std-move"><a href="#std-move" class="headerlink" title="std::move"></a>std::move</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">decltype</span>(<span class="keyword">auto</span>) move(T&amp;&amp; param)</span><br><span class="line">&#123;</span><br><span class="line">   <span class="keyword">using</span> return_type = <span class="built_in">std</span>::remove_reference&lt;T&gt;::type&amp;&amp;;</span><br><span class="line">   <span class="keyword">return</span> <span class="keyword">static_cast</span>&lt;return_type&gt;(param);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/03/14/Perfect-forward/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
     </div>
 
     
-        <div class="content">
-            <h2 id="移动语义（move-semantic）和完美转发（perfect-forward）"><a href="#移动语义（move-semantic）和完美转发（perfect-forward）" class="headerlink" title="移动语义（move semantic）和完美转发（perfect forward）"></a>移动语义（move semantic）和完美转发（perfect forward）</h2><p>新标准重新定义了 <code>lvalue</code>和<code>rvalue</code>，并允许函数依照这两种不同的类型进行重载。通过对于右值的重新定义，语言实现了移动语义和完美转发，通过这种方法，C++在保留原有的语法、不改动已存在的代码的基础上提升了代码的性能。<br></p>
-        </div>
-        <a href="/2019/03/14/Move-semantic-perfect-forward/" class="read-more">Read More</a>
     
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
 
-</div>
-            
-                
-<div class="post">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/14/Move-semantic-perfect-forward/">
 
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2019/03/14/RAII-smart-pointer/">
-                RAII & smart pointer
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2019-03-14</span>
-            
-            
-            
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/03/14/Move-semantic-perfect-forward/" class="post-title-link" itemprop="url">Move Semantic & Perfect Forward</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-03-14 19:58:49 / 修改时间：21:51:49" itemprop="dateCreated datePublished" datetime="2019-03-14T19:58:49+08:00">2019-03-14</time>
+            </span>
+
+          
+
         </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="移动语义（move-semantic）和完美转发（perfect-forward）"><a href="#移动语义（move-semantic）和完美转发（perfect-forward）" class="headerlink" title="移动语义（move semantic）和完美转发（perfect forward）"></a>移动语义（move semantic）和完美转发（perfect forward）</h2><p>新标准重新定义了 <code>lvalue</code>和<code>rvalue</code>，并允许函数依照这两种不同的类型进行重载。通过对于右值的重新定义，语言实现了移动语义和完美转发，通过这种方法，C++在保留原有的语法、不改动已存在的代码的基础上提升了代码的性能。<br></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/03/14/Move-semantic-perfect-forward/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
     </div>
 
     
-        <div class="content">
-            <h3 id="RAII"><a href="#RAII" class="headerlink" title="RAII"></a>RAII</h3><p>RAII 全称为 <em>Resource Acquisition Is Initialization</em>，1984-1989 年期间，比雅尼·斯特劳斯特鲁普和安德鲁·柯尼希在设计 C++ 异常时，为解决<strong>资源管理</strong>时的<strong>异常安全性</strong>而使用了 <strong>RAII</strong>。</p>
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/14/RAII-smart-pointer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/03/14/RAII-smart-pointer/" class="post-title-link" itemprop="url">RAII & Smart Pointer</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-03-14 15:44:25 / 修改时间：21:54:45" itemprop="dateCreated datePublished" datetime="2019-03-14T15:44:25+08:00">2019-03-14</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="RAII"><a href="#RAII" class="headerlink" title="RAII"></a>RAII</h3><p>RAII 全称为 <em>Resource Acquisition Is Initialization</em>，1984-1989 年期间，比雅尼·斯特劳斯特鲁普和安德鲁·柯尼希在设计 C++ 异常时，为解决<strong>资源管理</strong>时的<strong>异常安全性</strong>而使用了 <strong>RAII</strong>。</p>
 <p>RAII要求，资源的有效期与持有资源的对象的生命期严格绑定，即由对象的构造函数完成资源的获取，由析构函数完成资源的释放，在这种要求下，只要对象能正确地析构，就不会出现资源泄露问题。<br></p>
-        </div>
-        <a href="/2019/03/14/RAII-smart-pointer/" class="read-more">Read More</a>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2019/03/13/Leetcode/">
-                Leetcode
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2019-03-13</span>
-            
-            
-            
-        </div>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/03/14/RAII-smart-pointer/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
     </div>
 
     
-        <div class="content">
-            <h3 id="递归、回溯、分治"><a href="#递归、回溯、分治" class="headerlink" title="递归、回溯、分治"></a>递归、回溯、分治</h3>
-        </div>
-        <a href="/2019/03/13/Leetcode/" class="read-more">Read More</a>
     
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
 
-</div>
-            
-                
-<div class="post">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/13/Leetcode/">
 
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2019/03/13/Move-semantic/">
-                Move semantic
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2019-03-13</span>
-            
-            
-            
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/03/13/Leetcode/" class="post-title-link" itemprop="url">Leetcode</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-03-13 14:52:54" itemprop="dateCreated datePublished" datetime="2019-03-13T14:52:54+08:00">2019-03-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-03-16 01:48:01" itemprop="dateModified" datetime="2019-03-16T01:48:01+08:00">2019-03-16</time>
+              </span>
+
+          
+
         </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="递归、回溯、分治"><a href="#递归、回溯、分治" class="headerlink" title="递归、回溯、分治"></a>递归、回溯、分治</h3>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/03/13/Leetcode/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
     </div>
 
     
-        <div class="content">
-            <h3 id="右值引用"><a href="#右值引用" class="headerlink" title="右值引用"></a>右值引用</h3><p>左值和右值是表达式的属性，一些表达式生成或者需要左值，另外一些表达式生成或者需要右值，一般而言，一个左值表达式表示一个对象的身份，一个右值表达式则表示一个对象的值。</p>
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/13/Move-semantic/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/03/13/Move-semantic/" class="post-title-link" itemprop="url">Move Semantic</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-03-13 09:49:46 / 修改时间：11:24:32" itemprop="dateCreated datePublished" datetime="2019-03-13T09:49:46+08:00">2019-03-13</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="右值引用"><a href="#右值引用" class="headerlink" title="右值引用"></a>右值引用</h3><p>左值和右值是表达式的属性，一些表达式生成或者需要左值，另外一些表达式生成或者需要右值，一般而言，一个左值表达式表示一个对象的身份，一个右值表达式则表示一个对象的值。</p>
 <ul>
 <li>返回左值引用的函数，赋值、下标、解引用、前置递增、前置递减，这些返回左值</li>
 <li>返回非引用的函数，算术、关系、位、后置递增、后置递减，这些返回右值</li>
 </ul>
 <p>为了支持移动操作，C++11 引入了一种新的引用类型——右值引用（rvalue reference）。所谓右值引用是指<strong>只能</strong>绑定到右值的引用，一个右值引用类似于左值引用，也不过是某个对象的另外一个名字而已，通过 <code>&amp;&amp;</code> 来标识一个右值引用。我们只能将左值引用绑定到左值上（const 左值引用可以绑定到右值上），只能将右值引用绑定到右值上。<br></p>
-        </div>
-        <a href="/2019/03/13/Move-semantic/" class="read-more">Read More</a>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/11/21/C-Concurrency-In-Action/">
-                C++ Concurrency In Action
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-11-21</span>
-            
-            
-            
-        </div>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/03/13/Move-semantic/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
     </div>
 
     
-        <div class="content">
-            <h2 id="基本的线程管理"><a href="#基本的线程管理" class="headerlink" title="基本的线程管理"></a>基本的线程管理</h2><h4 id="启动线程"><a href="#启动线程" class="headerlink" title="启动线程"></a>启动线程</h4><ul>
-<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">void do_some_work();</div><div class="line">std::thread my_thread(do_some_work);</div></pre></td></tr></table></figure>
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/21/C-Concurrency-In-Action/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/11/21/C-Concurrency-In-Action/" class="post-title-link" itemprop="url">C++ Concurrency in Action</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-11-21 14:50:43" itemprop="dateCreated datePublished" datetime="2018-11-21T14:50:43+08:00">2018-11-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-12-03 22:46:55" itemprop="dateModified" datetime="2018-12-03T22:46:55+08:00">2018-12-03</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="基本的线程管理"><a href="#基本的线程管理" class="headerlink" title="基本的线程管理"></a>基本的线程管理</h2><h4 id="启动线程"><a href="#启动线程" class="headerlink" title="启动线程"></a>启动线程</h4><ul>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">void do_some_work();</span><br><span class="line">std::thread my_thread(do_some_work);</span><br></pre></td></tr></table></figure>
 </li>
-<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">class background_task &#123;</div><div class="line">    public:</div><div class="line">        void operator() ()const &#123;</div><div class="line">            do_something();</div><div class="line">            do_something_else();</div><div class="line">        &#125;</div><div class="line">&#125;;</div><div class="line">background_task f;</div><div class="line">std::thread my_thread(f);</div></pre></td></tr></table></figure>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">class background_task &#123;</span><br><span class="line">    public:</span><br><span class="line">        void operator() ()const &#123;</span><br><span class="line">            do_something();</span><br><span class="line">            do_something_else();</span><br><span class="line">        &#125;</span><br><span class="line">&#125;;</span><br><span class="line">background_task f;</span><br><span class="line">std::thread my_thread(f);</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-        </div>
-        <a href="/2018/11/21/C-Concurrency-In-Action/" class="read-more">Read More</a>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/11/21/C-Concurrency-In-Action/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
     
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
 
+
+  
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
 </div>
-            
-        </section>
-    </div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
 </div>
 
 
 
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="wrap-pagination">
-                <a class="disabled" href="/">
-                    <i class="fa fa-chevron-left" aria-hidden="true"></i>
-                </a>
-                <a class="" href="/page/2/">
-                    <i class="fa fa-chevron-right" aria-hidden="true"></i>
-                </a>
-            </div>
-        </div>
+      </div>
+
     </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
 
 
+      </div>
+    </main>
 
+    <footer class="footer">
+      <div class="footer-inner">
+        
 
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
 </div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
 
-<!-- Footer -->
-<div class="push"></div>
-
-<footer class="footer-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
-                <h2>About</h2>
-                <p>
-                    This is Robert Lexis (FengCun Li). To see the world, things dangerous to come to, to see behind walls, to draw closer, to find each other and to feel. That is the purpose of LIFE.
-                </p>
-            </div>
-            
-    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
-        <h2>Recent Posts</h2>
-        <ul>
-            
-            <li>
-                <a class="footer-post" href="/2019/07/12/Unnamed-namespace/">Unnamed namespace</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/05/08/Static-variable-in-inlined-function/">Static variable in inline</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/04/23/Iterator-invalidation-rules/">Iterator invalidation rul</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2019/03/18/Emplace-back/">Emplace back</a>
-            </li>
-            
-        </ul>
-    </div>
+        
 
 
 
-            
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <ul class="list-inline footer-social-icons">
-                    
-                    <li class="list-inline-item">
-                        <a href="https://github.com/RobertLexis">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-github"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="mailto:robert_lexis@163.com">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-envelope-o"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="footer-copyright">
-                    @Untitled. All right reserved | Robert Lexis Loves Wenny
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<!-- After footer scripts -->
-
-<!-- jQuery -->
-<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-
-<!-- Tween Max -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
-
-<!-- Gallery -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
-
-<!-- Custom JavaScript -->
-<script src="/js/main.js"></script>
-
-<!-- Disqus Comments -->
 
 
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
 
 </body>
-
 </html>
