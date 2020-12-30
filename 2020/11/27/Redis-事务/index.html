@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Remote Dictionary Server 乐观锁与悲观锁 悲观锁 认为总会出现竞争，所以会积极加锁。 乐观锁 认为竞争不常出现，所以不会积极加锁，而是 check-and-set。典型的就是使用 MySQL 数据库时，get-version -&amp;gt; process -&amp;gt; check version and set。">
+<meta name="keywords" content="Redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis 事务">
+<meta property="og:url" content="http://yoursite.com/2020/11/27/Redis-事务/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="Remote Dictionary Server 乐观锁与悲观锁 悲观锁 认为总会出现竞争，所以会积极加锁。 乐观锁 认为竞争不常出现，所以不会积极加锁，而是 check-and-set。典型的就是使用 MySQL 数据库时，get-version -&amp;gt; process -&amp;gt; check version and set。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2020/11/27/Redis-事务/transaction.png">
+<meta property="og:updated_time" content="2020-11-30T04:25:37.489Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis 事务">
+<meta name="twitter:description" content="Remote Dictionary Server 乐观锁与悲观锁 悲观锁 认为总会出现竞争，所以会积极加锁。 乐观锁 认为竞争不常出现，所以不会积极加锁，而是 check-and-set。典型的就是使用 MySQL 数据库时，get-version -&amp;gt; process -&amp;gt; check version and set。">
+<meta name="twitter:image" content="http://yoursite.com/2020/11/27/Redis-事务/transaction.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/11/27/Redis-事务/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Redis 事务 | The next stop - Antarctica</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/27/Redis-事务/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Redis 事务
+        </h1>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-30 12:25:37" itemprop="dateModified" datetime="2020-11-30T12:25:37+08:00">2020-11-30</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><strong>Re</strong>mote <strong>Di</strong>ctionary <strong>S</strong>erver</p>
+<h2 id="乐观锁与悲观锁"><a href="#乐观锁与悲观锁" class="headerlink" title="乐观锁与悲观锁"></a>乐观锁与悲观锁</h2><ol>
+<li>悲观锁 认为总会出现竞争，所以会积极加锁。</li>
+<li>乐观锁 认为竞争不常出现，所以不会积极加锁，而是 check-and-set。典型的就是使用 MySQL 数据库时，get-version -&gt; process -&gt; check version and set。</li>
+</ol>
+<a id="more"></a>
+<p>乐观锁基于 CAS 思想，不具有互斥性，不会产生锁等待，但是需要反复的重试，但也是因为重试的机制，能比较快地响应。</p>
+<h2 id="Redis-的事务"><a href="#Redis-的事务" class="headerlink" title="Redis 的事务"></a>Redis 的事务</h2><blockquote>
+<p>Transaction is used to make multiple commands runs atomically.</p>
+</blockquote>
+<p><img src="/2020/11/27/Redis-事务/transaction.png" alt="transaction"></p>
+<p>Create Transaction -&gt; Send Commands -&gt; Execute Transaction</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">ConnectionOptions connection_options;</span><br><span class="line">ConnectionPoolOptions pool_options;</span><br><span class="line"></span><br><span class="line"><span class="function">Redis <span class="title">redis</span><span class="params">(connection_options, pool_options)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// You don't need to send MULTI command to Redis. Transaction will do that for you automatically.</span></span><br><span class="line"><span class="comment">// Create Transaction</span></span><br><span class="line"><span class="keyword">auto</span> tx = redis.transaction();</span><br><span class="line"></span><br><span class="line"><span class="comment">// Send Commands</span></span><br><span class="line">tx.<span class="built_in">set</span>(<span class="string">"key1"</span>, <span class="string">"val"</span>).incr(<span class="string">"num"</span>).lpush(<span class="string">"list"</span>, &#123;<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>&#125;).command(<span class="string">"hset"</span>, <span class="string">"key2"</span>, <span class="string">"field"</span>, <span class="string">"val"</span>);</span><br></pre></td></tr></table></figure>
+<p>When you call Transaction::exec, you explicitly ask Redis to execute those queued commands, and return the replies. Otherwise, these commands won’t be executed. Also, you can call Transaction::discard to discard the execution, i.e. no command will be executed. Both Transaction::exec and Transaction::discard can be chained with other commands.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> replies = tx.<span class="built_in">set</span>(<span class="string">"key"</span>, <span class="string">"val"</span>).incr(<span class="string">"num"</span>).exec();</span><br><span class="line"></span><br><span class="line">tx.<span class="built_in">set</span>(<span class="string">"key"</span>, <span class="string">"val"</span>).incr(<span class="string">"num"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Discard the transaction.</span></span><br><span class="line">tx.discard();</span><br></pre></td></tr></table></figure>
+<h3 id="Exception"><a href="#Exception" class="headerlink" title="Exception"></a>Exception</h3><p>If any of Transaction’s method throws an exception other than WatchError or ReplyError, the Transaction object enters an invalid state. You CANNOT use it any more, but only destroy the object and create a new one.</p>
+<h3 id="Thread-Safety"><a href="#Thread-Safety" class="headerlink" title="Thread Safety"></a>Thread Safety</h3><p><code>Transaction</code> is NOT thread-safe. If you want to call its member functions in multi-thread environment, you need to synchronize between threads manually.</p>
+<h3 id="Watch-实现乐观锁"><a href="#Watch-实现乐观锁" class="headerlink" title="Watch 实现乐观锁"></a>Watch 实现乐观锁</h3><p><a href="https://redis.io/topics/transactions#optimistic-locking-using-check-and-set" target="_blank" rel="noopener">WATCH is used to provide a check-and-set(CAS) behavior to Redis transactions. Transactions # optimistic-locking-using-check-and-set</a></p>
+<p>WATCH 为 Redis 的事务提供了 check before set 行为。所谓的乐观锁也就是 check-and-set，或者称之为 check-before-set。</p>
+<p>注意 WATCH 和事务是对整个连接有效的，如果连接断开，WATCH 和事务都会被自动清除。</p>
+<p>当然了 EXEC，DISCARD，UNWATCH 命令也都会清除连接中的所有 WATCH。</p>
+<p>The WATCH command must be sent in the same connection as the transaction. And normally after the WATCH command, we also need to send some other commands to get data from Redis before executing the transaction. Take the following check-and-set case as an example:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">WATCH key           <span class="comment">// watch a key</span></span><br><span class="line">val = GET key       <span class="comment">// get value of the key</span></span><br><span class="line">new_val = val + <span class="number">1</span>   <span class="comment">// incr the value</span></span><br><span class="line">MULTI               <span class="comment">// begin the transaction</span></span><br><span class="line">SET key new_val     <span class="comment">// set value only if the value is NOT modified by others</span></span><br><span class="line">EXEC                <span class="comment">// try to execute the transaction.</span></span><br><span class="line">                    <span class="comment">// if val has been modified, the transaction won't be executed.</span></span><br></pre></td></tr></table></figure>
+<p>However, with Transaction object, you CANNOT get the result of commands until the whole transaction has been finished. Instead, you need to create a Redis object from the Transaction object. The created Redis object shares the connection with Transaction object. With this created Redis object, you can send WATCH command and any other Redis commands to Redis server, and get the result immediately.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> redis = Redis(<span class="string">"tcp://127.0.0.1"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Create a transaction.</span></span><br><span class="line"><span class="keyword">auto</span> tx = redis.transaction();</span><br><span class="line"></span><br><span class="line"><span class="comment">// Create a Redis object from the Transaction object. Both objects share the same connection.</span></span><br><span class="line"><span class="keyword">auto</span> r = tx.redis();</span><br><span class="line"></span><br><span class="line"><span class="comment">// If the watched key has been modified by other clients, the transaction might fail.</span></span><br><span class="line"><span class="comment">// So we need to retry the transaction in a loop.</span></span><br><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// Watch a key.</span></span><br><span class="line">        r.watch(<span class="string">"key"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Get the old value.</span></span><br><span class="line">        <span class="keyword">auto</span> val = r.get(<span class="string">"key"</span>);</span><br><span class="line">        <span class="keyword">auto</span> num = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (val) &#123;</span><br><span class="line">            num = <span class="built_in">std</span>::stoi(*val);</span><br><span class="line">        &#125; <span class="comment">// else use default value, i.e. 0.</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// Incr value.</span></span><br><span class="line">        ++num;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Execute the transaction.</span></span><br><span class="line">        <span class="keyword">auto</span> replies = tx.<span class="built_in">set</span>(<span class="string">"key"</span>, <span class="built_in">std</span>::to_string(num)).exec();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Transaction has been executed successfully. Check the result and break.</span></span><br><span class="line"></span><br><span class="line">        assert(replies.size() == <span class="number">1</span> &amp;&amp; replies.get&lt;<span class="keyword">bool</span>&gt;(<span class="number">0</span>) == <span class="literal">true</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (<span class="keyword">const</span> WatchError &amp;err) &#123;</span><br><span class="line">        <span class="comment">// Key has been modified by other clients, retry.</span></span><br><span class="line">        <span class="keyword">continue</span>;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (<span class="keyword">const</span> Error &amp;err) &#123;</span><br><span class="line">        <span class="comment">// Something bad happens, and the Transaction object is no longer valid.</span></span><br><span class="line">        <span class="keyword">throw</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果使用悲观锁的话，就需要在 <code>auto val = r.get(&quot;key&quot;);</code> 之前上锁，在 set 成功之后再解锁，这中间包括处理和网络通信带来的延迟，会极大地影响性能。之所以在 <code>auto val = r.get(&quot;key&quot;);</code> 之前就要上锁，把 critical section 搞的这么大，是因为要确保同一个值只会被一个进程拿到，避免同一个值被多个进程拿到，加一后为相同的值，然后多个进程再设置相同的值，会造成计数的丢失。</p>
+<p>NOTE: in the example above, we create Transaction object outside the while loop, in order to avoid creating new connection again and again.</p>
+<p>上面的代码稍微修改一下，就是分布式（也就是支持多主机）乐观锁秒杀代码了。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// If the watched key has been modified by other clients, the transaction might fail.</span></span><br><span class="line"><span class="comment">// So we need to retry the transaction in a loop.</span></span><br><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// Watch a key.</span></span><br><span class="line">        r.watch(<span class="string">"key"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Get the old value.</span></span><br><span class="line">        <span class="keyword">auto</span> val = r.get(<span class="string">"key"</span>);</span><br><span class="line">        <span class="keyword">auto</span> num = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (val) &#123;</span><br><span class="line">            num = <span class="built_in">std</span>::stoi(*val);</span><br><span class="line">        &#125; <span class="comment">// else use default value, i.e. 0.</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果已经秒杀完了，退出循环</span></span><br><span class="line">        <span class="keyword">if</span> (num == total_rewards_num) &#123;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 不然的话，增加计数</span></span><br><span class="line">            ++num;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 尝试设置自增之后的值，如果设置成功了，退出循环。</span></span><br><span class="line">            <span class="comment">// 否则，继续循环，在下一次的循环中拿到新的值再次判断，若秒杀完了，退出循环；若未完，再次增加计数、尝试设置。</span></span><br><span class="line">            <span class="keyword">auto</span> replies = tx.<span class="built_in">set</span>(<span class="string">"key"</span>, <span class="built_in">std</span>::to_string(num)).exec();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Transaction has been executed successfully. Check the result and break.</span></span><br><span class="line"></span><br><span class="line">            assert(replies.size() == <span class="number">1</span> &amp;&amp; replies.get&lt;<span class="keyword">bool</span>&gt;(<span class="number">0</span>) == <span class="literal">true</span>);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125; <span class="keyword">catch</span> (<span class="keyword">const</span> WatchError &amp;err) &#123;</span><br><span class="line">        <span class="comment">// Key has been modified by other clients, retry.</span></span><br><span class="line">        <span class="keyword">continue</span>;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (<span class="keyword">const</span> Error &amp;err) &#123;</span><br><span class="line">        <span class="comment">// Something bad happens, and the Transaction object is no longer valid.</span></span><br><span class="line">        <span class="keyword">throw</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Redis/" rel="tag"># Redis</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/26/RabbitMQ-集群搭建/" rel="prev" title="RabbitMQ 集群搭建">
+      <i class="fa fa-chevron-left"></i> RabbitMQ 集群搭建
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/28/Redis-穿透-击穿-雪崩/" rel="next" title="Redis 穿透 击穿 雪崩">
+      Redis 穿透 击穿 雪崩 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#乐观锁与悲观锁"><span class="nav-number">1.</span> <span class="nav-text">乐观锁与悲观锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-的事务"><span class="nav-number">2.</span> <span class="nav-text">Redis 的事务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Exception"><span class="nav-number">2.1.</span> <span class="nav-text">Exception</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Thread-Safety"><span class="nav-number">2.2.</span> <span class="nav-text">Thread Safety</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Watch-实现乐观锁"><span class="nav-number">2.3.</span> <span class="nav-text">Watch 实现乐观锁</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">104</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="一致性问题的常见场景：分布式系统、多线程编程 （C++ 11 的原子操作与内存模型，并行执行的多个线程，从某种层面上讲，可以粗略地视为一种分布式系统。在分布式系统中，任何通信乃至本地操作都需要消耗一定时间，而且可能出现不可靠的通信）。">
+<meta name="keywords" content="分布式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="各种一致性级别">
+<meta property="og:url" content="http://yoursite.com/2020/12/21/各种一致性级别/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="一致性问题的常见场景：分布式系统、多线程编程 （C++ 11 的原子操作与内存模型，并行执行的多个线程，从某种层面上讲，可以粗略地视为一种分布式系统。在分布式系统中，任何通信乃至本地操作都需要消耗一定时间，而且可能出现不可靠的通信）。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2020/12/21/各种一致性级别/顺序-因果-最终一致性.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/21/各种一致性级别/线性化一致性.png">
+<meta property="og:updated_time" content="2020-12-29T13:29:13.429Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="各种一致性级别">
+<meta name="twitter:description" content="一致性问题的常见场景：分布式系统、多线程编程 （C++ 11 的原子操作与内存模型，并行执行的多个线程，从某种层面上讲，可以粗略地视为一种分布式系统。在分布式系统中，任何通信乃至本地操作都需要消耗一定时间，而且可能出现不可靠的通信）。">
+<meta name="twitter:image" content="http://yoursite.com/2020/12/21/各种一致性级别/顺序-因果-最终一致性.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/12/21/各种一致性级别/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>各种一致性级别 | The next stop - Antarctica</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/21/各种一致性级别/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          各种一致性级别
+        </h1>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-29 21:29:13" itemprop="dateModified" datetime="2020-12-29T21:29:13+08:00">2020-12-29</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>一致性问题的常见场景：分布式系统、多线程编程 （C++ 11 的原子操作与内存模型，并行执行的多个线程，从某种层面上讲，可以粗略地视为一种分布式系统。在分布式系统中，任何通信乃至本地操作都需要消耗一定时间，而且可能出现不可靠的通信）。</p>
+<p><img src="/2020/12/21/各种一致性级别/顺序-因果-最终一致性.png" alt="顺序-因果-最终一致性"></p>
+<a id="more"></a>
+<blockquote>
+<p>要理解多线程编程中的一致性问题，需要充分理解 CPU 的缓存结构。</p>
+</blockquote>
+<p>所谓一致性是指多个进程在执行操作，多个进程在观察操作的顺序和操作的结果（状态在操作的前后发生转移，转移的顺序），观察到的操作的顺序和操作的结果之间的乱序性。</p>
+<p>从最强的一致性到最弱的一致性</p>
+<h2 id="线性化一致性"><a href="#线性化一致性" class="headerlink" title="线性化一致性"></a>线性化一致性</h2><p>在这种一致性模型中，</p>
+<ol>
+<li><strong>单个对象</strong>在<strong>所有副本中</strong>的操作是原子的。当一个客户端在一个副本中看到完成了一个操作，任何连接到其它副本的客户端应该看到相同的操作</li>
+<li>不同客户端看到的操作顺序是相同的</li>
+</ol>
+<p><img src="/2020/12/21/各种一致性级别/线性化一致性.png" alt="线性化一致性"></p>
+<h3 id="什么时候需要这种模型？"><a href="#什么时候需要这种模型？" class="headerlink" title="什么时候需要这种模型？"></a>什么时候需要这种模型？</h3><p>假设我们有三个客户端或进程。进程 A 向数据存储写入了一个对象值。进程 B 接收到一些外部事件，提示它读取前面所说的对象值。在读取这个值之后，它向进程 C 发送了一条消息也去读取这个值并进行决策。进程 B 认为，C 读取的对象值至少是 B 所拥有的最新值，而不是一个比较旧的值。为了确保这种行为，分布式数据存储必须提供线性化一致性保证，从而确保进程 A 所做的更新会立即被所有其它副本同时看到。</p>
+<p>即使我们配置 Cassandra 数据库为使用基于仲裁的读 / 写方案的强一致性，它也不能提供线性化保证，因为这些更新在副本中不是原子化发生的。为了拥有线性化，我们必须使用 Cassandra 中轻量化的事务支持。</p>
+<h2 id="顺序一致性"><a href="#顺序一致性" class="headerlink" title="顺序一致性"></a>顺序一致性</h2><p>在顺序一致性中，一个进程对数据存储所做的操作也会在其它进程中以相同顺序发生。</p>
+<h2 id="因果一致性"><a href="#因果一致性" class="headerlink" title="因果一致性"></a>因果一致性</h2><p>它的要求进一步降低，只需要有因果关系的操作顺序得到保障，而没有因果关系的操作顺序则不做要求。</p>
+<p>在因果一致性中，任何潜在的因果相关的操作都应该以相同的顺序对所有进程可见。简单的说，如果你基于一个先前观察到的单独操作执行了一个操作，那么对于其它进程，这些操作的顺序也应该相同。一个进程根据先前的写操作写入的值 v1，将新值 v2 写入到对象。在这种情况下，每个人都应该先看到这个对象的 v1 值，然后才是 v2 值。</p>
+<p>这是一个非常有用的一致性模型，适用于许多实际的应用程序。例如，我们以一个<strong>由分布式数据存储支持的社交媒体网站</strong>为例。我们有并发用户与网站交互，更新他们的个人资料状态或者评论某个人的个人资料状态。</p>
+<ul>
+<li><p>用户 Anne，刚遇到了一个小事故，将状态设置为“遇到一个小事故，等待 X 光检查结果！”。她刚更新了这条状态，她就得到了她的检查结果，没有骨折。因此她将她的状态更新为“好消息：没有骨折！”。Bob 看到了 Anne 的最后一条消息，回复她“太好了！:)”。</p>
+</li>
+<li><p>在上述场景中，如果我们的数据存储提供至少因果一致性，所有其它用户会以正确的顺序看到来自 Anne 和 Bob 的消息。但是如果数据存储没有提供因果一致性，有可能其它人会看到 Anne 的第一条消息和 Bob 的消息，而没有看到 Anne 的第二条更新。那种情况就变得有点儿奇怪，好像 Bob 在对 Anne 的不幸感到幸灾乐祸，而其实不是这样的。因此，我们需要在类似这样的场景中具有因果一致性。</p>
+</li>
+<li><p>假设我们有一个具有因果一致性的数据存储，在相同情况下，假设 Tom 将他的状态更新为“我刚刚得到了我的第一辆车！”，就在 Anne 更新她的第一条状态之前。网站的一些用户在 Anne 的第一条信息之后看到他的状态。这种情况没有问题，因为 Tom 的更新发生在 Anne 的更新之前或之后在现实生活中并不重要。它们之间没有联系，即 Tom 的行为不是由 Anne 的行为导致的。<strong>其它没有因果关系的操作以最终一致性的行为操作。</strong></p>
+</li>
+</ul>
+<p>一个支持因果一致性的分布式数据存储就是 MongoDB。它是基于 Lamport 逻辑锁实现的。</p>
+<h2 id="最终一致性"><a href="#最终一致性" class="headerlink" title="最终一致性"></a>最终一致性</h2><p>在一般的最终一致性中，如果不再向数据存储中写入数据，则数据存储中的所有副本都要<strong>聚合并最终达成一致</strong>。它不会提供任何其它保证，比如在最终值稳定之前的因果一致性。</p>
+<p>这种一致性模型适用于这样的场景：只有并发值更新，但这些值更新之间没有联系；用户并不关心中间值，只关心最终得到的稳定值。例如，以一个为每个城市发布当前气温的网站为例。这些值会不时变化。在某个时间点，一些用户可能会查看最新的气温值，而其它用户的值还没有更新。然而，最终，这个网站的所有用户都会得到更新。因此，存储这些值的分布式数据库的可能的传播延迟并不是一个大问题，只要最终所有的用户都会看到相同的气温值。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/分布式/" rel="tag"># 分布式</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/12/21/微服务架构中的事务处理/" rel="prev" title="微服务架构中的事务处理">
+      <i class="fa fa-chevron-left"></i> 微服务架构中的事务处理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/12/21/SSL/" rel="next" title="SSL">
+      SSL <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#线性化一致性"><span class="nav-number">1.</span> <span class="nav-text">线性化一致性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么时候需要这种模型？"><span class="nav-number">1.1.</span> <span class="nav-text">什么时候需要这种模型？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#顺序一致性"><span class="nav-number">2.</span> <span class="nav-text">顺序一致性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#因果一致性"><span class="nav-number">3.</span> <span class="nav-text">因果一致性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最终一致性"><span class="nav-number">4.</span> <span class="nav-text">最终一致性</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">104</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

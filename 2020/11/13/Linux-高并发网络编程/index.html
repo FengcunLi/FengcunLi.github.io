@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="应用层：FTP, HTTP, SMTP, SSH, Telnet, ARP?传输层：UDP / TCP 提供端到端的传输网络层：IP 为数据包提供路由数据链路层：以太网帧协议，借助 MAC 地址完成投递物理层：双绞线，光纤，同轴电缆">
+<meta name="keywords" content="Linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux 高并发网络编程">
+<meta property="og:url" content="http://yoursite.com/2020/11/13/Linux-高并发网络编程/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="应用层：FTP, HTTP, SMTP, SSH, Telnet, ARP?传输层：UDP / TCP 提供端到端的传输网络层：IP 为数据包提供路由数据链路层：以太网帧协议，借助 MAC 地址完成投递物理层：双绞线，光纤，同轴电缆">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2020/11/13/Linux-高并发网络编程/socket.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/13/Linux-高并发网络编程/3-way-shakehand.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/13/Linux-高并发网络编程/window-1.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/13/Linux-高并发网络编程/window-2.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/13/Linux-高并发网络编程/macos-ulimit-a.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/13/Linux-高并发网络编程/ubuntu-ulimit-a.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/13/Linux-高并发网络编程/exit-zombie.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/13/Linux-高并发网络编程/TCP-states-visited-by-ClientSide.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/13/Linux-高并发网络编程/TCP-states-visited-by-ServerSide.png">
+<meta property="og:updated_time" content="2020-11-25T10:50:25.418Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux 高并发网络编程">
+<meta name="twitter:description" content="应用层：FTP, HTTP, SMTP, SSH, Telnet, ARP?传输层：UDP / TCP 提供端到端的传输网络层：IP 为数据包提供路由数据链路层：以太网帧协议，借助 MAC 地址完成投递物理层：双绞线，光纤，同轴电缆">
+<meta name="twitter:image" content="http://yoursite.com/2020/11/13/Linux-高并发网络编程/socket.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/11/13/Linux-高并发网络编程/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Linux 高并发网络编程 | The next stop - Antarctica</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/13/Linux-高并发网络编程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Linux 高并发网络编程
+        </h1>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-25 18:50:25" itemprop="dateModified" datetime="2020-11-25T18:50:25+08:00">2020-11-25</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>应用层：FTP, HTTP, SMTP, SSH, Telnet, ARP?<br>传输层：UDP / TCP 提供端到端的传输<br>网络层：IP 为数据包提供路由<br>数据链路层：<strong>以太网帧</strong>协议，借助 MAC 地址完成投递<br>物理层：双绞线，光纤，同轴电缆</p>
+<a id="more"></a>
+<p>ARP：根据 IP 获取 MAC 地址。<br>ARP 的工作域？是局域网？会像他讲的那样，直接在广州和北京之间通过 ARP 获取对方的 MAC 地址吗？</p>
+<p>DNS 根服务器：</p>
+<ul>
+<li>10 美国</li>
+<li>1 英国</li>
+<li>1 瑞典</li>
+<li>1 日本</li>
+</ul>
+<p>以太网帧：</p>
+<p>IP 段格式：</p>
+<p>UDP 数据包格式：<br>端口：2 的 16 次方，max value 65535。</p>
+<p>TCP 缓存的大小，6K？<br>滑动窗口：协调发送速度和接收速度。<br>写缓存，读缓存？<br>缓存满了，就堵塞？<br>A -&gt; B<br>B 缓存满了，A 的发送就堵塞了？A 就不工作了？</p>
+<p>TCP 为什么三次而不是两次/四次握手？<br>TCP 为什么四次挥手而不是三次挥手？</p>
+<p>TCP 面向连接<br>三次握手，确认，重传<br>“协商”地比较好</p>
+<p>UDP 无连接<br>不握手，数据发出去就不管了。<br>可以再在应用层进行控制</p>
+<p>socket 是一套网络编程 API，封装了传输层协议。</p>
+<p>IP 定位主机，Port 确定进程（应用）。</p>
+<p>管道：匿名管道<br>内核缓冲区。<br>内核维护的一个缓冲区。<br>管道读写两端分别对应一个文件描述符。</p>
+<p>套接字创建成功，得到一个文件描述符和一块内核缓冲区。</p>
+<p>堵塞不堵塞是文件描述符对应的设备的性质</p>
+<h1 id="Does-accept-method-participate-in-tcp-ip-handshake"><a href="#Does-accept-method-participate-in-tcp-ip-handshake" class="headerlink" title="Does accept() method participate in tcp/ip handshake?"></a>Does <code>accept()</code> method participate in tcp/ip handshake?</h1><blockquote>
+<p>Generally in Unix, if you mark the socket with <code>listen()</code>, the operating system starts accepting the connections. When you call the <code>accept()</code> function, the operating system simply <strong>hands over</strong> the <strong>already opened connection</strong>.</p>
+</blockquote>
+<blockquote>
+<p>The <code>accept</code> method does not actively participate in the handshake. The sending and receiving of the messages is implemented in the TCP/IP protocol stack, typically in the OS kernel space. The TCP handshake is handled by the kernel; the server process is not involved. The kernel maintains two queues, one for incomplete connections (initial SYN received) and one for complete connections (3-way handshake complete).</p>
+</blockquote>
+<blockquote>
+<p>The <code>accept</code> call retrieves the first entry in the complete queue. If the queue is empty and the socket is blocking, the call blocks until a connection is made. If the socket is nonblocking, the call fails with <code>EAGAIN</code> or <code>EWOULDBLOCK</code>.</p>
+</blockquote>
+<p>也就是说，连接已经建立好了（三次握手已经成功完成），accept 仅仅是返回一个文件描述符，便于程序进行数据读写。 <code>accept</code> method 并没有主动参与到三次握手中，收发消息都是由 TCP/IP protocol stack 在内核空间完成的，也就是连接的建立是由 TCP/IP protocol stack 在内核空间完成的。用户空间的代码仅仅能拿到文件描述符而已。</p>
+<blockquote>
+<p>However, the accept() method is involved in the sense that the TCP/IP stack will only send the SYN-ACK message if some process has an accept() call active for a socket bound with the relevant IP address and port.</p>
+</blockquote>
+<blockquote>
+<p>If no process calls accept() in time, the incoming SYN message will be dropped by the kernel and the remote client will eventually time out the connection attempt. (On the other hand, if the IP address / port is not bound, then the kernel is likely to respond with a RST, and the remote client will see a “connection refused”.)</p>
+</blockquote>
+<p>然而，只有在有进程调用了 <code>accept</code> 时，即有意向 accept 连接时，TCP/IP protocol stack 才会对 SYN 回复 SYN-ACK message（进行握手操作）。在这样的意义上，<code>accept</code> 也参与到了三次握手中。</p>
+<blockquote>
+<p>There’s a backlog argument to listen, and it allows you to specify how many ‘non-accepted’ open(complete) connections(已经完成了三次握手的连接) the OS allows.<br>Although I think some implementations ignore this, and use a limit built into the stack. When the queue is full, the stack will no longer perform the handshake for incoming connections; the clients should retry, and their connections will succeed when the queue has room for them.</p>
+</blockquote>
+<p>一旦调用了 listen，内核 TCP/IP 协议栈就开始和 incoming 的请求握手，并在三次握手成功后，将建立起来的连接放到队列中，等待 accept 来取。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">socketaddr_in</span> <span class="title">serv</span>;</span></span><br><span class="line">serv.port = htons(port);</span><br><span class="line">serv.ip = htonl(INADDR_ANY);</span><br><span class="line">bind(lfd, &amp;serv, <span class="keyword">sizeof</span>(serv));</span><br><span class="line">listen(lfd, <span class="number">128</span>);</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">socketaddr_in</span> <span class="title">client</span>;</span></span><br><span class="line"><span class="keyword">int</span> len = <span class="keyword">sizeof</span>(client);</span><br><span class="line"><span class="keyword">int</span> cfd = accept(lfd, &amp;client, &amp;len);</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/11/13/Linux-高并发网络编程/socket.png" alt="socket"></p>
+<h3 id="三次握手"><a href="#三次握手" class="headerlink" title="三次握手"></a>三次握手</h3><p><img src="/2020/11/13/Linux-高并发网络编程/3-way-shakehand.png" alt="3-way-shakehand"><br><img src="/2020/11/13/Linux-高并发网络编程/window-1.png" alt="window-1"><br><img src="/2020/11/13/Linux-高并发网络编程/window-2.png" alt="window-2"></p>
+<h1 id="多进程并发服务器"><a href="#多进程并发服务器" class="headerlink" title="多进程并发服务器"></a>多进程并发服务器</h1><p>设计时需要注意的问题：</p>
+<ol>
+<li>共享<ul>
+<li>进程地址空间 copy-on-write</li>
+<li>文件描述符</li>
+<li>内存映射</li>
+</ul>
+</li>
+<li>父进程的角色<ul>
+<li>调用 accept，处理 TCP/IP 协议栈建立好的 TCP 连接</li>
+<li>调用 fork，创建子进程</li>
+<li>将通信文件描述符关闭，节约资源</li>
+</ul>
+</li>
+<li>子进程的角色<ul>
+<li>read/write</li>
+<li>关闭监听文件描述符，节约资源</li>
+</ul>
+</li>
+<li>创建的子进程数目限制<ul>
+<li>受硬件限制</li>
+<li>文件描述符数目，Max 1024<br><img src="/2020/11/13/Linux-高并发网络编程/macos-ulimit-a.png" alt="macos-ulimit-a"><br><img src="/2020/11/13/Linux-高并发网络编程/ubuntu-ulimit-a.png" alt="ubuntu-ulimit-a"></li>
+</ul>
+</li>
+<li><p>子进程资源回收</p>
+<ul>
+<li>wait/waitpid</li>
+<li>使用信号回收：<ul>
+<li>需要做信号捕捉，有两种方式，signal，sigaction(推荐)</li>
+<li>捕捉的信号是 SIGCHILD</li>
+</ul>
+</li>
+<li><p>回收的资源是哪些？</p>
+<ul>
+<li>struct task_struct</li>
+<li>thread_info</li>
+<li>内核栈<br><img src="/2020/11/13/Linux-高并发网络编程/exit-zombie.png" alt="exit-zombie"></li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<p><img src="/2020/11/13/Linux-高并发网络编程/TCP-states-visited-by-ClientSide.png" alt="TCP-states-visited-by-ClientSide"><br><img src="/2020/11/13/Linux-高并发网络编程/TCP-states-visited-by-ServerSide.png" alt="TCP-states-visited-by-ServerSide"></p>
+<blockquote>
+<p>Consider a TCP client and a TCP server running on two different machines. After completing data transfer, the TCP client calls close to terminate the connection and a FIN segment is sent to the TCP server. Server-side TCP responds by sending an ACK which is received by the client-side TCP. As per the TCP connection state diagram(RFC 793), in which state does the client side TCP connection wait for the FIN from the server-side TCP?</p>
+</blockquote>
+<blockquote>
+<p>(A) LAST-ACK</p>
+</blockquote>
+<blockquote>
+<p>(B) TIME-WAIT</p>
+</blockquote>
+<blockquote>
+<p>(C) FIN-WAIT-1</p>
+</blockquote>
+<blockquote>
+<p>(D) FIN-WAIT-2</p>
+</blockquote>
+<blockquote>
+<p>Explanation : (D)</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Linux/" rel="tag"># Linux</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/12/Linux-内核设计与实现/" rel="prev" title="Linux 内核设计与实现">
+      <i class="fa fa-chevron-left"></i> Linux 内核设计与实现
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/15/TCP-异常现象/" rel="next" title="TCP 异常现象">
+      TCP 异常现象 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Does-accept-method-participate-in-tcp-ip-handshake"><span class="nav-number">1.</span> <span class="nav-text">Does accept() method participate in tcp/ip handshake?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#三次握手"><span class="nav-number">1.0.1.</span> <span class="nav-text">三次握手</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#多进程并发服务器"><span class="nav-number">2.</span> <span class="nav-text">多进程并发服务器</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">104</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

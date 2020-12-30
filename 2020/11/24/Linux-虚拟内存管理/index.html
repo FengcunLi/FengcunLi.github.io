@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="为什么要用虚拟内存？Advantages">
+<meta name="keywords" content="Linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux 虚拟内存管理">
+<meta property="og:url" content="http://yoursite.com/2020/11/24/Linux-虚拟内存管理/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="为什么要用虚拟内存？Advantages">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2020/11/24/Linux-虚拟内存管理/两种地址空间.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/24/Linux-虚拟内存管理/虚拟内存硬件系统.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/24/Linux-虚拟内存管理/TLB.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/24/Linux-虚拟内存管理/虚拟地址空间的分割.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/24/Linux-虚拟内存管理/内核虚拟地址空间.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/24/Linux-虚拟内存管理/用户虚拟地址空间.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/24/Linux-虚拟内存管理/共享内存的实现-1.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/24/Linux-虚拟内存管理/共享内存的实现-2.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/24/Linux-虚拟内存管理/进程地址空间.png">
+<meta property="og:updated_time" content="2020-12-04T05:53:35.024Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux 虚拟内存管理">
+<meta name="twitter:description" content="为什么要用虚拟内存？Advantages">
+<meta name="twitter:image" content="http://yoursite.com/2020/11/24/Linux-虚拟内存管理/两种地址空间.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/11/24/Linux-虚拟内存管理/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Linux 虚拟内存管理 | The next stop - Antarctica</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/24/Linux-虚拟内存管理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Linux 虚拟内存管理
+        </h1>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-04 13:53:35" itemprop="dateModified" datetime="2020-12-04T13:53:35+08:00">2020-12-04</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="为什么要用虚拟内存？Advantages"><a href="#为什么要用虚拟内存？Advantages" class="headerlink" title="为什么要用虚拟内存？Advantages"></a>为什么要用虚拟内存？Advantages</h2><a id="more"></a>
+<ul>
+<li>隔离性<ul>
+<li>Each processes can have a different memory mapping. One process’s RAM is inaccessible (and invisible) to other processes - Built-in memory protection.</li>
+<li>Kernel RAM is invisible to user space processes.</li>
+</ul>
+</li>
+<li>共享内存<ul>
+<li>Physical RAM can be mapped into multiple processes at once - Shared memory.</li>
+</ul>
+</li>
+<li><p>鉴权</p>
+<ul>
+<li>Memory regions can have access permissions - Read, write, execute.</li>
+</ul>
+</li>
+<li><p>其他</p>
+<ul>
+<li>Memory can be moved</li>
+<li>Memory can be swapped to disk</li>
+<li>Hardware device memory can be mapped into a process’s address space. (Requires the kernel to perform the mapping.)</li>
+</ul>
+</li>
+</ul>
+<p>这样就有了两种地址空间：</p>
+<p><img src="/2020/11/24/Linux-虚拟内存管理/两种地址空间.png" alt="两种地址空间"></p>
+<h2 id="虚拟内存是怎么实现的？Mapping-is-performed-in-hardware"><a href="#虚拟内存是怎么实现的？Mapping-is-performed-in-hardware" class="headerlink" title="虚拟内存是怎么实现的？Mapping is performed in hardware"></a>虚拟内存是怎么实现的？Mapping is performed in hardware</h2><p><img src="/2020/11/24/Linux-虚拟内存管理/虚拟内存硬件系统.png" alt="虚拟内存硬件系统"></p>
+<ol>
+<li><p>The memory-management unit (MMU) is the hardware responsible for implementing virtual memory.</p>
+<ul>
+<li>Sits between the CPU core and memory.</li>
+<li>Most often part of the physical CPU itself. On ARM, it’s part of the licensed core.</li>
+<li>Separate from the RAM controller.</li>
+</ul>
+</li>
+<li><p>Translation Lookaside Buffer</p>
+<ul>
+<li>The TLB is a list of mappings from virtual to physical address space in hardware. <strong>Also holds permission bits.</strong></li>
+<li>There are a fixed number of entires in the TLB, which varies by CPU.</li>
+<li>The TLB is part of the MMU system.</li>
+</ul>
+</li>
+</ol>
+<p>The TLB holds each mapping:</p>
+<p><img src="/2020/11/24/Linux-虚拟内存管理/TLB.png" alt="TLB"></p>
+<ul>
+<li>Virtual address</li>
+<li>Physical address</li>
+<li>Permissions</li>
+</ul>
+<p>TLB is consulted by the MMU when the CPU accesses a virtual address.</p>
+<ul>
+<li>If the virtual address is in the TLB, the MMU can look up the physical resource (RAM or hardware).</li>
+<li>If the virtual address is not in the TLB, the MMU will generate a page fault exception and interrupt the CPU.</li>
+<li>If the address is in the TLB, but the permissions are insufficient, the MMU will generate a page fault.</li>
+</ul>
+<h2 id="虚拟地址空间分割为两部分"><a href="#虚拟地址空间分割为两部分" class="headerlink" title="虚拟地址空间分割为两部分"></a>虚拟地址空间分割为两部分</h2><p><img src="/2020/11/24/Linux-虚拟内存管理/虚拟地址空间的分割.png" alt="虚拟地址空间的分割"></p>
+<h2 id="内核虚拟地址空间"><a href="#内核虚拟地址空间" class="headerlink" title="内核虚拟地址空间"></a>内核虚拟地址空间</h2><p>In Linux, the kernel uses virtual addresses, as user space processes do.</p>
+<blockquote>
+<p>This is not true of all OS’s</p>
+</blockquote>
+<p>Virtual address space is split.</p>
+<ul>
+<li>The upper part is used for the kernel</li>
+<li><p>The lower part is used for user space</p>
+</li>
+<li><p>On 32-bit, the split is at <code>0xC0000000</code></p>
+</li>
+</ul>
+<p><img src="/2020/11/24/Linux-虚拟内存管理/内核虚拟地址空间.png" alt="内核虚拟地址空间"></p>
+<h2 id="用户虚拟地址空间，也就是进程地址空间"><a href="#用户虚拟地址空间，也就是进程地址空间" class="headerlink" title="用户虚拟地址空间，也就是进程地址空间"></a>用户虚拟地址空间，也就是进程地址空间</h2><p>User Virtual Addresses represent memory used by user space programs.</p>
+<ul>
+<li>This is most of the memory on most systems</li>
+<li>This is where most of the complication is</li>
+</ul>
+<p>User virtual addresses are all addresses below <code>PAGE_OFFSET</code>.<br>Each process has its own mapping</p>
+<ul>
+<li>Threads share a mapping</li>
+<li>Complex behavior with clone(2)</li>
+</ul>
+<p>Unlike kernel logical addresses, which use a fixed mapping between virtual and physical addresses, user space processes make full use of the MMU.</p>
+<ul>
+<li>Only the used portions of RAM are mapped</li>
+<li>Memory is not contiguous</li>
+<li>Memory can be moved</li>
+<li>Memory can be swapped to disk</li>
+</ul>
+<blockquote>
+<p>Since user virtual addresses are not guaranteed to be swapped in, or even allocated at all, user buffers are not suitable for use by the kernel (or for DMA), by default.</p>
+</blockquote>
+<p>Each process has its own memory map <code>struct mm_struct</code>, the<br><code>mm</code> pointers in <code>task_struct</code>. （At context switch time, the memory map is changed. This is part of the overhead。目前还不理解。）</p>
+<p><img src="/2020/11/24/Linux-虚拟内存管理/用户虚拟地址空间.png" alt="用户虚拟地址空间"></p>
+<h2 id="杂项"><a href="#杂项" class="headerlink" title="杂项"></a>杂项</h2><h3 id="Terminology"><a href="#Terminology" class="headerlink" title="Terminology"></a>Terminology</h3><ul>
+<li>A page is a unit of virtual memory sized and aligned at the page size.</li>
+<li>A page frame, or frame, refers to a page-sized and page-aligned physical memory block.</li>
+<li>A page is somewhat abstract, where a frame is concrete</li>
+</ul>
+<h3 id="Shared-memory"><a href="#Shared-memory" class="headerlink" title="Shared memory"></a>Shared memory</h3><p>Shared memory is easily implemented with an MMU.</p>
+<ul>
+<li>Simply map the same physical frame into two different processes.</li>
+<li>The virtual addresses need not be the same.</li>
+<li>If pointers to <strong>values inside a shared memory region</strong> are used, it might be important for them to have the same virtual addresses, though.</li>
+<li>The <code>mmap()</code> system call allows the user space process to request a specific virtual address to map the shared memory region. The kernel may not be able to grant a mapping at this address, causing mmap() to return failure.</li>
+</ul>
+<p><img src="/2020/11/24/Linux-虚拟内存管理/共享内存的实现-1.png" alt="共享内存的实现-1"><br><img src="/2020/11/24/Linux-虚拟内存管理/共享内存的实现-2.png" alt="共享内存的实现-2"></p>
+<h3 id="Lazy-Allocation"><a href="#Lazy-Allocation" class="headerlink" title="Lazy Allocation"></a>Lazy Allocation</h3><ol>
+<li>When memory is requested, the kernel simply creates a record of the request in its page tables and then returns (quickly) to the process, without updating the TLB.</li>
+<li>When that newly-allocated memory is touched, the CPU will generate a page fault, because the CPU doesn’t know about the mapping.</li>
+<li>In the page fault handler, the kernel uses its page tables to determine that the mapping is valid (from the kernel’s point of view) yet unmapped in the TLB.</li>
+<li>The kernel will allocate a physical page frame and update the TLB with the new mapping.</li>
+<li>The kernel returns from the exception handler and the user space program can resume.</li>
+</ol>
+<h3 id="Page-Tables"><a href="#Page-Tables" class="headerlink" title="Page Tables"></a>Page Tables</h3><ul>
+<li>The entries in the TLB are a limited resource. Far more mappings can be made than can exist in the TLB at one time.</li>
+<li>The kernel must keep track of all of the mappings all of the time.</li>
+<li>The kernel stores all this information in the page tables.</li>
+</ul>
+<p>TLB is often smaller than the total number of maps for a process. Since the TLB can only hold a limited subset of the total mappings for a process, some valid mappings will not have TLB entries.<br>When these addresses are touched, the CPU will generate a page fault, because the CPU has no knowledge of the page tables; only the kernel does.</p>
+<p>When the page fault handler executes in this case, it will:</p>
+<ul>
+<li>Find the appropriate mapping for the offending address in the kernel’s page tables</li>
+<li>Select and remove an existing TLB entry</li>
+<li>Create a TLB entry for the page containing the address</li>
+<li>Return to the user space process</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>上面讲的主要是虚拟地址空间和物理地址空间是如何通过硬件 MMU 和 TLB 完成 mapping 的，侧重的是硬件和 mapping。<br>虚拟地址空间包括两部分内核虚拟地址空间和用户虚拟地址空间（进程地址空间），内核管理进程地址空间是通过 <code>mm_struct</code> 和 <code>vm_area_struct</code> 等实现的，处于另外一侧。</p>
+<p><img src="/2020/11/24/Linux-虚拟内存管理/进程地址空间.png" alt="进程地址空间"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Linux/" rel="tag"># Linux</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/23/LRU/" rel="prev" title="LRU">
+      <i class="fa fa-chevron-left"></i> LRU
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/25/Tree-树/" rel="next" title="Tree 树">
+      Tree 树 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么要用虚拟内存？Advantages"><span class="nav-number">1.</span> <span class="nav-text">为什么要用虚拟内存？Advantages</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#虚拟内存是怎么实现的？Mapping-is-performed-in-hardware"><span class="nav-number">2.</span> <span class="nav-text">虚拟内存是怎么实现的？Mapping is performed in hardware</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#虚拟地址空间分割为两部分"><span class="nav-number">3.</span> <span class="nav-text">虚拟地址空间分割为两部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内核虚拟地址空间"><span class="nav-number">4.</span> <span class="nav-text">内核虚拟地址空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用户虚拟地址空间，也就是进程地址空间"><span class="nav-number">5.</span> <span class="nav-text">用户虚拟地址空间，也就是进程地址空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#杂项"><span class="nav-number">6.</span> <span class="nav-text">杂项</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Terminology"><span class="nav-number">6.1.</span> <span class="nav-text">Terminology</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Shared-memory"><span class="nav-number">6.2.</span> <span class="nav-text">Shared memory</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lazy-Allocation"><span class="nav-number">6.3.</span> <span class="nav-text">Lazy Allocation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Page-Tables"><span class="nav-number">6.4.</span> <span class="nav-text">Page Tables</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">104</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

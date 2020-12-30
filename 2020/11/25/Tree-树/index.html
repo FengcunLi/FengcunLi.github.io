@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="keywords" content="Algorithm">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tree 树">
+<meta property="og:url" content="http://yoursite.com/2020/11/25/Tree-树/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/Tree-树/树.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/Tree-树/binary-heap.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/Tree-树/avl.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/Tree-树/rb-tree.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/Tree-树/B树.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/Tree-树/B+树作为index树.png">
+<meta property="og:updated_time" content="2020-12-13T13:30:16.675Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Tree 树">
+<meta name="twitter:image" content="http://yoursite.com/2020/11/25/Tree-树/树.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/11/25/Tree-树/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Tree 树 | The next stop - Antarctica</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/25/Tree-树/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Tree 树
+        </h1>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-13 21:30:16" itemprop="dateModified" datetime="2020-12-13T21:30:16+08:00">2020-12-13</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><img src="/2020/11/25/Tree-树/树.png" alt="Tree-树"></p>
+<a id="more"></a>
+<h1 id="二叉堆-Binary-Heap"><a href="#二叉堆-Binary-Heap" class="headerlink" title="二叉堆 Binary Heap"></a>二叉堆 Binary Heap</h1><p><img src="/2020/11/25/Tree-树/binary-heap.jpg" alt="Tree-树"></p>
+<p>一般用完全二叉树表示，一般用数组实现，易于存储，便于索引。</p>
+<p>使用一个数组就可以存储完全二叉树，如果我们对一棵满二叉树逐层进行编号，会发现，假设每一个节点的编号为 $i$，那么它的左子节点编号是 $2 \times i$，而右子节点是 $2\times i+1$。完全二叉树则是，我们在满二叉树删掉一些节点之后，使用同样的逐层编号的方式，不会导致其他节点的编号发生变化。显而易见，删除的就是叶子结点中比较靠右的那一部分。所以它易于索引，并且不必为了保持编号的性质而去定义一些空的节点。同时还能保持它的层数一直是 $\log n$ 的，索引起来的话，路径不会太长。同时我们在删除节点的时候，很容易保持它的性质，就是把最右边的叶子结点拿过去补上被删除的节点，之后对树进行调整保证符合性质就好。</p>
+<p>堆这种数据结构存在的原因是什么。它作为一个工具，让什么样的问题变得简单了。</p>
+<p>如果仅仅是需要得到一个有序的序列，使用排序就可以很快完成，并不需要去组织一个新的数据结构。但是如果我们的需求是对于一个随时会有更新的序列，我要随时知道这个序列的最小值或最大值是什么。显然如果是线性结构，每次插入之后，假设原数组是有序的，那使用二分把它放在正确的位置也未尝不可，但是插入的时候从数组中留出空位就需要 $O(n)$ 的时间复杂度，删除的时候亦然。</p>
+<p>可是如果我们将序列看作是一个集合，我们需要的是这个集合的一个最小值，并且，在它被任意划分成为若干个子集的时候，这些子集的最小值我们也是知道的，这些子集被不断划分，我们依然知道这些再次被划分出来的子集的最小值。而且我们去想办法去保持这样的一个性质，那么这个问题是不是变得非常好解决了呢？那么问题就转换成了一种集合之间的关系，并且是非常明显的一种包含关系，那么最适合于解决这种集合上的关系的数据结构是什么呢？那么就是树，所以就形成了这样的一种树，它的每一个节点都比它的子节点们小或者大。</p>
+<p>当我们插入一个新的节点的时候，实际上我们需要去调整的大部分时候只是这棵树上的一条路径，也就是决定它在哪一个集合里面，树上的路径长度相对于这个集合，由于是对数级别的，所以非常可以接受，那么这种数据结构也就应运而生。</p>
+<p>二叉堆的 child 不分左右，进阶版的分左右的堆叫做左偏树。</p>
+<blockquote>
+<p>There is no requirement to order the left and right children of a node – Data Structures and Algorithms.</p>
+</blockquote>
+<h1 id="AVL-树和红黑树"><a href="#AVL-树和红黑树" class="headerlink" title="AVL 树和红黑树"></a>AVL 树和红黑树</h1><p>平衡二叉搜索树是基于二分法的策略提高数据查找速度的数据结构。</p>
+<p><img src="/2020/11/25/Tree-树/avl.jpg" alt="avl"></p>
+<p>Wikipedia</p>
+<blockquote>
+<p>AVL trees are often compared with red–black trees because both support the same set of operations and take $O(\log n)$ time for the basic operations. For lookup-intensive applications, AVL trees are faster than red–black trees because they are more strictly balanced. Similar to red–black trees, AVL trees are height-balanced.</p>
+</blockquote>
+<blockquote>
+<p>AVL trees maintain a more rigid balance than red-black trees. The path from the root to the deepest leaf in an AVL tree is at most ~1.44 lg(n+2), while in red black trees it’s at most ~2 lg (n+1).</p>
+</blockquote>
+<blockquote>
+<p>As a result, lookup in an AVL tree is typically faster, but this comes at the cost of slower insertion and deletion due to more rotation operations. So use an AVL tree if you expect the number of lookups to dominate the number of updates to the tree.</p>
+</blockquote>
+<p><img src="/2020/11/25/Tree-树/rb-tree.png" alt="rb-tree"></p>
+<ul>
+<li>Root is always black.</li>
+<li>All NULL leaves are black, both children of red node are black and vice-versa.</li>
+<li>Every simple path from a given node to any of its descendant leaves contains the same number of black nodes.</li>
+<li>Path from root to farthest leaf is no more than twice as long as path from root to nearest leaf.</li>
+<li>红黑树要求从根节点到叶子节点的最长路径不大于最短路径的两倍</li>
+<li>AVL 树要求每一棵子树的左右子树高度差不超过 1，即左右子树高度差为 [-1，0，1]</li>
+<li>AVL 的结构相对于 RB-TREE 来说更为平衡，在插入和删除的时候更加容易引起树的 unbalance，因此在大量数据需要插入或者删除时，AVL 需要 re-balance 的频率会更高。因此，RB-Tree 在需要大量插入和删除 node 的场景下，效率更高。自然，由于 AVL 高度平衡，因此 AVL 的 search 效率更高。</li>
+</ul>
+<ol>
+<li><p>查找，AVL 树要比红黑树更平衡，因此 AVL 树的查找效率更高。</p>
+</li>
+<li><p>插入，<strong>不论是 AVL 树还是红黑树，一次插入所需的旋转次数复杂度都是 $O(1)$（AVL 插入新节点所需要的最大旋转次数是常数，这个可以证明，不需要一直旋转到根节点）。</strong> 对于 AVL 树，旋转的时候，需要找到第一个不平衡节点，这就需要我们维护一个平衡因子，每一次插入，都要更新从根节点到被修改节点这个路径上的平衡因子，最差情况下，需要 $O(\log n)$ 的时间复杂度。对于红黑树，最差情况下也需要 $O(\log n)$ 的时间复杂度来调整平衡（recoloring），注意这只是极端情况下，比如父节点和伯父节点都是红色，曾祖父节点也是红色，这个时候，就要递归的去平衡父节点，然而，采用自顶向下的方法（就是如果一个节点的两个子节点都是红色，就把这个节点变成红色，它的两个子节点变成黑色），<strong>减少了多次旋转操作（虽然两者都是常数次旋转）</strong>。所以红黑树的插入操作<strong>统计</strong>上比 AVL 树要好。</p>
+</li>
+<li><p>删除对于 AVL 树，删除意味着某个子树深度减少，这个时候，我们找到第一个不平衡的点，像插入操作那样进行旋转，使得子树平衡，然后，递归的使它的祖先节点也平衡。对于红黑树，只有个别情况才会递归平衡父节点，它发生在：兄弟节点是黑色，两个侄儿也是黑色。当兄弟节点是红色的时候，转化为兄弟节点是黑色的情况处理，当两个侄儿有红色节点的时候，则在常数时间内就可以达到平衡。所以红黑树的删除操作<strong>统计</strong>上比 AVL 树要好。</p>
+</li>
+</ol>
+<h2 id="红黑树的应用领域"><a href="#红黑树的应用领域" class="headerlink" title="红黑树的应用领域"></a>红黑树的应用领域</h2><ol>
+<li><p>C++ STL map 和 set 都是用红黑树实现的。</p>
+</li>
+<li><p>Linux 进程调度中的完全公平调度算法（CFS），在左边的节点最需要 CPU，实现了选择哪一个进程获得 CPU 进行运行（比如上图中的 1 节点，1 数值代表进程的虚拟时钟<code>vruntime</code>。）</p>
+<blockquote>
+<p>CFS 调度器设计了一个参数叫 Virtual Runtime（简称 vruntime）来记录当前任务(进程)所获得的 CPU 运行时间，值越小代表获得的 CPU 运行时间也少，不符合公平的原则，因此该节点就是进程调用器应该选择获得 CPU 运行时间的进程<br>每个进程的累计运行时间保存在自己的 vruntime 字段里，哪个进程的 vruntime 最小就获得本轮运行的权利。</p>
+</blockquote>
+</li>
+<li>epoll</li>
+</ol>
+<p>平衡二叉搜索树的问题在于每次插入和删除都有很大可能需要进行重新平衡，数据就要不停的搬来搬去，在内存中这问题不是特别大，可如果在磁盘中，这个开销可能就大了，这些树绝大多数应用都是作为内存中的数据结构。</p>
+<h3 id="Links"><a href="#Links" class="headerlink" title="Links"></a>Links</h3><ul>
+<li><a href="https://www.jianshu.com/p/e136ec79235c" target="_blank" rel="noopener">30 张图带你彻底理解红黑树</a></li>
+</ul>
+<h1 id="Trie-树"><a href="#Trie-树" class="headerlink" title="Trie 树"></a>Trie 树</h1><p>Trie 树(字典树)并不是平衡树，也不一定非要有序。它主要用于前缀匹配，比如字符串，比如说 ip 地址，如果字符串长度是固定或者说有限的，那么 Trie 的深度是可控制的，你可以得到很好的搜索效果，而且插入新数据后不用平衡。不过 Trie 不像 B-tree 通用性那么强，你需要针对你自己的实际应用来设计你自己的 Trie，比如说你做个字典应用，是用 26 个字母，还是用 unicode 来前缀匹配？如果是 ip 地址搜索，是用二进制来前缀拼配，还是八进制来匹配？</p>
+<h1 id="B-树-B-树"><a href="#B-树-B-树" class="headerlink" title="B 树/B+树"></a>B 树/B+树</h1><p>B 树/B+ 树，平衡<strong>N 叉</strong>（N-ary）搜索树，每个节点可以有更多的孩子，新的值可以插在已有的节点里，而不需要改变树的高度，从而大量减少重新平衡和数据迁移的次数，<strong>这非常适合数据库索引这种需要持久化在磁盘，同时需要大量查询和插入操作的应用</strong>。</p>
+<p>二叉搜索树、平衡二叉搜索树、B 树/B+树都是有序的，如果你采用合适的算法遍历整个树，可以得到一个有序的列表。这也是为什么如果有数据库索引的情况下，你 order by 你索引的列，就会速度特别快，因为它并没有给你真的排序，只是遍历树而已。</p>
+<p><img src="/2020/11/25/Tree-树/B树.jpg" alt="B树"></p>
+<p>B 树的查询流程，从上图中找到 E 字母，查找流程如下：</p>
+<ol>
+<li>获取根节点的关键字进行比较，E&lt;M，所以往左找</li>
+<li>拿到关键字 D 和 G，D&lt;E&lt;G， 所以往 D 和 G 中间找</li>
+<li>拿到 E 和 F，因为 E=E 所以直接返回关键字和指针信息（data record pointer）（如果树结构里面没有包含所要查找的节点则返回 null）</li>
+</ol>
+<p>B+ 树改进了 B 树,</p>
+<ul>
+<li>让<strong>内部节点</strong>只作索引使用（也称之为索引节点）, 去掉了其中指向 data record 的指针, 使得每个节点中能够存放更多的 key, 因此能有更大的出度，树高能进一步被压缩, 使得检索的时间更短</li>
+<li>底部的<strong>叶子结点</strong>是链表形式, 因此可以实现更方便的顺序遍历</li>
+</ul>
+<p>B+ 树实现的联合索引：</p>
+<p><img src="/2020/11/25/Tree-树/B+树作为index树.png" alt="B+树作为index树"></p>
+<h3 id="Links-1"><a href="#Links-1" class="headerlink" title="Links"></a>Links</h3><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/27700617" target="_blank" rel="noopener">平衡二叉树、B 树、B+树、B*树 理解其中一种你就都明白了</a></li>
+<li><a href="https://segmentfault.com/a/1190000020416577" target="_blank" rel="noopener">segmentfault</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Algorithm/" rel="tag"># Algorithm</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/24/Linux-虚拟内存管理/" rel="prev" title="Linux 虚拟内存管理">
+      <i class="fa fa-chevron-left"></i> Linux 虚拟内存管理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/25/RabbitMQ/" rel="next" title="RabbitMQ">
+      RabbitMQ <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#二叉堆-Binary-Heap"><span class="nav-number">1.</span> <span class="nav-text">二叉堆 Binary Heap</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AVL-树和红黑树"><span class="nav-number">2.</span> <span class="nav-text">AVL 树和红黑树</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#红黑树的应用领域"><span class="nav-number">2.1.</span> <span class="nav-text">红黑树的应用领域</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Links"><span class="nav-number">2.1.1.</span> <span class="nav-text">Links</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Trie-树"><span class="nav-number">3.</span> <span class="nav-text">Trie 树</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#B-树-B-树"><span class="nav-number">4.</span> <span class="nav-text">B 树/B+树</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Links-1"><span class="nav-number">4.0.1.</span> <span class="nav-text">Links</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">104</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

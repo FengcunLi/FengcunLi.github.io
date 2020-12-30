@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Redis cluster tutorial Redis Cluster consistency guarantees">
+<meta name="keywords" content="Redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis 集群">
+<meta property="og:url" content="http://yoursite.com/2020/11/29/Redis-集群/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="Redis cluster tutorial Redis Cluster consistency guarantees">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2020/11/29/Redis-集群/Redis-cluster.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/29/Redis-集群/cluster-startup.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/29/Redis-集群/after-resharding.png">
+<meta property="og:updated_time" content="2020-12-01T11:35:09.886Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis 集群">
+<meta name="twitter:description" content="Redis cluster tutorial Redis Cluster consistency guarantees">
+<meta name="twitter:image" content="http://yoursite.com/2020/11/29/Redis-集群/Redis-cluster.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/11/29/Redis-集群/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Redis 集群 | The next stop - Antarctica</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/29/Redis-集群/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Redis 集群
+        </h1>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-01 19:35:09" itemprop="dateModified" datetime="2020-12-01T19:35:09+08:00">2020-12-01</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><a href="https://redis.io/topics/cluster-tutorial" target="_blank" rel="noopener">Redis cluster tutorial</a></p>
+<h2 id="Redis-Cluster-consistency-guarantees"><a href="#Redis-Cluster-consistency-guarantees" class="headerlink" title="Redis Cluster consistency guarantees"></a>Redis Cluster consistency guarantees</h2><p><img src="/2020/11/29/Redis-集群/Redis-cluster.png" alt="Redis-cluster"></p>
+<a id="more"></a>
+<p>Redis Cluster is not able to guarantee strong consistency. In practical terms this means that under certain conditions it is possible that Redis Cluster will lose writes that were acknowledged by the system to the client.</p>
+<p>The first reason why Redis Cluster can lose writes is because it uses asynchronous replication. This means that during writes the following happens:</p>
+<ul>
+<li>Your client writes to the master B.</li>
+<li>The master B replies OK to your client.</li>
+<li>The master B propagates the write to its slaves B1, B2 and B3.</li>
+</ul>
+<p>As you can see, B does not wait for an acknowledgement from B1, B2, B3 before replying to the client, since this would be a prohibitive latency penalty for Redis, so if your client writes something, B acknowledges the write, but crashes before being able to send the write to its slaves, one of the slaves (that did not receive the write) can be promoted to master, losing the write forever.</p>
+<p><strong>This is not very likely to happen because Redis sends the reply to the client, and the commands to replicate to the slaves, about at the same time, so there is a very small window to lose data. However the fact that it is hard to trigger does not mean that it is impossible, so this does not change the consistency guarantees provided by Redis cluster.</strong></p>
+<p>This is very similar to what happens with most databases that are configured to flush data to disk every second, so it is a scenario you are already able to reason about because of past experiences with traditional database systems not involving distributed systems. Similarly you can improve consistency by forcing the database to flush data to disk before replying to the client, but this usually results in prohibitively low performance. That would be the equivalent of synchronous replication in the case of Redis Cluster.</p>
+<p>Basically, there is a trade-off to be made between performance and consistency.</p>
+<p>Redis Cluster has support for synchronous writes when absolutely needed, implemented via the WAIT command. This makes losing writes a lot less likely. However, note that Redis Cluster does not implement strong consistency even when synchronous replication is used: it is always possible, under more complex failure scenarios, that a slave that was not able to receive the write will be elected as master.</p>
+<p>There is another notable scenario where Redis Cluster will lose writes, that happens during a network partition where a client is isolated with a minority of instances including at least a master.</p>
+<p>Take as an example our 6 nodes cluster composed of A, B, C, A1, B1, C1, with 3 masters and 3 slaves. There is also a client, that we will call Z1.</p>
+<p>After a partition occurs, it is possible that in one side of the partition we have A, C, A1, B1, C1, and in the other side we have B and Z1.</p>
+<p>Z1 is still able to write to B, which will accept its writes. If the partition heals in a very short time, the cluster will continue normally. However, if the partition lasts enough time for B1 to be promoted to master on the majority side of the partition, the writes that Z1 has sent to B in the mean time will be lost.</p>
+<p>Note that there is a maximum window to the amount of writes Z1 will be able to send to B: if enough time has elapsed for the majority side of the partition to elect a slave as master, every master node in the minority side will have stopped accepting writes.</p>
+<p>This amount of time is a very important configuration directive of Redis Cluster, and is called the node timeout.</p>
+<p>After node timeout has elapsed, a master node is considered to be failing, and can be replaced by one of its replicas. Similarly, after node timeout has elapsed without a master node to be able to sense the majority of the other master nodes, it enters an error state and stops accepting writes.</p>
+<h2 id="使用-redis-plus-plus-访问-cluster-的一个例子"><a href="#使用-redis-plus-plus-访问-cluster-的一个例子" class="headerlink" title="使用 redis plus plus 访问 cluster 的一个例子"></a>使用 redis plus plus 访问 cluster 的一个例子</h2><p>The redis-cli cluster support is very basic so it always uses the fact that Redis Cluster nodes are able to redirect a client to the right node. A serious client is able to</p>
+<ul>
+<li>do better than that</li>
+<li>and cache the map between hash slots and nodes addresses, to directly use the right connection to the right node. The map is refreshed only when something changed in the cluster configuration, for example after a failover or after the system administrator changed the cluster layout by adding or removing nodes.</li>
+</ul>
+<p>Redis 集群配置</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">port</span> <span class="number">7000</span></span><br><span class="line"><span class="string">cluster-enabled</span> <span class="literal">yes</span></span><br><span class="line"><span class="string">cluster-config-file</span> <span class="string">nodes.conf</span></span><br><span class="line"><span class="string">cluster-node-timeout</span> <span class="number">5000</span></span><br><span class="line"><span class="string">appendonly</span> <span class="literal">yes</span></span><br><span class="line"></span><br><span class="line"><span class="string">daemonize</span> <span class="literal">yes</span></span><br></pre></td></tr></table></figure>
+<p>启动脚本</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> 7000</span><br><span class="line">../redis-server redis.conf</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> ../7001</span><br><span class="line">../redis-server redis.conf</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> ../7002</span><br><span class="line">../redis-server redis.conf</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> ../7003</span><br><span class="line">../redis-server redis.conf</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> ../7004</span><br><span class="line">../redis-server redis.conf</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> ../7005</span><br><span class="line">../redis-server redis.conf</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/11/29/Redis-集群/cluster-startup.png" alt="cluster-startup"></p>
+<h3 id="Resharding-the-cluster"><a href="#Resharding-the-cluster" class="headerlink" title="Resharding the cluster"></a>Resharding the cluster</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli --cluster reshard 127.0.0.1:7000</span><br></pre></td></tr></table></figure>
+<p>通过查看 AOF 文件，可以看到实际上是发生了 DEL / SET。将 slots 连同相应的数据从一个 master 划给另一个 master 管理。</p>
+<p>Resharding 之后：<br><img src="/2020/11/29/Redis-集群/after-resharding.png" alt="after-resharding"></p>
+<h3 id="failover-故障转移"><a href="#failover-故障转移" class="headerlink" title="failover 故障转移"></a>failover 故障转移</h3><p>在发生故障时，会自动发生故障转移；也可以手动进行故障转移：<br>Sometimes manual failover is useful to force a failover without actually causing any problem on a master. For example in order to upgrade the Redis process of one of the master nodes it is a good idea to failover it in order to turn it into a slave with minimal impact on availability.</p>
+<p>Manual failovers are supported by Redis Cluster using the <code>CLUSTER FAILOVER</code> command, that must be executed in one of the slaves of the master you want to failover.</p>
+<p>Manual failovers are special and are safer compared to failovers resulting from actual master failures, since they occur in a way that avoid data loss in the process, by switching clients from the original master to the new master only when the system is sure that the new master processed all the replication stream from the old one.</p>
+<p>This is what you see in the slave log when you perform a manual failover:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Manual failover user request accepted.</span></span><br><span class="line"><span class="comment"># Received replication offset for paused master manual failover: 347540</span></span><br><span class="line"><span class="comment"># All master replication stream processed, manual failover can start.</span></span><br><span class="line"><span class="comment"># Start of election delayed for 0 milliseconds (rank #0, offset 347540).</span></span><br><span class="line"><span class="comment"># Starting a failover election for epoch 7545.</span></span><br><span class="line"><span class="comment"># Failover election won: I'm the new master.</span></span><br></pre></td></tr></table></figure>
+<p>Basically clients connected to the master we are failing over are stopped. At the same time the master sends its replication offset to the slave, that waits to reach the offset on its side. When the replication offset is reached, the failover starts, and the old master is informed about the configuration switch. When the clients are <strong>unblocked</strong> on the old master, they are redirected to the new master.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sw/redis++/redis++.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;chrono&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;thread&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> sw::redis;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> keyspace = <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">std</span>::<span class="function"><span class="built_in">string</span> <span class="title">generate_key</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> random_variable = <span class="built_in">std</span>::rand();</span><br><span class="line">    <span class="keyword">return</span> <span class="string">"key_"</span> + <span class="built_in">std</span>::to_string(random_variable % keyspace);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">reset</span><span class="params">(RedisCluster &amp;cluster)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; keyspace; i++) &#123;</span><br><span class="line">        <span class="keyword">auto</span> key = <span class="string">"key_"</span> + <span class="built_in">std</span>::to_string(i);</span><br><span class="line">        cluster.del(key);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void run_func_within_try_catch(std::function&lt;void()&gt; func,</span><br><span class="line">                               <span class="built_in">std</span>::function&lt;<span class="keyword">void</span>()&gt; expection_callback) &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        func();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (<span class="keyword">const</span> ReplyError &amp;err) &#123;</span><br><span class="line">        <span class="comment">// WRONGTYPE Operation against a key holding the wrong kind of value</span></span><br><span class="line">        expection_callback();</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"ReplyError: "</span> &lt;&lt; err.what() &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (<span class="keyword">const</span> TimeoutError &amp;err) &#123;</span><br><span class="line">        <span class="comment">// reading or writing timeout</span></span><br><span class="line">        expection_callback();</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"TimeoutError: "</span> &lt;&lt; err.what() &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (<span class="keyword">const</span> ClosedError &amp;err) &#123;</span><br><span class="line">        <span class="comment">// the connection has been closed.</span></span><br><span class="line">        expection_callback();</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"ClosedError: "</span> &lt;&lt; err.what() &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (<span class="keyword">const</span> IoError &amp;err) &#123;</span><br><span class="line">        <span class="comment">// there's an IO error on the connection.</span></span><br><span class="line">        expection_callback();</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"IoError: "</span> &lt;&lt; err.what() &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (<span class="keyword">const</span> Error &amp;err) &#123;</span><br><span class="line">        <span class="comment">// other errors</span></span><br><span class="line">        expection_callback();</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"Error: "</span> &lt;&lt; err.what() &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> <span class="keyword">const</span> *argv[])</span> </span>&#123;</span><br><span class="line">    <span class="function">RedisCluster <span class="title">cluster</span><span class="params">(<span class="string">"tcp://127.0.0.1:7003"</span>)</span></span>;</span><br><span class="line">    <span class="built_in">std</span>::srand(<span class="built_in">std</span>::time(<span class="number">0</span>));  <span class="comment">// use current time as seed for random generator</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// bookkeeping the write operation counts</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">map</span>&lt;<span class="built_in">std</span>::<span class="built_in">string</span>, <span class="keyword">int</span>&gt; write_operation_counts;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> reads = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> failed_reads = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> writes = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> failed_writes = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> lost_writes = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> not_ack_writes = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    reset(cluster);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">string</span> key = generate_key();</span><br><span class="line"></span><br><span class="line">        run_func_within_try_catch(</span><br><span class="line">            [&amp;]() &#123;</span><br><span class="line">                <span class="keyword">auto</span> result = cluster.get(key);</span><br><span class="line">                <span class="keyword">if</span> (result) &#123;</span><br><span class="line">                    <span class="keyword">int</span> write_op_count_on_redis_side = <span class="built_in">std</span>::atoi(result.value().c_str());</span><br><span class="line">                    <span class="keyword">int</span> write_op_count_on_our_side = write_operation_counts[key];</span><br><span class="line">                    <span class="keyword">if</span> (write_op_count_on_our_side &lt; write_op_count_on_redis_side) &#123;</span><br><span class="line">                        not_ack_writes += write_op_count_on_redis_side - write_op_count_on_our_side;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">if</span> (write_op_count_on_our_side &gt; write_op_count_on_redis_side) &#123;</span><br><span class="line">                        lost_writes += write_op_count_on_our_side - write_op_count_on_redis_side;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                reads++;</span><br><span class="line">            &#125;,</span><br><span class="line">            [&amp;failed_reads]() &#123;</span><br><span class="line">                failed_reads++;</span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">        run_func_within_try_catch(</span><br><span class="line">            [&amp;]() &#123;</span><br><span class="line">                <span class="comment">// 下面这一行是唯一的写操作，也就是唯一可能造成不一致的地方，</span></span><br><span class="line">                <span class="comment">// lost writes 或者 not acked writes</span></span><br><span class="line">                <span class="comment">// lost writes 发生在 master acknowledged the client, but crashed before sending write to</span></span><br><span class="line">                <span class="comment">// one slave, and this slave is promoted to be the new master.</span></span><br><span class="line"></span><br><span class="line">                <span class="comment">// not acked writes 发生在 master 没能 acknowledge the client（maybe caused by network issue？）</span></span><br><span class="line">                <span class="comment">// but master indeed increased the value on its side.</span></span><br><span class="line"></span><br><span class="line">                <span class="keyword">int</span> result = cluster.incr(key);</span><br><span class="line">                <span class="comment">// write_operation_counts[key]++;</span></span><br><span class="line">                <span class="comment">// This is a more elegant way.</span></span><br><span class="line"></span><br><span class="line">                <span class="comment">// 当出现不一致时，我们在上面已经进行了与不一致相关的统计量的增加，</span></span><br><span class="line">                <span class="comment">// 然后我们在这里将两个值（our side and redis side）进行同步，</span></span><br><span class="line">                <span class="comment">// 可以保证丢失写操作的统计和未确认写操作的统计两者之间不会相互干扰。</span></span><br><span class="line">                write_operation_counts[key] = result;</span><br><span class="line">                writes++;</span><br><span class="line">            &#125;,</span><br><span class="line">            [&amp;failed_writes]() &#123;</span><br><span class="line">                failed_writes++;</span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">        [&amp;]() &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"%d/%d failed_reads/reads\n"</span>, failed_reads, reads);</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"%d/%d failed_writes/writes\n"</span>, failed_writes, writes);</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"%d lost_writes\n"</span>, lost_writes);</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"%d not_ack_writes\n"</span>, not_ack_writes);</span><br><span class="line">        &#125;();</span><br><span class="line"></span><br><span class="line">        <span class="built_in">std</span>::this_thread::sleep_for(<span class="built_in">std</span>::chrono::milliseconds(<span class="number">300</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="redis-plus-plus-cluster-部分"><a href="#redis-plus-plus-cluster-部分" class="headerlink" title="redis plus plus cluster 部分"></a>redis plus plus cluster 部分</h2><h3 id="Connection"><a href="#Connection" class="headerlink" title="Connection"></a>Connection</h3><p><code>RedisCluster</code> connects to all master nodes in the cluster. For each master node, it maintains a connection pool. By now, it doesn’t connect to slave nodes.</p>
+<p>You can initialize a <code>RedisCluster</code> instance with <code>ConnectionOptions</code> and <code>ConnectionPoolOptions</code>. You only need to set one master node’s host &amp; port in <code>ConnectionOptions</code>, and <code>RedisCluster</code> will get other nodes’ info automatically (with the <code>CLUSTER SLOTS</code> command). For each master node, it creates a connection pool with the specified <code>ConnectionPoolOptions</code>. If <code>ConnectionPoolOptions</code> is not specified, <code>RedisCluster</code> maintains a single connection to every master node.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Set a master node's host &amp; port.</span></span><br><span class="line">ConnectionOptions connection_options;</span><br><span class="line">connection_options.host = <span class="string">"127.0.0.1"</span>;  <span class="comment">// Required.</span></span><br><span class="line">connection_options.port = <span class="number">7000</span>; <span class="comment">// Optional. The default port is 6379.</span></span><br><span class="line">connection_options.password = <span class="string">"auth"</span>; <span class="comment">// Optional. No password by default.</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Automatically get other nodes' info,</span></span><br><span class="line"><span class="comment">// and connect to every master node with a single connection.</span></span><br><span class="line"><span class="function">RedisCluster <span class="title">cluster1</span><span class="params">(connection_options)</span></span>;</span><br><span class="line"></span><br><span class="line">ConnectionPoolOptions pool_options;</span><br><span class="line">pool_options.size = <span class="number">3</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// For each master node, maintains a connection pool of size 3.</span></span><br><span class="line"><span class="function">RedisCluster <span class="title">cluster2</span><span class="params">(connection_options, pool_options)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>You can also specify connection option with an URI. However, in this way, you can only use default <code>ConnectionPoolOptions</code>, i.e. pool of size 1, and CANNOT specify password.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Specify a master node's host &amp; port.</span></span><br><span class="line"><span class="function">RedisCluster <span class="title">cluster3</span><span class="params">(<span class="string">"tcp://127.0.0.1:7000"</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Use default port, i.e. 6379.</span></span><br><span class="line"><span class="function">RedisCluster <span class="title">cluster4</span><span class="params">(<span class="string">"tcp://127.0.0.1"</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+<h4 id="Note"><a href="#Note" class="headerlink" title="Note"></a>Note</h4><ul>
+<li>RedisCluster only works with tcp connection. It CANNOT connect to Unix Domain Socket. If you specify Unix Domain Socket in ConnectionOptions, it throws an exception.</li>
+<li>All nodes in the cluster should have the same password.</li>
+<li>Since Redis Cluster does NOT support multiple databases, ConnectionOptions::db is ignored.</li>
+</ul>
+<h3 id="Interfaces"><a href="#Interfaces" class="headerlink" title="Interfaces"></a>Interfaces</h3><p>As we mentioned above, <code>RedisCluster</code>‘s interfaces are similar to Redis. It supports most of Redis’ interfaces, including the generic command interface (see Redis’ API Reference section for details), except the following:</p>
+<ul>
+<li>Not support commands without key as argument, e.g. PING, INFO.</li>
+<li>Not support Lua script without key parameters.</li>
+</ul>
+<p><strong>Since there’s no key parameter</strong>, <code>RedisCluster</code> has no idea on to which node these commands should be sent. However there’re 2 workarounds for this problem:</p>
+<ul>
+<li>If you want to send these commands to a specific node, you can create a <code>Redis</code> object with that node’s host and port, and use the <code>Redis</code> object to do the work.</li>
+<li>Instead of host and port, you can also call <code>Redis RedisCluster::redis(const StringView &amp;hash_tag)</code> to create a <code>Redis</code> object with a hash-tag specifying the node. In this case, the returned <code>Redis</code> object creates a new connection to Redis server. NOTE: the returned <code>Redis</code> object, <strong>IS NOT THREAD SAFE!</strong>. Also, when using the returned Redis object, if it throws exception, you need to destroy it, and create a new one with the <code>RedisCluster::redis</code> method.</li>
+</ul>
+<p>Also you can use the hash tags to send multiple-key commands.</p>
+<p>See the example section for details.</p>
+<h4 id="Publish-Subscribe"><a href="#Publish-Subscribe" class="headerlink" title="Publish/Subscribe"></a>Publish/Subscribe</h4><p>You can publish and subscribe messages with <code>RedisCluster</code>. The interfaces are exactly the same as <code>Redis</code>, i.e. use <code>RedisCluster::publish</code> to publish messages, and use <code>RedisCluster::subscriber</code> to create a subscriber to consume messages. See Publish/Subscribe section for details.</p>
+<h4 id="Pipeline-and-Transaction"><a href="#Pipeline-and-Transaction" class="headerlink" title="Pipeline and Transaction"></a>Pipeline and Transaction</h4><p>You can also create Pipeline and Transaction objects with RedisCluster, but the interfaces are different from Redis. <strong>Since all commands in the pipeline and transaction should be sent to a single node in a single connection</strong>, we need to tell <code>RedisCluster</code> with which node the pipeline or transaction should be created.</p>
+<p>Instead of specifying the node’s IP and port, <code>RedisCluster</code>‘s pipeline and transaction interfaces allow you to specify the node with a hash tag. <code>RedisCluster</code> will calculate the slot number with the given hash tag, and create a pipeline or transaction with the node holding the slot.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Pipeline RedisCluster::pipeline(<span class="keyword">const</span> StringView &amp;hash_tag, <span class="keyword">bool</span> new_connection = <span class="literal">true</span>);</span><br><span class="line"></span><br><span class="line">Transaction RedisCluster::transaction(<span class="keyword">const</span> StringView &amp;hash_tag, <span class="keyword">bool</span> piped = <span class="literal">false</span>, <span class="keyword">bool</span> new_connection = <span class="literal">true</span>);</span><br></pre></td></tr></table></figure>
+<p>With the created <code>Pipeline</code> or <code>Transaction</code> object, <strong>you can send commands with keys located on the same node as the given hash_tag</strong>. See Examples section for an example.</p>
+<p>NOTE: By default, Pipeline and Transaction will be created with a new connection. In order to avoid creating new connection, you can pass false as the last parameter. However, in this case, you MUST be very careful, otherwise, you might get bad performance or even dead lock. Please carefully check the related pipeline section before using this feature.</p>
+<p>Examples</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sw/redis++/redis++.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> sw::redis;</span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> redis_cluster = RedisCluster(<span class="string">"tcp://127.0.0.1:7000"</span>);</span><br><span class="line"></span><br><span class="line">redis_cluster.<span class="built_in">set</span>(<span class="string">"key"</span>, <span class="string">"value"</span>);</span><br><span class="line"><span class="keyword">auto</span> val = redis_cluster.get(<span class="string">"key"</span>);</span><br><span class="line"><span class="keyword">if</span> (val) &#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; *val &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// With hash-tag.</span></span><br><span class="line">redis_cluster.<span class="built_in">set</span>(<span class="string">"key&#123;tag&#125;1"</span>, <span class="string">"val1"</span>);</span><br><span class="line">redis_cluster.<span class="built_in">set</span>(<span class="string">"key&#123;tag&#125;2"</span>, <span class="string">"val2"</span>);</span><br><span class="line">redis_cluster.<span class="built_in">set</span>(<span class="string">"key&#123;tag&#125;3"</span>, <span class="string">"val3"</span>);</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">vector</span>&lt;OptionalString&gt; hash_tag_res;</span><br><span class="line">redis_cluster.mget(&#123;<span class="string">"key&#123;tag&#125;1"</span>, <span class="string">"key&#123;tag&#125;2"</span>, <span class="string">"key&#123;tag&#125;3"</span>&#125;,</span><br><span class="line">        <span class="built_in">std</span>::back_inserter(hash_tag_res));</span><br><span class="line"></span><br><span class="line">redis_cluster.lpush(<span class="string">"list"</span>, &#123;<span class="string">"1"</span>, <span class="string">"2"</span>, <span class="string">"3"</span>&#125;);</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::<span class="built_in">string</span>&gt; <span class="built_in">list</span>;</span><br><span class="line">redis_cluster.lrange(<span class="string">"list"</span>, <span class="number">0</span>, <span class="number">-1</span>, <span class="built_in">std</span>::back_inserter(<span class="built_in">list</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">// Pipeline.</span></span><br><span class="line"><span class="keyword">auto</span> pipe = redis_cluster.pipeline(<span class="string">"counter"</span>);</span><br><span class="line"><span class="keyword">auto</span> replies = pipe.incr(<span class="string">"&#123;counter&#125;:1"</span>).incr(<span class="string">"&#123;counter&#125;:2"</span>).exec();</span><br><span class="line"></span><br><span class="line"><span class="comment">// Transaction.</span></span><br><span class="line"><span class="keyword">auto</span> tx = redis_cluster.transaction(<span class="string">"key"</span>);</span><br><span class="line">replies = tx.incr(<span class="string">"key"</span>).get(<span class="string">"key"</span>).exec();</span><br><span class="line"></span><br><span class="line"><span class="comment">// Create a Redis object with hash-tag.</span></span><br><span class="line"><span class="comment">// It connects to the Redis instance that holds the given key, i.e. hash-tag.</span></span><br><span class="line"><span class="keyword">auto</span> r = redis_cluster.redis(<span class="string">"hash-tag"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// And send command without key parameter to the server.</span></span><br><span class="line">r.command(<span class="string">"client"</span>, <span class="string">"setname"</span>, <span class="string">"connection-name"</span>);</span><br></pre></td></tr></table></figure>
+<p>NOTE: By default, when you use <code>RedisCluster::redis(const StringView &amp;hash_tag, bool new_connection = true)</code> to create a Redis object, instead of picking a connection from the underlying connection pool, it creates a new connection to the corresponding Redis server. So this is NOT a cheap operation, and you should try to reuse this newly created Redis object as much as possible. If you pass false as the second parameter, you can create a Redis object without creating a new connection. However, in this case, you should be very careful, otherwise, you might get bad performance or even dead lock. Please carefully check the related pipeline section before using this feature.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// This is BAD! It's very inefficient.</span></span><br><span class="line"><span class="comment">// NEVER DO IT!!!</span></span><br><span class="line"><span class="comment">// After sending PING command, the newly created Redis object will be destroied.</span></span><br><span class="line">cluster.redis(<span class="string">"key"</span>).ping();</span><br><span class="line"></span><br><span class="line"><span class="comment">// Then it creates a connection to Redis, and closes the connection after sending the command.</span></span><br><span class="line">cluster.redis(<span class="string">"key"</span>).command(<span class="string">"client"</span>, <span class="string">"setname"</span>, <span class="string">"hello"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Instead you should reuse the Redis object.</span></span><br><span class="line"><span class="comment">// This is GOOD!</span></span><br><span class="line"><span class="keyword">auto</span> redis = cluster.redis(<span class="string">"key"</span>);</span><br><span class="line"></span><br><span class="line">redis.ping();</span><br><span class="line">redis.command(<span class="string">"client"</span>, <span class="string">"setname"</span>, <span class="string">"hello"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// This is GOOD! Create `Redis` object without creating a new connection. Use it, and destroy it ASAP.</span></span><br><span class="line">cluster.redis(<span class="string">"key"</span>, <span class="literal">false</span>).ping();</span><br></pre></td></tr></table></figure>
+<h3 id="Details"><a href="#Details" class="headerlink" title="Details"></a>Details</h3><p><code>RedisCluster</code> maintains <strong>the newest slot-node mapping</strong>, and sends command directly to the right node. Normally it works as fast as <code>Redis</code>. If the cluster <strong>reshards</strong>, <code>RedisCluster</code> will follow the redirection, and it will finally update the slot-node mapping. It can correctly handle the following resharding cases:</p>
+<ul>
+<li>Data migration between exist nodes.</li>
+<li>Add new node to the cluster.</li>
+<li>Remove node from the cluster.</li>
+</ul>
+<p>redis-plus-plus is able to handle both MOVED and ASK redirection, so it’s a complete Redis Cluster client.</p>
+<p>If master is down, the cluster will promote one of its replicas to be the new master. redis-plus-plus can also handle this case:</p>
+<ul>
+<li>When the master is down, redis-plus-plus lost connection to it. In this case, if you try to send commands to this master, redis-plus-plus will try to update slot-node mapping from other nodes. If the mapping remains unchanged, i.e. new master hasn’t been elected yet, it fails to send command to Redis Cluster and throws exception.</li>
+<li>When the new master has been elected, the slot-node mapping will be updated by the cluster. In this case, if you send commands to the cluster, redis-plus-plus can get an update-to-date mapping, and sends commands to the new master.</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Redis/" rel="tag"># Redis</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/28/Redis-conf-file/" rel="prev" title="Redis Conf File">
+      <i class="fa fa-chevron-left"></i> Redis Conf File
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/30/Redis-哨兵/" rel="next" title="Redis 哨兵">
+      Redis 哨兵 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-Cluster-consistency-guarantees"><span class="nav-number">1.</span> <span class="nav-text">Redis Cluster consistency guarantees</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用-redis-plus-plus-访问-cluster-的一个例子"><span class="nav-number">2.</span> <span class="nav-text">使用 redis plus plus 访问 cluster 的一个例子</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Resharding-the-cluster"><span class="nav-number">2.1.</span> <span class="nav-text">Resharding the cluster</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#failover-故障转移"><span class="nav-number">2.2.</span> <span class="nav-text">failover 故障转移</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#redis-plus-plus-cluster-部分"><span class="nav-number">3.</span> <span class="nav-text">redis plus plus cluster 部分</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Connection"><span class="nav-number">3.1.</span> <span class="nav-text">Connection</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Note"><span class="nav-number">3.1.1.</span> <span class="nav-text">Note</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Interfaces"><span class="nav-number">3.2.</span> <span class="nav-text">Interfaces</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Publish-Subscribe"><span class="nav-number">3.2.1.</span> <span class="nav-text">Publish/Subscribe</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Pipeline-and-Transaction"><span class="nav-number">3.2.2.</span> <span class="nav-text">Pipeline and Transaction</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Details"><span class="nav-number">3.3.</span> <span class="nav-text">Details</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">104</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

@@ -179,10 +179,10 @@
       <div class="post-body">
           <div class="tag-cloud">
             <div class="tag-cloud-title">
-              目前共计 5 个标签
+              目前共计 11 个标签
             </div>
             <div class="tag-cloud-tags">
-              <a href="/tags/Algorithm/" style="font-size: 12px; color: #ccc">Algorithm</a> <a href="/tags/C/" style="font-size: 21px; color: #6f6f6f">C++</a> <a href="/tags/DL/" style="font-size: 30px; color: #111">DL</a> <a href="/tags/Python/" style="font-size: 12px; color: #ccc">Python</a> <a href="/tags/Tool/" style="font-size: 12px; color: #ccc">Tool</a>
+              <a href="/tags/Algorithm/" style="font-size: 17.14px; color: #979797">Algorithm</a> <a href="/tags/C/" style="font-size: 30px; color: #111">C++</a> <a href="/tags/DL/" style="font-size: 27.43px; color: #2c2c2c">DL</a> <a href="/tags/Distributed-Systems/" style="font-size: 12px; color: #ccc">Distributed Systems</a> <a href="/tags/Linux/" style="font-size: 24.86px; color: #464646">Linux</a> <a href="/tags/MySQL/" style="font-size: 17.14px; color: #979797">MySQL</a> <a href="/tags/Python/" style="font-size: 12px; color: #ccc">Python</a> <a href="/tags/Redis/" style="font-size: 22.29px; color: #616161">Redis</a> <a href="/tags/TCP/" style="font-size: 19.71px; color: #7c7c7c">TCP</a> <a href="/tags/Tool/" style="font-size: 12px; color: #ccc">Tool</a> <a href="/tags/分布式/" style="font-size: 14.57px; color: #b1b1b1">分布式</a>
             </div>
           </div>
         
@@ -261,14 +261,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">67</span>
+          <span class="site-state-item-count">104</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -344,6 +344,61 @@
 
 
   
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 

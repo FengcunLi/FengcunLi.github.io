@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="优势：  应用解耦 异步提速 削峰填谷">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RabbitMQ">
+<meta property="og:url" content="http://yoursite.com/2020/11/25/RabbitMQ/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="优势：  应用解耦 异步提速 削峰填谷">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/RabbitMQ/rpc.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/RabbitMQ/using-mq.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/RabbitMQ/accelerate-1.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/RabbitMQ/accelerate-2.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/RabbitMQ/peak-valley.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/RabbitMQ/mq-products.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/RabbitMQ/AMQP-Protocol.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/RabbitMQ/rabbitmq-arch.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/RabbitMQ/modes.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/RabbitMQ/pub-sub.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/RabbitMQ/routing.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/RabbitMQ/topics.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/RabbitMQ/consumer-throttle.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/RabbitMQ/ttl.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/RabbitMQ/ttl-2.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/RabbitMQ/死信队列.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/RabbitMQ/延迟队列.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/RabbitMQ/延迟队列-2.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/RabbitMQ/消息补偿.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/RabbitMQ/乐观锁.png">
+<meta property="og:updated_time" content="2020-11-26T12:13:30.494Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RabbitMQ">
+<meta name="twitter:description" content="优势：  应用解耦 异步提速 削峰填谷">
+<meta name="twitter:image" content="http://yoursite.com/2020/11/25/RabbitMQ/rpc.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/11/25/RabbitMQ/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>RabbitMQ | The next stop - Antarctica</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/25/RabbitMQ/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          RabbitMQ
+        </h1>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-26 20:13:30" itemprop="dateModified" datetime="2020-11-26T20:13:30+08:00">2020-11-26</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>优势：</p>
+<ul>
+<li>应用解耦</li>
+<li>异步提速</li>
+<li>削峰填谷</li>
+</ul>
+<a id="more"></a>
+<p>劣势：</p>
+<ul>
+<li>系统可用性降低</li>
+<li>系统复杂度提高</li>
+<li>一致性问题</li>
+</ul>
+<ol>
+<li><p>应用解耦 目标：高内聚低耦合，提高了系统容错性和可维护性</p>
+<p>直接远程调用的方式：<br><img src="/2020/11/25/RabbitMQ/rpc.png" alt="rpc"></p>
+<p>系统耦合性越高，容错性就越低，可维护性就越低。</p>
+<ul>
+<li>库存系统挂了，订单系统就会挂。</li>
+<li>增删 X 系统需要修改订单系统的代码。</li>
+</ul>
+<p>使用 MQ 的方式：<br><img src="/2020/11/25/RabbitMQ/using-mq.png" alt="using-mq"></p>
+<ul>
+<li>库存系统挂了，修复好了之后，再去消费 MQ 中的消息就可以了。</li>
+<li>增删 X 系统不需要修改订单系统的代码。</li>
+</ul>
+</li>
+<li><p>异步提速，提高了系统吞吐量和用户体验</p>
+<p>同步的方式：<br><img src="/2020/11/25/RabbitMQ/accelerate-1.png" alt="sync"></p>
+<p>异步的方式：<br><img src="/2020/11/25/RabbitMQ/accelerate-2.png" alt="async"></p>
+</li>
+<li><p>削峰填谷，提高了系统稳定性<br>做活动时，A 承受不了这么大的并发，系统宕机。<br><img src="/2020/11/25/RabbitMQ/peak-valley.png" alt="peak-valley"></p>
+</li>
+</ol>
+<p>劣势</p>
+<ol>
+<li>系统引入的依赖越多，系统可用性就越差，一旦 MQ 宕机，就会对业务造成影响。怎么保证 MQ 的高可用？</li>
+<li>系统复杂度提高，以前是同步的远程调用，现在是使用 MQ 进行异步调用。怎么保证消息没有被重复消费？怎么处理消息丢失的情况？怎么保证消息传递的顺序性？</li>
+<li>一致性问题。A 系统处理完业务，通过 MQ 给 B、C、D 三个系统发消息，如果 B、C 系统处理成功，D 系统处理失败。怎么保证消息处理的一致性？</li>
+</ol>
+<p>既然 MQ 有优势也有劣势，那么使用 MQ 需要满足什么条件呢？</p>
+<ol>
+<li>生产者不需要从消费者处获得反馈。引入消息队列之前的直接调用，其接口的返回值应该为空，这才让明明下层的动作还没做，上层却当成动作做完了继续往后走，即所谓异步成为了可能。</li>
+<li>容许短暂的不一致性。</li>
+<li>确实是用了有效果。即解耦、提速、削峰这些方面的收益，超过加入 MQ，管理 MQ 这些成本。</li>
+</ol>
+<p>常见 MQ 产品<br><img src="/2020/11/25/RabbitMQ/mq-products.png" alt="mq-products"></p>
+<p>AMQP，即 Advanced Message Queuing Protocol（高级消息队列协议），是一个网络协议，是应用层协议的一个开放标准，为面向消息的中间件设计。基于此协议的客户端与消息中间件可传递消息，并不受客户端/中间件不同产品，不同的开发语言等条件的限制。2006 年，AMQP 规范发布。类比 HTTP。<br><img src="/2020/11/25/RabbitMQ/AMQP-Protocol.png" alt="AMQP-Protocol"><br><img src="/2020/11/25/RabbitMQ/rabbitmq-arch.png" alt="rabbitmq-arch"></p>
+<ul>
+<li><p>Channel：如果每一次访问 RabbitMQ 都建立一个 Connection，在消息量大的时候建立 TCP Connection 的开销将是巨大的，效率也较低。Channel 是在 connection 内部建立的逻辑连接，如果应用程序支持多线程，通常每个 thread 创建单独的 channel 进行通讯，AMQP method 包含了 channel id 帮助客户端和 message broker 识别 channel，所以 channel 之间是完全隔离的。Channel 作为轻量级的 Connection 极大减少了操作系统建立 TCP connection 的开销。</p>
+</li>
+<li><p>Exchange：message 到达 broker 的第一站，根据分发规则，匹配查询表中的 routing key，分发消息到 queue 中去。<br>交换机，一方面，接收生产者发送的消息。另一方面，知道如何处理消息，例如递交给某个/某些队列、递交给所有队列、或是将消息丢弃。到底如何操作，取决于 Exchange 的类型。</p>
+<p>Exchange 有常见以下 3 种类型：</p>
+<ul>
+<li>Fanout：广播，将消息递交给所有绑定到交换机的队列</li>
+<li>Direct：定向，将消息递交给符合指定 routing key 的队列</li>
+<li>Topic：通配符，将消息递交给符合 routing pattern（路由模式） 的队列</li>
+</ul>
+<p>Exchange 只负责转发消息，不具备存储消息的能力，因此如果没有任何队列与 Exchange 绑定，或者没有符合路由规则的队列，那么消息会丢失。</p>
+</li>
+<li><p>Queue：消息最终被送到这里等待 consumer 取走</p>
+</li>
+<li>Binding：exchange 和 queue 之间的虚拟连接，binding 中可以包含 routing key。Binding 信息被保存到 exchange 中的查询表中，用于 message 的分发依据</li>
+</ul>
+<p><img src="/2020/11/25/RabbitMQ/modes.png" alt="modes.png"></p>
+<h2 id="RabbitMQ-的工作模式"><a href="#RabbitMQ-的工作模式" class="headerlink" title="RabbitMQ 的工作模式"></a>RabbitMQ 的工作模式</h2><ol>
+<li><p>Work queues 工作队列模式</p>
+<ul>
+<li>多个消费者共同消费同一个消息队列中的消息</li>
+<li>一个队列如果有多个消费者，那么消费者之间对于同一条消息的关系是竞争的关系</li>
+<li>对于任务过重或任务较多情况使用工作队列可以提高任务处理的速度。例如：短信服务部署多个，只需要有一个节点成功发送即可。</li>
+</ul>
+</li>
+<li><p>Pub/Sub 订阅模式<br><img src="/2020/11/25/RabbitMQ/pub-sub.png" alt="RabbitMQ"></p>
+</li>
+<li><p>Routing 路由模式<br><img src="/2020/11/25/RabbitMQ/routing.png" alt="routing"></p>
+</li>
+<li>Topics 通配符模式<br><img src="/2020/11/25/RabbitMQ/topics.png" alt></li>
+</ol>
+<h2 id="RabbitMQ-的高级特性"><a href="#RabbitMQ-的高级特性" class="headerlink" title="RabbitMQ 的高级特性"></a>RabbitMQ 的高级特性</h2><ol>
+<li><p>消息的可靠投递 Publisher -&gt; Broker</p>
+<p>在使用 RabbitMQ 的时候，作为消息发送方希望杜绝任何消息丢失或者投递失败的情况。RabbitMQ 为我们提供了两种方式用来控制消息的投递可靠性。</p>
+<ul>
+<li>confirm 确认模式</li>
+<li>return 退回模式</li>
+</ul>
+<p>RabbitMQ 整个消息投递的路径为：<br>producer—&gt;RabbitMQ broker—&gt;exchange—&gt;queue—&gt;consumer</p>
+<ul>
+<li>消息从 producer 到与不到 exchange，confirmCallback</li>
+<li>消息从 exchange—&gt;queue 投递失败，即<strong>unroutable</strong>，returnCallback</li>
+</ul>
+<p>即 RabbitMQ 会通知应用消息投递的结果，应用可以根据结果采取相应的操作。</p>
+<p><strong>confirmCallback</strong></p>
+<p>PUBLISHER CONFIRMS</p>
+<p><a href="https://github.com/CopernicaMarketingSoftware/AMQP-CPP" target="_blank" rel="noopener">https://github.com/CopernicaMarketingSoftware/AMQP-CPP</a></p>
+<p>RabbitMQ supports a lightweight method of confirming that broker received and processed a message. When you enable this, RabbitMQ sends back an ‘ack’ or ‘nack’ for each publish-operation. For this to work, the channel needs to be put in confirm mode. This is done using the confirmSelect() method. When the channel is successfully put in confirm mode, the server starts counting the received messages (starting from 1) and sends acknowledgments for every message it processed (it can also acknowledge multiple message at once).</p>
+<p>If server is unable to process a message, it will send send negative acknowledgments. Both positive and negative acknowledgments handling are passed to callbacks that you can install on the object that is returned by the confirmSelect() method</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// setup confirm mode and ack/nack callbacks (from this moment onwards</span></span><br><span class="line"><span class="comment">// ack/nack confirmations are coming in)</span></span><br><span class="line">channel.confirmSelect().onSuccess([&amp;]() &#123;</span><br><span class="line"></span><br><span class="line">     <span class="comment">// publish the first message (this will be acked/nacked with deliveryTag=1)</span></span><br><span class="line">     channel.publish(<span class="string">"my-exchange"</span>, <span class="string">"my-key"</span>, <span class="string">"my first message"</span>);</span><br><span class="line"></span><br><span class="line">     <span class="comment">// publish the second message (this will be acked/nacked with deliveryTag=2)</span></span><br><span class="line">     channel.publish(<span class="string">"my-exchange"</span>, <span class="string">"my-key"</span>, <span class="string">"my second message"</span>);</span><br><span class="line"></span><br><span class="line"> &#125;).onAck([&amp;](<span class="keyword">uint64_t</span> deliveryTag, <span class="keyword">bool</span> multiple) &#123;</span><br><span class="line"></span><br><span class="line">     <span class="comment">// deliveryTag is message number</span></span><br><span class="line">     <span class="comment">// multiple is set to true, if all messages UP TO deliveryTag have been processed</span></span><br><span class="line"></span><br><span class="line"> &#125;).onNack([&amp;](uint64 deliveryTag, <span class="keyword">bool</span> multiple, <span class="keyword">bool</span> requeue) &#123;</span><br><span class="line"></span><br><span class="line">     <span class="comment">// deliveryTag is message number</span></span><br><span class="line">     <span class="comment">// multiple is set to true, if all messages UP TO deliveryTag have not been processed</span></span><br><span class="line">     <span class="comment">// requeue is to be ignored</span></span><br><span class="line"> &#125;);</span><br></pre></td></tr></table></figure>
+<p>If you use this feature, you will have to implement your own bookkeeping to track which messages have already been acked/nacked, and which messages are still being handled. For your convenience however, the AMQP-CPP library comes with a number of helper classes that can take over this responsibility.</p>
+<p>The AMQP::Reliable class is an optional wrapper around channels. When you use it, your underlying channel is automatically put it confirm method, and all publish operations are individually acknowledged:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// create a channel</span></span><br><span class="line">AMQP::<span class="function">TcpChannel <span class="title">mychannel</span><span class="params">(connection)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// wrap the channel into a reliable-object so that publish-operations are</span></span><br><span class="line"><span class="comment">// individually confirmed (after wrapping the channel, it is recommended</span></span><br><span class="line"><span class="comment">// to no longer make direct calls to the channel)</span></span><br><span class="line">AMQP::<span class="function">Reliable <span class="title">reliable</span><span class="params">(mychannel)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// publish a message via the reliable-channel</span></span><br><span class="line">reliable.publish(<span class="string">"my-exchange"</span>, <span class="string">"my-key"</span>, <span class="string">"my first message"</span>).onAck([]() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// the message has been acknowledged by RabbitMQ (in your application</span></span><br><span class="line">    <span class="comment">// code you can now safely discard the message as it has been picked up)</span></span><br><span class="line"></span><br><span class="line">&#125;).onNack([]() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// the message has _explicitly_ been nack'ed by RabbitMQ (in your application</span></span><br><span class="line">    <span class="comment">// code you probably want to log or handle this to avoid data-loss)</span></span><br><span class="line"></span><br><span class="line">&#125;).onError([](<span class="keyword">const</span> <span class="keyword">char</span> *message) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// a channel-error occurred before any ack or nack was received, and the</span></span><br><span class="line">    <span class="comment">// message is probably lost too (which you want to handle)</span></span><br><span class="line"></span><br><span class="line">&#125;).onLost([]() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// because the implementation for onNack() and onError() will be the same</span></span><br><span class="line">    <span class="comment">// in many applications, you can also choose to install a onLost() handler,</span></span><br><span class="line">    <span class="comment">// which is called when the message has either been nack'ed, or lost.</span></span><br><span class="line"></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>In the above example we have implemented four callback methods. In a real life application, implementing the onAck() and onLost() is normally sufficient.</p>
+<p>Publisher-confirms are often useful in situations where you need reliability. If you want to have certainty about whether your message was handled by RabbitMQ or not, you can enable this feature, either by explicitly calling channel.confirmSelect() if you want to do your own bookkeeping, or using AMQP::Reliable for a simpler API.</p>
+<p>But it also is useful for flood prevention. RabbitMQ turns out not to be very good at handling big loads of publish-operations. If you publish messages faster than RabbitMQ can handle, a server-side buffer builds up, and RabbitMQ gets slow (which causes the buffer to build up even further, et cetera). With publish-confirms you can keep the messages in your own application, and only proceed with publishing them when your previous messages have been handled. With this approach you prevent that RabbitMQ gets overloaded. We call it throttling.</p>
+<p>You can build your own throttling mechanism using the confirmSelect() approach or the AMQP::Reliable class. Or you use AMQP::Throttle:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// create a channel</span></span><br><span class="line">AMQP::<span class="function">TcpChannel <span class="title">mychannel</span><span class="params">(connection)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// create a throttle (do not publish more than 20 messages at once) (after</span></span><br><span class="line"><span class="comment">// wrapping the channel in a throttle you should no longer call any of the</span></span><br><span class="line"><span class="comment">// channel-methods directly)</span></span><br><span class="line">AMQP::<span class="function">Throttle <span class="title">throttle</span><span class="params">(connection, <span class="number">20</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// publish way more messages than RabbitMQ can handle (the Throttle class</span></span><br><span class="line"><span class="comment">// will make sure that messages are buffered inside your application if</span></span><br><span class="line"><span class="comment">// there are more than 20 unacked messages)</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; <span class="number">100000</span>; ++i)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// publish a message</span></span><br><span class="line">    throttle.publish(<span class="string">"my-exchange"</span>, <span class="string">"my-key"</span>, <span class="string">"my first message"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>The AMQP::Reliable and AMQP::Throttle classes both wrap around a channel. But what if you want to use both? You want to throttle messages, but also like to install your own callbacks for onAck and onLost? This is possible too:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// create a channel</span></span><br><span class="line">AMQP::<span class="function">TcpChannel <span class="title">mychannel</span><span class="params">(connection)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// create a throttle that allows reliable-publishing</span></span><br><span class="line">AMQP::Throttle&lt;AMQP::Reliable&gt; throttle(connection, <span class="number">20</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// publish way more messages than RabbitMQ can handle (the Throttle class</span></span><br><span class="line"><span class="comment">// will make sure that messages are buffered inside your application if</span></span><br><span class="line"><span class="comment">// there are more than 20 unacked messages)</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; <span class="number">100000</span>; ++i)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// publish a message</span></span><br><span class="line">    throttle.publish(<span class="string">"my-exchange"</span>, <span class="string">"my-key"</span>, <span class="string">"my first message"</span>).onAck([]() &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// @todo add your own code</span></span><br><span class="line"></span><br><span class="line">    &#125;).onLost([]() &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// @todo add your own code</span></span><br><span class="line"></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>returnCallback， 或者更好地称之为 recallCallback</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> *  Publish a message to an exchange</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *  You have to supply the name of an exchange and a routing key. RabbitMQ will then try</span></span><br><span class="line"><span class="comment"> *  to send the message to one or more queues. With the optional flags parameter you can</span></span><br><span class="line"><span class="comment"> *  specify what should happen if the message could not be routed to a queue. By default,</span></span><br><span class="line"><span class="comment"> *  unroutable message are silently discarded.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *  If you set the 'mandatory' and/or 'immediate' flag, messages that could not be handled</span></span><br><span class="line"><span class="comment"> *  are returned to the application. Make sure that you have called the recall()-method and</span></span><br><span class="line"><span class="comment"> *  have set up all appropriate handlers to process these returned messages before you start</span></span><br><span class="line"><span class="comment"> *  publishing.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *  The following flags can be supplied:</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *      -   mandatory   If set, server returns messages that are not sent to a queue</span></span><br><span class="line"><span class="comment"> *      -   immediate   If set, server returns messages that can not immediately be forwarded to a consumer.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *  @param  exchange    the exchange to publish to</span></span><br><span class="line"><span class="comment"> *  @param  routingkey  the routing key</span></span><br><span class="line"><span class="comment"> *  @param  envelope    the full envelope to send</span></span><br><span class="line"><span class="comment"> *  @param  message     the message to send</span></span><br><span class="line"><span class="comment"> *  @param  size        size of the message</span></span><br><span class="line"><span class="comment"> *  @param  flags       optional flags</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"> <span class="function"><span class="keyword">bool</span> <span class="title">publish</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> &amp;exchange, <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> &amp;routingKey, <span class="keyword">const</span> Envelope &amp;envelope, <span class="keyword">int</span> flags = <span class="number">0</span>)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"> <span class="comment">/**</span></span></span><br><span class="line"><span class="function"><span class="comment">  *  Tell the messages that you are ready to recall/take back messages that messages thar are unroutable.</span></span></span><br><span class="line"><span class="function"><span class="comment">  *</span></span></span><br><span class="line"><span class="function"><span class="comment">  *  When you use the publish() method in combination with the 'immediate' or 'mandatory' flag, rabbitmq</span></span></span><br><span class="line"><span class="function"><span class="comment">  *  sends back unroutable messages. With this recall() method you can install a sort of pseudo-consumer</span></span></span><br><span class="line"><span class="function"><span class="comment">  *  that defines how such returned-messages are processed.</span></span></span><br><span class="line"><span class="function"><span class="comment">  *</span></span></span><br><span class="line"><span class="function"><span class="comment">  *  Watch out: when you call this method more than once, you always get access to the same object. You</span></span></span><br><span class="line"><span class="function"><span class="comment">  *  can thus not install multiple callbacks for the same event.</span></span></span><br><span class="line"><span class="function"><span class="comment">  */</span></span></span><br><span class="line"><span class="function"> DeferredRecall &amp;<span class="title">recall</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> _implementation-&gt;recall(); &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Consumer ACK： Broker -&gt; Consumer</p>
+<p>有三种确认方式：</p>
+<ul>
+<li>自动确认：acknowledge=”none”</li>
+<li>手动确认：acknowledge=”manual”</li>
+<li>根据异常情况确认：acknowledge=”auto”</li>
+</ul>
+<p>其中自动确认是指，当消息一旦被 Consumer 接收到，则自动确认收到，并将相应 message 从 RabbitMQ 的消息缓存中移除。但是在实际业务处理中，很可能消息接收到，业务处理出现异常，那么该消息就会丢失。如果设置了手动确认方式，则需要在业务处理成功后，调用 <code>channel.basicAck()</code>，手动签收，如果出现异常，则调用 <code>channel.basicNack()</code>方法，让其自动重新发送消息。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 自动签收</span></span><br><span class="line"><span class="keyword">auto</span> &amp;&amp;result = channel.consume(queue_name, AMQP::noack);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 手动签收</span></span><br><span class="line"><span class="keyword">auto</span> &amp;&amp;result = channel.consume(queue_name);</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  *  Reject or nack a message</span></span><br><span class="line"><span class="comment">  *</span></span><br><span class="line"><span class="comment">  *  When a message was received in the DeferredConsumer::onReceived() method,</span></span><br><span class="line"><span class="comment">  *  and you don't want to acknowledge it, you can also choose to reject it by</span></span><br><span class="line"><span class="comment">  *  calling this reject method.</span></span><br><span class="line"><span class="comment">  *</span></span><br><span class="line"><span class="comment">  *  The following flags are supported:</span></span><br><span class="line"><span class="comment">  *</span></span><br><span class="line"><span class="comment">  *      -   multiple            reject multiple messages: all un-acked messages that were earlier delivered are unacked too</span></span><br><span class="line"><span class="comment">  *      -   requeue             if set, the message is put back in the queue, otherwise it is dead-lettered/removed</span></span><br><span class="line"><span class="comment">  *</span></span><br><span class="line"><span class="comment">  *  @param  deliveryTag         the unique delivery tag of the message</span></span><br><span class="line"><span class="comment">  *  @param  flags               optional flags</span></span><br><span class="line"><span class="comment">  *  @return bool</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> <span class="function"><span class="keyword">bool</span> <span class="title">reject</span><span class="params">(<span class="keyword">uint64_t</span> deliveryTag, <span class="keyword">int</span> flags=<span class="number">0</span>)</span> </span>&#123; <span class="keyword">return</span> _implementation-&gt;reject(deliveryTag, flags); &#125;</span><br><span class="line"></span><br><span class="line"> <span class="comment">// requeue，broker 会重新发送消息。</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>消费端限流</p>
+<p><img src="/2020/11/25/RabbitMQ/consumer-throttle.png" alt="consumer-throttle.png"></p>
+</li>
+<li><p>TTL</p>
+<p><img src="/2020/11/25/RabbitMQ/ttl.png" alt="ttl"><br>How long a message published to a queue can live before it is discarded (milliseconds).<br>(Sets the “x-message-ttl” argument.)<br><img src="/2020/11/25/RabbitMQ/ttl-2.png" alt="ttl-2"></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">AMQP::Table arguments;</span><br><span class="line">arguments.<span class="built_in">set</span>(<span class="string">"x-message-ttl"</span>, <span class="number">10000</span>);</span><br><span class="line">channel.declareQueue(queue_name_1, AMQP::durable, arguments);</span><br><span class="line">channel.declareQueue(queue_name_2, AMQP::durable, arguments);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>死信队列<br><img src="/2020/11/25/RabbitMQ/死信队列.png" alt="死信队列"></p>
+<ul>
+<li>死信交换机和死信队列和普通的没有区别</li>
+<li>当消息成为死信后，如果所在队列绑定了死信交换机，则消息会被死信交换机重新路由到死信队列</li>
+<li>消息成为死信的三种情况：<ol>
+<li>队列中消息的数量到达限制；</li>
+<li>消费者拒绝消费消息，basicNack/basicReject，并且不把消息重新放入原队列，requeue=false；</li>
+<li>队列存在消息过期设置，消息到达过期时间未被消费；</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment">    死信队列：</span></span><br><span class="line"><span class="comment">        1. 声明正常的队列(test_queue_dlx)和交换机(test_exchange_dlx)</span></span><br><span class="line"><span class="comment">        2. 声明死信队列(queue_dlx)和死信交换机(exchange_dlx)</span></span><br><span class="line"><span class="comment">        3. 正常队列绑定死信交换机</span></span><br><span class="line"><span class="comment">            设置两个参数：</span></span><br><span class="line"><span class="comment">                * x-dead-letter-exchange：死信交换机名称</span></span><br><span class="line"><span class="comment">                * x-dead-letter-routing-key：发送给死信交换机的 routingkey</span></span><br><span class="line"><span class="comment">--&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment">    1. 声明正常的队列(test_queue_dlx)和交换机(test_exchange_dlx)</span></span><br><span class="line"><span class="comment">--&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">rabbit:queue</span> <span class="attr">name</span>=<span class="string">"test_queue_dlx"</span> <span class="attr">id</span>=<span class="string">"test_queue_dlx"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--3. 正常队列绑定死信交换机--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">rabbit:queue-arguments</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--3.1 x-dead-letter-exchange：死信交换机名称--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">entry</span> <span class="attr">key</span>=<span class="string">"x-dead-letter-exchange"</span> <span class="attr">value</span>=<span class="string">"exchange_dlx"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">&lt;!--3.2 x-dead-letter-routing-key：发送给死信交换机的 routingkey--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">entry</span> <span class="attr">key</span>=<span class="string">"x-dead-letter-routing-key"</span> <span class="attr">value</span>=<span class="string">"dlx.heihei"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">&lt;!--4.1 设置队列的过期时间 ttl--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">entry</span> <span class="attr">key</span>=<span class="string">"x-message-ttl"</span> <span class="attr">value</span>=<span class="string">"10000"</span> <span class="attr">value-type</span>=<span class="string">"java.lang.Integer"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">&lt;!--4.2 设置队列的长度限制 max-length --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">entry</span> <span class="attr">key</span>=<span class="string">"x-max-length"</span> <span class="attr">value</span>=<span class="string">"10"</span> <span class="attr">value-type</span>=<span class="string">"java.lang.Integer"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">rabbit:queue-arguments</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">rabbit:queue</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">rabbit:topic-exchange</span> <span class="attr">name</span>=<span class="string">"test_exchange_dlx"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">rabbit:bindings</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">rabbit:binding</span> <span class="attr">pattern</span>=<span class="string">"test.dlx.#"</span> <span class="attr">queue</span>=<span class="string">"test_queue_dlx"</span>&gt;</span><span class="tag">&lt;/<span class="name">rabbit:binding</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">rabbit:bindings</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">rabbit:topic-exchange</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment">   2. 声明死信队列(queue_dlx)和死信交换机(exchange_dlx)</span></span><br><span class="line"><span class="comment">--&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">rabbit:queue</span> <span class="attr">name</span>=<span class="string">"queue_dlx"</span> <span class="attr">id</span>=<span class="string">"queue_dlx"</span>&gt;</span><span class="tag">&lt;/<span class="name">rabbit:queue</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">rabbit:topic-exchange</span> <span class="attr">name</span>=<span class="string">"exchange_dlx"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">rabbit:bindings</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">rabbit:binding</span> <span class="attr">pattern</span>=<span class="string">"dlx.#"</span> <span class="attr">queue</span>=<span class="string">"queue_dlx"</span>&gt;</span><span class="tag">&lt;/<span class="name">rabbit:binding</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">rabbit:bindings</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">rabbit:topic-exchange</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>延迟队列<br>延迟队列，即消息进入队列后不会立即被消费，只有到达指定时间后，才会被消费。</p>
+<p>需求：</p>
+<ol>
+<li>下单后，30 分钟未支付，取消订单，回滚库存。</li>
+<li>新用户注册成功 7 天后，发送短信问候。</li>
+</ol>
+<p>实现方式：</p>
+<ol>
+<li>定时器，定时扫表</li>
+<li>延迟队列</li>
+</ol>
+<p>很可惜，在 RabbitMQ 中并未提供延迟队列功能。</p>
+<p>但是可以使用：TTL + 死信队列 组合实现延迟队列的效果。</p>
+<p><img src="/2020/11/25/RabbitMQ/延迟队列.png" alt="延迟队列"><br><img src="/2020/11/25/RabbitMQ/延迟队列-2.png" alt="延迟队列-2"></p>
+</li>
+<li><p>日志与监控</p>
+<p>RabbitMQ 默认日志存放路径： <a href="mailto:/var/log/rabbitmq/rabbit@xxx.log" target="_blank" rel="noopener">/var/log/rabbitmq/rabbit@xxx.log</a></p>
+</li>
+<li><p>消息可靠性分析与追踪</p>
+<p>在使用任何消息中间件的过程中，难免会出现某条消息异常丢失的情况。对于 RabbitMQ 而言，可能是因为生产者或消费者与 RabbitMQ 断开了连接，而它们与 RabbitMQ 又采用了不同的确认机制；也有可能是因为交换器与队列之间不同的转发策略；甚至是交换器并没有与任何队列进行绑定，生产者又不感知或者没有采取相应的措施；另外 RabbitMQ 本身的集群策略也可能导致消息的丢失。这个时候就需要有一个较好的机制跟踪记录消息的投递过程，以此协助开发和运维人员进行问题的定位。</p>
+<p>在 RabbitMQ 中可以使用 Firehose 和 rabbitmq_tracing 插件功能来实现消息追踪。</p>
+<p>firehose 的机制是将生产者投递给 rabbitmq 的消息，rabbitmq 投递给消费者的消息按照指定的格式发送到默认的 exchange 上。这个默认的 exchange 的名称为 amq.rabbitmq.trace，它是一个 topic 类型的 exchange。发送到这个 exchange 上的消息的 routing key 为 publish.exchangename 和 deliver.queuename。其中 exchangename 和 queuename 为实际 exchange 和 queue 的名称，分别对应生产者投递到 exchange 的消息，和消费者从 queue 上获取的消息。</p>
+<p>注意：打开 trace 会影响消息写入功能，适当打开后请关闭。<br>rabbitmqctl trace_on：开启 Firehose 命令</p>
+<p>rabbitmqctl trace_off：关闭 Firehose 命令</p>
+</li>
+</ol>
+<h2 id="RabbitMQ-的应用问题"><a href="#RabbitMQ-的应用问题" class="headerlink" title="RabbitMQ 的应用问题"></a>RabbitMQ 的应用问题</h2><ol>
+<li><p>消息可靠性保障 消息补偿机制</p>
+<p>需求：<br>100%确保消息发送成功。</p>
+<p>发送两条相同的消息，一条用于消费，一条用于比对。</p>
+<p><img src="/2020/11/25/RabbitMQ/消息补偿.png" alt="消息补偿"></p>
+</li>
+<li><p>消息幂等性处理（即消息的重复消费问题），乐观锁解决方案</p>
+<p>幂等性指一次和多次请求某一个资源，对于资源本身应该具有同样的结果。也就是说，其任意多次执行对资源本身所产生的影响均与一次执行的影响相同。</p>
+<p>在 MQ 中指，消费多条相同的消息，得到与消费该消息一次相同的结果。</p>
+<p><img src="/2020/11/25/RabbitMQ/乐观锁.png" alt="乐观锁"></p>
+<p>比如由于 Consumer 暂时挂了，由于没有收到确认消息，回调检查服务让 Producer 再发送一次，如此这般，Q1 中就有两条完全一样的消息，这时如果 Consumer 活了过来，就会收到两条完全一样的消息。</p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/25/Tree-树/" rel="prev" title="Tree 树">
+      <i class="fa fa-chevron-left"></i> Tree 树
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/25/Libevent-event-base-loopbreak/" rel="next" title="Libevent Event_base_loopbreak">
+      Libevent Event_base_loopbreak <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#RabbitMQ-的工作模式"><span class="nav-number">1.</span> <span class="nav-text">RabbitMQ 的工作模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RabbitMQ-的高级特性"><span class="nav-number">2.</span> <span class="nav-text">RabbitMQ 的高级特性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RabbitMQ-的应用问题"><span class="nav-number">3.</span> <span class="nav-text">RabbitMQ 的应用问题</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">104</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

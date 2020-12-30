@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="首先要明白的是时间差肯定是存在的，因为实现机制是网络传输，而不是量子纠缠；其次，网络传输有可能失败，确认/重传机制；在发出复制指令之前，master 可能 down 掉，write lost；复制存在两种模式：同步和异步。增量时，一般不会 stop the world；全量时，会不会出现 stop the world 呢？ 这些问题是主从复制时一般要思考的问题，不仅仅是 Redis，MySQL 和">
+<meta name="keywords" content="Redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis Replication">
+<meta property="og:url" content="http://yoursite.com/2020/12/25/Redis-Replication/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="首先要明白的是时间差肯定是存在的，因为实现机制是网络传输，而不是量子纠缠；其次，网络传输有可能失败，确认/重传机制；在发出复制指令之前，master 可能 down 掉，write lost；复制存在两种模式：同步和异步。增量时，一般不会 stop the world；全量时，会不会出现 stop the world 呢？ 这些问题是主从复制时一般要思考的问题，不仅仅是 Redis，MySQL 和">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-12-25T10:24:36.606Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis Replication">
+<meta name="twitter:description" content="首先要明白的是时间差肯定是存在的，因为实现机制是网络传输，而不是量子纠缠；其次，网络传输有可能失败，确认/重传机制；在发出复制指令之前，master 可能 down 掉，write lost；复制存在两种模式：同步和异步。增量时，一般不会 stop the world；全量时，会不会出现 stop the world 呢？ 这些问题是主从复制时一般要思考的问题，不仅仅是 Redis，MySQL 和">
+
+<link rel="canonical" href="http://yoursite.com/2020/12/25/Redis-Replication/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Redis Replication | The next stop - Antarctica</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/25/Redis-Replication/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Redis Replication
+        </h1>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-25 18:24:36" itemprop="dateModified" datetime="2020-12-25T18:24:36+08:00">2020-12-25</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>首先要明白的是时间差肯定是存在的，因为实现机制是网络传输，而不是量子纠缠；其次，网络传输有可能失败，确认/重传机制；在发出复制指令之前，master 可能 down 掉，write lost；复制存在两种模式：同步和异步。增量时，一般不会 stop the world；全量时，会不会出现 stop the world 呢？ <strong>这些问题是主从复制时一般要思考的问题，不仅仅是 Redis，MySQL 和 RabbitMQ 也是一样的。</strong></p>
+<a id="more"></a>
+<h3 id="Replication"><a href="#Replication" class="headerlink" title="Replication"></a><a href="https://redis.io/topics/replication" target="_blank" rel="noopener">Replication</a></h3><p>At the base of Redis replication (excluding the high availability features provided as an additional layer by Redis Cluster or Redis Sentinel) there is a very simple to use and configure leader follower (master-slave) replication: it allows replica Redis instances to be exact copies of master instances. The replica will automatically reconnect to the master every time the link breaks, and will attempt to be an exact copy of it regardless of what happens to the master.</p>
+<p>This system works using three main mechanisms:</p>
+<ul>
+<li>When a master and a replica instances are well-connected, the master keeps the replica updated by sending a stream of commands to the replica, in order to replicate the effects on the dataset happening in the master side due to: client writes, keys expired or evicted, any other action changing the master dataset.</li>
+<li>When the link between the master and the replica breaks, for network issues or because a timeout is sensed in the master or the replica, the replica reconnects and attempts to proceed with a partial resynchronization: it means that it will try to just obtain the part of the stream of commands it missed during the disconnection.</li>
+<li>When a partial resynchronization is not possible, the replica will ask for a full resynchronization. This will involve a more complex process in which <strong>the master needs to create a snapshot of all its data, send it to the replica, and then continue sending the stream of commands as the dataset changes.</strong></li>
+</ul>
+<p>Redis uses by default asynchronous replication, which being low latency and high performance, is the natural replication mode for the vast majority of Redis use cases. However, Redis replicas asynchronously acknowledge the amount of data they received periodically with the master. So the master does not wait every time for a command to be processed by the replicas, <strong>however it knows, if needed, what replica already processed what command.</strong> This allows having optional synchronous replication.</p>
+<p>Synchronous replication of certain data can be requested by the <strong>clients</strong> using the WAIT command. However WAIT is only able to ensure that there are the specified number of acknowledged copies in the other Redis instances, it does not turn a set of Redis instances into a CP system with strong consistency: <strong>acknowledged writes can still be lost during a failover, depending on the exact configuration of the Redis persistence</strong>. However with WAIT the probability of losing a write after a failure event is greatly reduced to certain hard to trigger failure modes.</p>
+<p>You could check the Sentinel or Redis Cluster documentation for more information about high availability and failover. The rest of this document mainly describe the basic characteristics of Redis basic replication.</p>
+<p>The following are some very important facts about Redis replication:</p>
+<ul>
+<li>Redis uses asynchronous replication, with asynchronous replica-to-master acknowledges of the amount of data processed.</li>
+<li>A master can have multiple replicas.</li>
+<li>Replicas are able to accept connections from other replicas. Aside from connecting a number of replicas to the same master, replicas can also be connected to other replicas in a cascading-like structure. Since Redis 4.0, all the sub-replicas will receive exactly the same replication stream from the master.</li>
+<li><strong>Redis replication is non-blocking on the master side. This means that the master will continue to handle queries when one or more replicas perform the initial synchronization or a partial resynchronization. 非堵塞，全量时，也不会出现 stop the world。</strong></li>
+<li>Replication is also <strong>largely</strong> non-blocking on the replica side. While the replica is performing the initial synchronization, it can handle queries using the old version of the dataset, assuming you configured Redis to do so in redis.conf. Otherwise, you can configure Redis replicas to return an error to clients if the replication stream is down. However, after the initial sync, the old dataset must be deleted and the new one must be loaded. <strong>The replica will block incoming connections during this brief window (that can be as long as many seconds for very large datasets). Since Redis 4.0 it is possible to configure Redis so that the deletion of the old data set happens in a different thread, however loading the new initial dataset will still happen in the main thread（主线程） and block the replica.</strong> 无论配置了在同步数据的传输过程中提供旧数据副本还是直接返回错误，在同步数据的传输完成之后，进行旧数据副本的删除（调用 delete 或者 delete [] 或者 free 进行内存空间的释放，在 Redis 4.0 之后可以在一个单独的 delete 线程中完成）、新数据副本的加载都会 block 住主线程，这是合理的，因为 delete 和 load 同时进行，已经没有满足 integrity 的数据副本可以对外提供了，不得不 block 住，等待 load 操作完整地完成，拥有一个满足 integrity 的数据副本（这个副本可能落后于 master 的数据副本，时间差（年代差）是不得不接受的，但只要 master 和 slave 最终能够一致就可以了）对外提供服务。</li>
+<li>Replication can be used both for scalability, in order to have multiple replicas for read-only queries (for example, slow O(N) operations can be offloaded to replicas), or simply for improving data safety and high availability.</li>
+<li>It is possible to use replication to avoid the cost of having the master writing the full dataset to disk: a typical technique involves configuring your master redis.conf to avoid persisting to disk at all, then connect a replica configured to save from time to time, or with AOF enabled. However this setup must be handled with care, since a restarting master will start with an empty dataset: if the replica tries to synchronize with it, the replica will be emptied as well.</li>
+</ul>
+<h3 id="Safety-of-replication-when-master-has-persistence-turned-off"><a href="#Safety-of-replication-when-master-has-persistence-turned-off" class="headerlink" title="Safety of replication when master has persistence turned off"></a>Safety of replication when master has persistence turned off</h3><p>In setups where Redis replication is used, it is strongly advised to have persistence turned on in the master and in the replicas. When this is not possible, for example because of latency concerns due to very slow disks, instances should be configured to avoid restarting automatically after a reboot.</p>
+<p>To better understand why masters with persistence turned off configured to auto restart are dangerous, check the following failure mode where data is wiped from the master and all its replicas:</p>
+<ol>
+<li>We have a setup with node A acting as master, with persistence turned down, and nodes B and C replicating from node A.</li>
+<li>Node A crashes, however it has some auto-restart system, that restarts the process. However since persistence is turned off, the node restarts with an empty data set.</li>
+<li>Nodes B and C will replicate from node A, which is empty, so they’ll effectively destroy their copy of the data.</li>
+</ol>
+<p><strong>When Redis Sentinel is used for high availability, also turning off persistence on the master, together with auto restart of the process, is dangerous. For example the master can restart fast enough for Sentinel to not detect a failure, so that the failure mode described above happens.</strong></p>
+<p>Every time data safety is important, and replication is used with master configured without persistence, auto restart of instances should be disabled.</p>
+<h3 id="How-Redis-replication-works"><a href="#How-Redis-replication-works" class="headerlink" title="How Redis replication works"></a>How Redis replication works</h3><p>Every Redis master has a replication ID: it is a large pseudo random string that marks a given story of the dataset. Each master also takes an offset that increments for every byte of replication stream that it is produced to be sent to replicas, in order to update the state of the replicas with the new changes modifying the dataset. The replication offset is incremented even if no replica is actually connected, so basically every given pair of:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Replication ID, offset</span><br></pre></td></tr></table></figure>
+<p>Identifies an exact version of the dataset of a master.</p>
+<p>When replicas connect to masters, they use the <code>PSYNC</code> command in order to send their <strong>old master replication ID and the offsets they processed so far</strong>. This way the master can send just the incremental part needed. However if there is not enough backlog in the master buffers, or if the replica is referring to an history (replication ID) which is no longer known, than a full resynchronization happens: in this case the replica will get a full copy of the dataset, from scratch.</p>
+<h4 id="This-is-how-a-full-synchronization-works-in-more-details"><a href="#This-is-how-a-full-synchronization-works-in-more-details" class="headerlink" title="This is how a full synchronization works in more details"></a>This is how a full synchronization works in more details</h4><p>The master starts a background saving process in order to produce an RDB file. At the same time it starts to buffer all new write commands received from the clients. When the background saving is complete, the master transfers the database file to the replica, which saves it on disk, and then loads it into memory. The master will then send all buffered commands to the replica. This is done as a stream of commands and is in the same format of the Redis protocol itself. <strong>此处的一系列操作和 AOF 的 Log rewriting 很像，见 Redis 持久化。<code>fork()</code> 返回之初，父子进程的内存数据保持严格一致，子进程去根据内存数据产生 RDB 文件，父进程（也就是 Redis 主进程）去处理用户请求并 buffer all new write commands，所以可以实现主从之间严丝合缝地最终一致。buffer all new write commands and send all buffered commands 必须在主进程中进行，RDB file 的生成和传输则在后台子进程中完成。</strong></p>
+<p>You can try it yourself via telnet. Connect to the Redis port while the server is doing some work and issue the SYNC command. You’ll see a bulk transfer and then every command received by the master will be re-issued in the telnet session. Actually SYNC is an old protocol no longer used by newer Redis instances, but is still there for backward compatibility: it does not allow partial resynchronizations, so now <code>PSYNC</code> is used instead.</p>
+<p>As already said, replicas are able to automatically reconnect when the master-replica link goes down for some reason. If the master receives multiple concurrent replica synchronization requests, it performs a single background save in order to serve all of them.</p>
+<h3 id="Replication-ID-explained"><a href="#Replication-ID-explained" class="headerlink" title="Replication ID explained"></a>Replication ID explained</h3><p>In the previous section we said that if two instances have the same replication ID and replication offset, they have exactly the same data. However it is useful to understand what exactly is the replication ID, and why instances have actually two replication IDs the main ID and the secondary ID.</p>
+<p>A replication ID basically marks a given history of the data set. Every time an instance restarts from scratch as a master, or a replica is promoted to master, a new replication ID is generated for this instance. The replicas connected to a master will inherit its replication ID after the handshake. So two instances with the same ID are related by the fact that they hold the same data, but potentially at a different time. It is the offset that works as a logical time to understand, for a given history (replication ID) who holds the most updated data set.</p>
+<p>For instance, if two instances A and B have the same replication ID, but one with offset 1000 and one with offset 1023, it means that the first lacks certain commands applied to the data set. It also means that A, by applying just a few commands, may reach exactly the same state of B.</p>
+<p>The reason why Redis instances have two replication IDs is because of replicas that are promoted to masters. After a failover, the promoted replica requires to still remember what was its past replication ID, because such replication ID was the one of the former master. In this way, when other replicas will synchronize with the new master, they will try to perform a partial resynchronization using the old master replication ID. This will work as expected, because when the replica is promoted to master it <strong>sets its secondary ID to its main ID（将 main ID 的值赋到 secondary ID）</strong>, remembering what was the offset when this ID switch happened. Later it will select a new random replication ID, because a new history begins. When handling the new replicas connecting, the master will match their IDs and offsets both with the current ID and the secondary ID (up to a given offset, for safety). In short this means that after a failover, replicas connecting to the newly promoted master don’t have to perform a full sync.</p>
+<p>In case you wonder why a replica promoted to master needs to change its replication ID after a failover: it is possible that the old master is still working as a master because of some network partition: retaining the same replication ID would violate the fact that the same ID and same offset of any two random instances mean they have the same data set.</p>
+<h3 id="Diskless-replication"><a href="#Diskless-replication" class="headerlink" title="Diskless replication"></a>Diskless replication</h3><p>Normally a full resynchronization requires creating an RDB file on disk, then reloading the same RDB from disk in order to feed the replicas with the data.</p>
+<p>With slow disks this can be a very stressing operation for the master. Redis version 2.8.18 is the first version to have support for diskless replication. In this setup the child process directly sends the RDB over the wire to replicas, without using the disk as intermediate storage.</p>
+<h3 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h3><p>To configure basic Redis replication is trivial: just add the following line to the replica configuration file:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">replicaof 192.168.1.1 6379</span><br></pre></td></tr></table></figure>
+<p>Of course you need to replace 192.168.1.1 6379 with your master IP address (or hostname) and port. Alternatively, you can call the REPLICAOF command and the master host will start a sync with the replica.</p>
+<p>There are also a few parameters for tuning the replication backlog taken in memory by the master to perform the partial resynchronization. See the example redis.conf shipped with the Redis distribution for more information.</p>
+<p>Diskless replication can be enabled using the repl-diskless-sync configuration parameter. The delay to start the transfer in order to wait for more replicas to arrive after the first one is controlled by the repl-diskless-sync-delay parameter. Please refer to the example redis.conf file in the Redis distribution for more details.</p>
+<h3 id="Read-only-replica"><a href="#Read-only-replica" class="headerlink" title="Read-only replica"></a>Read-only replica</h3><p>Since Redis 2.6, replicas support a read-only mode that is enabled by default. This behavior is controlled by the replica-read-only option in the redis.conf file, and can be enabled and disabled at runtime using CONFIG SET.</p>
+<p>Read-only replicas will reject all write commands, so that it is not possible to write to a replica because of a mistake. This does not mean that the feature is intended to expose a replica instance to the internet or more generally to a network where untrusted clients exist, because administrative commands like DEBUG or CONFIG are still enabled. However, security of read-only instances can be improved by disabling commands in redis.conf using the rename-command directive.</p>
+<p>You may wonder why it is possible to revert the read-only setting and have replica instances that can be targeted by write operations. While those writes will be discarded if the replica and the master resynchronize or if the replica is restarted, there are a few legitimate use case for storing ephemeral data in writable replicas.</p>
+<p>For example computing slow Set or Sorted set operations and storing them into local keys is an use case for writable replicas that was observed multiple times.</p>
+<p>However note that writable replicas before version 4.0 were incapable of expiring keys with a time to live set. This means that if you use EXPIRE or other commands that set a maximum TTL for a key, the key will leak, and while you may no longer see it while accessing it with read commands, you will see it in the count of keys and it will still use memory. So in general mixing writable replicas (previous version 4.0) and keys with TTL is going to create issues.</p>
+<p>Redis 4.0 RC3 and greater versions totally solve this problem and now writable replicas are able to evict keys with TTL as masters do, with the exceptions of keys written in DB numbers greater than 63 (but by default Redis instances only have 16 databases).</p>
+<p>Also note that since Redis 4.0 replica writes are only local, and are not propagated to sub-replicas attached to the instance. Sub-replicas instead will always receive the replication stream identical to the one sent by the top-level master to the intermediate replicas. So for example in the following setup:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">A ---&gt; B ---&gt; C</span><br></pre></td></tr></table></figure>
+<p>Even if B is writable, C will not see B writes and will instead have identical dataset as the master instance A.</p>
+<h3 id="Setting-a-replica-to-authenticate-to-a-master"><a href="#Setting-a-replica-to-authenticate-to-a-master" class="headerlink" title="Setting a replica to authenticate to a master"></a>Setting a replica to authenticate to a master</h3><p>If your master has a password via requirepass, it’s trivial to configure the replica to use that password in all sync operations.</p>
+<p>To do it on a running instance, use redis-cli and type:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">config set masterauth &lt;password&gt;</span><br></pre></td></tr></table></figure>
+<p>To set it permanently, add this to your config file:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">masterauth &lt;password&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="Allow-writes-only-with-N-attached-replicas"><a href="#Allow-writes-only-with-N-attached-replicas" class="headerlink" title="Allow writes only with N attached replicas"></a>Allow writes only with N attached replicas</h3><p>Starting with Redis 2.8, it is possible to configure a Redis master to accept write queries only if at least N replicas are currently connected to the master.</p>
+<p><strong>However, because Redis uses asynchronous replication it is not possible to ensure the replica actually received a given write, so there is always a window for data loss. 只能确保主从之间是连接着的，返回到用户时并不能确保这次写操作已经 propagate 到了 N 个 replica。也就是说在 write 在 master 上被准许发生之前，确认了至少有 N 个 replica 连着，满足这个条件就进行写操作，然后就返回到用户了，但是这个写操作会不会成功地 propagate 到这 N 个 replica 由于异步复制的本质是无法确保的。</strong></p>
+<h4 id="This-is-how-the-feature-works"><a href="#This-is-how-the-feature-works" class="headerlink" title="This is how the feature works"></a>This is how the feature works</h4><ul>
+<li>Redis replicas ping the master every second, acknowledging the amount of replication stream processed.</li>
+<li>Redis masters will remember the last time it received a ping from every replica.</li>
+<li>The user can configure a minimum number of replicas that have a lag not greater than a maximum number of seconds.</li>
+<li>If there are at least N replicas, with a lag less than M seconds, then the write will be accepted.</li>
+</ul>
+<p>You may think of it as a best effort data safety mechanism, where consistency is not ensured for a given write, but at least the time window for data loss is restricted to a given number of seconds. In general bound data loss is better than unbound one.</p>
+<p>If the conditions are not met, the master will instead reply with an error and the write will not be accepted.</p>
+<p>There are two configuration parameters for this feature:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">min-replicas-to-write &lt;number of replicas&gt;</span><br><span class="line">min-replicas-max-lag &lt;number of seconds&gt;</span><br></pre></td></tr></table></figure>
+<p>For more information, please check the example redis.conf file shipped with the Redis source distribution.</p>
+<h3 id="How-Redis-replication-deals-with-expires-on-keys"><a href="#How-Redis-replication-deals-with-expires-on-keys" class="headerlink" title="How Redis replication deals with expires on keys"></a>How Redis replication deals with expires on keys</h3><p>Redis expires allow keys to have a limited time to live (TTL). Such a feature depends on the ability of an instance to count the time, however Redis replicas correctly replicate keys with expires, even when such keys are altered using Lua scripts.<br>To implement such a feature Redis cannot rely on the ability of the master and replica to have synchronized clocks, since this is a problem that cannot be solved and would result in race conditions and diverging data sets, so Redis uses three main techniques in order to make the replication of expired keys able to work:<br>Replicas don’t expire keys, instead they wait for masters to expire the keys. When a master expires a key (or evict it because of LRU), it synthesizes a DEL command which is transmitted to all the replicas.<br>However because of master-driven expire, sometimes replicas may still have in memory keys that are already logically expired, since the master was not able to provide the DEL command in time. In order to deal with that the replica uses its logical clock in order to report that a key does not exist only for read operations that don’t violate the consistency of the data set (as new commands from the master will arrive). In this way replicas avoid reporting logically expired keys are still existing. In practical terms, an HTML fragments cache that uses replicas to scale will avoid returning items that are already older than the desired time to live.<br>During Lua scripts executions no key expiries are performed. As a Lua script runs, conceptually the time in the master is frozen, so that a given key will either exist or not for all the time the script runs. This prevents keys expiring in the middle of a script, and is needed in order to send the same script to the replica in a way that is guaranteed to have the same effects in the data set.<br>Once a replica is promoted to a master it will start to expire keys independently, and will not require any help from its old master.</p>
+<h3 id="Configuring-replication-in-Docker-and-NAT"><a href="#Configuring-replication-in-Docker-and-NAT" class="headerlink" title="Configuring replication in Docker and NAT"></a>Configuring replication in Docker and NAT</h3><p>When Docker, or other types of containers using port forwarding, or Network Address Translation is used, Redis replication needs some extra care, especially when using Redis Sentinel or other systems where the master INFO or ROLE commands output is scanned in order to discover replicas’ addresses.</p>
+<p>The problem is that the ROLE command, and the replication section of the INFO output, when issued into a master instance, will show replicas as having the IP address they use to connect to the master, which, in environments using NAT may be different compared to the logical address of the replica instance (the one that clients should use to connect to replicas).</p>
+<p>Similarly the replicas will be listed with the listening port configured into redis.conf, that may be different from the forwarded port in case the port is remapped.</p>
+<p>In order to fix both issues, it is possible, since Redis 3.2.2, to force a replica to announce an arbitrary pair of IP and port to the master. The two configurations directives to use are:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">replica-announce-ip 5.5.5.5</span><br><span class="line">replica-announce-port 1234</span><br></pre></td></tr></table></figure>
+<p>And are documented in the example redis.conf of recent Redis distributions.</p>
+<h3 id="The-INFO-and-ROLE-command"><a href="#The-INFO-and-ROLE-command" class="headerlink" title="The INFO and ROLE command"></a>The INFO and ROLE command</h3><p>There are two Redis commands that provide a lot of information on the current replication parameters of master and replica instances. One is INFO. If the command is called with the replication argument as INFO replication only information relevant to the replication are displayed. Another more computer-friendly command is ROLE, that provides the replication status of masters and replicas together with their replication offsets, list of connected replicas and so forth.</p>
+<h3 id="Partial-resynchronizations-after-restarts-and-failovers"><a href="#Partial-resynchronizations-after-restarts-and-failovers" class="headerlink" title="Partial resynchronizations after restarts and failovers"></a>Partial resynchronizations after restarts and failovers</h3><p>Since Redis 4.0, when an instance is promoted to master after a failover, it will be still able to perform a partial resynchronization with the replicas of the old master. To do so, the replica remembers the old replication ID and offset of its former master, so can provide part of the backlog to the connecting replicas even if they ask for the old replication ID.</p>
+<p>However the new replication ID of the promoted replica will be different, since it constitutes a different history of the data set. For example, the master can return available and can continue accepting writes for some time, so using the same replication ID in the promoted replica would violate the rule that a of replication ID and offset pair identifies only a single data set.</p>
+<p>Moreover, replicas - when powered off gently and restarted - are able to store in the RDB file the information needed in order to resynchronize with their master. This is useful in case of upgrades. When this is needed, it is better to use the SHUTDOWN command in order to perform a save &amp; quit operation on the replica.</p>
+<p>It is not possible to partially resynchronize a replica that restarted via the AOF file. However the instance may be turned to RDB persistence before shutting down it, than can be restarted, and finally AOF can be enabled again.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Redis/" rel="tag"># Redis</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/12/23/MySQL-灵魂十连/" rel="prev" title="MySQL 灵魂十连">
+      <i class="fa fa-chevron-left"></i> MySQL 灵魂十连
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/12/28/MIT-6-824-Distributed-Systems-学习笔记/" rel="next" title="MIT 6.824: Distributed Systems 学习笔记">
+      MIT 6.824: Distributed Systems 学习笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Replication"><span class="nav-number">1.</span> <span class="nav-text">Replication</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Safety-of-replication-when-master-has-persistence-turned-off"><span class="nav-number">2.</span> <span class="nav-text">Safety of replication when master has persistence turned off</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#How-Redis-replication-works"><span class="nav-number">3.</span> <span class="nav-text">How Redis replication works</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#This-is-how-a-full-synchronization-works-in-more-details"><span class="nav-number">3.1.</span> <span class="nav-text">This is how a full synchronization works in more details</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Replication-ID-explained"><span class="nav-number">4.</span> <span class="nav-text">Replication ID explained</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Diskless-replication"><span class="nav-number">5.</span> <span class="nav-text">Diskless replication</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Configuration"><span class="nav-number">6.</span> <span class="nav-text">Configuration</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Read-only-replica"><span class="nav-number">7.</span> <span class="nav-text">Read-only replica</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Setting-a-replica-to-authenticate-to-a-master"><span class="nav-number">8.</span> <span class="nav-text">Setting a replica to authenticate to a master</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Allow-writes-only-with-N-attached-replicas"><span class="nav-number">9.</span> <span class="nav-text">Allow writes only with N attached replicas</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#This-is-how-the-feature-works"><span class="nav-number">9.1.</span> <span class="nav-text">This is how the feature works</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#How-Redis-replication-deals-with-expires-on-keys"><span class="nav-number">10.</span> <span class="nav-text">How Redis replication deals with expires on keys</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Configuring-replication-in-Docker-and-NAT"><span class="nav-number">11.</span> <span class="nav-text">Configuring replication in Docker and NAT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#The-INFO-and-ROLE-command"><span class="nav-number">12.</span> <span class="nav-text">The INFO and ROLE command</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Partial-resynchronizations-after-restarts-and-failovers"><span class="nav-number">13.</span> <span class="nav-text">Partial resynchronizations after restarts and failovers</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">104</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

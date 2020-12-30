@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="event_base_loopbreak - 把当前的 active 事件处理完；event_base_loopexit - 把当前的 active 事件们处理完。 Working with an event loop">
+<meta name="keywords" content="Linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Libevent Event_base_loopbreak">
+<meta property="og:url" content="http://yoursite.com/2020/11/25/Libevent-event-base-loopbreak/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="event_base_loopbreak - 把当前的 active 事件处理完；event_base_loopexit - 把当前的 active 事件们处理完。 Working with an event loop">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2020/11/25/Libevent-event-base-loopbreak/event_loop_funcs.png">
+<meta property="og:updated_time" content="2020-11-26T12:15:35.784Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Libevent Event_base_loopbreak">
+<meta name="twitter:description" content="event_base_loopbreak - 把当前的 active 事件处理完；event_base_loopexit - 把当前的 active 事件们处理完。 Working with an event loop">
+<meta name="twitter:image" content="http://yoursite.com/2020/11/25/Libevent-event-base-loopbreak/event_loop_funcs.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/11/25/Libevent-event-base-loopbreak/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Libevent Event_base_loopbreak | The next stop - Antarctica</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/25/Libevent-event-base-loopbreak/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Libevent Event_base_loopbreak
+        </h1>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-26 20:15:35" itemprop="dateModified" datetime="2020-11-26T20:15:35+08:00">2020-11-26</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><code>event_base_loopbreak</code> - 把当前的 active 事件处理完；<br><code>event_base_loopexit</code> - 把当前的 active 事件<strong>们</strong>处理完。</p>
+<h1 id="Working-with-an-event-loop"><a href="#Working-with-an-event-loop" class="headerlink" title="Working with an event loop"></a>Working with an event loop</h1><a id="more"></a>
+<p><a href="http://www.wangafu.net/~nickm/libevent-book/Ref3_eventloop.html" target="_blank" rel="noopener">libevent-book</a></p>
+<h2 id="Running-the-loop"><a href="#Running-the-loop" class="headerlink" title="Running the loop"></a>Running the loop</h2><p>Once you have an <code>event_base</code> with some events registered (see the next section about how to create and register events), you will want Libevent to wait for events and alert you about them.</p>
+<p>Interface</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> EVLOOP_ONCE 0x01</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> EVLOOP_NONBLOCK 0x02</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> EVLOOP_NO_EXIT_ON_EMPTY 0x04</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">event_base_loop</span><span class="params">(struct event_base *base, <span class="keyword">int</span> flags)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>By default, the <code>event_base_loop()</code> function runs an event_base until there are no more events registered in it. To run the loop, it repeatedly checks whether any of the registered events has triggered (for example, if a read event’s file descriptor is ready to read, or if a timeout event’s timeout is ready to expire). Once this happens, it marks all triggered events as “active”, and starts to run them.</p>
+<p>You can change the behavior of <code>event_base_loop()</code> by setting one or more flags in its <code>flags</code> argument. If <code>EVLOOP_ONCE</code> is set, then the loop will wait until some events become active, then run active events until there are no more to run, then return. If <code>EVLOOP_NONBLOCK</code> is set, then the loop will not wait for events to trigger: it will only check whether any events are ready to trigger immediately, and run their callbacks if so.</p>
+<p>Ordinarily, the loop will exit as soon as it has no pending or active events. You can override this behavior by passing the <code>EVLOOP_NO_EXIT_ON_EMPTY</code> flag—for example, if you’re going to be adding events from some other thread. If you do set <code>EVLOOP_NO_EXIT_ON_EMPTY</code>, the loop will keep running until somebody calls <code>event_base_loopbreak()</code>, or calls <code>event_base_loopexit()</code>, or an error occurs.</p>
+<p>When it is done, <code>event_base_loop()</code> returns 0 if it exited normally, -1 if it exited because of some unhandled error in the backend, and 1 if it exited because there were no more pending or active events.</p>
+<p>To aid in understanding, here’s an approximate summary of the <code>event_base_loop</code> algorithm:</p>
+<p>Pseudocode</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (any events are registered with the loop, <span class="keyword">or</span> EVLOOP_NO_EXIT_ON_EMPTY was <span class="built_in">set</span>) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (EVLOOP_NONBLOCK was <span class="built_in">set</span>, <span class="keyword">or</span> any events are already active)</span><br><span class="line">        If any registered events have triggered, mark them active.</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        Wait until at least one event has triggered, <span class="keyword">and</span> mark it active.</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (p = <span class="number">0</span>; p &lt; n_priorities; ++p) &#123;</span><br><span class="line">       <span class="keyword">if</span> (any event with priority of p is active) &#123;</span><br><span class="line">          Run all active events with priority of p.</span><br><span class="line">          <span class="keyword">break</span>; <span class="comment">/* Do not run any events of a less important priority */</span></span><br><span class="line">       &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (EVLOOP_ONCE was <span class="built_in">set</span> <span class="keyword">or</span> EVLOOP_NONBLOCK was <span class="built_in">set</span>)</span><br><span class="line">       <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">As a convenience, you can also call:</span><br><span class="line"></span><br><span class="line">Interface</span><br><span class="line">```cpp</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">event_base_dispatch</span><span class="params">(struct event_base \*base)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>The <code>event_base_dispatch()</code> call is the same as <code>event_base_loop()</code>, with no flags set. Thus, it keeps running until there are no more registered events or until <code>event_base_loopbreak()</code> or <code>event_base_loopexit()</code> is called.</p>
+<p>These functions are defined in &lt;event2/event.h&gt;. They have existed since Libevent 1.0.</p>
+<h2 id="Stopping-the-loop"><a href="#Stopping-the-loop" class="headerlink" title="Stopping the loop"></a>Stopping the loop</h2><p>If you want an active event loop to stop running before all events are removed from it, you have two slightly different functions you can call.</p>
+<p>Interface</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">event_base_loopexit</span><span class="params">(struct event_base *base,</span></span></span><br><span class="line"><span class="function"><span class="params"><span class="keyword">const</span> struct timeval *tv)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">event_base_loopbreak</span><span class="params">(struct event_base *base)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>The <code>event_base_loopexit()</code> function tells an <code>event_base</code> to stop looping after a given time has elapsed. If the tv argument is NULL, the <code>event_base</code> stops looping without a delay. If the <code>event_base</code> is currently running callbacks for any active events, it will continue running them, and not exit until they have all been run.</p>
+<p>The <code>event_base_loopbreak()</code> function tells the event_base to exit its loop immediately. It differs from <code>event_base_loopexit(base, NULL)</code> in that if the <code>event_base</code> is currently running callbacks for any active events, it will exit immediately after finishing the one it’s currently processing.</p>
+<p>Note also that <code>event_base_loopexit(base,NULL)</code> and <code>event_base_loopbreak(base)</code> act differently when no event loop is running: loopexit schedules the next instance of the event loop to stop right after the next round of callbacks are run (as if it had been invoked with <code>EVLOOP_ONCE</code>) whereas loopbreak only stops a currently running loop, and has no effect if the event loop isn’t running.</p>
+<p>Both of these methods return 0 on success and -1 on failure.</p>
+<p>Example: Shut down immediately</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;event2/event.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Here's a callback function that calls loopbreak */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">cb</span><span class="params">(<span class="keyword">int</span> sock, <span class="keyword">short</span> what, <span class="keyword">void</span> *arg)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">event_base</span> *<span class="title">base</span> = <span class="title">arg</span>;</span></span><br><span class="line">    event_base_loopbreak(base);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main_loop</span><span class="params">(struct event_base *base, <span class="keyword">evutil_socket_t</span> watchdog_fd)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">event</span> *<span class="title">watchdog_event</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Construct a new event to trigger whenever there are any bytes to</span></span><br><span class="line"><span class="comment">       read from a watchdog socket.  When that happens, we'll call the</span></span><br><span class="line"><span class="comment">       cb function, which will make the loop exit immediately without</span></span><br><span class="line"><span class="comment">       running any other active events at all.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    watchdog_event = event_new(base, watchdog_fd, EV_READ, cb, base);</span><br><span class="line"></span><br><span class="line">    event_add(watchdog_event, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">    event_base_dispatch(base);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Example: Run an event loop for 10 seconds, then exit.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;event2/event.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">run_base_with_ticks</span><span class="params">(struct event_base *base)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">timeval</span> <span class="title">ten_sec</span>;</span></span><br><span class="line"></span><br><span class="line">    ten_sec.tv_sec = <span class="number">10</span>;</span><br><span class="line">    ten_sec.tv_usec = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Now we run the event_base for a series of 10-second intervals, printing</span></span><br><span class="line"><span class="comment">    "Tick" after each. For a much better way to implement a 10-second</span></span><br><span class="line"><span class="comment">    timer, see the section below about persistent timer events. */</span></span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="comment">/* This schedules an exit ten seconds from now. */</span></span><br><span class="line">        event_base_loopexit(base, &amp;ten_sec);</span><br><span class="line"></span><br><span class="line">        event_base_dispatch(base);</span><br><span class="line">        <span class="built_in">puts</span>(<span class="string">"Tick"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Sometimes you may want to tell whether your call to <code>event_base_dispatch()</code> or <code>event_base_loop()</code> exited normally, or because of a call to <code>event_base_loopexit()</code> or <code>event_base_break()</code>. You can use these functions to tell whether loopexit or break was called:</p>
+<p>Interface</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">event_base_got_exit</span><span class="params">(struct event_base *base)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">event_base_got_break</span><span class="params">(struct event_base *base)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>These two functions will return true if the loop was stopped with <code>event_base_loopexit()</code> or <code>event_base_break()</code> respectively, and false otherwise. Their values will be reset the next time you start the event loop.</p>
+<p>These functions are declared in &lt;event2/event.h&gt;. The <code>event_base_loopexit()</code> function was first implemented in Libevent 1.0c; <code>event_base_loopbreak()</code> was first implemented in Libevent 1.4.3.</p>
+<h2 id="Re-checking-for-events"><a href="#Re-checking-for-events" class="headerlink" title="Re-checking for events"></a>Re-checking for events</h2><p>Ordinarily, Libevent checks for events, then runs all the active events with the highest priority, then checks for events again, and so on. But sometimes you might want to stop Libevent right after the current callback has been run, and tell it to scan again. By analogy to <code>event_base_loopbreak()</code>, you can do this with the function <code>event_base_loopcontinue()</code>.</p>
+<p>Interface</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">event_base_loopcontinue</span><span class="params">(struct event_base \*)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>Calling <code>event_base_loopcontinue()</code> has no effect if we aren’t currently running event callbacks.</p>
+<p>This function was introduced in Libevent 2.1.2-alpha.</p>
+<h2 id="Checking-the-internal-time-cache"><a href="#Checking-the-internal-time-cache" class="headerlink" title="Checking the internal time cache"></a>Checking the internal time cache</h2><p>Sometimes you want to get an approximate view of the current time inside an event callback, and you want to get it without calling <code>gettimeofday()</code> yourself (presumably because your OS implements <code>gettimeofday()</code> as a syscall, and you’re trying to avoid syscall overhead).</p>
+<p>From within a callback, you can ask Libevent for its view of the current time when it began executing <strong>this round of callbacks</strong>:</p>
+<p>Interface</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">event_base_gettimeofday_cached</span><span class="params">(struct event_base *base,</span></span></span><br><span class="line"><span class="function"><span class="params">struct timeval *tv_out)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>The <code>event_base_gettimeofday_cached()</code> function sets the value of its <code>tv_out</code> argument to the cached time if the event_base is currently executing callbacks. Otherwise, it calls <code>evutil_gettimeofday()</code> for the actual current time. It returns 0 on success, and negative on failure.</p>
+<p>Note that since the <code>timeval</code> is cached when Libevent starts running callbacks, it will be at least a little inaccurate. If your callbacks take a long time to run, it may be very inaccurate. To force an immediate cache update, you can call this function:</p>
+<p>Interface</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">event_base_update_cache_time</span><span class="params">(struct event_base *base)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>It returns 0 on success and -1 on failure, and has no effect if the base was not running its event loop.</p>
+<p>The <code>event_base_gettimeofday_cached()</code> function was new in Libevent 2.0.4-alpha. Libevent 2.1.1-alpha added <code>event_base_update_cache_time()</code>.</p>
+<p>Dumping the event_base status<br>Interface</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">event_base_dump_events</span><span class="params">(struct event_base *base, FILE *f)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>For help debugging your program (or debugging Libevent!) you might sometimes want a complete list of all events added in the event_base and their status. Calling <code>event_base_dump_events()</code> writes this list to the stdio file provided.</p>
+<p>The list is meant to be human-readable; its format will change in future versions of Libevent.</p>
+<p>This function was introduced in Libevent 2.0.1-alpha.</p>
+<p>Running a function over every event in an <code>event_base</code><br>Interface</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">int</span> <span class="params">(*event_base_foreach_event_cb)</span><span class="params">(<span class="keyword">const</span> struct event_base *,</span></span></span><br><span class="line"><span class="function"><span class="params"><span class="keyword">const</span> struct event *, <span class="keyword">void</span> *)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">event_base_foreach_event</span><span class="params">(struct event_base *base,</span></span></span><br><span class="line"><span class="function"><span class="params">event_base_foreach_event_cb fn,</span></span></span><br><span class="line"><span class="function"><span class="params"><span class="keyword">void</span> *arg)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>You can use <code>event_base_foreach_event()</code> to iterate over every currently active or pending event associated with an <code>event_base()</code>. The provided callback will be invoked exactly once per event, in an unspecified order. The third argument of <code>event_base_foreach_event()</code> will be passed as the third argument to each invocation of the callback.</p>
+<p>The callback function must return 0 to continue iteration, or some other integer to stop iterating. Whatever value the callback function finally returns will then be returned by event_base_foreach_function().</p>
+<p>Your callback function must not modify any of the events that it receives, or add or remove any events to the event base, or otherwise modify any event associated with the event base, or undefined behavior can occur, up to or including crashes and heap-smashing.</p>
+<p>The <code>event_base</code> lock will be held for the duration of the call to <code>event_base_foreach_event()</code> — this will block other threads from doing anything useful with the <code>event_base</code>, so make sure that your callback doesn’t take a long time.</p>
+<p>This function was added in Libevent 2.1.2-alpha.</p>
+<p>Obsolete event loop functions<br>As discussed above, older versions of Libevent APIs had a global notion of a “current” <code>event_base</code>.</p>
+<p>Some of the event loop functions in this section had variants that operated on the current base. These functions behaved as the current functions, except that they took no base argument.</p>
+<p><img src="/2020/11/25/Libevent-event-base-loopbreak/event_loop_funcs.png" alt="event_loop_funcs"></p>
+<h2 id="Note"><a href="#Note" class="headerlink" title="Note"></a>Note</h2><p>Because <code>event_base</code> did not support locking before Libevent 2.0, these functions weren’t completely thread safe: it was not permissible to call the <code>_loopbreak()</code> or <code>_loopexit()</code> functions from a thread other than the one executing the event loop.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Linux/" rel="tag"># Linux</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/25/RabbitMQ/" rel="prev" title="RabbitMQ">
+      <i class="fa fa-chevron-left"></i> RabbitMQ
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/26/RabbitMQ-集群搭建/" rel="next" title="RabbitMQ 集群搭建">
+      RabbitMQ 集群搭建 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Working-with-an-event-loop"><span class="nav-number">1.</span> <span class="nav-text">Working with an event loop</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Running-the-loop"><span class="nav-number">1.1.</span> <span class="nav-text">Running the loop</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Stopping-the-loop"><span class="nav-number">1.2.</span> <span class="nav-text">Stopping the loop</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Re-checking-for-events"><span class="nav-number">1.3.</span> <span class="nav-text">Re-checking for events</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Checking-the-internal-time-cache"><span class="nav-number">1.4.</span> <span class="nav-text">Checking the internal time cache</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Note"><span class="nav-number">1.5.</span> <span class="nav-text">Note</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">104</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

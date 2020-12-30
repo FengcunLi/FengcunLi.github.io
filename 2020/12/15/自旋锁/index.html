@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="乐观锁的实现之一 CAS 算法中提到了一个自旋锁的概念，自旋锁是什么，自旋锁的适用场景和优缺点分别是什么。">
+<meta name="keywords" content="C++">
+<meta property="og:type" content="article">
+<meta property="og:title" content="自旋锁">
+<meta property="og:url" content="http://yoursite.com/2020/12/15/自旋锁/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="乐观锁的实现之一 CAS 算法中提到了一个自旋锁的概念，自旋锁是什么，自旋锁的适用场景和优缺点分别是什么。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-12-15T07:31:13.433Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="自旋锁">
+<meta name="twitter:description" content="乐观锁的实现之一 CAS 算法中提到了一个自旋锁的概念，自旋锁是什么，自旋锁的适用场景和优缺点分别是什么。">
+
+<link rel="canonical" href="http://yoursite.com/2020/12/15/自旋锁/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>自旋锁 | The next stop - Antarctica</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/15/自旋锁/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          自旋锁
+        </h1>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-15 15:31:13" itemprop="dateModified" datetime="2020-12-15T15:31:13+08:00">2020-12-15</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>乐观锁的实现之一 CAS 算法中提到了一个自旋锁的概念，自旋锁是什么，自旋锁的适用场景和优缺点分别是什么。</p>
+<a id="more"></a>
+<h2 id="自旋锁的提出背景"><a href="#自旋锁的提出背景" class="headerlink" title="自旋锁的提出背景"></a>自旋锁的提出背景</h2><p>加锁是保护共享资源逻辑一致性的通用方案，在并发环境下，通过锁使得在某个时刻只有一个线程或进程可以访问该资源（以下统一用线程同时代表线程和进程）。其他线程必须等待锁被释放后，继续通过竞争锁来获取资源的控制权，当其中一个线程胜出，其他线程只能继续等待。</p>
+<p>等待获取锁的方式有“被动”和“主动”两种。被动模式指的是互相竞争的线程不再关心锁是否已经被释放，而是让自身进入阻塞状态，等待重新调度请求，等待某种调度机制在锁释放时唤醒其中某个线程；主动模式通常使用自旋的方式实现：线程进入某种循环主动判断锁的状态并尝试获得锁，一旦某个线程获得了锁会立即退出循环。<br>关于两种模式的优劣：</p>
+<blockquote>
+<p>Even though spin-waiting wastes processor cycles, it is useful in two situations: if the critical is small, so that the expected wait is less than the cost of blocking and resuming the process, or if no other work is available</p>
+</blockquote>
+<p>简单来说，尽管自旋浪费了计算资源，但是在锁资源很快就可以被释放的前提下，自旋锁的开销，要低于线程的阻塞和唤起导致的系统开销。软件领域没有所谓的银弹，这两种模式都有各自适用的场景，没有绝对的孰优孰劣之分。</p>
+<h2 id="自旋锁的原理"><a href="#自旋锁的原理" class="headerlink" title="自旋锁的原理"></a>自旋锁的原理</h2><p>自旋锁的原理比较简单，如果持有锁的线程能在短时间内释放锁资源，那么那些<strong>等待竞争锁的线程</strong>就不需要做内核态和用户态之间的切换进入阻塞状态，它们只需要等一等(自旋)，等到持有锁的线程释放锁之后即可获取，这样就避免了切换的消耗。</p>
+<p>因为自旋锁避免了操作系统进程调度和线程切换，自旋锁通常适用在时间比较短的情况下。由于这个原因，操作系统的内核经常使用自旋锁。但是，如果长时间上锁的话，自旋锁会非常耗费性能。线程持有锁的时间越长，则持有该锁的线程将被 OS 调度程序中断的风险越大。如果发生中断情况，那么其他线程将保持旋转状态(反复尝试获取锁)，而持有该锁的线程并不打算释放锁，这样导致的是结果是无限期推迟，直到持有锁的线程可以完成并释放它为止。</p>
+<p>解决上面这种情况一个很好的方式是给自旋锁设定一个自旋时间，等时间一到立即结束自旋。如何去选择自旋时间呢？如果自旋时间太长，会有大量的线程处于自旋状态占用 CPU 资源，进而会影响整体系统的性能。因此自旋的周期选的额外重要！JDK 在 1.6 引入了适应性自旋锁，适应性自旋锁意味着自旋时间不是固定的了，而是由前一次在同一个锁上的自旋时间以及锁拥有的状态来决定，基本认为一个线程上下文切换的时间是最佳的一个时间。</p>
+<h2 id="自旋锁的优缺点"><a href="#自旋锁的优缺点" class="headerlink" title="自旋锁的优缺点"></a>自旋锁的优缺点</h2><ul>
+<li><p>自旋锁尽可能的减少线程的阻塞，这对于锁的竞争不激烈，且占用锁时间非常短的代码块来说性能能大幅度的提升，因为自旋的消耗会小于线程阻塞挂起再唤醒的消耗。</p>
+</li>
+<li><p>但是如果锁的竞争激烈，或者持有锁的线程需要长时间占用锁执行同步块 critical section，这时候就不适合使用自旋锁了，因为自旋锁在获取锁前一直都是占用 cpu 做无用功，同时有大量线程在竞争同一个锁，会导致获取锁的时间很长，线程自旋的消耗大于线程阻塞挂起的消耗，其它需要 cpu 的线程又不能获取到 cpu，造成 cpu 的浪费。所以这种情况下我们要关闭自旋锁。</p>
+</li>
+</ul>
+<h2 id="自旋锁的实现"><a href="#自旋锁的实现" class="headerlink" title="自旋锁的实现"></a>自旋锁的实现</h2><h3 id="简单实现"><a href="#简单实现" class="headerlink" title="简单实现"></a>简单实现</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SpinLockTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> AtomicBoolean locked = <span class="keyword">new</span> AtomicBoolean(<span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span></span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 循环检测尝试获取锁</span></span><br><span class="line">        <span class="keyword">while</span> (!tryLock())&#123;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">tryLock</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">// 尝试获取锁，成功返回 true，失败返回 false</span></span><br><span class="line">        <span class="keyword">return</span> locked.compareAndSet(<span class="keyword">false</span>,<span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">unLock</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(!locked.compareAndSet(<span class="keyword">true</span>,<span class="keyword">false</span>))&#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"释放锁失败"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//  A spinlock mutex can be implemented in userspace using an atomic_flag</span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;thread&gt;</span></span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;atomic&gt;</span></span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">std</span>::atomic_flag lock = ATOMIC_FLAG_INIT;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">f</span><span class="params">(<span class="keyword">int</span> n)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> cnt = <span class="number">0</span>; cnt &lt; <span class="number">100</span>; ++cnt) &#123;</span><br><span class="line">            <span class="keyword">while</span> (lock.test_and_set(<span class="built_in">std</span>::memory_order_acquire))  <span class="comment">// acquire lock</span></span><br><span class="line">            ; <span class="comment">// spin</span></span><br><span class="line">            <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"Output from thread "</span> &lt;&lt; n &lt;&lt; <span class="string">'\n'</span>;</span><br><span class="line">            lock.clear(<span class="built_in">std</span>::memory_order_release);                <span class="comment">// release lock</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::thread&gt; v;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> n = <span class="number">0</span>; n &lt; <span class="number">10</span>; ++n) &#123;</span><br><span class="line">            v.emplace_back(f, n);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">auto</span>&amp; t : v) &#123;</span><br><span class="line">            t.join();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>这种简单的自旋锁有一个问题：无法保证多线程竞争的公平性，可能会造成某些线程一直都未获取到锁造成线程饥饿。通常会采取排队的方式解决这样的问题，把这种锁叫排队自旋锁(QueuedSpinlock)。计算机科学家们使用了各种方式来实现排队自旋锁，如 TicketLock，MCSLock，CLHLock。</p>
+<h3 id="TicketLock"><a href="#TicketLock" class="headerlink" title="TicketLock"></a>TicketLock</h3><p>它使用 ticket 来控制线程执行顺序，实现了叫号器，基于先进先出(FIFO) 队列的机制。它增加了锁的公平性。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TicketLock</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> AtomicInteger nowServing = <span class="keyword">new</span> AtomicInteger();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> AtomicInteger numberCallingMachine = <span class="keyword">new</span> AtomicInteger();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// incrementAndGet Returns the increased value</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">lock</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">int</span> myTicket = numberCallingMachine.incrementAndGet();</span><br><span class="line">        <span class="keyword">while</span> (myTicket != nowServing.get())&#123;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> myTicket;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">unLock</span><span class="params">(<span class="keyword">int</span> myTicket)</span></span>&#123;</span><br><span class="line">        nowServing.compareAndSet(myTicket, myTicket + <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但是上面这个设计是有问题的，因为获得自己的号码之后，是可以对号码进行更改的，这就造成系统紊乱，锁不能及时释放。我们重新设计一下这个逻辑</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TicketLock2</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> AtomicInteger nowServing = <span class="keyword">new</span> AtomicInteger();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> AtomicInteger numberCallingMachine = <span class="keyword">new</span> AtomicInteger();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ThreadLocal&lt;Integer&gt; ticketLocal = <span class="keyword">new</span> ThreadLocal&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">int</span> myTicket = numberCallingMachine.incrementAndGet();</span><br><span class="line"></span><br><span class="line">        ticketLocal.set(myTicket);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (myTicket != nowServing.get())&#123;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">unLock</span><span class="params">()</span></span>&#123;</span><br><span class="line">        Integer myTicket = ticketLocal.get();</span><br><span class="line">        nowServing.compareAndSet(myTicket, myTicket + <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>TicketLock 虽然解决了公平性的问题，但是多处理器系统上，每个进程/线程占用的处理器都在读写同一个变量 nowServing ，每次读写操作都必须在多个处理器缓存之间进行缓存同步，这会导致繁重的系统总线和内存的流量，大大降低系统整体的性能。</p>
+<p>为了解决这个问题，MCSLock 和 CLHLock 应运而生。</p>
+<h3 id="CLHLock"><a href="#CLHLock" class="headerlink" title="CLHLock"></a>CLHLock</h3><p>CLH 的发明人是：Craig，Landin and Hagersten，CLH 是一种基于链表的可扩展，高性能，公平的自旋锁，<strong>线程只能在本地变量上自旋</strong>，它会不断轮询前驱的状态，如果发现前驱释放了锁就结束自旋。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ClhSpinLock</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ThreadLocal&lt;Node&gt; pred;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ThreadLocal&lt;Node&gt; node;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> AtomicReference&lt;Node&gt; tail = <span class="keyword">new</span> AtomicReference&lt;Node&gt;(<span class="keyword">new</span> Node());</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ClhSpinLock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.node = <span class="keyword">new</span> ThreadLocal&lt;Node&gt;() &#123;</span><br><span class="line">            <span class="function"><span class="keyword">protected</span> Node <span class="title">initialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> Node();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">this</span>.pred = <span class="keyword">new</span> ThreadLocal&lt;Node&gt;() &#123;</span><br><span class="line">            <span class="function"><span class="keyword">protected</span> Node <span class="title">initialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> Node node = <span class="keyword">this</span>.node.get();</span><br><span class="line">        node.locked = <span class="keyword">true</span>;</span><br><span class="line">        Node pred = <span class="keyword">this</span>.tail.getAndSet(node);</span><br><span class="line">        <span class="keyword">this</span>.pred.set(pred);</span><br><span class="line">        <span class="keyword">while</span> (pred.locked) &#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">unlock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> Node node = <span class="keyword">this</span>.node.get();</span><br><span class="line">        node.locked = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">this</span>.node.set(<span class="keyword">this</span>.pred.get());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">boolean</span> locked;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="MCSLock"><a href="#MCSLock" class="headerlink" title="MCSLock"></a>MCSLock</h3><p>MCS Spinlock 是一种基于链表的可扩展，高性能，公平的自旋锁，线程只在本地变量上自旋，直接前驱负责通知其结束自旋，从而极大地减少了不必要的处理器缓存同步的次数，降低了总线和内存的开销。MCS 来自于其发明人名字的首字母： John Mellor-Crummey 和 Michael Scott。</p>
+<p>CLHLock 和 MCSLock</p>
+<ul>
+<li>都是基于链表，不同的是 CLHLock 是基于隐式链表，没有真正的后续节点属性，MCSLock 是显式链表，有一个指向后续节点的属性。</li>
+<li>将锁的状态借助节点(node)保存，每个线程都有一份独立的节点，这样就解决了 TicketLock 多处理器缓存同步的问题。</li>
+</ul>
+<p>cpu_relax.h</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> CPU_RELAX_H</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CPU_RELAX_H</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;intrin.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> sync &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">inline</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">cpu_relax</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">if</span> (COMPILER == MVCC)</span></span><br><span class="line">        _mm_pause();</span><br><span class="line">    <span class="meta">#<span class="meta-keyword">elif</span> (COMPILER == GCC || COMPILER == LLVM)</span></span><br><span class="line">        <span class="function"><span class="keyword">asm</span> <span class="title">volatile</span><span class="params">(<span class="string">"pause\n"</span>: : :<span class="string">"memory"</span>)</span></span>;</span><br><span class="line">    <span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span> <span class="comment">// CPU_RELAX_H</span></span></span><br></pre></td></tr></table></figure>
+<p>mcs_lock.h</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> MCS_LOCK_H</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MCS_LOCK_H</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdint&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;assert.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;atomic&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;thread&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"cache_info.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"cpu_relax.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> sync &#123;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">mcs_lock</span> &#123;</span></span><br><span class="line"></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">mcs_node</span> &#123;</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">bool</span> locked&#123;<span class="literal">true</span>&#125;;</span><br><span class="line">            <span class="keyword">uint8_t</span> pad1[CACHELINE_SIZE - <span class="keyword">sizeof</span>(<span class="keyword">bool</span>)];</span><br><span class="line"></span><br><span class="line">            mcs_node* next&#123;<span class="literal">nullptr</span>&#125;;</span><br><span class="line">            <span class="keyword">uint8_t</span> pad2[CACHELINE_SIZE - <span class="keyword">sizeof</span>(mcs_node*)];</span><br><span class="line"></span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">static_assert</span>(<span class="keyword">sizeof</span>(mcs_node) == <span class="number">2</span> * CACHELINE_SIZE, <span class="string">""</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">unlock</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span>:</span><br><span class="line"></span><br><span class="line">        <span class="built_in">std</span>::atomic&lt;mcs_node*&gt; tail&#123;<span class="literal">nullptr</span>&#125;;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">static</span> <span class="keyword">thread_local</span> mcs_node local_node;</span><br><span class="line"></span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span> <span class="comment">// MCS_LOCK_H</span></span></span><br></pre></td></tr></table></figure>
+<p>mcs_lock.cpp</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"mcs_lock.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> sync &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">void</span> mcs_lock::lock() &#123;</span><br><span class="line">        <span class="comment">//to acquire the lock a thread atomically appends its own local node at the tail of the list returning tail's previous contents</span></span><br><span class="line">        <span class="keyword">auto</span> prior_node = tail.exchange(&amp;local_node, <span class="built_in">std</span>::memory_order_acquire);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(prior_node != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">            local_node.locked = <span class="literal">true</span>;</span><br><span class="line">            <span class="comment">//if the list was not previously empty, it sets the predecessor’s next field to refer to its own local node</span></span><br><span class="line">            prior_node-&gt;next = &amp;local_node;</span><br><span class="line">            <span class="comment">//thread then spins on its local locked field, waiting until its predecessor sets this field to false</span></span><br><span class="line">            <span class="keyword">while</span>(local_node.locked)</span><br><span class="line">                cpu_relax();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//now first in the queue, own the lock and enter the critical section...</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">void</span> mcs_lock::unlock() &#123;</span><br><span class="line">        <span class="comment">//...leave the critical section</span></span><br><span class="line">        <span class="comment">//check whether this thread's local node’s next field is null</span></span><br><span class="line">        <span class="keyword">if</span>(local_node.next == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">        <span class="comment">//if so, then either:</span></span><br><span class="line">        <span class="comment">// 1. no other thread is contending for the lock</span></span><br><span class="line">        <span class="comment">// 2. there is a race condition with another thread about to</span></span><br><span class="line">        <span class="comment">// to distinguish between these cases atomic compare exchange the tail field</span></span><br><span class="line">        <span class="comment">// if the call succeeds, then no other thread is trying to acquire the lock, tail is set to nullptr, and unlock() returns</span></span><br><span class="line">            mcs_node* p = &amp;local_node;</span><br><span class="line">            <span class="keyword">if</span>(tail.compare_exchange_strong(p,<span class="literal">nullptr</span>,</span><br><span class="line">                                            <span class="built_in">std</span>::memory_order_release,</span><br><span class="line">                                            <span class="built_in">std</span>::memory_order_relaxed)) &#123;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">//otherwise, another thread is in the process of trying to acquire the lock, so spins waiting for it to finish</span></span><br><span class="line">            <span class="keyword">while</span> (local_node.next == <span class="literal">nullptr</span>) &#123;&#125;;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//in either case, once the successor has appeared, the unlock() method sets its successor’s locked field to false, indicating that the lock is now free</span></span><br><span class="line">        local_node.next-&gt;locked = <span class="literal">false</span>;</span><br><span class="line">        <span class="comment">//at this point no other thread can access this node and it can be reused</span></span><br><span class="line">        local_node.next = <span class="literal">nullptr</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">thread_local</span> mcs_lock::mcs_node mcs_lock::local_node = mcs_lock::mcs_node&#123;&#125;;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>自旋锁在等待期间不会睡眠或者释放自己的线程。自旋锁不适用于长时间持有 CPU 的情况，这会加剧系统的负担，为了解决这种情况，需要设定自旋周期，那么自旋周期的设定也是一门学问。</p>
+<p>自旋锁本身无法保证公平性，那么为了保证公平性又引出了 TicketLock ，TicketLock 是采用排队叫号的机制来实现的一种公平锁，但是它每次读写操作都必须在多个处理器缓存之间进行缓存同步，这会导致繁重的系统总线和内存的流量，大大降低系统整体的性能。所以又引出了 CLHLock 和 MCSLock，CLHLock 和 MCSLock 通过链表的方式减少了处理器缓存同步，极大的提高了性能，区别在于 CLHLock 是通过轮询其前驱节点的状态，而 MCS 则是查看当前节点的锁状态。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.21.8571&amp;rep=rep1&amp;type=pdf" target="_blank" rel="noopener">Queue Locks on Cache Coherent Multiprocessors</a></li>
+<li><a href="https://www.codedump.info/post/20191214-cxx11-memory-model-1/" target="_blank" rel="noopener">C++11 中的内存模型上篇 - 内存模型基础</a></li>
+<li><a href="https://www.codedump.info/post/20191214-cxx11-memory-model-2/" target="_blank" rel="noopener">C++11 中的内存模型下篇 - C++11 支持的几种内存模型</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C/" rel="tag"># C++</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/12/14/epoll-源码分析/" rel="prev" title="Epoll 源码分析">
+      <i class="fa fa-chevron-left"></i> Epoll 源码分析
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/12/15/Correctly-implementing-a-spinlock-in-C/" rel="next" title="Correctly Implementing a Spinlock in C++">
+      Correctly Implementing a Spinlock in C++ <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#自旋锁的提出背景"><span class="nav-number">1.</span> <span class="nav-text">自旋锁的提出背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自旋锁的原理"><span class="nav-number">2.</span> <span class="nav-text">自旋锁的原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自旋锁的优缺点"><span class="nav-number">3.</span> <span class="nav-text">自旋锁的优缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自旋锁的实现"><span class="nav-number">4.</span> <span class="nav-text">自旋锁的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简单实现"><span class="nav-number">4.1.</span> <span class="nav-text">简单实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TicketLock"><span class="nav-number">4.2.</span> <span class="nav-text">TicketLock</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CLHLock"><span class="nav-number">4.3.</span> <span class="nav-text">CLHLock</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MCSLock"><span class="nav-number">4.4.</span> <span class="nav-text">MCSLock</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">104</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

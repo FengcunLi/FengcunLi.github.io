@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="实际生产应用中都会采用消息队列的集群方案">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RabbitMQ 集群搭建">
+<meta property="og:url" content="http://yoursite.com/2020/11/26/RabbitMQ-集群搭建/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="实际生产应用中都会采用消息队列的集群方案">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2020/11/26/RabbitMQ-集群搭建/1566073768274.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/26/RabbitMQ-集群搭建/1566065096459.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/26/RabbitMQ-集群搭建/1566072300852.png">
+<meta property="og:updated_time" content="2020-11-26T12:13:56.562Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RabbitMQ 集群搭建">
+<meta name="twitter:description" content="实际生产应用中都会采用消息队列的集群方案">
+<meta name="twitter:image" content="http://yoursite.com/2020/11/26/RabbitMQ-集群搭建/1566073768274.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/11/26/RabbitMQ-集群搭建/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>RabbitMQ 集群搭建 | The next stop - Antarctica</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/26/RabbitMQ-集群搭建/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          RabbitMQ 集群搭建
+        </h1>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-26 20:13:56" itemprop="dateModified" datetime="2020-11-26T20:13:56+08:00">2020-11-26</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>实际生产应用中都会采用消息队列的集群方案</p>
+<a id="more"></a>
+<p>一般来说，如果只是为了学习 RabbitMQ 或者验证业务工程的正确性那么在本地环境或者测试环境上使用其单实例部署就可以了，但是出于 MQ 中间件本身的可靠性、并发性、吞吐量和消息堆积能力等问题的考虑，在生产环境上一般都会考虑使用 RabbitMQ 的集群方案。</p>
+<h3 id="1-集群方案的原理"><a href="#1-集群方案的原理" class="headerlink" title="1 集群方案的原理"></a>1 集群方案的原理</h3><p>RabbitMQ 这款消息队列中间件产品本身是基于 Erlang 编写，Erlang 语言天生具备分布式特性（通过同步 Erlang 集群各节点的 magic cookie 来实现）。因此，RabbitMQ 天然支持 Clustering。这使得 RabbitMQ 本身不需要像 ActiveMQ、Kafka 那样通过 ZooKeeper 分别来实现 HA 方案和保存集群的元数据。集群是保证可靠性的一种方式，同时可以通过水平扩展以达到增加消息吞吐量能力的目的。</p>
+<p><img src="/2020/11/26/RabbitMQ-集群搭建/1566073768274.png" alt="1565245219265"></p>
+<h3 id="2-单机多实例部署"><a href="#2-单机多实例部署" class="headerlink" title="2 单机多实例部署"></a>2 单机多实例部署</h3><p>由于某些因素的限制，有时候你不得不在一台机器上去搭建一个 rabbitmq 集群，这个有点类似 zookeeper 的单机版。真实生成环境还是要配成多机集群的。有关怎么配置多机集群的可以参考其他的资料，这里主要论述如何在单机中配置多个 rabbitmq 实例。</p>
+<p>主要参考官方文档：<a href="https://www.rabbitmq.com/clustering.html" target="_blank" rel="noopener">https://www.rabbitmq.com/clustering.html</a></p>
+<p>首先确保 RabbitMQ 运行没有问题</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line">[root@super ~]<span class="comment"># rabbitmqctl status</span></span><br><span class="line">Status of node rabbit@super ...</span><br><span class="line">[&#123;pid,10232&#125;,</span><br><span class="line"> &#123;running_applications,</span><br><span class="line">     [&#123;rabbitmq_management,<span class="string">"RabbitMQ Management Console"</span>,<span class="string">"3.6.5"</span>&#125;,</span><br><span class="line">      &#123;rabbitmq_web_dispatch,<span class="string">"RabbitMQ Web Dispatcher"</span>,<span class="string">"3.6.5"</span>&#125;,</span><br><span class="line">      &#123;webmachine,<span class="string">"webmachine"</span>,<span class="string">"1.10.3"</span>&#125;,</span><br><span class="line">      &#123;mochiweb,<span class="string">"MochiMedia Web Server"</span>,<span class="string">"2.13.1"</span>&#125;,</span><br><span class="line">      &#123;rabbitmq_management_agent,<span class="string">"RabbitMQ Management Agent"</span>,<span class="string">"3.6.5"</span>&#125;,</span><br><span class="line">      &#123;rabbit,<span class="string">"RabbitMQ"</span>,<span class="string">"3.6.5"</span>&#125;,</span><br><span class="line">      &#123;os_mon,<span class="string">"CPO  CXC 138 46"</span>,<span class="string">"2.4"</span>&#125;,</span><br><span class="line">      &#123;syntax_tools,<span class="string">"Syntax tools"</span>,<span class="string">"1.7"</span>&#125;,</span><br><span class="line">      &#123;inets,<span class="string">"INETS  CXC 138 49"</span>,<span class="string">"6.2"</span>&#125;,</span><br><span class="line">      &#123;amqp_client,<span class="string">"RabbitMQ AMQP Client"</span>,<span class="string">"3.6.5"</span>&#125;,</span><br><span class="line">      &#123;rabbit_common,[],<span class="string">"3.6.5"</span>&#125;,</span><br><span class="line">      &#123;ssl,<span class="string">"Erlang/OTP SSL application"</span>,<span class="string">"7.3"</span>&#125;,</span><br><span class="line">      &#123;public_key,<span class="string">"Public key infrastructure"</span>,<span class="string">"1.1.1"</span>&#125;,</span><br><span class="line">      &#123;asn1,<span class="string">"The Erlang ASN1 compiler version 4.0.2"</span>,<span class="string">"4.0.2"</span>&#125;,</span><br><span class="line">      &#123;ranch,<span class="string">"Socket acceptor pool for TCP protocols."</span>,<span class="string">"1.2.1"</span>&#125;,</span><br><span class="line">      &#123;mnesia,<span class="string">"MNESIA  CXC 138 12"</span>,<span class="string">"4.13.3"</span>&#125;,</span><br><span class="line">      &#123;compiler,<span class="string">"ERTS  CXC 138 10"</span>,<span class="string">"6.0.3"</span>&#125;,</span><br><span class="line">      &#123;crypto,<span class="string">"CRYPTO"</span>,<span class="string">"3.6.3"</span>&#125;,</span><br><span class="line">      &#123;xmerl,<span class="string">"XML parser"</span>,<span class="string">"1.3.10"</span>&#125;,</span><br><span class="line">      &#123;sasl,<span class="string">"SASL  CXC 138 11"</span>,<span class="string">"2.7"</span>&#125;,</span><br><span class="line">      &#123;stdlib,<span class="string">"ERTS  CXC 138 10"</span>,<span class="string">"2.8"</span>&#125;,</span><br><span class="line">      &#123;kernel,<span class="string">"ERTS  CXC 138 10"</span>,<span class="string">"4.2"</span>&#125;]&#125;,</span><br><span class="line"> &#123;os,&#123;unix,linux&#125;&#125;,</span><br><span class="line"> &#123;erlang_version,</span><br><span class="line">     <span class="string">"Erlang/OTP 18 [erts-7.3] [source] [64-bit] [async-threads:64] [hipe] [kernel-poll:true]\n"</span>&#125;,</span><br><span class="line"> &#123;memory,</span><br><span class="line">     [&#123;total,56066752&#125;,</span><br><span class="line">      &#123;connection_readers,0&#125;,</span><br><span class="line">      &#123;connection_writers,0&#125;,</span><br><span class="line">      &#123;connection_channels,0&#125;,</span><br><span class="line">      &#123;connection_other,2680&#125;,</span><br><span class="line">      &#123;queue_procs,268248&#125;,</span><br><span class="line">      &#123;queue_slave_procs,0&#125;,</span><br><span class="line">      &#123;plugins,1131936&#125;,</span><br><span class="line">      &#123;other_proc,18144280&#125;,</span><br><span class="line">      &#123;mnesia,125304&#125;,</span><br><span class="line">      &#123;mgmt_db,921312&#125;,</span><br><span class="line">      &#123;msg_index,69440&#125;,</span><br><span class="line">      &#123;other_ets,1413664&#125;,</span><br><span class="line">      &#123;binary,755736&#125;,</span><br><span class="line">      &#123;code,27824046&#125;,</span><br><span class="line">      &#123;atom,1000601&#125;,</span><br><span class="line">      &#123;other_system,4409505&#125;]&#125;,</span><br><span class="line"> &#123;alarms,[]&#125;,</span><br><span class="line"> &#123;listeners,[&#123;clustering,25672,<span class="string">"::"</span>&#125;,&#123;amqp,5672,<span class="string">"::"</span>&#125;]&#125;,</span><br><span class="line"> &#123;vm_memory_high_watermark,0.4&#125;,</span><br><span class="line"> &#123;vm_memory_limit,411294105&#125;,</span><br><span class="line"> &#123;disk_free_limit,50000000&#125;,</span><br><span class="line"> &#123;disk_free,13270233088&#125;,</span><br><span class="line"> &#123;file_descriptors,</span><br><span class="line">     [&#123;total_limit,924&#125;,&#123;total_used,6&#125;,&#123;sockets_limit,829&#125;,&#123;sockets_used,0&#125;]&#125;,</span><br><span class="line"> &#123;processes,[&#123;<span class="built_in">limit</span>,1048576&#125;,&#123;used,262&#125;]&#125;,</span><br><span class="line"> &#123;run_queue,0&#125;,</span><br><span class="line"> &#123;uptime,43651&#125;,</span><br><span class="line"> &#123;kernel,&#123;net_ticktime,60&#125;&#125;]</span><br></pre></td></tr></table></figure>
+<p>停止 rabbitmq 服务</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@super sbin]<span class="comment"># service rabbitmq-server stop</span></span><br><span class="line">Stopping rabbitmq-server: rabbitmq-server.</span><br></pre></td></tr></table></figure>
+<p>启动第一个节点：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@super sbin]<span class="comment"># RABBITMQ_NODE_PORT=5673 RABBITMQ_NODENAME=rabbit1 rabbitmq-server start</span></span><br><span class="line"></span><br><span class="line">              RabbitMQ 3.6.5. Copyright (C) 2007-2016 Pivotal Software, Inc.</span><br><span class="line">  <span class="comment">##  ##      Licensed under the MPL.  See http://www.rabbitmq.com/</span></span><br><span class="line">  <span class="comment">##  ##</span></span><br><span class="line">  <span class="comment">##########  Logs: /var/log/rabbitmq/rabbit1.log</span></span><br><span class="line">  <span class="comment">######  ##        /var/log/rabbitmq/rabbit1-sasl.log</span></span><br><span class="line">  <span class="comment">##########</span></span><br><span class="line">              Starting broker...</span><br><span class="line"> completed with 6 plugins.</span><br></pre></td></tr></table></figure>
+<p>启动第二个节点：</p>
+<blockquote>
+<p>web 管理插件端口占用,所以还要指定其 web 插件占用的端口号。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@super ~]<span class="comment"># RABBITMQ_NODE_PORT=5674 RABBITMQ_SERVER_START_ARGS="-rabbitmq_management listener [&#123;port,15674&#125;]" RABBITMQ_NODENAME=rabbit2 rabbitmq-server start</span></span><br><span class="line"></span><br><span class="line">              RabbitMQ 3.6.5. Copyright (C) 2007-2016 Pivotal Software, Inc.</span><br><span class="line">  <span class="comment">##  ##      Licensed under the MPL.  See http://www.rabbitmq.com/</span></span><br><span class="line">  <span class="comment">##  ##</span></span><br><span class="line">  <span class="comment">##########  Logs: /var/log/rabbitmq/rabbit2.log</span></span><br><span class="line">  <span class="comment">######  ##        /var/log/rabbitmq/rabbit2-sasl.log</span></span><br><span class="line">  <span class="comment">##########</span></span><br><span class="line">              Starting broker...</span><br><span class="line"> completed with 6 plugins.</span><br></pre></td></tr></table></figure>
+<p>结束命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rabbitmqctl -n rabbit1 stop</span><br><span class="line">rabbitmqctl -n rabbit2 stop</span><br></pre></td></tr></table></figure>
+<p>rabbit1 操作作为主节点：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@super ~]<span class="comment"># rabbitmqctl -n rabbit1 stop_app</span></span><br><span class="line">Stopping node rabbit1@super ...</span><br><span class="line">[root@super ~]<span class="comment"># rabbitmqctl -n rabbit1 reset</span></span><br><span class="line">Resetting node rabbit1@super ...</span><br><span class="line">[root@super ~]<span class="comment"># rabbitmqctl -n rabbit1 start_app</span></span><br><span class="line">Starting node rabbit1@super ...</span><br><span class="line">[root@super ~]<span class="comment">#</span></span><br></pre></td></tr></table></figure>
+<p>rabbit2 操作为从节点：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@super ~]<span class="comment"># rabbitmqctl -n rabbit2 stop_app</span></span><br><span class="line">Stopping node rabbit2@super ...</span><br><span class="line">[root@super ~]<span class="comment"># rabbitmqctl -n rabbit2 reset</span></span><br><span class="line">Resetting node rabbit2@super ...</span><br><span class="line">[root@super ~]<span class="comment"># rabbitmqctl -n rabbit2 join_cluster rabbit1@'super' ###''内是主机名换成自己的</span></span><br><span class="line">Clustering node rabbit2@super with rabbit1@super ...</span><br><span class="line">[root@super ~]<span class="comment"># rabbitmqctl -n rabbit2 start_app</span></span><br><span class="line">Starting node rabbit2@super ...</span><br></pre></td></tr></table></figure>
+<p>查看集群状态：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@super ~]# rabbitmqctl cluster_status -n rabbit1</span><br><span class="line">Cluster status of node rabbit1@super ...</span><br><span class="line">[&#123;nodes,[&#123;disc,[rabbit1@super,rabbit2@super]&#125;]&#125;,</span><br><span class="line"> &#123;running_nodes,[rabbit2@super,rabbit1@super]&#125;,</span><br><span class="line"> &#123;cluster_name,&lt;&lt;&quot;rabbit1@super&quot;&gt;&gt;&#125;,</span><br><span class="line"> &#123;partitions,[]&#125;,</span><br><span class="line"> &#123;alarms,[&#123;rabbit2@super,[]&#125;,&#123;rabbit1@super,[]&#125;]&#125;]</span><br></pre></td></tr></table></figure>
+<p>web 监控：</p>
+<p><img src="/2020/11/26/RabbitMQ-集群搭建/1566065096459.png" alt="1566065096459"></p>
+<h3 id="3-集群管理"><a href="#3-集群管理" class="headerlink" title="3 集群管理"></a>3 集群管理</h3><p><strong>rabbitmqctl join_cluster {cluster_node} [–ram]</strong><br>将节点加入指定集群中。在这个命令执行前需要停止 RabbitMQ 应用并重置节点。</p>
+<p><strong>rabbitmqctl cluster_status</strong><br>显示集群的状态。</p>
+<p><strong>rabbitmqctl change_cluster_node_type {disc|ram}</strong><br>修改集群节点的类型。在这个命令执行前需要停止 RabbitMQ 应用。</p>
+<p><strong>rabbitmqctl forget_cluster_node [–offline]</strong><br>将节点从集群中删除，允许离线执行。</p>
+<p><strong>rabbitmqctl update_cluster_nodes {clusternode}</strong></p>
+<p>在集群中的节点应用启动前咨询 clusternode 节点的最新信息，并更新相应的集群信息。这个和 join_cluster 不同，它不加入集群。考虑这样一种情况，节点 A 和节点 B 都在集群中，当节点 A 离线了，节点 C 又和节点 B 组成了一个集群，然后节点 B 又离开了集群，当 A 醒来的时候，它会尝试联系节点 B，但是这样会失败，因为节点 B 已经不在集群中了。</p>
+<p><strong>rabbitmqctl cancel_sync_queue [-p vhost] {queue}</strong><br>取消队列 queue 同步镜像的操作。</p>
+<p><strong>rabbitmqctl set_cluster_name {name}</strong><br>设置集群名称。集群名称在客户端连接时会通报给客户端。Federation 和 Shovel 插件也会有用到集群名称的地方。集群名称默认是集群中第一个节点的名称，通过这个命令可以重新设置。</p>
+<h3 id="4-RabbitMQ-镜像集群配置"><a href="#4-RabbitMQ-镜像集群配置" class="headerlink" title="4 RabbitMQ 镜像集群配置"></a>4 RabbitMQ 镜像集群配置</h3><blockquote>
+<p>上面已经完成 RabbitMQ 默认集群模式，但并不保证队列的高可用性，尽管交换机、绑定这些可以复制到集群里的任何一个节点，但是队列内容不会复制。虽然该模式解决一项目组节点压力，但队列节点宕机直接导致该队列无法应用，只能等待重启，所以要想在队列节点宕机或故障也能正常应用，就要复制队列内容到集群里的每个节点，必须要创建镜像队列。</p>
+<p>镜像队列是基于普通的集群模式的，然后再添加一些策略，所以你还是得先配置普通集群，然后才能设置镜像队列，我们就以上面的集群接着做。</p>
+</blockquote>
+<p><strong>设置的镜像队列可以通过开启的网页的管理端 Admin-&gt;Policies，也可以通过命令。</strong></p>
+<blockquote>
+<p>rabbitmqctl set_policy my_ha “^” ‘{“ha-mode”:”all”}’</p>
+</blockquote>
+<p><img src="/2020/11/26/RabbitMQ-集群搭建/1566072300852.png" alt="1566072300852"></p>
+<blockquote>
+<ul>
+<li>Name:策略名称</li>
+<li>Pattern：匹配的规则，如果是匹配所有的队列，是^.</li>
+<li>Definition:使用 ha-mode 模式中的 all，也就是同步所有匹配的队列。问号链接帮助文档。</li>
+</ul>
+</blockquote>
+<h3 id="5-负载均衡-HAProxy"><a href="#5-负载均衡-HAProxy" class="headerlink" title="5 负载均衡-HAProxy"></a>5 负载均衡-HAProxy</h3><p>HAProxy 提供高可用性、负载均衡以及基于 TCP 和 HTTP 应用的代理，支持虚拟主机，它是免费、快速并且可靠的一种解决方案,包括 Twitter，Reddit，StackOverflow，GitHub 在内的多家知名互联网公司在使用。HAProxy 实现了一种事件驱动、单一进程模型，此模型支持非常大的并发连接数。</p>
+<h5 id="5-1-安装-HAProxy"><a href="#5-1-安装-HAProxy" class="headerlink" title="5.1 安装 HAProxy"></a>5.1 安装 HAProxy</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">//下载依赖包</span><br><span class="line">yum install gcc vim wget</span><br><span class="line">//上传haproxy源码包</span><br><span class="line">//解压</span><br><span class="line">tar -zxvf haproxy-1.6.5.tar.gz -C /usr/<span class="built_in">local</span></span><br><span class="line">//进入目录、进行编译、安装</span><br><span class="line"><span class="built_in">cd</span> /usr/<span class="built_in">local</span>/haproxy-1.6.5</span><br><span class="line">make TARGET=linux31 PREFIX=/usr/<span class="built_in">local</span>/haproxy</span><br><span class="line">make install PREFIX=/usr/<span class="built_in">local</span>/haproxy</span><br><span class="line">mkdir /etc/haproxy</span><br><span class="line">//赋权</span><br><span class="line">groupadd -r -g 149 haproxy</span><br><span class="line">useradd -g haproxy -r -s /sbin/nologin -u 149 haproxy</span><br><span class="line">//创建haproxy配置文件</span><br><span class="line">mkdir /etc/haproxy</span><br><span class="line">vim /etc/haproxy/haproxy.cfg</span><br></pre></td></tr></table></figure>
+<h5 id="5-2-配置-HAProxy"><a href="#5-2-配置-HAProxy" class="headerlink" title="5.2 配置 HAProxy"></a>5.2 配置 HAProxy</h5><p>配置文件路径：/etc/haproxy/haproxy.cfg</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#logging options</span></span><br><span class="line">global</span><br><span class="line">	<span class="built_in">log</span> 127.0.0.1 local0 info</span><br><span class="line">	maxconn 5120</span><br><span class="line">	chroot /usr/<span class="built_in">local</span>/haproxy</span><br><span class="line">	uid 99</span><br><span class="line">	gid 99</span><br><span class="line">	daemon</span><br><span class="line">	quiet</span><br><span class="line">	nbproc 20</span><br><span class="line">	pidfile /var/run/haproxy.pid</span><br><span class="line"></span><br><span class="line">defaults</span><br><span class="line">	<span class="built_in">log</span> global</span><br><span class="line"></span><br><span class="line">	mode tcp</span><br><span class="line"></span><br><span class="line">	option tcplog</span><br><span class="line">	option dontlognull</span><br><span class="line">	retries 3</span><br><span class="line">	option redispatch</span><br><span class="line">	maxconn 2000</span><br><span class="line">	contimeout 5s</span><br><span class="line"></span><br><span class="line">     clitimeout 60s</span><br><span class="line"></span><br><span class="line">     srvtimeout 15s</span><br><span class="line"><span class="comment">#front-end IP for consumers and producters</span></span><br><span class="line"></span><br><span class="line">listen rabbitmq_cluster</span><br><span class="line">	<span class="built_in">bind</span> 0.0.0.0:5672</span><br><span class="line"></span><br><span class="line">	mode tcp</span><br><span class="line">	<span class="comment">#balance url_param userid</span></span><br><span class="line">	<span class="comment">#balance url_param session_id check_post 64</span></span><br><span class="line">	<span class="comment">#balance hdr(User-Agent)</span></span><br><span class="line">	<span class="comment">#balance hdr(host)</span></span><br><span class="line">	<span class="comment">#balance hdr(Host) use_domain_only</span></span><br><span class="line">	<span class="comment">#balance rdp-cookie</span></span><br><span class="line">	<span class="comment">#balance leastconn</span></span><br><span class="line">	<span class="comment">#balance source //ip</span></span><br><span class="line"></span><br><span class="line">	balance roundrobin</span><br><span class="line"></span><br><span class="line">        server node1 127.0.0.1:5673 check inter 5000 rise 2 fall 2</span><br><span class="line">        server node2 127.0.0.1:5674 check inter 5000 rise 2 fall 2</span><br><span class="line"></span><br><span class="line">listen stats</span><br><span class="line">	<span class="built_in">bind</span> 172.16.98.133:8100</span><br><span class="line">	mode http</span><br><span class="line">	option httplog</span><br><span class="line">	stats <span class="built_in">enable</span></span><br><span class="line">	stats uri /rabbitmq-stats</span><br><span class="line">	stats refresh 5s</span><br></pre></td></tr></table></figure>
+<p>启动 HAproxy 负载</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">/usr/<span class="built_in">local</span>/haproxy/sbin/haproxy -f /etc/haproxy/haproxy.cfg</span><br><span class="line">//查看haproxy进程状态</span><br><span class="line">ps -ef | grep haproxy</span><br><span class="line"></span><br><span class="line">访问如下地址对mq节点进行监控</span><br><span class="line">http://172.16.98.133:8100/rabbitmq-stats</span><br></pre></td></tr></table></figure>
+<p>代码中访问 mq 集群地址，则变为访问 haproxy 地址:5672</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/25/Libevent-event-base-loopbreak/" rel="prev" title="Libevent Event_base_loopbreak">
+      <i class="fa fa-chevron-left"></i> Libevent Event_base_loopbreak
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/27/Redis-事务/" rel="next" title="Redis 事务">
+      Redis 事务 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-集群方案的原理"><span class="nav-number">1.</span> <span class="nav-text">1 集群方案的原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-单机多实例部署"><span class="nav-number">2.</span> <span class="nav-text">2 单机多实例部署</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-集群管理"><span class="nav-number">3.</span> <span class="nav-text">3 集群管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-RabbitMQ-镜像集群配置"><span class="nav-number">4.</span> <span class="nav-text">4 RabbitMQ 镜像集群配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-负载均衡-HAProxy"><span class="nav-number">5.</span> <span class="nav-text">5 负载均衡-HAProxy</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#5-1-安装-HAProxy"><span class="nav-number">5.0.1.</span> <span class="nav-text">5.1 安装 HAProxy</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#5-2-配置-HAProxy"><span class="nav-number">5.0.2.</span> <span class="nav-text">5.2 配置 HAProxy</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">104</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

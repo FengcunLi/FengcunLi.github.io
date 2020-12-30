@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="ZookeeperZookeeper：一个提供“强”一致性的“分布式文件系统”。 什么是强一致性 Strong consistency ？Guarantee : Get the most recent my own and others’ write. 确保 Get the most recent my own and others’ write &amp;gt; 确保 Get the most rece">
+<meta name="keywords" content="Distributed Systems">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MIT 6.824: Distributed Systems 学习笔记">
+<meta property="og:url" content="http://yoursite.com/2020/12/28/MIT-6-824-Distributed-Systems-学习笔记/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="ZookeeperZookeeper：一个提供“强”一致性的“分布式文件系统”。 什么是强一致性 Strong consistency ？Guarantee : Get the most recent my own and others’ write. 确保 Get the most recent my own and others’ write &amp;gt; 确保 Get the most rece">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2020/12/28/MIT-6-824-Distributed-Systems-学习笔记/linearizable.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/28/MIT-6-824-Distributed-Systems-学习笔记/non-linearizable.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/28/MIT-6-824-Distributed-Systems-学习笔记/non-linearizable-2.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/28/MIT-6-824-Distributed-Systems-学习笔记/partitioned.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/28/MIT-6-824-Distributed-Systems-学习笔记/raft-application.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/28/MIT-6-824-Distributed-Systems-学习笔记/zookeeper-hierarchy.png">
+<meta property="og:updated_time" content="2020-12-30T08:53:50.632Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MIT 6.824: Distributed Systems 学习笔记">
+<meta name="twitter:description" content="ZookeeperZookeeper：一个提供“强”一致性的“分布式文件系统”。 什么是强一致性 Strong consistency ？Guarantee : Get the most recent my own and others’ write. 确保 Get the most recent my own and others’ write &amp;gt; 确保 Get the most rece">
+<meta name="twitter:image" content="http://yoursite.com/2020/12/28/MIT-6-824-Distributed-Systems-学习笔记/linearizable.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/12/28/MIT-6-824-Distributed-Systems-学习笔记/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>MIT 6.824: Distributed Systems 学习笔记 | The next stop - Antarctica</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/28/MIT-6-824-Distributed-Systems-学习笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MIT 6.824: Distributed Systems 学习笔记
+        </h1>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-30 16:53:50" itemprop="dateModified" datetime="2020-12-30T16:53:50+08:00">2020-12-30</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Zookeeper"><a href="#Zookeeper" class="headerlink" title="Zookeeper"></a>Zookeeper</h2><p>Zookeeper：一个提供“强”一致性的“分布式文件系统”。</p>
+<h3 id="什么是强一致性-Strong-consistency-？"><a href="#什么是强一致性-Strong-consistency-？" class="headerlink" title="什么是强一致性 Strong consistency ？"></a>什么是强一致性 Strong consistency ？</h3><p><strong>Guarantee : Get the most recent my own and others’ write.</strong></p>
+<p><strong>确保 Get the most recent my own and others’ write</strong> &gt; <strong>确保 Get the most recent my own write</strong> &gt; <strong>不确保 Get the most recent my own write</strong></p>
+<a id="more"></a>
+<h3 id="理解线性一致性"><a href="#理解线性一致性" class="headerlink" title="理解线性一致性"></a>理解线性一致性</h3><p><img src="/2020/12/28/MIT-6-824-Distributed-Systems-学习笔记/linearizable.png" alt="linearizable"></p>
+<p>上图中的 “history” 是可线性化的，所谓 history 是我们对于系统的观察，请求什么时候开始，请求什么时候返回，一个写请求写的是什么值，一个读请求读到的是什么值，history 是我们可以通过观察知道的，根据 history，我们可以猜测出一个合理的读写发生时刻序列，也就是图中的叉，如果能做到这一点就说明该 history 是可线性化的。具体系统是否提供的是线性一致性并不能确定。但是如果我们不能根据 history 猜测出一个合理的读写发生时刻序列，就说明系统提供的肯定不是线性一致性，如下图：</p>
+<p><img src="/2020/12/28/MIT-6-824-Distributed-Systems-学习笔记/non-linearizable.png" alt="non-linearizable"></p>
+<p>上述 history 出现的原因可能是这个分布式系统中不同 replica 看到的写顺序序列不一致。</p>
+<h3 id="线性一致性系统"><a href="#线性一致性系统" class="headerlink" title="线性一致性系统"></a>线性一致性系统</h3><p>对于一个提供线性一致性的系统来说是不可能出现以下情况的：</p>
+<p><img src="/2020/12/28/MIT-6-824-Distributed-Systems-学习笔记/non-linearizable-2.png" alt="non-linearizable-2"><br>换句话说，如果我们在观察一个系统时，观察到了上述的行为，那么说明该系统一定不是一个提供线性一致性的系统。</p>
+<p>A linearizable system <strong>确保 Get the most recent my own and others’ write</strong>。A linearizable system (a strongly consistent system) can not serve up stale data.<br>这是一个 client centric 的图，左竖线表示用户发出请求，右竖线表示用户收到来自 server 的确认说“写入已经完成”，可以看出，server 在什么样的时机向用户确认“写入已经完成”，影响着系统提供的一致性级别，如果是在所有节点都完成写入后才向用户确认“写入已经完成”，才向外提供新版本的数据（在此之前所有节点向外提供的都是旧版本的数据），则提供的是强一致性。如果像 Redis 是 master 写入后，不管是否完成了主从之间的 sync，就向用户确认“写入已经完成”， replica 甚至在 master 向用户确认完“写入已经完成”后依然向外提供的是旧版本的数据，则提供的是最终一致性。（NOTE：虽然可以使用 WAIT 指令使得 Redis master 在收到 N 个 replica 的写入确认之后才向用户确认“写入已经完成”，但是这提供的也并不是强一致性，因为这个写可能会在故障转移时丢失。</p>
+<blockquote>
+<p>Synchronous replication of certain data can be requested by the <strong>clients</strong> using the WAIT command. However WAIT is only able to ensure that there are the specified number of acknowledged copies in the other Redis instances, it does not turn a set of Redis instances into a CP system with strong consistency: <strong>acknowledged writes can still be lost during a failover, depending on the exact configuration of the Redis persistence (依赖于 Redis 的持久化配置)</strong>.</p>
+</blockquote>
+<h3 id="线性一致性系统给我们带来的约束"><a href="#线性一致性系统给我们带来的约束" class="headerlink" title="线性一致性系统给我们带来的约束"></a>线性一致性系统给我们带来的约束</h3><p>Because there is no reason to believe that any one replica other than the leader is up to date. 这不是因为网络延迟（因为 ZAB 下它们是“同步”更新的），而是因为可能存在网络分区。</p>
+<p><img src="/2020/12/28/MIT-6-824-Distributed-Systems-学习笔记/partitioned.png" alt="partitioned"></p>
+<p>If we want to build a linearizable system, we can not play the game of sending read requests to replicas even if it seems attractive with respect to performance. <strong>linearizability forbids us from having replicas serve client even for the read requests.</strong><br><strong>这就导致了一个问题，more servers(replicas) -&gt; slower。</strong></p>
+<blockquote>
+<p>ZAB is as much the same as raft. It first sends out a log entry and when the leader gets a majority of positive replies, the leader sends out commit command. 如果 commit command 由于网络的原因丢失了，就会造成不一致了，这就是一个为什么 replica 不能用于 serve client 的原因。</p>
+</blockquote>
+<p>但是 zookeeper 确实允许让 replica serve read requests ，增加机器其性能也会 dramatically 地提升。zookeeper 是怎么做到的？答案是 zookeeper 不是 linearizable 的，也就是有可能 serve up stale data 的。</p>
+<p>zookeeper does have two main guarantees:</p>
+<ol>
+<li><p>Writes to ZooKeeper are linearizable</p>
+<p>ZooKeeper guarantees linearizable writes, stated in the paper as:</p>
+<blockquote>
+<p>All requests that update the state of ZooKeeper are serializable and respect precedence.<br><strong>all write requests from all clients.</strong> 注意和下面的 <strong>all read and write requests from a single client</strong> 的区别。<br>This means that if Client A writes a value for key X, any subsequent updates to that key by another client will happen after A’s write. The leader chooses an order for the writes, and that order is maintained on all the followers. 也就是说，所有客户端看到的写操作序列是一致的（这个写操作序列是由 leader 的运行过程确定下来的），这一点看起来很自然，但是对于 zookeeper 本身这么一个分布式系统来说却是难能可贵的。</p>
+</blockquote>
+</li>
+<li><p>Client Requests are FIFO<br>A client is any user of the ZooKeeper service. The guarantee for clients is stated as:</p>
+<blockquote>
+<p>All requests from a given client are executed in the order that they were sent by the client.</p>
+</blockquote>
+<p>In other words, each client can specify an order for its operations (reads and writes), and that order will be maintained by ZooKeeper when executing.<br>根据某个客户端指定的顺序执行读写操作，即使是异步不停地发起读写操作，虽然这些读写操作到达 leader 时的顺序并不一定是发出时的顺序，但是（maybe）由于 timestamp（1，2，3，4，…） 的存在，可以保证是 client specified order.</p>
+<p>读操作（即使跨 replica，switch replica (due to failure) during a series of reads）在 state machine 中或者说 state 转移轴上不会 move backward。这是通过 zxid 实现的，zxid 会随着 response 回到客户端，客户端在下次请求时会带上这个 zxid，告诉 replica（可能是另一个 replica），我上次看到的数据是 zxid 这条 log 对应的 state 下的数据。</p>
+<blockquote>
+<p>执行一条 log 就完成了一次 state 转移，一条 log 执行完就明确了一个状态，所以可以说一条 log 就对应了一个状态，这条 log 对应的 zxid 也就明确了 state。</p>
+</blockquote>
+<p>如果这个新的 replica out of date 太过严重，这个 replica 需要等待直到达到了这个 zxid，也就是状态成功转移到了 zxid 指定的状态，然后就可以给客户端返回更新的或者 zxid 状态下的数据了。具体实现时可能是 delay responding 或者 reject，但是 eventually this replica will catch up。</p>
+<p>同一客户端发出了一次写操作，然后又发出了一条读操作，写操作需要时间才能最终完成 commit，这条读操作需要 stall 直到写操作 committed。例子就是如果一个客户端（异步）写了 x=7，但是（异步）读到了 stale x = 42，that’s just bizarre。实现（也许）是，client 发送读请求时，会说 the last time I sent my write to leader with zxid，replica 如果没有到达 zxid，则会 stall 直到达到了这个 zxid。</p>
+<p>zookeeper 并不保证 client 会看到最新的数据，leader 也许 commit 到了 a majority of replicas，如果 client 正在通信的 replica 并不在 majority 中，这个 replica 也许并不具有最新的数据，That IS the way zookeeper works. It does NOT guarantee that we would see the latest data. 它确实确保了 read the most recent write，但是是 per-client 的。If <strong>I</strong> send a write, the system guarantees my read observes my write. 这一点看起来简单，但是在分布式环境下确是很难能可贵的。If <strong>I</strong> send a write, it’s not guaranteed that you would read the most recent my write. 这是支持 replica serve up read requests （get speedup reads proportional to the number of replicas）所必须付出的代价。</p>
+</li>
+</ol>
+<p>These guarantees combined can be used to implement many useful distributed system primitives despite the weaker consistency guarantee. <strong>Note that ZooKeeper does provide optional support for linearizable reads which comes with a performance cost.</strong></p>
+<h3 id="ZooKeeper-Overview"><a href="#ZooKeeper-Overview" class="headerlink" title="ZooKeeper Overview"></a>ZooKeeper Overview</h3><p>ZooKeeper is a service for coordinating the processes of distributed applications. Coordination can be in the form of:</p>
+<ul>
+<li>Group membership: Ensuring that members of a group know about all the other members of that group.</li>
+<li>Configuration: Keeping track of the operational parameters needed by the nodes in a cluster. Configuration items could include database server URLs for different environments, security settings, etc.</li>
+<li>Leader Election: Like Raft, ZooKeeper can also be used to coordinate the election of a leader among a set of nodes.</li>
+</ul>
+<h4 id="ZooKeeper-can-scale-linearly"><a href="#ZooKeeper-can-scale-linearly" class="headerlink" title="ZooKeeper can scale linearly"></a>ZooKeeper can scale linearly</h4><p>Let’s consider the distributed key-value store shown below which makes use of a Raft module in each replica. As discussed in the previous lecture, all the writes in Raft must go through a leader. To guarantee a linearizable history, all reads must go through the leader as well. One reason why reads cannot be sent to followers is that a replica may not be in the majority needed by Raft, and so may return stale value which violates linearizability.</p>
+<p>Sample Key-Value store using Raft for replication<br><img src="/2020/12/28/MIT-6-824-Distributed-Systems-学习笔记/raft-application.png" alt="Sample Key-Value store using Raft for replication"></p>
+<p>If we added 2x more replicas to this setup, is there a chance that we could get 2x better performance of reads and writes?</p>
+<p>The simple answer is: it depends. In a Raft based system like in figure above, adding more servers will likely degrade the performance of the system. This is because all the reads must still go through the leader, and the leader now has to store more information about the new servers.</p>
+<p>ZooKeeper, on the other hand, allows us to scale the performance of our system linearly by adding more servers. It does this by relaxing the definition of correctness and providing weaker guarantees for clients. Reads can be served from any replica but writes are still sent to a leader. While this has the downside that reads may return stale data, it greatly improves the performance of reads in the system. <strong>ZooKeeper is a system designed for read-heavy workloads, and so the trade-off that leads to better read performance is worth it.</strong></p>
+<h3 id="ZooKeeper-as-a-service"><a href="#ZooKeeper-as-a-service" class="headerlink" title="ZooKeeper as a service"></a>ZooKeeper as a service</h3><p>ZooKeeper is a good example of how the coordination of distributed systems can be handled by a stand-alone service. It does this by exposing an API that application developers can use to implement specific primitives.</p>
+<p>The ZooKeeper service is made up of a cluster of nodes that use replication for better fault tolerance and performance. Clients communicate with ZooKeeper through a client API contained in the client library. The client library also handles the network connections between ZooKeeper servers and the client. Some systems covered in the previous lectures where ZooKeeper could be used are:</p>
+<ul>
+<li>VMware FT’s Test-and-Set server: This test-and-set server needs to be fault-tolerant. ZooKeeper is a fault tolerant service that allows to implement primitives like test-and-set operations.</li>
+<li>GFS: GFS (pre-Colossus) made use of a <strong>single</strong> master to keep track of the metadata related to the chunks in the system. ZooKeeper could have played this role and maybe even improved performance since all the replicas of the master would have been able to serve reads.</li>
+<li>In MapReduce, ZooKeeper can be used to keep track of information like who the current master is, the list of workers, what jobs are assigned to what workers, the status of tasks, etc.</li>
+</ul>
+<h3 id="Data-Model"><a href="#Data-Model" class="headerlink" title="Data Model"></a>Data Model</h3><p>ZooKeeper provides a client API to manipulate a set of wait-free data objects known as znodes. Znodes are organized in a hierarchical form similar to file systems, and we can refer to a given znode using the standard UNIX notation for file systems. For example, we can use /A/B/C to refer to znode C which has znode B as its parent, where B has znode A as its parent.</p>
+<p>A client can create two types of znodes:</p>
+<ul>
+<li>Regular: Regular znodes are created and deleted explicitly.</li>
+<li>Ephemeral: Ephemeral znodes can either be deleted explicitly or are automatically removed by the system when the session that created them is terminated.</li>
+</ul>
+<p>In addition, a client can set a sequential flag when creating a new znode. When this flag is set, the znode’s name is appended with the value of a monotonically increasing counter. For example, If z is the new znode and p is the parent znode’s name, then the sequence value of z will be greater than that of any other sequential child znode of p created before z.</p>
+<p>Illustration of ZooKeeper’s hierarchical name space<br><img src="/2020/12/28/MIT-6-824-Distributed-Systems-学习笔记/zookeeper-hierarchy.png" alt="Illustration of ZooKeeper&#39;s hierarchical name space"></p>
+<h4 id="Znodes-map-to-client-abstractions"><a href="#Znodes-map-to-client-abstractions" class="headerlink" title="Znodes map to client abstractions"></a>Znodes map to client abstractions</h4><p>Znodes of either type can store data but only regular znodes can have children. Znodes are not designed for general data storage but are instead to use represent abstractions in a client’s application. For example, the figure above has two subtrees for Application 1 and Application 2. Application 1 also has a subtree that implements a group membership protocol. The client processes p1-pn each create a znode pi under /app1. In this example, the znodes are used to represent the processes for an application, and a process can be aware of its group members by reading from the /app1 subtree.</p>
+<h4 id="Znodes-can-also-store-specific-metadata"><a href="#Znodes-can-also-store-specific-metadata" class="headerlink" title="Znodes can also store specific metadata"></a>Znodes can also store specific metadata</h4><p>Note that although znodes are not designed for general data storage, they allow clients to store specific metadata or configuration. For example, it is useful for a new server in a leader-based system to learn about which other server is the current leader. To achieve this, the current leader can be configured to write this information in a known znode space. Any new servers can then read from that znode space.</p>
+<p>There is also some metadata associated with znodes by default like timestamps and version counters, with which clients can execute conditional updates based on the version of the znode.</p>
+<h3 id="Client-API"><a href="#Client-API" class="headerlink" title="Client API"></a>Client API</h3><p>The ZooKeeper client API exposes a number of methods. Here are a few of them:</p>
+<ul>
+<li><code>create(path, data, flags)</code>: Creates a znode with pathname path, stores data[] in it, and<br>returns the name of the new znode. flags enables a client to select the type of znode: regular, ephemeral, and set the sequential flag;</li>
+<li><code>delete(path, version)</code>: Deletes the znode path if that znode is at the expected version;</li>
+<li><code>exists(path, watch)</code>: Returns true if the znode with path name path exists, and returns false otherwise. The watch flag enables a client to set a watch on the znode;</li>
+<li><code>getData(path, watch)</code>: Returns the data and meta-data, such as version information, associated with the znode. The watch flag works in the same way as it does for exists(), except that ZooKeeper does not set the watch if the znode does not exist;</li>
+<li><code>setData(path, data, version)</code>: Writes data[] to znode path if the version number is the current version of the znode;</li>
+<li><code>getChildren(path, watch)</code>: Returns the set of names of the children of a znode;</li>
+<li><code>sync(path)</code>: Waits for all updates pending at the start of the operation to propagate to the server that the client is connected to.</li>
+</ul>
+<p>Note the following about the client API:</p>
+<ul>
+<li>When clients connect to ZooKeeper, they establish a session. <strong>It is through this session that ZooKeeper can identify clients in fulfilling the FIFO order guarantee.</strong></li>
+<li>The <code>sync</code> method can be used to ensure that the read for a znode is linearizable, though it comes at a performance cost. It forces a server to apply all its pending write requests before processing a read.</li>
+<li>All the methods have both a synchronous and asynchronous version available through the API.</li>
+<li>The update methods(<code>delete</code> and <code>setData</code>) take an expected version number. If this differs from the actual version number of the znode, the operation will fail.</li>
+<li>When the watch parameter in the read methods (<code>getData</code> and <code>getChildren</code>) is set, the operation will complete as normal except that the server promises that it will notify the client when the returned information changes. This is another optimization made in ZooKeeper to prevent a client from continuously having to poll for the latest information.</li>
+</ul>
+<h3 id="Implementing-primitives-using-ZooKeeper"><a href="#Implementing-primitives-using-ZooKeeper" class="headerlink" title="Implementing primitives using ZooKeeper"></a>Implementing primitives using ZooKeeper</h3><h4 id="Using-ZooKeeper-for-Configuration-Management"><a href="#Using-ZooKeeper-for-Configuration-Management" class="headerlink" title="Using ZooKeeper for Configuration Management"></a>Using ZooKeeper for Configuration Management</h4><p>要求 atomically 地修改，clients 看不见 partially modified configure.<br>To implement dynamic configuration management with ZooKeeper, we can store configuration in a znode, zc. When a process is started, it starts up with the full pathname of zc. The process can get its required configuration by reading zc and setting the watch flag to true. It will get notified whenever the configuration changes, and can then read the new configuration with the watch flag set to true again.</p>
+<h4 id="Using-ZooKeeper-for-Rendezvous"><a href="#Using-ZooKeeper-for-Rendezvous" class="headerlink" title="Using ZooKeeper for Rendezvous"></a>Using ZooKeeper for Rendezvous</h4><p>Let’s consider a scenario where a client wants to start a master process and many worker processes, with the job of starting the processes being handled by a scheduler. The worker processes will need information about the address and port of the master to connect to it. However, because a scheduler starts the processes, the client will not know the master’s port and address ahead of time for it to give to the workers.</p>
+<p>This can be handled by the client creating a rendezvous znode, zr, and passing the full pathname of zr as a startup parameter to both the master and worker processes. When the master starts up, it can fill in zr with information about its address and port. The workers can read from the znode when they start up and set the watch flag set to true. This way, workers will get notified when zr is updated and can use the information there.</p>
+<h4 id="Using-ZooKeeper-for-Group-Membership"><a href="#Using-ZooKeeper-for-Group-Membership" class="headerlink" title="Using ZooKeeper for Group Membership"></a>Using ZooKeeper for Group Membership</h4><p>As described in an earlier section, we can use ZooKeeper to implement group membership by creating a znode zg to represent the group. Any process member of the group can create an ephemeral child znode with a unique name under zg. The znode representing a process will be automatically removed when the process fails or ends.</p>
+<p>A process can obtain other information about the other members of its group by listing the children under zg. It can then monitor changes in group membership by setting the watch flag to true.</p>
+<h3 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h3><p>The design of ZooKeeper is another great example of tailoring a system for a specific use case; in this example, strong consistency was relaxed to improve the performance of reads in read-mostly workloads. The results in the paper show that the throughput of ZooKeeper can scale linearly. ZooKeeper is also used in many distributed systems today.</p>
+<h2 id="GFS"><a href="#GFS" class="headerlink" title="GFS"></a>GFS</h2><h3 id="Big-storage-why-hard"><a href="#Big-storage-why-hard" class="headerlink" title="Big storage why hard?"></a>Big storage why hard?</h3><ol>
+<li>performance -&gt; sharding</li>
+<li>fault tolerance -&gt; replication (out of sync, inconsistency, pay for consistency with low performance)</li>
+</ol>
+<p>GFS built for big(MB,GB,PB, not 100B like bank balance) sequential(not random) access.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Distributed-Systems/" rel="tag"># Distributed Systems</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/12/25/Redis-Replication/" rel="prev" title="Redis Replication">
+      <i class="fa fa-chevron-left"></i> Redis Replication
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Zookeeper"><span class="nav-number">1.</span> <span class="nav-text">Zookeeper</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是强一致性-Strong-consistency-？"><span class="nav-number">1.1.</span> <span class="nav-text">什么是强一致性 Strong consistency ？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#理解线性一致性"><span class="nav-number">1.2.</span> <span class="nav-text">理解线性一致性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线性一致性系统"><span class="nav-number">1.3.</span> <span class="nav-text">线性一致性系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线性一致性系统给我们带来的约束"><span class="nav-number">1.4.</span> <span class="nav-text">线性一致性系统给我们带来的约束</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ZooKeeper-Overview"><span class="nav-number">1.5.</span> <span class="nav-text">ZooKeeper Overview</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ZooKeeper-can-scale-linearly"><span class="nav-number">1.5.1.</span> <span class="nav-text">ZooKeeper can scale linearly</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ZooKeeper-as-a-service"><span class="nav-number">1.6.</span> <span class="nav-text">ZooKeeper as a service</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Model"><span class="nav-number">1.7.</span> <span class="nav-text">Data Model</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Znodes-map-to-client-abstractions"><span class="nav-number">1.7.1.</span> <span class="nav-text">Znodes map to client abstractions</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Znodes-can-also-store-specific-metadata"><span class="nav-number">1.7.2.</span> <span class="nav-text">Znodes can also store specific metadata</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Client-API"><span class="nav-number">1.8.</span> <span class="nav-text">Client API</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Implementing-primitives-using-ZooKeeper"><span class="nav-number">1.9.</span> <span class="nav-text">Implementing primitives using ZooKeeper</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Using-ZooKeeper-for-Configuration-Management"><span class="nav-number">1.9.1.</span> <span class="nav-text">Using ZooKeeper for Configuration Management</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Using-ZooKeeper-for-Rendezvous"><span class="nav-number">1.9.2.</span> <span class="nav-text">Using ZooKeeper for Rendezvous</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Using-ZooKeeper-for-Group-Membership"><span class="nav-number">1.9.3.</span> <span class="nav-text">Using ZooKeeper for Group Membership</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Conclusion"><span class="nav-number">1.10.</span> <span class="nav-text">Conclusion</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GFS"><span class="nav-number">2.</span> <span class="nav-text">GFS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Big-storage-why-hard"><span class="nav-number">2.1.</span> <span class="nav-text">Big storage why hard?</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">104</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
