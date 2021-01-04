@@ -37,7 +37,7 @@
 <meta property="og:image" content="http://yoursite.com/2020/11/24/Linux-虚拟内存管理/共享内存的实现-1.png">
 <meta property="og:image" content="http://yoursite.com/2020/11/24/Linux-虚拟内存管理/共享内存的实现-2.png">
 <meta property="og:image" content="http://yoursite.com/2020/11/24/Linux-虚拟内存管理/进程地址空间.png">
-<meta property="og:updated_time" content="2020-12-04T05:53:35.024Z">
+<meta property="og:updated_time" content="2021-01-01T13:24:13.850Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Linux 虚拟内存管理">
 <meta name="twitter:description" content="为什么要用虚拟内存？Advantages">
@@ -194,7 +194,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-04 13:53:35" itemprop="dateModified" datetime="2020-12-04T13:53:35+08:00">2020-12-04</time>
+                <time title="修改时间：2021-01-01 21:24:13" itemprop="dateModified" datetime="2021-01-01T21:24:13+08:00">2021-01-01</time>
               </span>
 
           
@@ -288,7 +288,7 @@
 <li>Threads share a mapping</li>
 <li>Complex behavior with clone(2)</li>
 </ul>
-<p>Unlike kernel logical addresses, which use a fixed mapping between virtual and physical addresses, user space processes make full use of the MMU.</p>
+<p>Unlike kernel logical addresses, which use a fixed mapping between virtual and physical addresses, user space processes make full use of the MMU. 只有用户虚拟地址空间才会用到 MMU 和 TLB，内核虚拟地址空间和物理地址空间之间是固定的映射。</p>
 <ul>
 <li>Only the used portions of RAM are mapped</li>
 <li>Memory is not contiguous</li>
@@ -309,7 +309,6 @@
 <ul>
 <li>Simply map the same physical frame into two different processes.</li>
 <li>The virtual addresses need not be the same.</li>
-<li>If pointers to <strong>values inside a shared memory region</strong> are used, it might be important for them to have the same virtual addresses, though.</li>
 <li>The <code>mmap()</code> system call allows the user space process to request a specific virtual address to map the shared memory region. The kernel may not be able to grant a mapping at this address, causing mmap() to return failure.</li>
 </ul>
 <p><img src="/2020/11/24/Linux-虚拟内存管理/共享内存的实现-1.png" alt="共享内存的实现-1"><br><img src="/2020/11/24/Linux-虚拟内存管理/共享内存的实现-2.png" alt="共享内存的实现-2"></p>
@@ -320,7 +319,8 @@
 <li>The kernel will allocate a physical page frame and update the TLB with the new mapping.</li>
 <li>The kernel returns from the exception handler and the user space program can resume.</li>
 </ol>
-<h3 id="Page-Tables"><a href="#Page-Tables" class="headerlink" title="Page Tables"></a>Page Tables</h3><ul>
+<h3 id="Page-Tables"><a href="#Page-Tables" class="headerlink" title="Page Tables"></a>Page Tables</h3><p>Each entry in the page table holds a flag indicating whether the corresponding page is in real memory or not. If it is in real memory, the page table entry will contain the real memory address at which the page is stored.<br>Each process has its own page tables. A page N of a process P1 is probably not mapped to the same frame in physical memory than a page N of a process P2. As there is a specific mapping for each process, you have a specific page table for each process.<br>Paging supervisor, a part of the operating system creates and manages page tables. When all physical memory is already in use, the paging supervisor must free a page in primary storage to hold the swapped-in page. The supervisor uses one of a variety of page replacement algorithms such as least recently used to determine which page to free.</p>
+<ul>
 <li>The entries in the TLB are a limited resource. Far more mappings can be made than can exist in the TLB at one time.</li>
 <li>The kernel must keep track of all of the mappings all of the time.</li>
 <li>The kernel stores all this information in the page tables.</li>
@@ -434,14 +434,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">104</span>
+          <span class="site-state-item-count">106</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -468,7 +468,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -512,6 +512,26 @@
 
 
 
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
 
 
 

@@ -223,7 +223,7 @@
 <p>Note also that <code>event_base_loopexit(base,NULL)</code> and <code>event_base_loopbreak(base)</code> act differently when no event loop is running: loopexit schedules the next instance of the event loop to stop right after the next round of callbacks are run (as if it had been invoked with <code>EVLOOP_ONCE</code>) whereas loopbreak only stops a currently running loop, and has no effect if the event loop isn’t running.</p>
 <p>Both of these methods return 0 on success and -1 on failure.</p>
 <p>Example: Shut down immediately</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;event2/event.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Here's a callback function that calls loopbreak */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">cb</span><span class="params">(<span class="keyword">int</span> sock, <span class="keyword">short</span> what, <span class="keyword">void</span> *arg)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">event_base</span> *<span class="title">base</span> = <span class="title">arg</span>;</span></span><br><span class="line">    event_base_loopbreak(base);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main_loop</span><span class="params">(struct event_base *base, <span class="keyword">evutil_socket_t</span> watchdog_fd)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">event</span> *<span class="title">watchdog_event</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Construct a new event to trigger whenever there are any bytes to</span></span><br><span class="line"><span class="comment">       read from a watchdog socket.  When that happens, we'll call the</span></span><br><span class="line"><span class="comment">       cb function, which will make the loop exit immediately without</span></span><br><span class="line"><span class="comment">       running any other active events at all.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    watchdog_event = event_new(base, watchdog_fd, EV_READ, cb, base);</span><br><span class="line"></span><br><span class="line">    event_add(watchdog_event, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">    event_base_dispatch(base);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;event2/event.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Here's a callback function that calls loopbreak */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">cb</span><span class="params">(<span class="keyword">int</span> sock, short what, <span class="keyword">void</span> *arg)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">event_base</span> *<span class="title">base</span> = <span class="title">arg</span>;</span></span><br><span class="line">    event_base_loopbreak(base);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main_loop</span><span class="params">(struct event_base *base, <span class="keyword">evutil_socket_t</span> watchdog_fd)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">event</span> *<span class="title">watchdog_event</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Construct a new event to trigger whenever there are any bytes to</span></span><br><span class="line"><span class="comment">       read from a watchdog socket.  When that happens, we'll call the</span></span><br><span class="line"><span class="comment">       cb function, which will make the loop exit immediately without</span></span><br><span class="line"><span class="comment">       running any other active events at all.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    watchdog_event = event_new(base, watchdog_fd, EV_READ, cb, base);</span><br><span class="line"></span><br><span class="line">    event_add(watchdog_event, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">    event_base_dispatch(base);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>Example: Run an event loop for 10 seconds, then exit.</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;event2/event.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">run_base_with_ticks</span><span class="params">(struct event_base *base)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">timeval</span> <span class="title">ten_sec</span>;</span></span><br><span class="line"></span><br><span class="line">    ten_sec.tv_sec = <span class="number">10</span>;</span><br><span class="line">    ten_sec.tv_usec = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Now we run the event_base for a series of 10-second intervals, printing</span></span><br><span class="line"><span class="comment">    "Tick" after each. For a much better way to implement a 10-second</span></span><br><span class="line"><span class="comment">    timer, see the section below about persistent timer events. */</span></span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="comment">/* This schedules an exit ten seconds from now. */</span></span><br><span class="line">        event_base_loopexit(base, &amp;ten_sec);</span><br><span class="line"></span><br><span class="line">        event_base_dispatch(base);</span><br><span class="line">        <span class="built_in">puts</span>(<span class="string">"Tick"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>Sometimes you may want to tell whether your call to <code>event_base_dispatch()</code> or <code>event_base_loop()</code> exited normally, or because of a call to <code>event_base_loopexit()</code> or <code>event_base_break()</code>. You can use these functions to tell whether loopexit or break was called:</p>
@@ -361,14 +361,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">104</span>
+          <span class="site-state-item-count">106</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -395,7 +395,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -439,6 +439,26 @@
 
 
 
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
 
 
 

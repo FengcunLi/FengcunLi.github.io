@@ -219,21 +219,21 @@
 <p>请注意，以上是 <code>shared_ptr</code> 对象本身的线程安全级别，不是它管理的对象的线程安全级别。</p>
 <p>本文则具体分析一下为什么“因为 <code>shared_ptr</code> 有两个数据成员，读写操作不能原子化”使得多线程读写同一个 <code>shared_ptr</code> 对象需要加锁。本文以 <code>boost::shared_ptr</code> 为例，与 <code>std::shared_ptr</code> 可能略有区别。<br><a id="more"></a></p>
 <h3 id="shared-ptr-的数据结构"><a href="#shared-ptr-的数据结构" class="headerlink" title="shared_ptr 的数据结构"></a>shared_ptr 的数据结构</h3><p><code>shared_ptr</code> 是引用计数型（reference counting）智能指针，几乎所有的实现都采用在堆（heap）上放个计数值（count）的办法。具体来说，<code>shared_ptr&lt;Foo&gt;</code> 包含两个成员，一个是指向 <code>Foo</code> 的指针 <code>ptr</code>，另一个是 <code>ref_count</code> 指针，指向堆上的 <code>ref_count</code> 对象。<code>ref_count</code> 对象有多个成员，具体的数据结构如图所示，其中 <code>deleter</code> 和 <code>allocator</code> 是可选的。<br><img src="/2018/07/18/Shared-ptr-threadsafety/1.png" alt="data_structure"><br>为了简化并突出重点，后文只画出 <code>use_count</code> 的值，<code>shared_ptr&lt;Foo&gt; x(new Foo);</code> 对应的内存数据结构:<br><img src="/2018/07/18/Shared-ptr-threadsafety/2.png" alt="data_structure"><br>如果再执行 <code>shared_ptr&lt;Foo&gt; y = x;</code> 那么对应的数据结构如下:<br><img src="/2018/07/18/Shared-ptr-threadsafety/3.png" alt="data_structure"><br>但是 <code>y=x</code> 涉及两个成员的复制，这两步拷贝不会同时（原子）发生。<br>中间步骤 1，复制 ptr 指针：<br><img src="/2018/07/18/Shared-ptr-threadsafety/4.png" alt="data_structure"><br>中间步骤 2，复制 ref_count 指针，导致引用计数加 1：<br><img src="/2018/07/18/Shared-ptr-threadsafety/5.png" alt="data_structure"><br>步骤1和步骤2的先后顺序跟实现相关（因此步骤 2 里没有画出 y.ptr 的指向），我见过的都是先1后2。既然 <code>y=x</code> 有两个步骤，如果没有 mutex 保护，那么在多线程里就有 race condition。</p>
-<h3 id="多线程无保护读写-shared-ptr-可能出现的-race-condition"><a href="#多线程无保护读写-shared-ptr-可能出现的-race-condition" class="headerlink" title="多线程无保护读写 shared_ptr 可能出现的 race condition"></a>多线程无保护读写 shared_ptr 可能出现的 race condition</h3><p>考虑一个简单的场景，有 3 个 <code>shared_ptr&lt;Foo&gt;</code> 对象 <code>x</code>、<code>g</code>、<code>n</code>：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">shared_ptr</span>&lt;Foo&gt; g(<span class="keyword">new</span> Foo); <span class="comment">// 线程之间共享的 shared_ptr</span></span><br><span class="line"><span class="built_in">shared_ptr</span>&lt;Foo&gt; x; <span class="comment">// 线程 A 的局部变量</span></span><br><span class="line"><span class="built_in">shared_ptr</span>&lt;Foo&gt; n(<span class="keyword">new</span> Foo); <span class="comment">// 线程 B 的局部变量</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="多线程无保护读写-shared-ptr-可能出现的-race-condition"><a href="#多线程无保护读写-shared-ptr-可能出现的-race-condition" class="headerlink" title="多线程无保护读写 shared_ptr 可能出现的 race condition"></a>多线程无保护读写 shared_ptr 可能出现的 race condition</h3><p>考虑一个简单的场景，有 3 个 <code>shared_ptr&lt;Foo&gt;</code> 对象 <code>x</code>、<code>g</code>、<code>n</code>：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">shared_ptr</span>&lt;Foo&gt; <span class="title">g</span><span class="params">(<span class="keyword">new</span> Foo)</span></span>; <span class="comment">// 线程之间共享的 shared_ptr</span></span><br><span class="line"><span class="built_in">shared_ptr</span>&lt;Foo&gt; x; <span class="comment">// 线程 A 的局部变量</span></span><br><span class="line"><span class="function"><span class="built_in">shared_ptr</span>&lt;Foo&gt; <span class="title">n</span><span class="params">(<span class="keyword">new</span> Foo)</span></span>; <span class="comment">// 线程 B 的局部变量</span></span><br></pre></td></tr></table></figure></p>
 <p>一开始，各安其事。<br><img src="/2018/07/18/Shared-ptr-threadsafety/6.png" alt="data_structure"><br>线程 A 执行 x = g; （即 read g），以下完成了步骤 1，还没来及执行步骤 2。这时切换到了 B 线程。<br><img src="/2018/07/18/Shared-ptr-threadsafety/7.png" alt="data_structure"><br>同时线程 B 执行 g = n; （即 write g），两个步骤一起完成了。<br>先是步骤 1：<br><img src="/2018/07/18/Shared-ptr-threadsafety/8.png" alt="data_structure"><br>再是步骤 2：<br><img src="/2018/07/18/Shared-ptr-threadsafety/9.png" alt="data_structure"><br>这是 Foo1 对象已经销毁，x.ptr 成了空悬指针！<br>最后回到线程 A，完成步骤 2：<br><img src="/2018/07/18/Shared-ptr-threadsafety/10.png" alt="data_structure"><br>多线程无保护地读写 <code>g</code>，造成了“<code>x</code> 是空悬指针”的后果。这正是多线程读写同一个 <code>shared_ptr</code> 必须加锁的原因。</p>
 <h3 id="为什么图-1-中的-ref-count-也有指向-Foo-的指针？"><a href="#为什么图-1-中的-ref-count-也有指向-Foo-的指针？" class="headerlink" title="为什么图 1 中的 ref_count 也有指向 Foo 的指针？"></a>为什么图 1 中的 ref_count 也有指向 Foo 的指针？</h3><p><code>shared_ptr&lt;Foo&gt; sp(new Foo)</code> 在构造 <code>sp</code> 的时候捕获了 <code>Foo</code> 的析构行为。实际上 <code>shared_ptr.ptr</code> 和 <code>ref_count.ptr</code> 可以是不同的类型（只要它们之间存在隐式转换），这是 <code>shared_ptr</code> 的一大功能。分 3 点来说：</p>
 <ul>
-<li>无需虚析构；假设 Bar 是 Foo 的基类，但是 Bar 和 Foo 都没有虚析构。<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">shared_ptr</span>&lt;Foo&gt; sp1(<span class="keyword">new</span> Foo); <span class="comment">// ref_count.ptr 的类型是 Foo*</span></span><br><span class="line"><span class="built_in">shared_ptr</span>&lt;Bar&gt; sp2 = sp1; <span class="comment">// 可以赋值，自动向上转型（up-cast）</span></span><br><span class="line">sp1.reset(); <span class="comment">// 这时 Foo 对象的引用计数降为 1</span></span><br></pre></td></tr></table></figure>
+<li>无需虚析构；假设 Bar 是 Foo 的基类，但是 Bar 和 Foo 都没有虚析构。<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">shared_ptr</span>&lt;Foo&gt; <span class="title">sp1</span><span class="params">(<span class="keyword">new</span> Foo)</span></span>; <span class="comment">// ref_count.ptr 的类型是 Foo*</span></span><br><span class="line"><span class="built_in">shared_ptr</span>&lt;Bar&gt; sp2 = sp1; <span class="comment">// 可以赋值，自动向上转型（up-cast）</span></span><br><span class="line">sp1.reset(); <span class="comment">// 这时 Foo 对象的引用计数降为 1</span></span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <p>此后 <code>sp2</code> 仍然能安全地管理 <code>Foo</code> 对象的生命期，并安全完整地释放 <code>Foo</code>，因为其 <code>ref_count</code> 记住了 <code>Foo</code> 的实际类型。</p>
 <ul>
-<li><code>shared_ptr&lt;void&gt;</code> 可以指向并安全地管理（析构或防止析构）任何对象；<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">shared_ptr</span>&lt;Foo&gt; sp1(<span class="keyword">new</span> Foo); <span class="comment">// ref_count.ptr 的类型是 Foo*</span></span><br><span class="line"><span class="built_in">shared_ptr</span>&lt;<span class="keyword">void</span>&gt; sp2 = sp1; <span class="comment">// 可以赋值，Foo* 向 void* 自动转型</span></span><br><span class="line">sp1.reset(); <span class="comment">// 这时 Foo 对象的引用计数降为 1</span></span><br></pre></td></tr></table></figure>
+<li><code>shared_ptr&lt;void&gt;</code> 可以指向并安全地管理（析构或防止析构）任何对象；<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">shared_ptr</span>&lt;Foo&gt; <span class="title">sp1</span><span class="params">(<span class="keyword">new</span> Foo)</span></span>; <span class="comment">// ref_count.ptr 的类型是 Foo*</span></span><br><span class="line"><span class="built_in">shared_ptr</span>&lt;<span class="keyword">void</span>&gt; sp2 = sp1; <span class="comment">// 可以赋值，Foo* 向 void* 自动转型</span></span><br><span class="line">sp1.reset(); <span class="comment">// 这时 Foo 对象的引用计数降为 1</span></span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <p>此后 <code>sp2</code> 仍然能安全地管理 <code>Foo</code> 对象的生命期，并安全完整地释放 <code>Foo</code>，不会出现 <code>delete void*</code> 的情况，因为 <code>delete</code> 的是 <code>ref_count.ptr</code>，不是 <code>sp2.ptr</code>。</p>
 <ul>
-<li>多继承。假设 <code>Bar</code> 是 <code>Foo</code> 的多个基类之一，那么：<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">shared_ptr</span>&lt;Foo&gt; sp1(<span class="keyword">new</span> Foo);</span><br><span class="line"><span class="built_in">shared_ptr</span>&lt;Bar&gt; sp2 = sp1; <span class="comment">// 这时 sp1.ptr 和 sp2.ptr 可能指向不同的地址，因为 Bar subobject 在 Foo object 中的 offset 可能不为0。</span></span><br><span class="line">sp1.reset(); <span class="comment">// 此时 Foo 对象的引用计数降为 1</span></span><br></pre></td></tr></table></figure>
+<li>多继承。假设 <code>Bar</code> 是 <code>Foo</code> 的多个基类之一，那么：<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">shared_ptr</span>&lt;Foo&gt; <span class="title">sp1</span><span class="params">(<span class="keyword">new</span> Foo)</span></span>;</span><br><span class="line"><span class="built_in">shared_ptr</span>&lt;Bar&gt; sp2 = sp1; <span class="comment">// 这时 sp1.ptr 和 sp2.ptr 可能指向不同的地址，因为 Bar subobject 在 Foo object 中的 offset 可能不为0。</span></span><br><span class="line">sp1.reset(); <span class="comment">// 此时 Foo 对象的引用计数降为 1</span></span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <p>但是 <code>sp2</code> 仍然能安全地管理 <code>Foo</code> 对象的生命期，并安全完整地释放 <code>Foo</code>，因为 delete 的不是 <code>Bar*</code>，而是原来的 <code>Foo*</code>。换句话说，<code>sp2.ptr</code> 和 <code>ref_count.ptr</code> 可能具有不同的值（当然它们的类型也不同）。</p>
@@ -337,14 +337,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">104</span>
+          <span class="site-state-item-count">106</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -371,7 +371,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -415,6 +415,26 @@
 
 
 
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
 
 
 

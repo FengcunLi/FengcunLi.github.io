@@ -156,6 +156,155 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/04/OAuth-2-0-and-OpenID-Connect/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/04/OAuth-2-0-and-OpenID-Connect/" class="post-title-link" itemprop="url">OAuth 2.0 and OpenID Connect</a>
+        </h2>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-04 23:12:04" itemprop="dateModified" datetime="2021-01-04T23:12:04+08:00">2021-01-04</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><a href="https://www.youtube.com/watch?v=996OiexHze0" target="_blank" rel="noopener">OAuth 2.0 and OpenID Connect (in plain English)</a></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/01/04/OAuth-2-0-and-OpenID-Connect/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/04/Kafka-A-Modern-Distributed-System/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/04/Kafka-A-Modern-Distributed-System/" class="post-title-link" itemprop="url">Kafka: A Modern Distributed System</a>
+        </h2>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-04 19:16:30" itemprop="dateModified" datetime="2021-01-04T19:16:30+08:00">2021-01-04</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Youtube-Kafka-A-Modern-Distributed-System"><a href="#Youtube-Kafka-A-Modern-Distributed-System" class="headerlink" title="Youtube - Kafka: A Modern Distributed System"></a><a href="https://www.youtube.com/watch?v=Ea3aoACnbEk" target="_blank" rel="noopener">Youtube - Kafka: A Modern Distributed System</a></h2><p>CDC(change data capture) is essentially a way to replicate data from one data source to another.</p>
+<p><a href="https://debezium.io/" target="_blank" rel="noopener">Debezium: Stream changes from your database</a> Debezium is an open source distributed platform for change data capture. Start it up, point it at your databases, and your apps can start responding to all of the inserts, updates, and deletes that other apps commit to your databases. Debezium is durable and fast, so your apps can respond quickly and never miss an event, even when things go wrong.</p>
+<p><img src="/2021/01/04/Kafka-A-Modern-Distributed-System/debezium.png" alt="debezium"><br><img src="/2021/01/04/Kafka-A-Modern-Distributed-System/oltp.png" alt="oltp"><br>Kafka is a system for managing and logging events. Someone thinks about it as a queue, which is terrible. It’s a distributed log system. 你可以认为它是一个支持 append 的 log file。</p>
+<p><img src="/2021/01/04/Kafka-A-Modern-Distributed-System/log.png" alt="log"></p>
+<h3 id="Sharded-amp-Replicated"><a href="#Sharded-amp-Replicated" class="headerlink" title="Sharded &amp; Replicated"></a>Sharded &amp; Replicated</h3><ul>
+<li>一个 topic 太大了，一个 broker (machine) 存不了，使用 consistent hash 进行 sharding。</li>
+<li>为了 redundancy （fault tolerance），进行 replication。</li>
+</ul>
+<ol>
+<li>Partitions are replicated</li>
+<li>Writes always go to the lead replica</li>
+<li>Followers ask the leader for new writes</li>
+<li>Reads always* go to the lead replica</li>
+<li>Producer acknowledgement is tunable. 客户端可以指定 what constitutes a successful write, is a trade off between durability and latency.<ul>
+<li>the leader write it to the disk, acknowledge the write is successful.</li>
+<li>the leader write it to the disk and all the followers write it to the disk, then acknowledge the write is successful.</li>
+</ul>
+</li>
+<li>Consumer only sees fully replicated data</li>
+</ol>
+<p><img src="/2021/01/04/Kafka-A-Modern-Distributed-System/replica-1.png" alt="replicas-1"><br><img src="/2021/01/04/Kafka-A-Modern-Distributed-System/replica-2.png" alt="replicas-2"></p>
+<h3 id="In-Sync-Replicas"><a href="#In-Sync-Replicas" class="headerlink" title="In-Sync Replicas"></a>In-Sync Replicas</h3><p>A replica is in-sync if it is not more than N messages or T seconds behind the leader. By default, a replica falls out of sync after ten seconds. Even a replica is in sync, it can still be behind.</p>
+<ul>
+<li>For each partition, ZK knows the leader, the epoch, and the ISR(In-Sync Replicas) list</li>
+<li>The High Water Mark is the highest replicated offset <strong>common</strong> to all replicas in the ISR list</li>
+<li>Messages are readable by consumers up to the high water mark. The contract is for a message to be readable it has to be fully replicated. The leader is not allowed to expose messages to a reader past the high water mark.</li>
+<li>The leader will <strong>always</strong> be ahead of its followers and the high water mark. In other words, the leader will <strong>always</strong> have stuff that its followers don’t have.</li>
+<li>Live followers who are eligible for leader election are those in-sync.</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/28/MIT-6-824-Distributed-Systems-学习笔记/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -373,7 +522,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-23 11:40:18" itemprop="dateModified" datetime="2020-12-23T11:40:18+08:00">2020-12-23</time>
+                <time title="修改时间：2021-01-04 21:57:24" itemprop="dateModified" datetime="2021-01-04T21:57:24+08:00">2021-01-04</time>
               </span>
 
           
@@ -387,8 +536,17 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="openssl-生成-SSL-证书的流程"><a href="#openssl-生成-SSL-证书的流程" class="headerlink" title="openssl 生成 SSL 证书的流程"></a>openssl 生成 SSL 证书的流程</h2><p><img src="/2020/12/21/SSL/SSL.png" alt="SSL"></p>
-<p>SSL 证书通过<br>在客户端/浏览器和 Web 服务器之间建立一条 SSL 安全通道（Secure socket layer(SSL),SSL 安全协议主要用来提供对用户和服务器的认证；对传送的数据进行加密；确保数据在传送中不被改变，保证数据的完整性。SSL 已建立到所有主要的浏览器和 WEB 服务器程序中）。</p>
+          <p><a href="https://www.youtube.com/watch?v=Rp3iZUvXWlM" target="_blank" rel="noopener">Youtube SSL/TLS - Cristina Formaini</a></p>
+<h2 id="openssl-生成-SSL-证书的流程"><a href="#openssl-生成-SSL-证书的流程" class="headerlink" title="openssl 生成 SSL 证书的流程"></a>openssl 生成 SSL 证书的流程</h2><p><img src="/2020/12/21/SSL/SSL.png" alt="SSL"></p>
+<p>SSL（Secure socket layer）在客户端/浏览器和 Web 服务器之间建立一条安全通道。</p>
+<p>SSL 安全协议主要用来</p>
+<ul>
+<li>对传送的数据进行加密；</li>
+<li>确保数据在传送中不被改变，保证数据的完整性；</li>
+<li>提供对用户和服务器的认证；</li>
+</ul>
+<p><img src="/2020/12/21/SSL/CIA.png" alt="CIA"></p>
+<p>SSL 已建立到所有主要的浏览器和 WEB 服务器程序中。</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/12/21/SSL/#more" rel="contents">
@@ -833,7 +991,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-14 16:24:22" itemprop="dateModified" datetime="2020-12-14T16:24:22+08:00">2020-12-14</time>
+                <time title="修改时间：2020-12-31 17:33:02" itemprop="dateModified" datetime="2020-12-31T17:33:02+08:00">2020-12-31</time>
               </span>
 
           
@@ -1694,7 +1852,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-04 13:53:35" itemprop="dateModified" datetime="2020-12-04T13:53:35+08:00">2020-12-04</time>
+                <time title="修改时间：2021-01-01 21:24:13" itemprop="dateModified" datetime="2021-01-01T21:24:13+08:00">2021-01-01</time>
               </span>
 
           
@@ -1886,7 +2044,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-25 18:42:40" itemprop="dateModified" datetime="2020-11-25T18:42:40+08:00">2020-11-25</time>
+                <time title="修改时间：2020-12-31 16:44:38" itemprop="dateModified" datetime="2020-12-31T16:44:38+08:00">2020-12-31</time>
               </span>
 
           
@@ -1987,134 +2145,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/16/TCP-连接状态-CLOSE-WAIT-和-TIME-WAIT/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Fengcun Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="The next stop - Antarctica">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/11/16/TCP-连接状态-CLOSE-WAIT-和-TIME-WAIT/" class="post-title-link" itemprop="url">TCP 连接状态 CLOSE_WAIT 和 TIME_WAIT</a>
-        </h2>
-
-        <div class="post-meta">
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-25 18:47:59" itemprop="dateModified" datetime="2020-11-25T18:47:59+08:00">2020-11-25</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="TCP-连接状态简介"><a href="#TCP-连接状态简介" class="headerlink" title="TCP 连接状态简介"></a>TCP 连接状态简介</h2>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/11/16/TCP-连接状态-CLOSE-WAIT-和-TIME-WAIT/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/16/Interprocess-communication-with-shared-memory/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Fengcun Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="The next stop - Antarctica">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/11/16/Interprocess-communication-with-shared-memory/" class="post-title-link" itemprop="url">Interprocess Communication With Shared Memory</a>
-        </h2>
-
-        <div class="post-meta">
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-25 18:48:51" itemprop="dateModified" datetime="2020-11-25T18:48:51+08:00">2020-11-25</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Based on appearance, a UNIX® application has sole command of the underlying host. It has ready and free access to the processor, its memory is sacrosanct, and attached devices serve the application’s every whim. But true to the maxim “Appearances can be deceiving,” such sovereignty is a clever illusion. A UNIX system runs any number of applications simultaneously, sharing its finite physical resources judiciously among all. Processor capacity is doled out in slices, application images are constantly shuffled in and out of real memory, and device access is driven by demand and policed by access rights. Although your shell prompt blinks attentively, a UNIX machine teems with activity.</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/11/16/Interprocess-communication-with-shared-memory/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2186,14 +2216,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">104</span>
+          <span class="site-state-item-count">106</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -2220,7 +2250,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -2264,6 +2294,26 @@
 
 
 
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
 
 
 

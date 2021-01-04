@@ -232,7 +232,7 @@
 <li><code>K.binary_crossentropy</code> 的默认设置是 <code>from_logits=False</code>,即该函数的默认设置假设输入是经过 <code>sigmoid</code> 激活之后的值，而不是仅经过卷积操作之后的<code>logits</code>，这是由其需要注意的一点，<code>K.binary_crossentropy</code> 的源码如下，如果<code>from_logits==True</code>，则直接调用 TensorFlow 的 <code>tf.nn.sigmoid_cross_entropy_with_logits</code>；如果<code>from_logits==False</code>，则首先将输入转换回 logits，再调用<code>tf.nn.sigmoid_cross_entropy_with_logits</code>。如果使用错误，就会 logits 就会被 <code>clip_by_value</code> 裁剪到（0，1）之间。</li>
 </ul>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">binary_crossentropy</span><span class="params">(target, output, from_logits=False)</span>:</span></span><br><span class="line">    <span class="string">"""Binary crossentropy between an output tensor and a target tensor.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    # Arguments</span></span><br><span class="line"><span class="string">        target: A tensor with the same shape as `output`.</span></span><br><span class="line"><span class="string">        output: A tensor.</span></span><br><span class="line"><span class="string">        from_logits: Whether `output` is expected to be a logits tensor.</span></span><br><span class="line"><span class="string">            By default, we consider that `output`</span></span><br><span class="line"><span class="string">            encodes a probability distribution.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    # Returns</span></span><br><span class="line"><span class="string">        A tensor.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="comment"># Note: tf.nn.sigmoid_cross_entropy_with_logits</span></span><br><span class="line">    <span class="comment"># expects logits, Keras expects probabilities.</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> from_logits:</span><br><span class="line">        <span class="comment"># transform back to logits</span></span><br><span class="line">        _epsilon = _to_tensor(epsilon(), output.dtype.base_dtype)</span><br><span class="line">        output = tf.clip_by_value(output, _epsilon, <span class="number">1</span> - _epsilon)</span><br><span class="line">        output = tf.log(output / (<span class="number">1</span> - output))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> tf.nn.sigmoid_cross_entropy_with_logits(labels=target,</span><br><span class="line">                                                   logits=output)</span><br></pre></td></tr></table></figure>
-<p>定义的损失函数如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">loss</span><span class="params">(y_true, y_pred)</span>:</span></span><br><span class="line">	<span class="string">"""</span></span><br><span class="line"><span class="string">	# Arguments</span></span><br><span class="line"><span class="string">		y_true: A tensor of shape (batch_size, W, H, K), K is the num of heatmaps.</span></span><br><span class="line"><span class="string">		y_pred: A tensor of shape (batch_size, N, W, H, K), N is the num of hourglass modules. </span></span><br><span class="line"><span class="string">	"""</span></span><br><span class="line">    losses = []</span><br><span class="line">    shapes = y_pred.get_shape().as_list()</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(shapes[<span class="number">1</span>]):</span><br><span class="line">        losses.append(K.reshape(</span><br><span class="line">            K.mean(K.binary_crossentropy(y_true, y_pred[:, i], from_logits=<span class="keyword">True</span>), axis=<span class="number">-1</span>), </span><br><span class="line">            (<span class="number">-1</span>, shapes[<span class="number">2</span>]*shapes[<span class="number">3</span>])))</span><br><span class="line">    </span><br><span class="line">    loss = K.mean(K.mean(K.stack(losses, axis=<span class="number">1</span>), axis=<span class="number">1</span>), axis=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> loss</span><br></pre></td></tr></table></figure></p>
+<p>定义的损失函数如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">loss</span><span class="params">(y_true, y_pred)</span>:</span></span><br><span class="line">	<span class="string">"""</span></span><br><span class="line"><span class="string">	# Arguments</span></span><br><span class="line"><span class="string">		y_true: A tensor of shape (batch_size, W, H, K), K is the num of heatmaps.</span></span><br><span class="line"><span class="string">		y_pred: A tensor of shape (batch_size, N, W, H, K), N is the num of hourglass modules. </span></span><br><span class="line"><span class="string">	"""</span></span><br><span class="line">    losses = []</span><br><span class="line">    shapes = y_pred.get_shape().as_list()</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(shapes[<span class="number">1</span>]):</span><br><span class="line">        losses.append(K.reshape(</span><br><span class="line">            K.mean(K.binary_crossentropy(y_true, y_pred[:, i], from_logits=<span class="literal">True</span>), axis=<span class="number">-1</span>), </span><br><span class="line">            (<span class="number">-1</span>, shapes[<span class="number">2</span>]*shapes[<span class="number">3</span>])))</span><br><span class="line">    </span><br><span class="line">    loss = K.mean(K.mean(K.stack(losses, axis=<span class="number">1</span>), axis=<span class="number">1</span>), axis=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> loss</span><br></pre></td></tr></table></figure></p>
 <h3 id="数据集及结果"><a href="#数据集及结果" class="headerlink" title="数据集及结果"></a>数据集及结果</h3><h5 id="发动机和对接环的定位（关键点检测任务）"><a href="#发动机和对接环的定位（关键点检测任务）" class="headerlink" title="发动机和对接环的定位（关键点检测任务）"></a>发动机和对接环的定位（关键点检测任务）</h5><h6 id="数据集"><a href="#数据集" class="headerlink" title="数据集"></a>数据集</h6><p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/satellite/satellite_key_pts.png" alt="satellite_key_pts"></p>
 <h6 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h6><p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/satellite/satellite_key_pts_ret.png" alt="satellite_key_pts_ret"></p>
 <h5 id="发动机和对接环的检测定位（类似图像分割任务）"><a href="#发动机和对接环的检测定位（类似图像分割任务）" class="headerlink" title="发动机和对接环的检测定位（类似图像分割任务）"></a>发动机和对接环的检测定位（类似图像分割任务）</h5><h6 id="数据集-1"><a href="#数据集-1" class="headerlink" title="数据集"></a>数据集</h6><p><img src="http://oytnj8g2y.bkt.clouddn.com/image/jpg/satellite/satellite.png" alt="satellite"></p>
@@ -338,14 +338,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">104</span>
+          <span class="site-state-item-count">106</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -372,7 +372,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -416,6 +416,26 @@
 
 
 
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
 
 
 

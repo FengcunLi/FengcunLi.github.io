@@ -179,10 +179,10 @@
       <div class="post-body">
           <div class="tag-cloud">
             <div class="tag-cloud-title">
-              目前共计 11 个标签
+              目前共计 12 个标签
             </div>
             <div class="tag-cloud-tags">
-              <a href="/tags/Algorithm/" style="font-size: 17.14px; color: #979797">Algorithm</a> <a href="/tags/C/" style="font-size: 30px; color: #111">C++</a> <a href="/tags/DL/" style="font-size: 27.43px; color: #2c2c2c">DL</a> <a href="/tags/Distributed-Systems/" style="font-size: 12px; color: #ccc">Distributed Systems</a> <a href="/tags/Linux/" style="font-size: 24.86px; color: #464646">Linux</a> <a href="/tags/MySQL/" style="font-size: 17.14px; color: #979797">MySQL</a> <a href="/tags/Python/" style="font-size: 12px; color: #ccc">Python</a> <a href="/tags/Redis/" style="font-size: 22.29px; color: #616161">Redis</a> <a href="/tags/TCP/" style="font-size: 19.71px; color: #7c7c7c">TCP</a> <a href="/tags/Tool/" style="font-size: 12px; color: #ccc">Tool</a> <a href="/tags/分布式/" style="font-size: 14.57px; color: #b1b1b1">分布式</a>
+              <a href="/tags/Algorithm/" style="font-size: 17.14px; color: #979797">Algorithm</a> <a href="/tags/C/" style="font-size: 30px; color: #111">C++</a> <a href="/tags/DL/" style="font-size: 27.43px; color: #2c2c2c">DL</a> <a href="/tags/Distributed-Systems/" style="font-size: 12px; color: #ccc">Distributed Systems</a> <a href="/tags/Kafka/" style="font-size: 12px; color: #ccc">Kafka</a> <a href="/tags/Linux/" style="font-size: 24.86px; color: #464646">Linux</a> <a href="/tags/MySQL/" style="font-size: 17.14px; color: #979797">MySQL</a> <a href="/tags/Python/" style="font-size: 12px; color: #ccc">Python</a> <a href="/tags/Redis/" style="font-size: 22.29px; color: #616161">Redis</a> <a href="/tags/TCP/" style="font-size: 19.71px; color: #7c7c7c">TCP</a> <a href="/tags/Tool/" style="font-size: 12px; color: #ccc">Tool</a> <a href="/tags/分布式/" style="font-size: 14.57px; color: #b1b1b1">分布式</a>
             </div>
           </div>
         
@@ -261,14 +261,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">104</span>
+          <span class="site-state-item-count">106</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -295,7 +295,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -339,6 +339,26 @@
 
 
 
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
 
 
 
