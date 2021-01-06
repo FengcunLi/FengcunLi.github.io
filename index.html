@@ -179,7 +179,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-04 23:12:04" itemprop="dateModified" datetime="2021-01-04T23:12:04+08:00">2021-01-04</time>
+                <time title="修改时间：2021-01-04 23:15:14" itemprop="dateModified" datetime="2021-01-04T23:15:14+08:00">2021-01-04</time>
               </span>
 
           
@@ -243,7 +243,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-04 19:16:30" itemprop="dateModified" datetime="2021-01-04T19:16:30+08:00">2021-01-04</time>
+                <time title="修改时间：2021-01-06 15:43:58" itemprop="dateModified" datetime="2021-01-06T15:43:58+08:00">2021-01-06</time>
               </span>
 
           
@@ -258,35 +258,14 @@
 
       
           <h2 id="Youtube-Kafka-A-Modern-Distributed-System"><a href="#Youtube-Kafka-A-Modern-Distributed-System" class="headerlink" title="Youtube - Kafka: A Modern Distributed System"></a><a href="https://www.youtube.com/watch?v=Ea3aoACnbEk" target="_blank" rel="noopener">Youtube - Kafka: A Modern Distributed System</a></h2><p>CDC(change data capture) is essentially a way to replicate data from one data source to another.</p>
-<p><a href="https://debezium.io/" target="_blank" rel="noopener">Debezium: Stream changes from your database</a> Debezium is an open source distributed platform for change data capture. Start it up, point it at your databases, and your apps can start responding to all of the inserts, updates, and deletes that other apps commit to your databases. Debezium is durable and fast, so your apps can respond quickly and never miss an event, even when things go wrong.</p>
-<p><img src="/2021/01/04/Kafka-A-Modern-Distributed-System/debezium.png" alt="debezium"><br><img src="/2021/01/04/Kafka-A-Modern-Distributed-System/oltp.png" alt="oltp"><br>Kafka is a system for managing and logging events. Someone thinks about it as a queue, which is terrible. It’s a distributed log system. 你可以认为它是一个支持 append 的 log file。</p>
-<p><img src="/2021/01/04/Kafka-A-Modern-Distributed-System/log.png" alt="log"></p>
-<h3 id="Sharded-amp-Replicated"><a href="#Sharded-amp-Replicated" class="headerlink" title="Sharded &amp; Replicated"></a>Sharded &amp; Replicated</h3><ul>
-<li>一个 topic 太大了，一个 broker (machine) 存不了，使用 consistent hash 进行 sharding。</li>
-<li>为了 redundancy （fault tolerance），进行 replication。</li>
-</ul>
-<ol>
-<li>Partitions are replicated</li>
-<li>Writes always go to the lead replica</li>
-<li>Followers ask the leader for new writes</li>
-<li>Reads always* go to the lead replica</li>
-<li>Producer acknowledgement is tunable. 客户端可以指定 what constitutes a successful write, is a trade off between durability and latency.<ul>
-<li>the leader write it to the disk, acknowledge the write is successful.</li>
-<li>the leader write it to the disk and all the followers write it to the disk, then acknowledge the write is successful.</li>
-</ul>
-</li>
-<li>Consumer only sees fully replicated data</li>
-</ol>
-<p><img src="/2021/01/04/Kafka-A-Modern-Distributed-System/replica-1.png" alt="replicas-1"><br><img src="/2021/01/04/Kafka-A-Modern-Distributed-System/replica-2.png" alt="replicas-2"></p>
-<h3 id="In-Sync-Replicas"><a href="#In-Sync-Replicas" class="headerlink" title="In-Sync Replicas"></a>In-Sync Replicas</h3><p>A replica is in-sync if it is not more than N messages or T seconds behind the leader. By default, a replica falls out of sync after ten seconds. Even a replica is in sync, it can still be behind.</p>
-<ul>
-<li>For each partition, ZK knows the leader, the epoch, and the ISR(In-Sync Replicas) list</li>
-<li>The High Water Mark is the highest replicated offset <strong>common</strong> to all replicas in the ISR list</li>
-<li>Messages are readable by consumers up to the high water mark. The contract is for a message to be readable it has to be fully replicated. The leader is not allowed to expose messages to a reader past the high water mark.</li>
-<li>The leader will <strong>always</strong> be ahead of its followers and the high water mark. In other words, the leader will <strong>always</strong> have stuff that its followers don’t have.</li>
-<li>Live followers who are eligible for leader election are those in-sync.</li>
-</ul>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/01/04/Kafka-A-Modern-Distributed-System/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -522,7 +501,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-04 21:57:24" itemprop="dateModified" datetime="2021-01-04T21:57:24+08:00">2021-01-04</time>
+                <time title="修改时间：2021-01-04 23:15:24" itemprop="dateModified" datetime="2021-01-04T23:15:24+08:00">2021-01-04</time>
               </span>
 
           
@@ -2223,7 +2202,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
