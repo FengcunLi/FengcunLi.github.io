@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Queries with LIMITs and OFFSETs are common in systems that do pagination, nearly always in conjunction with an ORDER BY clause.  Django Rest Framework 的 LimitOffsetPagination 的实现十分朴素，性能不是很好，因此使用 Defe">
+<meta name="keywords" content="MySQL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL 优化 Deferred Join">
+<meta property="og:url" content="http://yoursite.com/2021/01/26/MySQL-优化-Deferred-join/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="Queries with LIMITs and OFFSETs are common in systems that do pagination, nearly always in conjunction with an ORDER BY clause.  Django Rest Framework 的 LimitOffsetPagination 的实现十分朴素，性能不是很好，因此使用 Defe">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2021/01/26/MySQL-优化-Deferred-join/naive.png">
+<meta property="og:image" content="http://yoursite.com/2021/01/26/MySQL-优化-Deferred-join/optimized.png">
+<meta property="og:updated_time" content="2021-01-26T15:52:46.763Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MySQL 优化 Deferred Join">
+<meta name="twitter:description" content="Queries with LIMITs and OFFSETs are common in systems that do pagination, nearly always in conjunction with an ORDER BY clause.  Django Rest Framework 的 LimitOffsetPagination 的实现十分朴素，性能不是很好，因此使用 Defe">
+<meta name="twitter:image" content="http://yoursite.com/2021/01/26/MySQL-优化-Deferred-join/naive.png">
+
+<link rel="canonical" href="http://yoursite.com/2021/01/26/MySQL-优化-Deferred-join/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>MySQL 优化 Deferred Join | The next stop - Antarctica</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/26/MySQL-优化-Deferred-join/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MySQL 优化 Deferred Join
+        </h1>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-26 23:52:46" itemprop="dateModified" datetime="2021-01-26T23:52:46+08:00">2021-01-26</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>Queries with LIMITs and OFFSETs are common in systems that do pagination, nearly always in conjunction with an ORDER BY clause.</p>
+</blockquote>
+<p>Django Rest Framework 的 LimitOffsetPagination 的实现十分朴素，性能不是很好，因此使用 Deferred join 进行了优化，并通过实验进行了对比。</p>
+<h2 id="Setup"><a href="#Setup" class="headerlink" title="Setup"></a>Setup</h2><a id="more"></a>
+<h3 id="Model"><a href="#Model" class="headerlink" title="Model"></a>Model</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Thread</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    title = models.CharField(null=<span class="literal">False</span>, default=<span class="string">''</span>, max_length=<span class="number">255</span>)</span><br><span class="line">    content = models.TextField(null=<span class="literal">False</span>, default=<span class="string">''</span>)</span><br></pre></td></tr></table></figure>
+<p>查看 migration 文件:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">migrations.CreateModel(</span><br><span class="line">    name=<span class="string">'Thread'</span>,</span><br><span class="line">    fields=[</span><br><span class="line">        (<span class="string">'id'</span>, models.AutoField(auto_created=<span class="literal">True</span>, primary_key=<span class="literal">True</span>, serialize=<span class="literal">False</span>, verbose_name=<span class="string">'ID'</span>)),</span><br><span class="line">        (<span class="string">'title'</span>, models.CharField(default=<span class="string">''</span>, max_length=<span class="number">255</span>)),</span><br><span class="line">        (<span class="string">'content'</span>, models.TextField(default=<span class="string">''</span>)),</span><br><span class="line">    ],</span><br><span class="line">),</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; describe myapp_thread;</span><br><span class="line">+<span class="comment">---------+--------------+------+-----+---------+----------------+</span></span><br><span class="line">| Field   | Type         | Null | Key | Default | Extra          |</span><br><span class="line">+<span class="comment">---------+--------------+------+-----+---------+----------------+</span></span><br><span class="line">| id      | int(11)      | NO   | PRI | NULL    | auto_increment |</span><br><span class="line">| title   | varchar(255) | NO   |     | NULL    |                |</span><br><span class="line">| content | longtext     | NO   |     | NULL    |                |</span><br><span class="line">+<span class="comment">---------+--------------+------+-----+---------+----------------+</span></span><br><span class="line">3 rows in <span class="keyword">set</span> (<span class="number">0.01</span> sec)</span><br></pre></td></tr></table></figure>
+<h3 id="使用-faker-populate-数据库"><a href="#使用-faker-populate-数据库" class="headerlink" title="使用 faker populate 数据库"></a>使用 faker populate 数据库</h3><p>利用 Django command 实现:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">handle</span><span class="params">(self, *args, **options)</span>:</span></span><br><span class="line">    number_to_create: int = options[<span class="string">'threads'</span>]</span><br><span class="line">    fake: Generator = Factory.create()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> _ <span class="keyword">in</span> tqdm(range(number_to_create), desc=<span class="string">'Creating new threads'</span>):</span><br><span class="line">        title: str = fake.sentence(nb_words=<span class="number">20</span>)</span><br><span class="line"></span><br><span class="line">        paragraphs: List[str] = []</span><br><span class="line">        <span class="keyword">for</span> _ <span class="keyword">in</span> range(random.randint(<span class="number">1</span>, <span class="number">20</span>)):</span><br><span class="line">            sentences = fake.sentences(random.randint(<span class="number">1</span>, <span class="number">20</span>))</span><br><span class="line">            paragraph = <span class="string">' '</span>.join(sentences)</span><br><span class="line">            paragraphs.append(<span class="string">f'&lt;p&gt;<span class="subst">&#123;paragraph&#125;</span>&lt;/p&gt;'</span>)</span><br><span class="line"></span><br><span class="line">        content = <span class="string">''</span>.join(paragraphs)</span><br><span class="line"></span><br><span class="line">        Thread(</span><br><span class="line">            title=title,</span><br><span class="line">            content=content,</span><br><span class="line">        ).save()</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select count(*) from myapp_thread;</span><br><span class="line">+<span class="comment">----------+</span></span><br><span class="line">| count(*) |</span><br><span class="line">+<span class="comment">----------+</span></span><br><span class="line">|    60788 |</span><br><span class="line">+<span class="comment">----------+</span></span><br></pre></td></tr></table></figure>
+<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><p>对以下请求进行 profile:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost:8000/threads/?offset=60000</span><br></pre></td></tr></table></figure>
+<p>使用 Rest Framework 默认的 LimitOffsetPagination 进行分页:<br><img src="/2021/01/26/MySQL-优化-Deferred-join/naive.png" alt="naive"></p>
+<p>使用如下代码逻辑实现分页:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ThreadViewSet</span><span class="params">(ModelViewSet)</span>:</span></span><br><span class="line">    serializer_class = ThreadSerializer</span><br><span class="line">    queryset = Thread.objects.all()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">list</span><span class="params">(self, request, *args, **kwargs)</span>:</span></span><br><span class="line">        paginator = LimitOffsetPagination()</span><br><span class="line">        count = Thread.objects.count()</span><br><span class="line">        limit = paginator.get_limit(request)</span><br><span class="line">        offset = paginator.get_offset(request)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> count == <span class="number">0</span> <span class="keyword">or</span> offset &gt; count:</span><br><span class="line">            <span class="keyword">return</span> Response([])</span><br><span class="line"></span><br><span class="line">        queryset_ = Thread.objects.raw(<span class="string">f"""</span></span><br><span class="line"><span class="string">        select myapp_thread.id,</span></span><br><span class="line"><span class="string">            title,</span></span><br><span class="line"><span class="string">            content</span></span><br><span class="line"><span class="string">        from myapp_thread</span></span><br><span class="line"><span class="string">            inner join (</span></span><br><span class="line"><span class="string">                select id</span></span><br><span class="line"><span class="string">                from myapp_thread</span></span><br><span class="line"><span class="string">                limit <span class="subst">&#123;limit&#125;</span> offset <span class="subst">&#123;offset&#125;</span></span></span><br><span class="line"><span class="string">            ) as ids</span></span><br><span class="line"><span class="string">        where myapp_thread.id = ids.id;</span></span><br><span class="line"><span class="string">        """</span>)</span><br><span class="line"></span><br><span class="line">        serializer = self.get_serializer(queryset_, many=<span class="literal">True</span>)</span><br><span class="line">        <span class="keyword">return</span> Response(serializer.data)</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/01/26/MySQL-优化-Deferred-join/optimized.png" alt="optimized"></p>
+<h2 id="MySQL-explain"><a href="#MySQL-explain" class="headerlink" title="MySQL explain"></a>MySQL explain</h2><h3 id="LimitOffsetPagination"><a href="#LimitOffsetPagination" class="headerlink" title="LimitOffsetPagination"></a>LimitOffsetPagination</h3><p>全表扫描</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain SELECT `myapp_thread`.`id`,</span><br><span class="line">    -&gt;        `myapp_thread`.`title`,</span><br><span class="line">    -&gt;        `myapp_thread`.`content`</span><br><span class="line">    -&gt;   FROM `myapp_thread`</span><br><span class="line">    -&gt;  LIMIT 100</span><br><span class="line">    -&gt; OFFSET 60000\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">           id: 1</span><br><span class="line">  select_type: SIMPLE</span><br><span class="line">        table: myapp_thread</span><br><span class="line">   partitions: NULL</span><br><span class="line">         type: ALL</span><br><span class="line">possible_keys: NULL</span><br><span class="line">          key: NULL</span><br><span class="line">      key_len: NULL</span><br><span class="line">          ref: NULL</span><br><span class="line">         rows: 47884</span><br><span class="line">     filtered: 100.00</span><br><span class="line">        Extra: NULL</span><br><span class="line">1 row in <span class="keyword">set</span>, <span class="number">1</span> <span class="keyword">warning</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+<h3 id="Deferred-join"><a href="#Deferred-join" class="headerlink" title="Deferred join"></a>Deferred join</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select myapp_thread.id,</span><br><span class="line">    -&gt;        title,</span><br><span class="line">    -&gt;        content</span><br><span class="line">    -&gt;   from myapp_thread</span><br><span class="line">    -&gt;  inner join (</span><br><span class="line">    -&gt;         select id</span><br><span class="line">    -&gt;           from myapp_thread</span><br><span class="line">    -&gt;          limit 100</span><br><span class="line">    -&gt;         offset 60000</span><br><span class="line">    -&gt;        ) as ids</span><br><span class="line">    -&gt;  where myapp_thread.id = ids.id\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">           id: 1</span><br><span class="line">  select_type: PRIMARY</span><br><span class="line">        table: &lt;derived2&gt;</span><br><span class="line">   partitions: NULL</span><br><span class="line">         type: ALL</span><br><span class="line">possible_keys: NULL</span><br><span class="line">          key: NULL</span><br><span class="line">      key_len: NULL</span><br><span class="line">          ref: NULL</span><br><span class="line">         rows: 47884</span><br><span class="line">     filtered: 100.00</span><br><span class="line">        Extra: NULL</span><br><span class="line">*************************** 2. row ***************************</span><br><span class="line">           id: 1</span><br><span class="line">  select_type: PRIMARY</span><br><span class="line">        table: myapp_thread</span><br><span class="line">   partitions: NULL</span><br><span class="line">         type: eq_ref</span><br><span class="line">possible_keys: PRIMARY</span><br><span class="line">          key: PRIMARY</span><br><span class="line">      key_len: 4</span><br><span class="line">          ref: ids.id</span><br><span class="line">         rows: 1</span><br><span class="line">     filtered: 100.00</span><br><span class="line">        Extra: NULL</span><br><span class="line">*************************** 3. row ***************************</span><br><span class="line">           id: 2</span><br><span class="line">  select_type: DERIVED</span><br><span class="line">        table: myapp_thread</span><br><span class="line">   partitions: NULL</span><br><span class="line">         type: index</span><br><span class="line">possible_keys: NULL</span><br><span class="line">          key: PRIMARY</span><br><span class="line">      key_len: 4</span><br><span class="line">          ref: NULL</span><br><span class="line">         rows: 47884</span><br><span class="line">     filtered: 100.00</span><br><span class="line">        Extra: Using index</span><br><span class="line">3 rows in <span class="keyword">set</span>, <span class="number">1</span> <span class="keyword">warning</span> (<span class="number">0.01</span> sec)</span><br></pre></td></tr></table></figure>
+<h4 id="执行计划解释"><a href="#执行计划解释" class="headerlink" title="执行计划解释"></a>执行计划解释</h4><p>在表 myapp_thread 中使用覆盖索引（Extra: Using index）进行索引数据结构扫描 scan index（type: index），得到 temporary table （table: &lt;derived2>），以 derived2， myapp_thread 的顺序进行 nested loop join，即对 derived2（临时表无索引）进行全表扫描（type: ALL），由于是 join on 主键，主键具有 unique 属性，所以可以以 eq_ref 且值为 ids.id（ref: ids.id）的方式在 myapp_thread 表中唯一定位到一行（rows: 1）。</p>
+<h2 id="What-contributes-to-the-improvement"><a href="#What-contributes-to-the-improvement" class="headerlink" title="What contributes to the improvement"></a>What contributes to the improvement</h2><p>《High performance MySQL 3rd》</p>
+<h3 id="Optimizing-LIMIT-and-OFFSET"><a href="#Optimizing-LIMIT-and-OFFSET" class="headerlink" title="Optimizing LIMIT and OFFSET"></a>Optimizing LIMIT and OFFSET</h3><p>Queries with <code>LIMIT</code>s and <code>OFFSET</code>s are common in systems that do pagination, nearly always in conjunction with an <code>ORDER BY</code> clause. It’s helpful to have an index that supports the ordering; otherwise, the server has to do a lot of filesorts.</p>
+<p>A frequent problem is having a high value for the offset. If your query looks like <code>LIMIT 10000, 20</code>, it is generating 10,020 rows and throwing away the first 10,000 of them, which is very expensive. Assuming all pages are accessed with equal frequency, such queries scan half the table on average. To optimize them, you can either limit how many pages are permitted in a pagination view, or try to make the high offsets more efficient.</p>
+<p>One simple technique to improve efficiency is to do the offset on a covering index, rather than the full rows. You can then join the result to the full row and retrieve the additional columns you need. This can be much more efficient. Consider the following query:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> film_id, description <span class="keyword">FROM</span> sakila.film <span class="keyword">ORDER</span> <span class="keyword">BY</span> title <span class="keyword">LIMIT</span> <span class="number">50</span>, <span class="number">5</span>;</span><br></pre></td></tr></table></figure>
+<p>If the table is very large, this query is better written as follows:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> film.film_id,</span><br><span class="line">    film.description</span><br><span class="line"><span class="keyword">FROM</span> sakila.film</span><br><span class="line">    <span class="keyword">INNER</span> <span class="keyword">JOIN</span> (</span><br><span class="line">        <span class="keyword">SELECT</span> film_id</span><br><span class="line">        <span class="keyword">FROM</span> sakila.film</span><br><span class="line">        <span class="keyword">ORDER</span> <span class="keyword">BY</span> title</span><br><span class="line">        <span class="keyword">LIMIT</span> <span class="number">50</span>, <span class="number">5</span></span><br><span class="line">    ) <span class="keyword">AS</span> lim <span class="keyword">USING</span>(film_id);</span><br></pre></td></tr></table></figure>
+<p>This “deferred join” works because it lets the server examine as little data as possible in an index without accessing rows, and then, once the desired rows are found, join them against the full table to retrieve the other columns from the row.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/07/SNAKE/" rel="prev" title="SNAKE">
+      <i class="fa fa-chevron-left"></i> SNAKE
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Setup"><span class="nav-number">1.</span> <span class="nav-text">Setup</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Model"><span class="nav-number">1.1.</span> <span class="nav-text">Model</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-faker-populate-数据库"><span class="nav-number">1.2.</span> <span class="nav-text">使用 faker populate 数据库</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实验"><span class="nav-number">2.</span> <span class="nav-text">实验</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL-explain"><span class="nav-number">3.</span> <span class="nav-text">MySQL explain</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#LimitOffsetPagination"><span class="nav-number">3.1.</span> <span class="nav-text">LimitOffsetPagination</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Deferred-join"><span class="nav-number">3.2.</span> <span class="nav-text">Deferred join</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#执行计划解释"><span class="nav-number">3.2.1.</span> <span class="nav-text">执行计划解释</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#What-contributes-to-the-improvement"><span class="nav-number">4.</span> <span class="nav-text">What contributes to the improvement</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Optimizing-LIMIT-and-OFFSET"><span class="nav-number">4.1.</span> <span class="nav-text">Optimizing LIMIT and OFFSET</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

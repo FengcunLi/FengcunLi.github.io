@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="SNAKE Scenario 哪些功能？Feature/Interface?  Needs 多强的系统？Constrains/Hypothesis/QPS/DAU  Application 主要组成模块？Service/Module  Kilobyte 数据如何存储和访问？Data/Storage/SQL vs. NoSQL/File System/Schema  Evolve 如何进化，解决缺陷">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SNAKE">
+<meta property="og:url" content="http://yoursite.com/2021/01/07/SNAKE/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="SNAKE Scenario 哪些功能？Feature/Interface?  Needs 多强的系统？Constrains/Hypothesis/QPS/DAU  Application 主要组成模块？Service/Module  Kilobyte 数据如何存储和访问？Data/Storage/SQL vs. NoSQL/File System/Schema  Evolve 如何进化，解决缺陷">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2021/01/07/SNAKE/push-pull-mix.png">
+<meta property="og:updated_time" content="2021-01-07T08:29:51.287Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SNAKE">
+<meta name="twitter:description" content="SNAKE Scenario 哪些功能？Feature/Interface?  Needs 多强的系统？Constrains/Hypothesis/QPS/DAU  Application 主要组成模块？Service/Module  Kilobyte 数据如何存储和访问？Data/Storage/SQL vs. NoSQL/File System/Schema  Evolve 如何进化，解决缺陷">
+<meta name="twitter:image" content="http://yoursite.com/2021/01/07/SNAKE/push-pull-mix.png">
+
+<link rel="canonical" href="http://yoursite.com/2021/01/07/SNAKE/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>SNAKE | The next stop - Antarctica</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/07/SNAKE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SNAKE
+        </h1>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-07 16:29:51" itemprop="dateModified" datetime="2021-01-07T16:29:51+08:00">2021-01-07</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="SNAKE"><a href="#SNAKE" class="headerlink" title="SNAKE"></a>SNAKE</h2><ul>
+<li><p>Scenario 哪些功能？Feature/Interface?</p>
+</li>
+<li><p>Needs 多强的系统？Constrains/Hypothesis/QPS/DAU</p>
+</li>
+<li><p>Application 主要组成模块？Service/Module</p>
+</li>
+<li><p>Kilobyte 数据如何存储和访问？Data/Storage/SQL vs. NoSQL/File System/Schema</p>
+</li>
+<li><p>Evolve 如何进化，解决缺陷？Optimize/Special Case</p>
+</li>
+</ul>
+<a id="more"></a>
+<h2 id="Design-a-Twitter"><a href="#Design-a-Twitter" class="headerlink" title="Design a Twitter"></a>Design a Twitter</h2><h3 id="Scenario"><a href="#Scenario" class="headerlink" title="Scenario"></a>Scenario</h3><h4 id="Step-1-–-Enumerate-罗列功能"><a href="#Step-1-–-Enumerate-罗列功能" class="headerlink" title="Step 1 – Enumerate 罗列功能"></a>Step 1 – Enumerate 罗列功能</h4><ul>
+<li>Register/Login</li>
+<li>User Profile Display/Edit</li>
+<li>Upload Image/Video</li>
+<li>Search</li>
+<li>Post/Share a tweet</li>
+<li>Timeline/News Feed</li>
+<li>Follow/Unfollow a user</li>
+</ul>
+<h4 id="Step-2-–-Sort-选出核心功能"><a href="#Step-2-–-Sort-选出核心功能" class="headerlink" title="Step 2 – Sort 选出核心功能"></a>Step 2 – Sort 选出核心功能</h4><ul>
+<li>Post a tweet</li>
+<li>Timeline</li>
+<li>News Feed</li>
+<li>Follow/Unfollow</li>
+<li>Register/Login</li>
+</ul>
+<h3 id="Needs"><a href="#Needs" class="headerlink" title="Needs"></a>Needs</h3><h4 id="Step-1-–-Ask"><a href="#Step-1-–-Ask" class="headerlink" title="Step 1 – Ask"></a>Step 1 – Ask</h4><p>DAU – Daily Active Users – 日活跃用户数量</p>
+<p>Twitter: MAU 320M, DAU ~150M+</p>
+<h4 id="Step-2-–-Predict"><a href="#Step-2-–-Predict" class="headerlink" title="Step 2 – Predict"></a>Step 2 – Predict</h4><p>Concurrent Users – 并发用户</p>
+<ol>
+<li>Avg Concurrent Users = 日活跃用户数量 * 每个用户平均请求次数 / 一天多少秒 = 150M * 60 / 86400 ~= 100k</li>
+<li>峰值：Peak Users = Avg Concurrent Users * 3 ~= 300k</li>
+<li>快速增长的产品：Fast Growing = Peak Users * 2 ~= 600k</li>
+<li>Read QPS(Queries Per Second) 读频率：300k</li>
+<li>Write QPS(Queries Per Second) 写频率：5k</li>
+</ol>
+<h3 id="Application-–-Service-Module"><a href="#Application-–-Service-Module" class="headerlink" title="Application – Service/Module"></a>Application – Service/Module</h3><ul>
+<li>Receptionist</li>
+<li>User Service: Register/Login</li>
+<li>Tweet Service: Post a tweet/News Feed/Timeline</li>
+<li>Media Service: Upload Picture/Video</li>
+<li>Friendship Service: Follow/Unfollow</li>
+</ul>
+<h3 id="Kilobyte-–-Data-Storage"><a href="#Kilobyte-–-Data-Storage" class="headerlink" title="Kilobyte – Data/Storage"></a>Kilobyte – Data/Storage</h3><ol>
+<li>关系型数据库 SQL Database</li>
+<li>非关系型数据库 NoSQL Database：Tweets, Social Graph(Followers)</li>
+<li>文件系统 File System: Images, Videos, other media files</li>
+</ol>
+<p>程序 = 算法 + 数据结构<br>系统 = 服务 + 数据存储</p>
+<p>为每个 App/Service 选择合适的存储结构</p>
+<ul>
+<li>User Service: SQL</li>
+<li>Tweet Service: NoSQL</li>
+<li>Media Service: File System</li>
+<li>Friendship Service: SQL/NoSQL</li>
+</ul>
+<p>Schema 细化 Database table 结构</p>
+<h3 id="News-Feed-如何存取？"><a href="#News-Feed-如何存取？" class="headerlink" title="News Feed 如何存取？"></a>News Feed 如何存取？</h3><h4 id="Pull-Model"><a href="#Pull-Model" class="headerlink" title="Pull Model"></a>Pull Model</h4><p>获取每个 following 的前 K 条 tweets，合并出 news feed。假设有 N 个 following，则时间复杂度为 N 次 DB Read 的时间 + N 路归并时间。When somebody post a tweet ==&gt; 1 次 DB Write</p>
+<p>Pull Work Flow 原理图</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Client ----&gt;send get News Feed request to----&gt; Server</span><br><span class="line">Server &lt;----get Following from----&gt; Friendship Table</span><br><span class="line">Server &lt;----get Tweets of Followings from----&gt; Tweet Table</span><br><span class="line">Server ----&gt;Merge Tweets and return to----&gt; Client</span><br></pre></td></tr></table></figure>
+<p>Pull Model 的缺陷<br>读取慢（N 次 DB Reads），且发生在用户获得 News Feed 的请求过程中，延迟大。</p>
+<h4 id="Push-Model"><a href="#Push-Model" class="headerlink" title="Push Model"></a>Push Model</h4><ol>
+<li>为每个用户建一个 List 存储其 News Feed</li>
+<li>When somebody post a tweet，将该推文逐个推送（Fanout）到他的每个 Follower 的 List 中</li>
+<li>When request News Feed 时，从 List 中读取最新的 100 条即可</li>
+</ol>
+<p>每次 request News Feed，只用一次 DB Read；<br>每次 Post Tweet，会 Fanout 到 N 个 Follower，需要 N 次 DB Writes，可以用异步任务后台执行。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">postTweet(POST, tweet_info) &#123;</span><br><span class="line">    tweet = DB.insertTweet(userId, tweet_info);</span><br><span class="line">    AsyncService.fanoutTweet(userId, tweet);</span><br><span class="line">    <span class="keyword">return</span> success;</span><br><span class="line">&#125;</span><br><span class="line">AsyncService::fanoutTweet(userId, tweet) &#123;</span><br><span class="line">    followers = DB.getFollowers(userId);</span><br><span class="line">    <span class="keyword">for</span> (follower: followers) &#123;</span><br><span class="line">        DB.insertNewsFeed(follower.userId, tweet);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Push Model 的缺陷<br>postTweet()的异步执行；fanoutTweet()可能遇到 followers 数目太大的问题。</p>
+<h4 id="Push-和-Pull-的比较"><a href="#Push-和-Pull-的比较" class="headerlink" title="Push 和 Pull 的比较"></a>Push 和 Pull 的比较</h4><ul>
+<li>Facebook Pull</li>
+<li>Twitter Pull</li>
+<li>Instagram Pull + Push</li>
+</ul>
+<h3 id="Evolve-优化：Optimize-Maintenance"><a href="#Evolve-优化：Optimize-Maintenance" class="headerlink" title="Evolve 优化：Optimize/Maintenance"></a>Evolve 优化：Optimize/Maintenance</h3><h4 id="Step-1-Optimize"><a href="#Step-1-Optimize" class="headerlink" title="Step 1: Optimize"></a>Step 1: Optimize</h4><ol>
+<li>Solve Problems: Push vs. Pull; Normalize vs. De-normalize</li>
+<li>More Features: Edit; Delete; Media; Ads</li>
+<li>Special Cases: 大 V，热推，不活跃用户</li>
+</ol>
+<h4 id="Step-2-Maintenance"><a href="#Step-2-Maintenance" class="headerlink" title="Step 2: Maintenance"></a>Step 2: Maintenance</h4><p>Robust 鲁棒性：如果有一台 server/DB 挂了怎么处理<br>Scalability 扩展性：如果有流量暴增，如何扩展</p>
+<h4 id="解决-Pull-的缺陷-DB-Reads"><a href="#解决-Pull-的缺陷-DB-Reads" class="headerlink" title="解决 Pull 的缺陷 DB Reads"></a>解决 Pull 的缺陷 DB Reads</h4><ul>
+<li>Cache 每个用户的 Timeline</li>
+<li>Cache 每个用户的 News Feed</li>
+</ul>
+<ol>
+<li>最近没有 Cache 过 News Feed 的用户：归并 N 个 following 的最近 K 条 Tweets，取出前 K 条；</li>
+<li>最近 Cache 过的用户：归并某个时间戳之后的 tweets</li>
+</ol>
+<h4 id="解决-Push-的缺陷"><a href="#解决-Push-的缺陷" class="headerlink" title="解决 Push 的缺陷"></a>解决 Push 的缺陷</h4><p>follower 数目远大于 following 数目时，加几台 push 任务的机器；如果加 server 无法解决，针对长期的 fast growing，进行评估，转换 push 模型为 pull 模型。</p>
+<p><strong>Tradeoff：对于大 V，采用 pull；对于普通用户，采用 push；</strong></p>
+<p><img src="/2021/01/07/SNAKE/push-pull-mix.png" alt="push-pull-mix"></p>
+<h4 id="如何实现-Follow-和-Unfollow"><a href="#如何实现-Follow-和-Unfollow" class="headerlink" title="如何实现 Follow 和 Unfollow"></a>如何实现 Follow 和 Unfollow</h4><p>Follow 之后：异步将他的 Timeline 合并到你的 News Feed 中<br>Unfollow 之后：异步将他的 Tweets 从你的 News Feed 中移除</p>
+<p>异步的好处：用户迅速得到反馈，无须等待异步操作的真正完成<br>异步的坏处：如果 unfollow 之后刷新，发现他的 Tweets 还在</p>
+<h4 id="如何存储-Likes"><a href="#如何存储-Likes" class="headerlink" title="如何存储 Likes"></a>如何存储 Likes</h4><ul>
+<li>Normalize：两个 tables，使用 Join 操作</li>
+<li><strong>De-normalize</strong></li>
+</ul>
+<h4 id="大-V-发一条-tweet-之后的问题"><a href="#大-V-发一条-tweet-之后的问题" class="headerlink" title="大 V 发一条 tweet 之后的问题"></a>大 V 发一条 tweet 之后的问题</h4><p>对于同一条数据短时间出现大量请求：</p>
+<ol>
+<li><p>load balancer, sharding, consistent hashing</p>
+</li>
+<li><p>cache</p>
+</li>
+</ol>
+<h4 id="Like-Retweet-Comment-都会改变该-tweet-的基本信息，如何更新？"><a href="#Like-Retweet-Comment-都会改变该-tweet-的基本信息，如何更新？" class="headerlink" title="Like, Retweet, Comment 都会改变该 tweet 的基本信息，如何更新？"></a>Like, Retweet, Comment 都会改变该 tweet 的基本信息，如何更新？</h4><p>Write through; Write back; Look aside</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/07/Four-Distributed-Systems-Architectural-Patterns/" rel="prev" title="Four Distributed Systems Architectural Patterns">
+      <i class="fa fa-chevron-left"></i> Four Distributed Systems Architectural Patterns
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/01/26/MySQL-优化-Deferred-join/" rel="next" title="MySQL 优化 Deferred Join">
+      MySQL 优化 Deferred Join <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SNAKE"><span class="nav-number">1.</span> <span class="nav-text">SNAKE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Design-a-Twitter"><span class="nav-number">2.</span> <span class="nav-text">Design a Twitter</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Scenario"><span class="nav-number">2.1.</span> <span class="nav-text">Scenario</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Step-1-–-Enumerate-罗列功能"><span class="nav-number">2.1.1.</span> <span class="nav-text">Step 1 – Enumerate 罗列功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Step-2-–-Sort-选出核心功能"><span class="nav-number">2.1.2.</span> <span class="nav-text">Step 2 – Sort 选出核心功能</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Needs"><span class="nav-number">2.2.</span> <span class="nav-text">Needs</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Step-1-–-Ask"><span class="nav-number">2.2.1.</span> <span class="nav-text">Step 1 – Ask</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Step-2-–-Predict"><span class="nav-number">2.2.2.</span> <span class="nav-text">Step 2 – Predict</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Application-–-Service-Module"><span class="nav-number">2.3.</span> <span class="nav-text">Application – Service/Module</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Kilobyte-–-Data-Storage"><span class="nav-number">2.4.</span> <span class="nav-text">Kilobyte – Data/Storage</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#News-Feed-如何存取？"><span class="nav-number">2.5.</span> <span class="nav-text">News Feed 如何存取？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Pull-Model"><span class="nav-number">2.5.1.</span> <span class="nav-text">Pull Model</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Push-Model"><span class="nav-number">2.5.2.</span> <span class="nav-text">Push Model</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Push-和-Pull-的比较"><span class="nav-number">2.5.3.</span> <span class="nav-text">Push 和 Pull 的比较</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Evolve-优化：Optimize-Maintenance"><span class="nav-number">2.6.</span> <span class="nav-text">Evolve 优化：Optimize/Maintenance</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Step-1-Optimize"><span class="nav-number">2.6.1.</span> <span class="nav-text">Step 1: Optimize</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Step-2-Maintenance"><span class="nav-number">2.6.2.</span> <span class="nav-text">Step 2: Maintenance</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解决-Pull-的缺陷-DB-Reads"><span class="nav-number">2.6.3.</span> <span class="nav-text">解决 Pull 的缺陷 DB Reads</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解决-Push-的缺陷"><span class="nav-number">2.6.4.</span> <span class="nav-text">解决 Push 的缺陷</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#如何实现-Follow-和-Unfollow"><span class="nav-number">2.6.5.</span> <span class="nav-text">如何实现 Follow 和 Unfollow</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#如何存储-Likes"><span class="nav-number">2.6.6.</span> <span class="nav-text">如何存储 Likes</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#大-V-发一条-tweet-之后的问题"><span class="nav-number">2.6.7.</span> <span class="nav-text">大 V 发一条 tweet 之后的问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Like-Retweet-Comment-都会改变该-tweet-的基本信息，如何更新？"><span class="nav-number">2.6.8.</span> <span class="nav-text">Like, Retweet, Comment 都会改变该 tweet 的基本信息，如何更新？</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
