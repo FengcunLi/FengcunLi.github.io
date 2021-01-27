@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="为了确认分页数目，需要知道总行数，朴素的实现是 1234567SELECT COUNT(*) FROM myapp_thread;+----------+| count(*) |+----------+|    30000 |+----------+1 row in set (0.16 sec)">
+<meta name="keywords" content="MySQL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL 优化 Count in Pagination">
+<meta property="og:url" content="http://yoursite.com/2021/01/27/MySQL-优化-Count-In-Pagination/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="为了确认分页数目，需要知道总行数，朴素的实现是 1234567SELECT COUNT(*) FROM myapp_thread;+----------+| count(*) |+----------+|    30000 |+----------+1 row in set (0.16 sec)">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2021/01/27/MySQL-优化-Count-In-Pagination/naive.png">
+<meta property="og:image" content="http://yoursite.com/2021/01/27/MySQL-优化-Count-In-Pagination/optimized.png">
+<meta property="og:updated_time" content="2021-01-27T10:02:26.878Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MySQL 优化 Count in Pagination">
+<meta name="twitter:description" content="为了确认分页数目，需要知道总行数，朴素的实现是 1234567SELECT COUNT(*) FROM myapp_thread;+----------+| count(*) |+----------+|    30000 |+----------+1 row in set (0.16 sec)">
+<meta name="twitter:image" content="http://yoursite.com/2021/01/27/MySQL-优化-Count-In-Pagination/naive.png">
+
+<link rel="canonical" href="http://yoursite.com/2021/01/27/MySQL-优化-Count-In-Pagination/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>MySQL 优化 Count in Pagination | The next stop - Antarctica</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/27/MySQL-优化-Count-In-Pagination/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MySQL 优化 Count in Pagination
+        </h1>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-27 18:02:26" itemprop="dateModified" datetime="2021-01-27T18:02:26+08:00">2021-01-27</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>为了确认分页数目，需要知道总行数，朴素的实现是</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(*) <span class="keyword">FROM</span> myapp_thread;</span><br><span class="line">+<span class="comment">----------+</span></span><br><span class="line">| count(*) |</span><br><span class="line">+<span class="comment">----------+</span></span><br><span class="line">|    30000 |</span><br><span class="line">+<span class="comment">----------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.16</span> sec)</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(*) <span class="keyword">FROM</span> myapp_thread;</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">           id: 1</span><br><span class="line">  select_type: SIMPLE</span><br><span class="line">        table: myapp_thread</span><br><span class="line">   partitions: NULL</span><br><span class="line">         type: index</span><br><span class="line">possible_keys: NULL</span><br><span class="line">          key: PRIMARY</span><br><span class="line">      key_len: 4</span><br><span class="line">          ref: NULL</span><br><span class="line">         rows: 24585</span><br><span class="line">     filtered: 100.00</span><br><span class="line">        Extra: Using index</span><br><span class="line">1 row in <span class="keyword">set</span>, <span class="number">1</span> <span class="keyword">warning</span> (<span class="number">0.01</span> sec)</span><br></pre></td></tr></table></figure>
+<p>即使 MySQL Optimizer 使用到了覆盖索引（Using index）及索引扫描（type: index）进行优化，也是比较耗时的。</p>
+<h2 id="Walk-Around"><a href="#Walk-Around" class="headerlink" title="Walk Around"></a>Walk Around</h2><p>《High performance MySQL 3rd》</p>
+<ol>
+<li>在 APP 中不提供分页数目，只提供 next link。<blockquote>
+<p>Convert the pager to a “next” link. Assuming there are 20 results per page, the query should then use a LIMIT of 21 rows and display only 20. If the 21st row exists in the results, there’s a next page, and you can render the “next” link.</p>
+</blockquote>
+</li>
+<li>在一定条件下提供精确的分页数目，超过后不提供分页数目。<blockquote>
+<p>To fetch and cache many more rows than you need—say, 1,000— and then retrieve them from the cache for successive pages. This strategy lets your application know how large the full result set is. If it’s fewer than 1,000 rows, the application knows how many page links to render; if it’s more, the application can just display “more than 1,000 results found.”</p>
+</blockquote>
+</li>
+<li>提供不精确的分页数目。<blockquote>
+<p>Sometimes you can also just estimate the full size of the result set by running an EXPLAIN query and looking at the rows column in the result (hey, even Google doesn’t show exact result counts!).</p>
+</blockquote>
+</li>
+<li>提供精确的分页数目。<blockquote>
+<p>Add the <code>SQL_CALC_FOUND_ROWS</code> hint to a query with a LIMIT, so you’ll know how many rows would have been returned without the LIMIT. It might seem that there’s some kind of “magic” happening here, whereby the server predicts how many rows it would have found. But unfortunately, the server doesn’t really do that; it can’t count rows it doesn’t actually find. This option just tells the server to generate and throw away the rest of the result set, instead of stopping when it reaches the desired number of rows. <strong>That’s very expensive.</strong></p>
+</blockquote>
+</li>
+<li><code>COUNT(*)</code><blockquote>
+<p>Using a separate <code>COUNT(*)</code> query to find the number of rows can be much faster than <code>SQL_CALC_FOUND_ROWS</code>, if it can use a covering index.</p>
+</blockquote>
+</li>
+</ol>
+<h2 id="Precomputed-Summary-Table"><a href="#Precomputed-Summary-Table" class="headerlink" title="Precomputed Summary Table"></a>Precomputed Summary Table</h2><h3 id="建立-Summary-Table"><a href="#建立-Summary-Table" class="headerlink" title="建立 Summary Table"></a>建立 Summary Table</h3><p>通过 slot 提供并发度。</p>
+<blockquote>
+<p>The problem is that this single row is effectively a global “mutex” for any transaction that updates the counter. It will serialize those transactions. You can get higher concurrency by keeping more than one row and updating a random row.</p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> myapp_thread_count(</span><br><span class="line">    <span class="keyword">id</span> <span class="built_in">INT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">    cnt <span class="built_in">INT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="number">0</span>,</span><br><span class="line">    slot <span class="built_in">TINYINT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    PRIMARY <span class="keyword">KEY</span>(<span class="keyword">id</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<h3 id="Populate"><a href="#Populate" class="headerlink" title="Populate"></a>Populate</h3><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="symbol">:ok</span>, pid&#125; = MyXQL.start_link(<span class="symbol">hostname:</span> <span class="string">"127.0.0.1"</span>, <span class="symbol">port:</span> <span class="number">6033</span>, <span class="symbol">database:</span> <span class="string">"mysql_test"</span>, <span class="symbol">username:</span> <span class="string">"root"</span>, <span class="symbol">password:</span> <span class="string">"Lfc152413"</span>)</span><br><span class="line">Enum.map(0..<span class="number">99</span>, &amp;(MyXQL.query!(pid, <span class="string">"INSERT INTO myapp_thread_count (slot) values (<span class="subst">#&#123;&amp;<span class="number">1</span>&#125;</span>)"</span>)))</span><br></pre></td></tr></table></figure>
+<h3 id="创建触发器"><a href="#创建触发器" class="headerlink" title="创建触发器"></a>创建触发器</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DELIMITER $$</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TRIGGER</span> myapp_thread_ins_inc_count</span><br><span class="line"><span class="keyword">AFTER</span> <span class="keyword">INSERT</span> <span class="keyword">ON</span> myapp_thread <span class="keyword">FOR</span> <span class="keyword">EACH</span> <span class="keyword">ROW</span> <span class="keyword">BEGIN</span></span><br><span class="line"><span class="keyword">UPDATE</span> myapp_thread_count</span><br><span class="line"><span class="keyword">SET</span> cnt = cnt + <span class="number">1</span></span><br><span class="line"><span class="keyword">WHERE</span> slot = <span class="keyword">FLOOR</span>(<span class="keyword">RAND</span>() * <span class="number">100</span>);</span><br><span class="line"><span class="keyword">END</span>;</span><br><span class="line">$$</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TRIGGER</span> myapp_thread_del_dec_count</span><br><span class="line"><span class="keyword">AFTER</span> <span class="keyword">DELETE</span> <span class="keyword">ON</span> myapp_thread <span class="keyword">FOR</span> <span class="keyword">EACH</span> <span class="keyword">ROW</span> <span class="keyword">BEGIN</span></span><br><span class="line"><span class="keyword">UPDATE</span> myapp_thread_count</span><br><span class="line"><span class="keyword">SET</span> cnt = cnt - <span class="number">1</span></span><br><span class="line"><span class="keyword">WHERE</span> slot = <span class="keyword">FLOOR</span>(<span class="keyword">RAND</span>() * <span class="number">100</span>);</span><br><span class="line"><span class="keyword">END</span>;</span><br><span class="line">$$</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DELIMITER ;</span><br></pre></td></tr></table></figure>
+<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://127.0.0.1:8000/threads/?limit=100&amp;offset=55000</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/01/27/MySQL-优化-Count-In-Pagination/naive.png" alt="naive"><br><img src="/2021/01/27/MySQL-优化-Count-In-Pagination/optimized.png" alt="optimized"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ThreadViewSet</span><span class="params">(ModelViewSet)</span>:</span></span><br><span class="line">    serializer_class = ThreadSerializer</span><br><span class="line">    queryset = Thread.objects.all()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">list</span><span class="params">(self, request, *args, **kwargs)</span>:</span></span><br><span class="line">        paginator = LimitOffsetPagination()</span><br><span class="line"></span><br><span class="line">        <span class="comment"># count = Thread.objects.count()</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">with</span> connection.cursor() <span class="keyword">as</span> cursor:</span><br><span class="line">            cursor.execute(<span class="string">"select SUM(cnt) from myapp_thread_count;"</span>)</span><br><span class="line">            row = cursor.fetchone()</span><br><span class="line">        count = int(row[<span class="number">0</span>])</span><br><span class="line"></span><br><span class="line">        limit = paginator.get_limit(request)</span><br><span class="line">        offset = paginator.get_offset(request)</span><br><span class="line">        <span class="keyword">if</span> count == <span class="number">0</span> <span class="keyword">or</span> offset &gt; count:</span><br><span class="line">            <span class="keyword">return</span> Response([])</span><br><span class="line"></span><br><span class="line">        queryset_ = Thread.objects.raw(<span class="string">f"""</span></span><br><span class="line"><span class="string">        select myapp_thread.id,</span></span><br><span class="line"><span class="string">            title,</span></span><br><span class="line"><span class="string">            content</span></span><br><span class="line"><span class="string">        from myapp_thread</span></span><br><span class="line"><span class="string">            inner join (</span></span><br><span class="line"><span class="string">                select id</span></span><br><span class="line"><span class="string">                from myapp_thread</span></span><br><span class="line"><span class="string">                limit <span class="subst">&#123;limit&#125;</span> offset <span class="subst">&#123;offset&#125;</span></span></span><br><span class="line"><span class="string">            ) as ids</span></span><br><span class="line"><span class="string">        where myapp_thread.id = ids.id;</span></span><br><span class="line"><span class="string">        """</span>)</span><br><span class="line"></span><br><span class="line">        serializer = self.get_serializer(queryset_, many=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">        paginator.request = request</span><br><span class="line">        paginator.limit = limit</span><br><span class="line">        paginator.offset = offset</span><br><span class="line">        paginator.count = count</span><br><span class="line">        <span class="keyword">return</span> paginator.get_paginated_response(serializer.data)</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/26/MySQL-优化-Deferred-join/" rel="prev" title="MySQL 优化 Deferred Join">
+      <i class="fa fa-chevron-left"></i> MySQL 优化 Deferred Join
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Walk-Around"><span class="nav-number">1.</span> <span class="nav-text">Walk Around</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Precomputed-Summary-Table"><span class="nav-number">2.</span> <span class="nav-text">Precomputed Summary Table</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#建立-Summary-Table"><span class="nav-number">2.1.</span> <span class="nav-text">建立 Summary Table</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Populate"><span class="nav-number">2.2.</span> <span class="nav-text">Populate</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建触发器"><span class="nav-number">2.3.</span> <span class="nav-text">创建触发器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实验"><span class="nav-number">3.</span> <span class="nav-text">实验</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
