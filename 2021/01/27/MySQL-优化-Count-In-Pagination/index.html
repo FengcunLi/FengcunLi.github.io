@@ -30,7 +30,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://yoursite.com/2021/01/27/MySQL-优化-Count-In-Pagination/naive.png">
 <meta property="og:image" content="http://yoursite.com/2021/01/27/MySQL-优化-Count-In-Pagination/optimized.png">
-<meta property="og:updated_time" content="2021-01-27T10:02:26.878Z">
+<meta property="og:updated_time" content="2021-01-27T11:01:11.986Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL 优化 Count in Pagination">
 <meta name="twitter:description" content="为了确认分页数目，需要知道总行数，朴素的实现是 1234567SELECT COUNT(*) FROM myapp_thread;+----------+| count(*) |+----------+|    30000 |+----------+1 row in set (0.16 sec)">
@@ -187,7 +187,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-27 18:02:26" itemprop="dateModified" datetime="2021-01-27T18:02:26+08:00">2021-01-27</time>
+                <time title="修改时间：2021-01-27 19:01:11" itemprop="dateModified" datetime="2021-01-27T19:01:11+08:00">2021-01-27</time>
               </span>
 
           
@@ -213,7 +213,7 @@
 </blockquote>
 </li>
 <li>在一定条件下提供精确的分页数目，超过后不提供分页数目。<blockquote>
-<p>To fetch and cache many more rows than you need—say, 1,000— and then retrieve them from the cache for successive pages. This strategy lets your application know how large the full result set is. If it’s fewer than 1,000 rows, the application knows how many page links to render; if it’s more, the application can just display “more than 1,000 results found.”</p>
+<p>To fetch and cache many more rows than you need —say, 1,000— and then retrieve them from the cache for successive pages. This strategy lets your application know how large the full result set is. If it’s fewer than 1,000 rows, the application knows how many page links to render; if it’s more, the application can just display “more than 1,000 results found.”</p>
 </blockquote>
 </li>
 <li>提供不精确的分页数目。<blockquote>
@@ -233,7 +233,7 @@
 <blockquote>
 <p>The problem is that this single row is effectively a global “mutex” for any transaction that updates the counter. It will serialize those transactions. You can get higher concurrency by keeping more than one row and updating a random row.</p>
 </blockquote>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> myapp_thread_count(</span><br><span class="line">    <span class="keyword">id</span> <span class="built_in">INT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">    cnt <span class="built_in">INT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="number">0</span>,</span><br><span class="line">    slot <span class="built_in">TINYINT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    PRIMARY <span class="keyword">KEY</span>(<span class="keyword">id</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> myapp_thread_count(</span><br><span class="line">    <span class="keyword">id</span> <span class="built_in">INT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">    cnt <span class="built_in">INT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="number">0</span>,</span><br><span class="line">    slot <span class="built_in">TINYINT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">UNIQUE</span>,</span><br><span class="line">    PRIMARY <span class="keyword">KEY</span>(<span class="keyword">id</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
 <h3 id="Populate"><a href="#Populate" class="headerlink" title="Populate"></a>Populate</h3><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="symbol">:ok</span>, pid&#125; = MyXQL.start_link(<span class="symbol">hostname:</span> <span class="string">"127.0.0.1"</span>, <span class="symbol">port:</span> <span class="number">6033</span>, <span class="symbol">database:</span> <span class="string">"mysql_test"</span>, <span class="symbol">username:</span> <span class="string">"root"</span>, <span class="symbol">password:</span> <span class="string">"Lfc152413"</span>)</span><br><span class="line">Enum.map(0..<span class="number">99</span>, &amp;(MyXQL.query!(pid, <span class="string">"INSERT INTO myapp_thread_count (slot) values (<span class="subst">#&#123;&amp;<span class="number">1</span>&#125;</span>)"</span>)))</span><br></pre></td></tr></table></figure>
 <h3 id="创建触发器"><a href="#创建触发器" class="headerlink" title="创建触发器"></a>创建触发器</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DELIMITER $$</span><br></pre></td></tr></table></figure>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TRIGGER</span> myapp_thread_ins_inc_count</span><br><span class="line"><span class="keyword">AFTER</span> <span class="keyword">INSERT</span> <span class="keyword">ON</span> myapp_thread <span class="keyword">FOR</span> <span class="keyword">EACH</span> <span class="keyword">ROW</span> <span class="keyword">BEGIN</span></span><br><span class="line"><span class="keyword">UPDATE</span> myapp_thread_count</span><br><span class="line"><span class="keyword">SET</span> cnt = cnt + <span class="number">1</span></span><br><span class="line"><span class="keyword">WHERE</span> slot = <span class="keyword">FLOOR</span>(<span class="keyword">RAND</span>() * <span class="number">100</span>);</span><br><span class="line"><span class="keyword">END</span>;</span><br><span class="line">$$</span><br></pre></td></tr></table></figure>
@@ -263,7 +263,10 @@
     <a href="/2021/01/26/MySQL-优化-Deferred-join/" rel="prev" title="MySQL 优化 Deferred Join">
       <i class="fa fa-chevron-left"></i> MySQL 优化 Deferred Join
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2021/01/28/MySQL-User-Defined-Variables-Evaluation-Order/" rel="next" title="MySQL User Defined Variables Evaluation Order">
+      MySQL User Defined Variables Evaluation Order <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -338,7 +341,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-count">111</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

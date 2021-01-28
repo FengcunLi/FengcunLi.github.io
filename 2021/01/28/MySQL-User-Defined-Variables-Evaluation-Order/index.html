@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="keywords" content="MySQL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL User Defined Variables Evaluation Order">
+<meta property="og:url" content="http://yoursite.com/2021/01/28/MySQL-User-Defined-Variables-Evaluation-Order/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2021/01/28/MySQL-User-Defined-Variables-Evaluation-Order/SQL.png">
+<meta property="og:updated_time" content="2021-01-28T11:00:12.900Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MySQL User Defined Variables Evaluation Order">
+<meta name="twitter:image" content="http://yoursite.com/2021/01/28/MySQL-User-Defined-Variables-Evaluation-Order/SQL.png">
+
+<link rel="canonical" href="http://yoursite.com/2021/01/28/MySQL-User-Defined-Variables-Evaluation-Order/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>MySQL User Defined Variables Evaluation Order | The next stop - Antarctica</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/28/MySQL-User-Defined-Variables-Evaluation-Order/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MySQL User Defined Variables Evaluation Order
+        </h1>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-28 19:00:12" itemprop="dateModified" datetime="2021-01-28T19:00:12+08:00">2021-01-28</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><img src="/2021/01/28/MySQL-User-Defined-Variables-Evaluation-Order/SQL.png" alt="SQL"></p>
+<a id="more"></a>
+<blockquote>
+<p>Too many columns<br>MySQL’s storage engine API works by copying rows between the server and the storage engine in a row buffer format; the server then decodes the buffer into columns. But it can be costly to turn the row buffer into the row data structure with the decoded columns. MyISAM’s fixed row format actually matches the server’s row format exactly, so no conversion is needed. However, MyISAM’s variable row format and InnoDB’s row format always require conversion. The cost of this conversion depends on the number of columns.<br>We discovered that this can become expensive when we investigated an issue with high CPU consumption for a customer with extremely wide tables (hundreds of columns), even though only a few columns were actually used.<br>If you’re planning for hundreds of columns, be aware that the server’s performance characteristics will be a bit different.</p>
+</blockquote>
+<p>对于 definition 如下的表:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">describe</span> myapp_thread_count;</span><br><span class="line">+<span class="comment">-------+------------+------+-----+---------+----------------+</span></span><br><span class="line">| Field | Type       | Null | Key | Default | Extra          |</span><br><span class="line">+<span class="comment">-------+------------+------+-----+---------+----------------+</span></span><br><span class="line">| id    | int(11)    | NO   | PRI | NULL    | auto_increment |</span><br><span class="line">| slot  | tinyint(4) | NO   | UNI | NULL    |                |</span><br><span class="line">| cnt   | int(11)    | NO   |     | 0       |                |</span><br><span class="line">+<span class="comment">-------+------------+------+-----+---------+----------------+</span></span><br></pre></td></tr></table></figure>
+<h2 id="Order-by-覆盖索引"><a href="#Order-by-覆盖索引" class="headerlink" title="Order by 覆盖索引"></a>Order by 覆盖索引</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> <span class="keyword">id</span>, slot <span class="keyword">from</span> myapp_thread_count <span class="keyword">order</span> <span class="keyword">by</span> slot;</span><br><span class="line"></span><br><span class="line">************************** 1. row ***************************</span><br><span class="line">           id: 1</span><br><span class="line">  select_type: SIMPLE</span><br><span class="line">        table: myapp_thread_count</span><br><span class="line">   partitions: NULL</span><br><span class="line">         type: index</span><br><span class="line">possible_keys: NULL</span><br><span class="line">          key: slot</span><br><span class="line">      key_len: 1</span><br><span class="line">          ref: NULL</span><br><span class="line">         rows: 100</span><br><span class="line">     filtered: 100.00</span><br><span class="line">        Extra: Using index</span><br><span class="line"></span><br><span class="line">1 row in <span class="keyword">set</span>, <span class="number">1</span> <span class="keyword">warning</span> (<span class="number">0.01</span> sec)</span><br></pre></td></tr></table></figure>
+<p>slot 是索引，而且是个覆盖索引，所以 scan slot index 就能<strong>按序</strong>获得所需的数据。</p>
+<ul>
+<li>type index: scan an index</li>
+<li>Using index: 覆盖索引</li>
+<li>rows 100: <strong>plan to access</strong> 100 rows</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> @<span class="keyword">num</span> := <span class="number">0</span>;</span><br><span class="line"><span class="keyword">select</span> <span class="keyword">id</span>, slot, @<span class="keyword">num</span> := @<span class="keyword">num</span> + <span class="number">1</span> <span class="keyword">from</span> myapp_thread_count <span class="keyword">where</span> @<span class="keyword">num</span> &lt;= <span class="number">1</span> <span class="keyword">order</span> <span class="keyword">by</span> slot;</span><br><span class="line"></span><br><span class="line">+<span class="comment">----+------+------------------+</span></span><br><span class="line">| id | slot | @num := @num + 1 |</span><br><span class="line">+<span class="comment">----+------+------------------+</span></span><br><span class="line">|  1 |    0 |                1 |</span><br><span class="line">|  2 |    1 |                2 |</span><br><span class="line">+<span class="comment">----+------+------------------+</span></span><br><span class="line"></span><br><span class="line">2 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span> @<span class="keyword">num</span> := <span class="number">0</span>;</span><br><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> <span class="keyword">id</span>, slot, @<span class="keyword">num</span> := @<span class="keyword">num</span> + <span class="number">1</span> <span class="keyword">from</span> myapp_thread_count <span class="keyword">where</span> @<span class="keyword">num</span> &lt;= <span class="number">1</span> <span class="keyword">order</span> <span class="keyword">by</span> slot;</span><br><span class="line"></span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">           id: 1</span><br><span class="line">  select_type: SIMPLE</span><br><span class="line">        table: myapp_thread_count</span><br><span class="line">   partitions: NULL</span><br><span class="line">         type: index</span><br><span class="line">possible_keys: NULL</span><br><span class="line">          key: slot</span><br><span class="line">      key_len: 1</span><br><span class="line">          ref: NULL</span><br><span class="line">         rows: 100</span><br><span class="line">     filtered: 100.00</span><br><span class="line">        Extra: Using where; Using index</span><br></pre></td></tr></table></figure>
+<div class="note danger">
+            <p>filtered: 100.00 不准确，Optimizer 不知道 @num 会变，它以为 where 0 &lt;= 1 一直成立，所以给出的数是 100 / 100 = 100%，而实际应该是 2 / 100 = 2%，<br>2% 这个数字对于 filtered 而言就很糟糕了，说明做了很多无用功。</p>
+          </div>
+<p>可以看出与上面并没有什么不同，都是扫描覆盖索引，也都访问了 100 条记录（@num &lt;= 1 不能下推到引擎层），虽然最终由于 Using where; 只输出了 2 条。</p>
+<h2 id="Order-by-非覆盖索引"><a href="#Order-by-非覆盖索引" class="headerlink" title="Order by 非覆盖索引"></a>Order by 非覆盖索引</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> @<span class="keyword">num</span> := <span class="number">0</span>;</span><br><span class="line"><span class="keyword">select</span> <span class="keyword">id</span>, slot, cnt, @<span class="keyword">num</span> := @<span class="keyword">num</span> + <span class="number">1</span> <span class="keyword">from</span> myapp_thread_count <span class="keyword">where</span> @<span class="keyword">num</span> &lt;= <span class="number">1</span> <span class="keyword">order</span> <span class="keyword">by</span> slot;</span><br><span class="line">+<span class="comment">-----+------+-----+------------------+</span></span><br><span class="line">| id  | slot | cnt | @num := @num + 1 |</span><br><span class="line">+<span class="comment">-----+------+-----+------------------+</span></span><br><span class="line">|   1 |    0 |  16 |                1 |</span><br><span class="line">|   2 |    1 |  23 |                2 |</span><br><span class="line">|   3 |    2 |  15 |                3 |</span><br><span class="line"></span><br><span class="line">.......................................</span><br><span class="line">.......................................</span><br><span class="line">.......................................</span><br><span class="line"></span><br><span class="line">|  98 |   97 |  22 |               98 |</span><br><span class="line">|  99 |   98 |  20 |               99 |</span><br><span class="line">| 100 |   99 |  20 |              100 |</span><br><span class="line">+<span class="comment">-----+------+-----+------------------+</span></span><br><span class="line">100 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> <span class="keyword">id</span>, slot, cnt, @<span class="keyword">num</span> := @<span class="keyword">num</span> + <span class="number">1</span> <span class="keyword">from</span> myapp_thread_count <span class="keyword">where</span> @<span class="keyword">num</span> &lt;= <span class="number">1</span> <span class="keyword">order</span> <span class="keyword">by</span> slot\G</span><br><span class="line">*************************** <span class="number">1.</span> <span class="keyword">row</span> ***************************</span><br><span class="line">           <span class="keyword">id</span>: <span class="number">1</span></span><br><span class="line">  select_type: SIMPLE</span><br><span class="line">        <span class="keyword">table</span>: myapp_thread_count</span><br><span class="line">   <span class="keyword">partitions</span>: <span class="literal">NULL</span></span><br><span class="line">         <span class="keyword">type</span>: <span class="keyword">ALL</span></span><br><span class="line">possible_keys: <span class="literal">NULL</span></span><br><span class="line">          <span class="keyword">key</span>: <span class="literal">NULL</span></span><br><span class="line">      key_len: <span class="literal">NULL</span></span><br><span class="line">          <span class="keyword">ref</span>: <span class="literal">NULL</span></span><br><span class="line">         <span class="keyword">rows</span>: <span class="number">100</span></span><br><span class="line">     filtered: <span class="number">100.00</span></span><br><span class="line">        Extra: <span class="keyword">Using</span> <span class="keyword">where</span>; Using filesort</span><br></pre></td></tr></table></figure>
+<div class="note success">
+            <p>filtered: 100.00，where 0 &lt;= 1 一直成立，通过 filter 的数目是 100，100 / 100 = 100%</p>
+          </div>
+<p>slot 是索引，但是不是覆盖索引，order by slot 时 MySQL 理论上有两种执行计划：</p>
+<ol>
+<li>scan slot index，获得主键索引，然后再利用主键索引去获得未被覆盖的列的值，但是这样会触发大量的 Random IO；</li>
+<li>既然这个索引不能覆盖，索性直接抛弃这个索引，进行全表扫描然后进行 filesort（single pass filesort）。Reads all the columns needed for the query, sorts them by the ORDER BY columns, and then scans the sorted list and outputs the specified columns. 这种方式会触发排序算法，但是会减少 Random IO，trades random I/O for more sequential I/O。在此 MySQL 选择了第二种。</li>
+</ol>
+<p>之所以会输出全部的 100 行是因为 <code>where @num &lt;= 1</code> 发生在 filesort 之前，而 filesort 发生在 <code>select id, slot, cnt, @num := @num + 1</code> 之前，因此 <code>where @num &lt;= 1</code> 等效于 <code>where 0 &lt;= 1</code>，即没有过滤掉任何的行。</p>
+<h2 id="Order-by-非索引列"><a href="#Order-by-非索引列" class="headerlink" title="Order by 非索引列"></a>Order by 非索引列</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> @<span class="keyword">num</span> := <span class="number">0</span>;</span><br><span class="line"><span class="keyword">select</span> <span class="keyword">id</span>, slot, cnt, @<span class="keyword">num</span> := @<span class="keyword">num</span> + <span class="number">1</span> <span class="keyword">from</span> myapp_thread_count <span class="keyword">where</span> @<span class="keyword">num</span> &lt;= <span class="number">1</span> <span class="keyword">order</span> <span class="keyword">by</span> cnt;</span><br><span class="line">+<span class="comment">-----+------+-----+------------------+</span></span><br><span class="line">| id  | slot | cnt | @num := @num + 1 |</span><br><span class="line">+<span class="comment">-----+------+-----+------------------+</span></span><br><span class="line">|   1 |    0 |  16 |                1 |</span><br><span class="line">|   2 |    1 |  23 |                2 |</span><br><span class="line">|   3 |    2 |  15 |                3 |</span><br><span class="line"></span><br><span class="line">.......................................</span><br><span class="line">.......................................</span><br><span class="line">.......................................</span><br><span class="line"></span><br><span class="line">|  98 |   97 |  22 |               98 |</span><br><span class="line">|  99 |   98 |  20 |               99 |</span><br><span class="line">| 100 |   99 |  20 |              100 |</span><br><span class="line">+<span class="comment">-----+------+-----+------------------+</span></span><br><span class="line">100 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> <span class="keyword">id</span>, slot, cnt, @<span class="keyword">num</span> := @<span class="keyword">num</span> + <span class="number">1</span> <span class="keyword">from</span> myapp_thread_count <span class="keyword">where</span> @<span class="keyword">num</span> &lt;= <span class="number">1</span> <span class="keyword">order</span> <span class="keyword">by</span> cnt\G</span><br><span class="line">*************************** <span class="number">1.</span> <span class="keyword">row</span> ***************************</span><br><span class="line">           <span class="keyword">id</span>: <span class="number">1</span></span><br><span class="line">  select_type: SIMPLE</span><br><span class="line">        <span class="keyword">table</span>: myapp_thread_count</span><br><span class="line">   <span class="keyword">partitions</span>: <span class="literal">NULL</span></span><br><span class="line">         <span class="keyword">type</span>: <span class="keyword">ALL</span></span><br><span class="line">possible_keys: <span class="literal">NULL</span></span><br><span class="line">          <span class="keyword">key</span>: <span class="literal">NULL</span></span><br><span class="line">      key_len: <span class="literal">NULL</span></span><br><span class="line">          <span class="keyword">ref</span>: <span class="literal">NULL</span></span><br><span class="line">         <span class="keyword">rows</span>: <span class="number">100</span></span><br><span class="line">     filtered: <span class="number">100.00</span></span><br><span class="line">        Extra: <span class="keyword">Using</span> <span class="keyword">where</span>; Using filesort</span><br></pre></td></tr></table></figure>
+<div class="note success">
+            <p>filtered: 100.00，where 0 &lt;= 1 一直成立，通过 filter 的数目是 100，100 / 100 = 100%</p>
+          </div>
+<p>cnt 是非索引列，order by cnt 时 MySQL 只有一种执行计划 – 全表扫描然后进行 filesort（single pass filesort）。</p>
+<p>之所以会输出全部的 100 行是因为 <code>where @num &lt;= 1</code> 发生在 filesort 之前，而 filesort 发生在 <code>select id, slot, cnt, @num := @num + 1</code> 之前，因此 <code>where @num &lt;= 1</code> 等效于 <code>where 0 &lt;= 1</code>，即没有过滤掉任何的行。</p>
+<h2 id="Order-by-主键索引"><a href="#Order-by-主键索引" class="headerlink" title="Order by 主键索引"></a>Order by 主键索引</h2><p>主键索引是一种“全”覆盖索引。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> @<span class="keyword">num</span> := <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">id</span>, slot, cnt, @<span class="keyword">num</span> := @<span class="keyword">num</span> + <span class="number">1</span> <span class="keyword">from</span> myapp_thread_count <span class="keyword">where</span> @<span class="keyword">num</span> &lt;= <span class="number">1</span> <span class="keyword">order</span> <span class="keyword">by</span> <span class="keyword">id</span>;</span><br><span class="line">+<span class="comment">----+------+-----+------------------+</span></span><br><span class="line">| id | slot | cnt | @num := @num + 1 |</span><br><span class="line">+<span class="comment">----+------+-----+------------------+</span></span><br><span class="line">|  1 |    0 |  16 |                1 |</span><br><span class="line">|  2 |    1 |  23 |                2 |</span><br><span class="line">+<span class="comment">----+------+-----+------------------+</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> <span class="keyword">id</span>, slot, cnt, @<span class="keyword">num</span> := @<span class="keyword">num</span> + <span class="number">1</span> <span class="keyword">from</span> myapp_thread_count <span class="keyword">where</span> @<span class="keyword">num</span> &lt;= <span class="number">1</span> <span class="keyword">order</span> <span class="keyword">by</span> <span class="keyword">id</span>\G</span><br><span class="line"></span><br><span class="line">*************************** <span class="number">1.</span> <span class="keyword">row</span> ***************************</span><br><span class="line">           <span class="keyword">id</span>: <span class="number">1</span></span><br><span class="line">  select_type: SIMPLE</span><br><span class="line">        <span class="keyword">table</span>: myapp_thread_count</span><br><span class="line">   <span class="keyword">partitions</span>: <span class="literal">NULL</span></span><br><span class="line">         <span class="keyword">type</span>: <span class="keyword">index</span></span><br><span class="line">possible_keys: <span class="literal">NULL</span></span><br><span class="line">          <span class="keyword">key</span>: PRIMARY</span><br><span class="line">      key_len: <span class="number">4</span></span><br><span class="line">          <span class="keyword">ref</span>: <span class="literal">NULL</span></span><br><span class="line">         <span class="keyword">rows</span>: <span class="number">100</span></span><br><span class="line">     filtered: <span class="number">100.00</span></span><br><span class="line">        Extra: <span class="keyword">Using</span> <span class="keyword">where</span></span><br></pre></td></tr></table></figure>
+<div class="note danger">
+            <p>filtered: 100.00 不准确，Optimizer 不知道 @num 会变，它以为 where 0 &lt;= 1 一直成立，所以给出的数是 100 / 100 = 100%，而实际应该是 2 / 100 = 2%，<br>2% 这个数字对于 filtered 而言就很糟糕了，说明做了很多无用功。</p>
+          </div>
+<h2 id="性能优化"><a href="#性能优化" class="headerlink" title="性能优化"></a>性能优化</h2><ol>
+<li>Determine whether the query has to examine too many rows，是不是拷贝了太多行，是不是每行又具有太多的列，比如上面的所有例子中都没有过滤条件被下推到引擎层，所以均是全量地用 where 进行了 examine（rows 都是 100）。</li>
+<li>perform post-retrieval sorting or use temporary tables，就比如上图的 filesort block。</li>
+<li>access data with random I/O, or look up full rows from the table to retrieve columns not included in the index，后者是会导致前者的。</li>
+</ol>
+<h2 id="One-final-example"><a href="#One-final-example" class="headerlink" title="One final example"></a>One final example</h2><p>表中共有 100 条记录。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">id</span>, slot, cnt <span class="keyword">from</span> myapp_thread_count <span class="keyword">where</span> slot &gt; N <span class="keyword">order</span> <span class="keyword">by</span> slot;</span><br></pre></td></tr></table></figure>
+<p>slot 是索引，但是不是覆盖索引，order by slot 时 MySQL 理论上有两种执行计划：</p>
+<ol>
+<li>range scan slot index，通过 B+树 lookup skip 过 [0 ～ N]，获得主键索引，然后再利用主键索引去获得未被覆盖的列的值，会触发一些 Random IO；</li>
+<li>既然这个索引不能覆盖，索性直接抛弃这个索引，进行全表扫描，进行<code>where slot &gt; N</code>过滤，然后进行 filesort（single pass filesort）。Reads all the columns needed for the query, sorts them by the ORDER BY columns, and then scans the sorted list and outputs the specified columns. 这种方式会触发排序算法，但是会减少 Random IO，trades random I/O for more sequential I/O。</li>
+</ol>
+<p>让我们来看看在不同的 N 取值时，Optimizer 会做出怎么的决策。</p>
+<h3 id="N-97"><a href="#N-97" class="headerlink" title="N = 97"></a>N = 97</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> <span class="keyword">id</span>, slot, cnt <span class="keyword">from</span> myapp_thread_count <span class="keyword">where</span> slot &gt; <span class="number">97</span> <span class="keyword">order</span> <span class="keyword">by</span> slot\G</span><br><span class="line">*************************** <span class="number">1.</span> <span class="keyword">row</span> ***************************</span><br><span class="line">           <span class="keyword">id</span>: <span class="number">1</span></span><br><span class="line">  select_type: SIMPLE</span><br><span class="line">        <span class="keyword">table</span>: myapp_thread_count</span><br><span class="line">   <span class="keyword">partitions</span>: <span class="literal">NULL</span></span><br><span class="line">         <span class="keyword">type</span>: <span class="keyword">range</span></span><br><span class="line">possible_keys: slot</span><br><span class="line">          <span class="keyword">key</span>: slot</span><br><span class="line">      key_len: <span class="number">1</span></span><br><span class="line">          <span class="keyword">ref</span>: <span class="literal">NULL</span></span><br><span class="line">         <span class="keyword">rows</span>: <span class="number">2</span></span><br><span class="line">     filtered: <span class="number">100.00</span></span><br><span class="line">        Extra: <span class="keyword">Using</span> <span class="keyword">index</span> condition</span><br></pre></td></tr></table></figure>
+<div class="note danger">
+            <p>filtered: 100.00% = 2 / 2</p>
+          </div>
+<p>当 N 接近总数 100 时，Optimizer 采用了第一种执行计划，N 接近总数 100，触发的 Random IO 次数会比较少，相较之下，第二种执行计划则需要 examine 表中的全部记录（copy，where filter，filesort）。</p>
+<h3 id="N-80"><a href="#N-80" class="headerlink" title="N = 80"></a>N = 80</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> <span class="keyword">id</span>, slot, cnt <span class="keyword">from</span> myapp_thread_count <span class="keyword">where</span> slot &gt; <span class="number">80</span> <span class="keyword">order</span> <span class="keyword">by</span> slot\G</span><br><span class="line">*************************** <span class="number">1.</span> <span class="keyword">row</span> ***************************</span><br><span class="line">           <span class="keyword">id</span>: <span class="number">1</span></span><br><span class="line">  select_type: SIMPLE</span><br><span class="line">        <span class="keyword">table</span>: myapp_thread_count</span><br><span class="line">   <span class="keyword">partitions</span>: <span class="literal">NULL</span></span><br><span class="line">         <span class="keyword">type</span>: <span class="keyword">ALL</span></span><br><span class="line">possible_keys: slot</span><br><span class="line">          <span class="keyword">key</span>: <span class="literal">NULL</span></span><br><span class="line">      key_len: <span class="literal">NULL</span></span><br><span class="line">          <span class="keyword">ref</span>: <span class="literal">NULL</span></span><br><span class="line">         <span class="keyword">rows</span>: <span class="number">100</span></span><br><span class="line">     filtered: <span class="number">19.00</span></span><br><span class="line">        Extra: <span class="keyword">Using</span> <span class="keyword">where</span>; Using filesort</span><br></pre></td></tr></table></figure>
+<div class="note danger">
+            <p>filtered: 19.00% = 19 / 100</p>
+          </div>
+<p>当 N = 80 时，Optimizer 采用了第二种执行计划，也许是 Optimizer 认为触发那么多 Random IO，还不如直接全表扫描（more sequential），copy，where filter，filesort。</p>
+<div class="note info">
+            <p>rows: N，copy 了 N 条记录，过滤后剩下 M 条记录，则 filtered = M / N，衡量了 MySQL server 从引擎层获取数据的精度。当然 N，M 这都是 explain 的估计，因为并没有实际进行 SQL 语句的执行。</p>
+          </div>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/27/MySQL-优化-Count-In-Pagination/" rel="prev" title="MySQL 优化 Count in Pagination">
+      <i class="fa fa-chevron-left"></i> MySQL 优化 Count in Pagination
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Order-by-覆盖索引"><span class="nav-number">1.</span> <span class="nav-text">Order by 覆盖索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Order-by-非覆盖索引"><span class="nav-number">2.</span> <span class="nav-text">Order by 非覆盖索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Order-by-非索引列"><span class="nav-number">3.</span> <span class="nav-text">Order by 非索引列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Order-by-主键索引"><span class="nav-number">4.</span> <span class="nav-text">Order by 主键索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#性能优化"><span class="nav-number">5.</span> <span class="nav-text">性能优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#One-final-example"><span class="nav-number">6.</span> <span class="nav-text">One final example</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#N-97"><span class="nav-number">6.1.</span> <span class="nav-text">N = 97</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#N-80"><span class="nav-number">6.2.</span> <span class="nav-text">N = 80</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">111</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
