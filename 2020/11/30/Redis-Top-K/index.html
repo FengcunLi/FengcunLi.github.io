@@ -28,7 +28,7 @@
 <meta property="og:site_name" content="The next stop - Antarctica">
 <meta property="og:description" content="排行榜，比如粉丝排行榜，播放排行榜等，排行榜本身含义非常清晰，就是维护一个列表，其中每个条目有一个 score，依据 score 进行排序，形成排行榜。 redis zset 由于如下特性天生支持排行榜需求：  zset 是有序集合类型 zset 支持常用的添加，删除，范围读取操作 有序集合的成员是唯一的，但分数(score)却可以重复">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-11-30T05:03:45.953Z">
+<meta property="og:updated_time" content="2021-02-13T15:43:44.739Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Redis Top-K">
 <meta name="twitter:description" content="排行榜，比如粉丝排行榜，播放排行榜等，排行榜本身含义非常清晰，就是维护一个列表，其中每个条目有一个 score，依据 score 进行排序，形成排行榜。 redis zset 由于如下特性天生支持排行榜需求：  zset 是有序集合类型 zset 支持常用的添加，删除，范围读取操作 有序集合的成员是唯一的，但分数(score)却可以重复">
@@ -184,7 +184,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-30 13:03:45" itemprop="dateModified" datetime="2020-11-30T13:03:45+08:00">2020-11-30</time>
+                <time title="修改时间：2021-02-13 23:43:44" itemprop="dateModified" datetime="2021-02-13T23:43:44+08:00">2021-02-13</time>
               </span>
 
           
@@ -227,7 +227,6 @@
 <ul>
 <li>这里范围是 <code>0</code> 到 <code>K-1</code>，原因是：redis zset 下标从 0 开始；</li>
 <li>ZREVRANGE 是倒序取数据；</li>
-<li>redis zset ZRANGE 与 ZREVRANGE 当元素 score 相同时会默认根据 member 字典序排序；</li>
 <li>withscores 会将 member 与对应 score 一起返回</li>
 </ul>
 <p>复杂度：</p>
@@ -333,7 +332,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">111</span>
+          <span class="site-state-item-count">114</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
