@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Kafka:出身 log –&amp;gt; 重存储 –&amp;gt; 甚至可以做 datastore RabbitMQ:出身 MQ (IPC) –&amp;gt; 重通信(尽快投递出去，otherwise run out of memory) –&amp;gt; 微服务 middleman 摘抄自 When to use RabbitMQ or Apache Kafka">
+<meta name="keywords" content="Kafka,RabbitMQ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RabbitMQ vs Kafka">
+<meta property="og:url" content="http://yoursite.com/2021/01/18/RabbitMQ-vs-Kafka/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="Kafka:出身 log –&amp;gt; 重存储 –&amp;gt; 甚至可以做 datastore RabbitMQ:出身 MQ (IPC) –&amp;gt; 重通信(尽快投递出去，otherwise run out of memory) –&amp;gt; 微服务 middleman 摘抄自 When to use RabbitMQ or Apache Kafka">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2021/01/18/RabbitMQ-vs-Kafka/exchanges-topic-fanout-direct.png">
+<meta property="og:updated_time" content="2021-02-18T08:18:41.385Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RabbitMQ vs Kafka">
+<meta name="twitter:description" content="Kafka:出身 log –&amp;gt; 重存储 –&amp;gt; 甚至可以做 datastore RabbitMQ:出身 MQ (IPC) –&amp;gt; 重通信(尽快投递出去，otherwise run out of memory) –&amp;gt; 微服务 middleman 摘抄自 When to use RabbitMQ or Apache Kafka">
+<meta name="twitter:image" content="http://yoursite.com/2021/01/18/RabbitMQ-vs-Kafka/exchanges-topic-fanout-direct.png">
+
+<link rel="canonical" href="http://yoursite.com/2021/01/18/RabbitMQ-vs-Kafka/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>RabbitMQ vs Kafka | The next stop - Antarctica</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/18/RabbitMQ-vs-Kafka/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          RabbitMQ vs Kafka
+        </h1>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-02-18 16:18:41" itemprop="dateModified" datetime="2021-02-18T16:18:41+08:00">2021-02-18</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Kafka:<br>出身 log –&gt; 重存储 –&gt; 甚至可以做 datastore</p>
+<p>RabbitMQ:<br>出身 MQ (IPC) –&gt; 重通信(尽快投递出去，otherwise run out of memory) –&gt; 微服务 middleman</p>
+<p>摘抄自 <a href="https://www.cloudamqp.com/blog/2019-12-12-when-to-use-rabbitmq-or-apache-kafka.html" target="_blank" rel="noopener">When to use RabbitMQ or Apache Kafka</a></p>
+<a id="more"></a>
+<p>If you’re asking yourself if Apache Kafka is better than RabbitMQ or if RabbitMQ is more reliable than Apache Kafka, I want to stop you right there. This article will discuss both from a broader perspective. It has focus is on the functionality offered by both systems and will guide you to make a good decision regarding which system to use when.<br>Some articles on the web make Apache Kafka shine in front of RabbitMQ, and others do the opposite. A lot of us could plead guilty to listening to the hype and running with the crowd. I feel that it’s important to know that the decision of whether to go with RabbitMQ or Kafka is dependent on the requirements of your project, and a true comparison can only be made if you have used them both with the correct setup in a fitting scenario.</p>
+<p>84codes and I have been in the industry for a long time providing hosted solutions for both RabbitMQ through the service CloudAMQP, and Apache Kafka through the service CloudKarafka. Since I have seen so many use cases and different application setups by both CloudAMQP and CloudKarafka users, I feel like I can authoritatively answer use case questions, based on my experience, on both RabbitMQ and Apache Kafka.</p>
+<p>In this article, my mission is to share insights based on the many developer-to-developer chats I have had over the years and to try to convey their thoughts about why they were choosing a specific message broker service over another.</p>
+<blockquote>
+<p>The terminology used in this article includes:<br>A message queue is a queue in RabbitMQ, and this “queue” in Kafka is referred to as a log, but to simplify the information in the article, I will refer to queues instead of switching to ‘log’ all the time.<br>A message in Kafka is often called a record, but again, I will refer to messages in order to simplify the information here.<br>When I write about a topic in Kafka, you can think of it as a categorization inside a message queue. Kafka topics are divided into partitions which contain records in an unchangeable sequence.</p>
+</blockquote>
+<p>Both systems pass messages between producers and consumers through queues or topics. A message can include any kind of information. It could, for example, have information about an event that has happened on a website or it could be a simple text message that triggers an event on another application.</p>
+<p><strong>This kind of system</strong> is ideal for connecting different components, building microservices, real-time streaming of data or when passing work to remote workers.</p>
+<p>According to Confluent, more than one-third of fortune 500 companies utilize Apache Kafka. Various big industries also rely on RabbitMQ, like Zalando, WeWork, Wunderlist and Bloomberg.</p>
+<h2 id="The-big-question-when-to-use-Kafka-and-when-to-use-RabbitMQ"><a href="#The-big-question-when-to-use-Kafka-and-when-to-use-RabbitMQ" class="headerlink" title="The big question; when to use Kafka, and when to use RabbitMQ?"></a>The big question; when to use Kafka, and when to use RabbitMQ?</h2><p>I wrote an answer on Stackoverflow a while ago to answer the question, “Is there any reason to use RabbitMQ over Kafka?”. The answer is just a few lines, but it has proven to be an answer many people have found helpful.</p>
+<p>I will try to break down the answer into sub answers and try to explain each part. First of all, I wrote</p>
+<blockquote>
+<p>RabbitMQ is a solid, mature, general-purpose message broker that supports several protocols such as AMQP, MQTT, STOMP, and more. RabbitMQ can handle high throughput. A common use case for it is to handle background jobs or to act as a message broker between microservices. Kafka is a message bus optimized for high-<strong>ingress</strong> data streams and replay. Kafka can be seen as a durable message broker where applications can process and re-process streamed data on disk.</p>
+</blockquote>
+<p>Regarding the term “mature”; RabbitMQ has simply been on the market for a longer time then Kafka (2007 vs 2011, respectively). Both RabbitMQ and Kafka are “mature”, which means they both are considered to be reliable and scalable messaging systems.</p>
+<h3 id="Message-handling-message-replay"><a href="#Message-handling-message-replay" class="headerlink" title="Message handling (message replay)"></a>Message handling (message replay)</h3><p><strong>Here is the main difference between them;</strong> unlike most messaging systems, the message queue in Kafka is persistent. The data sent is stored until a specified retention period has passed, either a period of time or a size limit. The message stays in the queue until the retention period/size limit is exceeded, meaning the message is not removed once it’s consumed. Instead, it can be replayed or consumed multiple times, which is a setting that can be adjusted.</p>
+<p>In RabbitMQ, messages are stored until a receiving application connects and receives a message off the queue. The client can either acknowledge the message when it receives it or when the client has completely processed the message. In either situation, once the message is acked, it’s removed from the queue.</p>
+<p>If you are using replay in Kafka, ensure that you are using it in the correct way and for the correct reason. <strong>Replaying an event multiple times that should just happen a single time; e.g. if you happen to save a customer order multiple times, is not ideal in most usage scenarios.</strong> Where a replay does come in handy is when you have a bug in the consumer that requires deploying a newer version, and you need to re-processing some or all of the messages.</p>
+<h3 id="Protocol"><a href="#Protocol" class="headerlink" title="Protocol"></a>Protocol</h3><p>I also mentioned that “RabbitMQ supports several standardized protocols such as AMQP, MQTT, STOMP, etc.”, where it natively implements AMQP 0.9.1. The use of a standardized message protocol allows you to replace your RabbitMQ broker with any AMQP based broker.</p>
+<p>Kafka uses a custom protocol, on top of TCP/IP for communication between applications and the cluster. Kafka can’t simply be removed and replaced, since its the only software implementing this protocol.</p>
+<p>The ability of RabbitMQ to support different protocols means that it can be used in many different scenarios.</p>
+<p>The newest version of AMQP differs drastically from the officially supported release, 0.9.1. It is unlikely that RabbitMQ will deviate from AMQP 0.9.1. Version 1.0 of the protocol released on October 30, 2011 but has not gained widespread support from developers. AMQP 1.0 is available via plugin.</p>
+<h3 id="Routing"><a href="#Routing" class="headerlink" title="Routing"></a>Routing</h3><p><img src="/2021/01/18/RabbitMQ-vs-Kafka/exchanges-topic-fanout-direct.png" alt="exchanges-topic-fanout-direct"></p>
+<p>The next part of the answer is about routing, I wrote: “Kafka has a very simple routing approach. RabbitMQ has better options if you need to route your messages in complex ways to your consumers.”</p>
+<p>Chief among RabbitMQ’s benefits is the ability to flexibly route messages. Direct or regular expression-based routing allows messages to reach specific queues without additional code. RabbitMQ has four different routing options: direct, topic, fanout, and header exchanges. Direct exchanges route messages to all queues with an exact match for something called a routing key. The fanout exchange can broadcast a message to every queue that is bound to the exchange. The topics method is similar to direct as it uses a routing key but allows for wildcard matching along with exact matching. More information about the different exchange types can be found <a href="https://www.cloudamqp.com/blog/2015-09-03-part4-rabbitmq-for-beginners-exchanges-routing-keys-bindings.html" target="_blank" rel="noopener">here</a>.</p>
+<p>Kafka does not support routing; Kafka topics are divided into partitions which contain messages in an unchangeable sequence. You can make use of consumer groups and persistent topics as a substitute for the routing in RabbitMQ, where you send all messages to one topic, but let your consumer groups subscribe from different offsets.</p>
+<p>You can create <a href="https://www.confluent.io/blog/putting-events-in-their-place-with-dynamic-routing/" target="_blank" rel="noopener">dynamic routing</a> yourself with help of Kafka streams, where you dynamically route events to topics, but it’s not a default feature.</p>
+<h3 id="Message-Priority"><a href="#Message-Priority" class="headerlink" title="Message Priority"></a>Message Priority</h3><p>RabbitMQ supports something called priority queues, meaning that a queue can be set to have a range of priorities. The priority of each message can be set when it is published. Depending on the priority of the message it is placed in the appropriate priority queue. So, when could priority queues be used? Here follow a simple example: We are running database backups every day, for our hosted database service ElephantSQL. Thousands of backup events are added to RabbitMQ without order. A customer can also trigger a backup on demand, and if that happens, a new backup event i added to the queue, but with a higher priority.</p>
+<p>A message cannot be sent with a priority level, nor be delivered in priority order, in Kafka. All messages in Kafka are stored and delivered in the order in which they are received regardless of how busy the consumer side is.</p>
+<h3 id="Acknowledgment-Commit-or-Confirm"><a href="#Acknowledgment-Commit-or-Confirm" class="headerlink" title="Acknowledgment (Commit or Confirm)"></a>Acknowledgment (Commit or Confirm)</h3><p>“Acknowledgment”, is the signal passed between communicating processes to signify acknowledgment, i.e., receipt of the message sent or handled.</p>
+<ul>
+<li><p>发送端确认 Both Kafka and RabbitMQ have support for producer acknowledgments (publisher confirms in RabbitMQ) to make sure published messages have safely reached the broker.</p>
+</li>
+<li><p>消费端确认 When a node delivers a message to a consumer, it has to decide whether the message should be considered handled (or at least received) by the consumer. The client can either ack the message when it receives it, or when the client has completely processed the message.</p>
+</li>
+</ul>
+<p>RabbitMQ can consider a message delivered once it’s sent out, or wait for the consumer to manually acknowledgement when it has been received.</p>
+<p>Kafka maintains an offset for each message in a partition. The committed position is the last offset that has been saved. Should the process fail and restart, is this the offset that it will recover to. A consumer in Kafka can either automatically commit offsets periodically, or it can choose to control this committed position manually.</p>
+<p>How Kafka keeps track of what’s been consumed and what has not differs in different versions of Apache Kafka. In earlier versions, the consumer kept track of the offset.</p>
+<p>A RabbitMQ client can also nack (negative acknowledgement) a message when it fails to handle the message. The message will be returned to the queue it came from as if it were a new message; this is useful in case of a temporary failure on the consumer side.</p>
+<h3 id="How-to-work-with-the-queues"><a href="#How-to-work-with-the-queues" class="headerlink" title="How to work with the queues?"></a>How to work with the queues?</h3><p>RabbitMQ’s queues are fastest when they’re empty, while Kafka is designed for <strong>holding</strong> and <strong>distributing large volumes of messages</strong>. Kafka retains large amounts of data with very little overhead.</p>
+<p>People that are trying out RabbitMQ are probably not aware of the the feature lazy queues. Lazy queues are queues where the messages are automatically stored to disk, thereby minimizing the RAM usage, but extending the throughput time. In our experience, lazy queues create a more stable cluster with better predictive performance.<br>If you are sending a lot of messages at once (e.g. processing batch jobs), or if you think that your consumers will not consistently keep up with the speed of the publishers（大量消息，并有可能要存储大量消息，快 publisher(high-ingress)，慢 consumer（甚至可能无 consumer），这种场景正是 Kafka 的设计场景，此处的 lazy queues 可以看作是向 Kafka 靠近的一种尝试。）, we recommend that you enable lazy queues.</p>
+<h3 id="Scaling"><a href="#Scaling" class="headerlink" title="Scaling"></a>Scaling</h3><p>Scaling means the process of increasing or decreasing the capacity of the system. RabbitMQ and Kafka can scale in different ways, you can adjust the number of consumers, the power of the broker or add more nodes into the system.</p>
+<h4 id="CONSUMER-SCALING"><a href="#CONSUMER-SCALING" class="headerlink" title="CONSUMER SCALING"></a>CONSUMER SCALING</h4><p>If you publish quicker then you can consume in RabbitMQ, your queue will start to grow and might end up with millions of messages, finally causing RabbitMQ to run out of memory. In this case, you can scale the number of consumers that are handling (consuming) your messages. Each queue in RabbitMQ can have many consumers, and these consumers can all “compete” to consume messages from the queue. The message processing is spread across all active consumers, so scaling up and down in RabbitMQ can be done by simply adding and removing consumers.</p>
+<p>In Kafka, the way to distribute consumers is by using topic partitions, where each consumer in a group is dedicated to one or more partitions. You can use the partition mechanism to send each partition different set of messages by business key, for example, by user id, location, etc.</p>
+<h4 id="SCALING-BROKER"><a href="#SCALING-BROKER" class="headerlink" title="SCALING BROKER"></a>SCALING BROKER</h4><p>In the answer at stackoverflow I wrote; “Kafka is built from the ground up with horizontal scaling (adding more machines) in mind, while RabbitMQ is mostly designed for vertical scaling (adding more power)”. This part of the answer is giving information about the machines running Kafka or RabbitMQ.</p>
+<p>Horizontal scaling does not always give you a better performance in RabbitMQ. The best performance levels are achieved with vertical scaling (adding more power). Horizontal scaling is possible in RabbitMQ, but that means that you must set up clustering between your nodes, which will probably slow down your setup.</p>
+<p>In Kafka, you can scale by adding more nodes to the cluster or by adding more partitions to topics. This is sometimes easier than to add CPU or memory into an existing machine like you have to do in RabbitMQ.</p>
+<p>Many people and blogs, including Confluent, are talking about how great Kafka is at scaling. And sure, Kafka can scale further than RabbitMQ since there will always be a limit on how beefy the machines are that you can buy. However, in this case, we need to remember the reason why we are using a broker. You probably have a message volume that both Kafka and RabbitMQ can support without any problems at all, and most of us don’t deal with a scale where RabbitMQ runs out of space.</p>
+<h3 id="Log-compaction"><a href="#Log-compaction" class="headerlink" title="Log compaction"></a>Log compaction</h3><p>A feature that is worth mentioning in Apache Kafka, that does not exist in RabbitMQ is the log compaction strategy. Log compaction ensures that Kafka always retains the last known value for each message key within the queue for a single topic partition. Kafka simply keeps the latest version of a message and delete the older versions with the same key.</p>
+<p>Log compaction can be seen as a way of using Kafka as a database. You set the retention period to “forever” or enable log compaction on a topic, and voila, the data is stored forever.</p>
+<p>An example of where we use log compaction is when we are showing the latest status of one cluster among thousands of clusters running. Instead of storing whether a cluster is responding or not all the time, we store the final status. The latest information is available immediately, such as how many messages are currently in the queue.</p>
+<h3 id="Monitoring"><a href="#Monitoring" class="headerlink" title="Monitoring"></a>Monitoring</h3><p>RabbitMQ has a user-friendly interface that lets you monitor and handle your RabbitMQ server from a web browser. Among other things, queues, connections, channels, exchanges, users and user permissions can be handled (created, deleted, and listed) in the browser, and you can monitor message rates and send/receive messages manually.</p>
+<p>For Kafka, we have a number of open-source tools for monitoring, and also some commercial ones, offering administration and monitoring functionalities. Information about different monitoring tools for Kafka can be found <a href="https://medium.com/@giorgosmyrianthous/overview-of-ui-monitoring-tools-for-apache-kafka-clusters-9ca516c165bd" target="_blank" rel="noopener">here</a>.</p>
+<h3 id="PUSH-or-PULL"><a href="#PUSH-or-PULL" class="headerlink" title="PUSH or PULL"></a>PUSH or PULL</h3><p>Messages are pushed from RabbitMQ to the consumer. It’s important to configure a prefetch limit in order to prevent overwhelming the consumer (if messages arrive at the queue faster than the consumers can process them). Consumers can also pull messages from RabbitMQ, but it’s not recommended. Kafka, on the other hand, uses a pull model, as described earlier, where consumers request batches of messages from a given offset.</p>
+<h3 id="License"><a href="#License" class="headerlink" title="License"></a>License</h3><p>RabbitMQ was originally created by Rabbit Technologies Ltd. The project became part of Pivotal Software in May 2013. The source code for RabbitMQ is released under the Mozilla Public License. The license has never changed (as of Nov. 2019).</p>
+<p>Kafka was originally created at LinkedIn. It was given open-source status and passed to the Apache Foundation in 2011. Apache Kafka is covered by the Apache 2.0 license. Some of the components often used in combination with Kafka are covered by another license called Confluent Community License, e.g. Rest Proxy, Schema Registry, and KSL. This license still allows people to freely download, modify, and redistribute the code (very much like Apache 2.0 does), but it does not allow anyone to provide the software as a SaaS offering.</p>
+<p>Both licenses are free and open-source software licenses. If Kafka changes the license again to something even stricter, this is where RabbitMQ has the advantage as it can easily be replaced by another AMQP broker while Kafka cannot.</p>
+<h3 id="Complexity"><a href="#Complexity" class="headerlink" title="Complexity"></a>Complexity</h3><p>Personally, I thought it was easier to get started with RabbitMQ and found it easy to work with. And as a customer of ours said;</p>
+<p>“We didn’t spend any time learning RabbitMQ and it worked for years. It definitely reduced tons of operational cost during DoorDash’s hyper-growth.” Zhaobang Liu, Doordash<br>In my opinion, the architecture in Kafka brings more complexity, as it does include more concepts such as topics/partitions/message offsets, etc. from the very beginning. You have to be familiar with consumer groups and how to handle offsets.</p>
+<p>As Kafka and RabbitMQ operators, we feel that it’s a bit more complicated to handle failures in Kafka. The process to recover or fix something is usually more time consuming and bit more messy.</p>
+<h3 id="The-Kafka-Ecosystem"><a href="#The-Kafka-Ecosystem" class="headerlink" title="The Kafka Ecosystem"></a>The Kafka Ecosystem</h3><p>Kafka is not just a broker, it’s a streaming platform, and there are many tools available that are easy to integrate with Kafka outside the main distribution. The Kafka ecosystem consists of Kafka Core, Kafka Streams, Kafka Connect, Kafka REST Proxy, and the Schema Registry. Please note that most of the additional tools of the Kafka ecosystem come from Confluent and are not part of Apache.</p>
+<p>The good thing with all these tools is that you can configure a huge system before you need to write a single line of code.</p>
+<p>Kafka Connect lets you integrate other systems with Kafka. You can add a data source that allows you to consume data from that source and store it in Kafka, or the other way around, and have all data in a topic sent to another system for processing or storage. There are many possibilities with using Kafka Connect, and it’s easy to get started since there are already a lot of connectors available.</p>
+<p>The Kafka REST Proxy gives you the opportunity to receive metadata from a cluster and produce and consume messages over a simple REST API. This feature can easily be enabled from the Control Panel for your cluster.</p>
+<h2 id="Common-use-cases-RabbitMQ-vs-Apache-Kafka"><a href="#Common-use-cases-RabbitMQ-vs-Apache-Kafka" class="headerlink" title="Common use cases - RabbitMQ vs Apache Kafka"></a>Common use cases - RabbitMQ vs Apache Kafka</h2><p>There has been a lot of information about what one system can or can’t do. Here are two main use cases describing how I and many of our customers have been thinking about and making a decision on which system to use. Of course, we have also seen situations where a customer has built a system where one system should have been used instead of the other one.</p>
+<h3 id="Use-cases-for-RabbitMQ"><a href="#Use-cases-for-RabbitMQ" class="headerlink" title="Use cases for RabbitMQ"></a>Use cases for RabbitMQ</h3><p>In general, if you want a simple/traditional pub-sub message broker, the obvious choice is RabbitMQ, as it will most probably scale more than you will ever need it to scale. I would have chosen RabbitMQ if my requirements were simple enough to deal with system communication through channels/queues, and where retention and streaming is not a requirement.</p>
+<p>There are two main situations where I would choose RabbitMQ; For long-running tasks, when I need to run reliable background jobs. And for communication and integration within, and between applications, i.e as middleman between microservices, where a system simply needs to notify another part of the system to start to work on a task, like ordering handling in a webshop (order placed, update order status, send order, payment, etc.).</p>
+<h4 id="LONG-RUNNING-TASKS-异步提速"><a href="#LONG-RUNNING-TASKS-异步提速" class="headerlink" title="LONG-RUNNING TASKS 异步提速"></a>LONG-RUNNING TASKS 异步提速</h4><p>Message queues enable asynchronous processing, meaning that they allow you to put a message in a queue without processing it immediately. RabbitMQ is ideal for long-running tasks.</p>
+<p>An example can be found in our RabbitMQ beginner guide, which follows a classic scenario where a web application allows users to upload information to a web site. The site will handle this information, generate a PDF, and email it back to the user. Completing the tasks in this example case takes several seconds, which is one of the reasons why a message queue will be used.</p>
+<p>Many of our customers let RabbitMQ queues serve as event buses allowing web servers to respond quickly to requests instead of being forced to perform computationally intensive tasks on the spot.</p>
+<p>Take Softonic as an example, <a href="https://www.cloudamqp.com/blog/2019-01-18-softonic-userstory-rabbitmq-eventbased-communication.html" target="_blank" rel="noopener">they</a> use RabbitMQ in an event-based microservices architecture that supports 100 million users a month.</p>
+<h4 id="MIDDLEMAN-IN-A-MICROSERVICE-ARCHITECTURES-应用解耦"><a href="#MIDDLEMAN-IN-A-MICROSERVICE-ARCHITECTURES-应用解耦" class="headerlink" title="MIDDLEMAN IN A MICROSERVICE ARCHITECTURES 应用解耦"></a>MIDDLEMAN IN A MICROSERVICE ARCHITECTURES 应用解耦</h4><p>RabbitMQ is also used by many customers for microservice architecture, where it serves as a means of communicating between applications, avoiding bottlenecks passing messages.</p>
+<p>You can for example read how Parkster (a digital parking service) are <a href="https://www.cloudamqp.com/blog/2017-09-25-breaking-down-a-monolithic-system-into-microservices.html" target="_blank" rel="noopener">breaking down a system into multiple microservices by using RabbitMQ</a>.</p>
+<p>MapQuest is a large direction service supporting 23.1 million unique mobile users every month. Map updates are published to personal devices and software located in organizations and corporations. Here <a href="https://developer.mapquest.com/devblog/2016/10/19/five-things-users-should-know-about-mapquests-directions-api/index.html" target="_blank" rel="noopener">RabbitMQ topics spread over an appropriate number of queues</a>. Tens of millions of users receive accurate enterprise-grade map information through the framework.</p>
+<h3 id="Use-cases-for-Apache-Kafka"><a href="#Use-cases-for-Apache-Kafka" class="headerlink" title="Use cases for Apache Kafka"></a>Use cases for Apache Kafka</h3><p>In general, if you want a framework for storing, reading (re-reading), and analyzing streaming data, use Apache Kafka. It’s ideal for systems that are audited or those that need to store messages permanently. These can also be broken down into two main use cases for analyzing data (tracking, ingestion, logging, security etc.) or real-time processing.</p>
+<h4 id="DATA-ANALYSIS-TRACKING-INGESTION-LOGGING-SECURITY"><a href="#DATA-ANALYSIS-TRACKING-INGESTION-LOGGING-SECURITY" class="headerlink" title="DATA ANALYSIS: TRACKING, INGESTION, LOGGING, SECURITY"></a>DATA ANALYSIS: TRACKING, INGESTION, LOGGING, SECURITY</h4><p>In all these cases, large amounts of data need to be collected, stored, and handled. Companies that need to gain insights into data, provide search features, auditing or analysis of tons of data justify the use of Kafka.</p>
+<p>According to the creators of Apache Kafka, the original use case for Kafka was to track website activity including page views, searches, uploads or other actions users may take. This kind of activity tracking often requires a very high volume of throughput, since messages are generated for each action and for each user. Many of these activities - in fact, all of the system activities - can be stored in Kafka and handled as needed.</p>
+<p>Producers of data only need to send their data to a single place while a host of backend services can consume the data as required. Major analytics, search and storage systems have integrations with Kafka.</p>
+<p>Kafka can be used to stream large amounts of information to storage systems, and these days hard drive space is not a large expense.</p>
+<h4 id="REAL-TIME-PROCESSING"><a href="#REAL-TIME-PROCESSING" class="headerlink" title="REAL-TIME PROCESSING"></a>REAL-TIME PROCESSING</h4><p>Kafka acts as a high-throughput distributed system; <strong>source services push streams of data into the target services that pull them in real-time</strong>.<br>Kafka could be used in systems handling many producers in real-time with a small number of consumers; i.e. financial IT systems monitoring stock data.<br>Streaming services from Spotify to the Rabobank publish information in real-time over Kafka. The ability to handle high-throughput in real-time empowers applications., making these applications more powerful than ever before.</p>
+<p>CloudAMQP uses RabbitMQ in the automated process of server setups, but we have used Kafka when publishing logs and metrics(log 和 metrics 都是重存储的).</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Kafka/" rel="tag"># Kafka</a>
+              <a href="/tags/RabbitMQ/" rel="tag"># RabbitMQ</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/07/SNAKE/" rel="prev" title="SNAKE">
+      <i class="fa fa-chevron-left"></i> SNAKE
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/01/26/MySQL-优化-Deferred-join/" rel="next" title="MySQL 优化 Deferred Join">
+      MySQL 优化 Deferred Join <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#The-big-question-when-to-use-Kafka-and-when-to-use-RabbitMQ"><span class="nav-number">1.</span> <span class="nav-text">The big question; when to use Kafka, and when to use RabbitMQ?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Message-handling-message-replay"><span class="nav-number">1.1.</span> <span class="nav-text">Message handling (message replay)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Protocol"><span class="nav-number">1.2.</span> <span class="nav-text">Protocol</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Routing"><span class="nav-number">1.3.</span> <span class="nav-text">Routing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Message-Priority"><span class="nav-number">1.4.</span> <span class="nav-text">Message Priority</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Acknowledgment-Commit-or-Confirm"><span class="nav-number">1.5.</span> <span class="nav-text">Acknowledgment (Commit or Confirm)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#How-to-work-with-the-queues"><span class="nav-number">1.6.</span> <span class="nav-text">How to work with the queues?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Scaling"><span class="nav-number">1.7.</span> <span class="nav-text">Scaling</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#CONSUMER-SCALING"><span class="nav-number">1.7.1.</span> <span class="nav-text">CONSUMER SCALING</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SCALING-BROKER"><span class="nav-number">1.7.2.</span> <span class="nav-text">SCALING BROKER</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Log-compaction"><span class="nav-number">1.8.</span> <span class="nav-text">Log compaction</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Monitoring"><span class="nav-number">1.9.</span> <span class="nav-text">Monitoring</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PUSH-or-PULL"><span class="nav-number">1.10.</span> <span class="nav-text">PUSH or PULL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#License"><span class="nav-number">1.11.</span> <span class="nav-text">License</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Complexity"><span class="nav-number">1.12.</span> <span class="nav-text">Complexity</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#The-Kafka-Ecosystem"><span class="nav-number">1.13.</span> <span class="nav-text">The Kafka Ecosystem</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Common-use-cases-RabbitMQ-vs-Apache-Kafka"><span class="nav-number">2.</span> <span class="nav-text">Common use cases - RabbitMQ vs Apache Kafka</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Use-cases-for-RabbitMQ"><span class="nav-number">2.1.</span> <span class="nav-text">Use cases for RabbitMQ</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#LONG-RUNNING-TASKS-异步提速"><span class="nav-number">2.1.1.</span> <span class="nav-text">LONG-RUNNING TASKS 异步提速</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MIDDLEMAN-IN-A-MICROSERVICE-ARCHITECTURES-应用解耦"><span class="nav-number">2.1.2.</span> <span class="nav-text">MIDDLEMAN IN A MICROSERVICE ARCHITECTURES 应用解耦</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Use-cases-for-Apache-Kafka"><span class="nav-number">2.2.</span> <span class="nav-text">Use cases for Apache Kafka</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#DATA-ANALYSIS-TRACKING-INGESTION-LOGGING-SECURITY"><span class="nav-number">2.2.1.</span> <span class="nav-text">DATA ANALYSIS: TRACKING, INGESTION, LOGGING, SECURITY</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#REAL-TIME-PROCESSING"><span class="nav-number">2.2.2.</span> <span class="nav-text">REAL-TIME PROCESSING</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">117</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

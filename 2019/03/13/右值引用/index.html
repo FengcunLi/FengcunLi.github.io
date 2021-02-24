@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="表达式是有值的，必然是左值，纯右值，将亡值中的一种，且只能是一种。 右值引用 调用返回左值引用的函数，赋值、下标、解引用、前置递增、前置递减，这些都是左值表达式 调用返回非引用的函数，算术、关系、位、后置递增、后置递减，这些都是右值表达式  引用和左/右值之间是一种绑定关系，我们  只能将左值引用绑定到左值上 只能将右值引用绑定到右值上 const 左值引用可以绑定到右值上  一个右值引用类似于左">
+<meta name="keywords" content="C++">
+<meta property="og:type" content="article">
+<meta property="og:title" content="右值引用">
+<meta property="og:url" content="http://yoursite.com/2019/03/13/右值引用/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="表达式是有值的，必然是左值，纯右值，将亡值中的一种，且只能是一种。 右值引用 调用返回左值引用的函数，赋值、下标、解引用、前置递增、前置递减，这些都是左值表达式 调用返回非引用的函数，算术、关系、位、后置递增、后置递减，这些都是右值表达式  引用和左/右值之间是一种绑定关系，我们  只能将左值引用绑定到左值上 只能将右值引用绑定到右值上 const 左值引用可以绑定到右值上  一个右值引用类似于左">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2021-02-23T13:59:49.817Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="右值引用">
+<meta name="twitter:description" content="表达式是有值的，必然是左值，纯右值，将亡值中的一种，且只能是一种。 右值引用 调用返回左值引用的函数，赋值、下标、解引用、前置递增、前置递减，这些都是左值表达式 调用返回非引用的函数，算术、关系、位、后置递增、后置递减，这些都是右值表达式  引用和左/右值之间是一种绑定关系，我们  只能将左值引用绑定到左值上 只能将右值引用绑定到右值上 const 左值引用可以绑定到右值上  一个右值引用类似于左">
+
+<link rel="canonical" href="http://yoursite.com/2019/03/13/右值引用/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>右值引用 | The next stop - Antarctica</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/13/右值引用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          右值引用
+        </h1>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-02-23 21:59:49" itemprop="dateModified" datetime="2021-02-23T21:59:49+08:00">2021-02-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>表达式是有值的，必然是左值，纯右值，将亡值中的一种，且只能是一种。</p>
+<h2 id="右值引用"><a href="#右值引用" class="headerlink" title="右值引用"></a>右值引用</h2><ul>
+<li>调用返回左值引用的函数，赋值、下标、解引用、前置递增、前置递减，这些都是左值表达式</li>
+<li>调用返回非引用的函数，算术、关系、位、后置递增、后置递减，这些都是右值表达式</li>
+</ul>
+<p>引用和左/右值之间是一种绑定关系，我们</p>
+<ul>
+<li>只能将左值引用绑定到左值上</li>
+<li>只能将右值引用绑定到右值上</li>
+<li>const 左值引用可以绑定到右值上</li>
+</ul>
+<p>一个右值引用类似于左值引用，也不过是某个对象的别名而已，通过 <code>&amp;&amp;</code> 来标识一个右值引用。</p>
+<a id="more"></a>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">42</span>;</span><br><span class="line"><span class="keyword">int</span> &amp;r = i;                  <span class="comment">// 正确，左值引用绑定到左值上</span></span><br><span class="line"><span class="keyword">int</span> &amp;&amp;rr = i;                <span class="comment">// 错误，右值引用不能绑定到左值上</span></span><br><span class="line"><span class="keyword">int</span> &amp;r2 = i * <span class="number">42</span>;            <span class="comment">// 错误，左值引用不能绑定到右值上</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> &amp;r3 = i * <span class="number">42</span>;      <span class="comment">// 正确，const 左值引用可以绑定到右值上</span></span><br><span class="line"><span class="keyword">int</span> &amp;&amp;rr2 = i * <span class="number">42</span>;          <span class="comment">// 正确，右值引用绑定到右值上</span></span><br></pre></td></tr></table></figure>
+<p><strong>右值引用绑定到的对象没有其他用户。</strong><br><strong>变量是左值，因此一个右值引用类型的变量是一个左值，即 <code>rr</code> 和 <code>rr2</code> 是左值。</strong></p>
+<h2 id="move-函数"><a href="#move-函数" class="headerlink" title="move 函数"></a>move 函数</h2><p><code>move</code> 函数告诉编译器：我们有一个左值，但是我们希望像一个右值一样处理它。我们也必须同时认识到，调用 <code>move</code> 意味着承诺：除了对<strong>移后源对象</strong>赋值或者销毁外，我们将不再使用它。</p>
+<h2 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BoVector</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> size;</span><br><span class="line">    <span class="keyword">double</span> *arr_;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    BoVector() &#123;</span><br><span class="line">        size = <span class="number">5</span>;</span><br><span class="line">        arr_ = <span class="keyword">new</span> <span class="keyword">double</span>[size];</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"Default constructor"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    BoVector(<span class="keyword">const</span> BoVector &amp;rhs) &#123;</span><br><span class="line">        size = rhs.size;</span><br><span class="line">        arr_ = <span class="keyword">new</span> <span class="keyword">double</span>[size];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; size; i++) &#123;</span><br><span class="line">            arr_[i] = rhs.arr_[i];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"Copy constructor"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    BoVector(BoVector &amp;&amp;rhs) <span class="keyword">noexcept</span> &#123;</span><br><span class="line">        size = rhs.size;</span><br><span class="line">        arr_ = rhs.arr_;</span><br><span class="line"></span><br><span class="line">        rhs.arr_ = <span class="literal">nullptr</span>;</span><br><span class="line">        rhs.size = <span class="number">0</span>;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"Move constructor"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ~BoVector() &#123;</span><br><span class="line">        <span class="keyword">delete</span>[] arr_;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function">BoVector <span class="title">createBoVector</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;&#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们有一个类 <code>BoVector</code>，它具有默认构造函数、拷贝构造函数、移动构造函数。</p>
+<h3 id="Example-1"><a href="#Example-1" class="headerlink" title="Example 1"></a>Example 1</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(BoVector v)</span> </span>&#123;    <span class="comment">// pass-by-value</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo_by_ref</span><span class="params">(BoVector &amp;v)</span> </span>&#123;    <span class="comment">// pass-by-reference</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    BoVector reusable = createBoVector(); <span class="comment">// 由于编译器的优化，此处并没有临时对象的生成，也就没有拷贝/移动构造函数的调用，而只有默认构造函数的调用</span></span><br><span class="line">    foo_by_ref(reusable); <span class="comment">// pass-by-reference，没有任何构造函数的调用</span></span><br><span class="line">    foo(BoVector());       <span class="comment">// 同一，只有默认构造函数的调用</span></span><br><span class="line">    foo(createBoVector());  <span class="comment">//同一，只有默认构造函数的调用</span></span><br><span class="line"></span><br><span class="line">    foo(reusable);      <span class="comment">// pass-by-value，有新对象的生成，就有构造函数的调用，此处是拷贝构造函数</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下面两行不能同时存在，不能移动两次</span></span><br><span class="line">    foo(<span class="built_in">std</span>::move(reusable)); <span class="comment">// pass-by-value，有新对象的生成，就有构造函数的调用，std::move(reusable) 表达式是一个右值，即会调用移动构造函数</span></span><br><span class="line"></span><br><span class="line">    BoVector &amp;&amp;rr = <span class="built_in">std</span>::move(reusable);</span><br><span class="line">    foo(rr); <span class="comment">// pass-by-value，有新对象的生成，就有构造函数的调用，但是由于 rr 是一个变量（右值引用类型的），是一个左值，此处会调用拷贝构造函数</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Example-2"><a href="#Example-2" class="headerlink" title="Example 2"></a>Example 2</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(BoVector &amp;v)</span> </span>&#123;         <span class="comment">// pass-by-reference</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"Lvalue reference."</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(BoVector &amp;&amp;v)</span> </span>&#123;     <span class="comment">// pass-by-reference</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"Rvalue reference."</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    BoVector reusable = createBoVector(); <span class="comment">// Default constructor</span></span><br><span class="line">    foo(reusable); <span class="comment">// Lvalue reference.</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下面两行不能同时存在，不能移动两次</span></span><br><span class="line">    <span class="comment">// std::move(reusable) 表达式是一个右值</span></span><br><span class="line">    foo(<span class="built_in">std</span>::move(reusable)); <span class="comment">// Rvalue reference.</span></span><br><span class="line"></span><br><span class="line">    BoVector &amp;&amp;rr = <span class="built_in">std</span>::move(reusable);</span><br><span class="line">    <span class="comment">// rr 是一个变量（右值引用类型的），是一个左值</span></span><br><span class="line">    foo(rr); <span class="comment">// Lvalue reference.</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// BoVector() 表达式，是一个右值</span></span><br><span class="line">    foo(BoVector()); <span class="comment">// Default constructor, Rvalue reference.</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// createBoVector() 表达式，是一个右值</span></span><br><span class="line">    foo(createBoVector()); <span class="comment">// Default constructor, Rvalue reference.</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>另外需要特别注意的是，<code>void foo(BoVector &amp;)</code> 与 <code>void foo(BoVector &amp;&amp;)</code> 都是 pass-by-reference，虽然一个是左值引用，一个是右值引用，但是都是引用，都是某一对象的别名，因此传参时没有新对象的生成，也就没有任何构造函数的调用。</p>
+<p>右值引用和 const 左值引用都可以用来延长将亡值的生命期。</p>
+<h2 id="const-左值引用"><a href="#const-左值引用" class="headerlink" title="const 左值引用"></a>const 左值引用</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span> &amp; i)</span> </span>&#123; <span class="built_in">cout</span> &lt;&lt; <span class="string">"const int &amp; "</span> &lt;&lt; i &lt;&lt; <span class="built_in">endl</span>; &#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(<span class="keyword">int</span> &amp; i)</span> </span>&#123; <span class="built_in">cout</span> &lt;&lt; <span class="string">"int &amp; "</span> &lt;&lt; i &lt;&lt; <span class="built_in">endl</span>; &#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(<span class="keyword">int</span> &amp;&amp; i)</span> </span>&#123; <span class="built_in">cout</span> &lt;&lt; <span class="string">"int &amp;&amp; "</span> &lt;&lt; i &lt;&lt; <span class="built_in">endl</span>; &#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span> &amp;&amp; i)</span> </span>&#123; <span class="built_in">cout</span> &lt;&lt; <span class="string">"const int &amp;&amp; "</span> &lt;&lt; i &lt;&lt; <span class="built_in">endl</span>; &#125; <span class="comment">// 这是个奇葩</span></span><br></pre></td></tr></table></figure>
+<p>在没有后面三个重载函数的情况下</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">2</span>;</span><br><span class="line">foo(<span class="number">2</span>); <span class="comment">// const int &amp; 2</span></span><br><span class="line">foo(i); <span class="comment">// const int &amp; 2</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>只有第二个函数而没有其他函数，第二条语句是违法的；</li>
+<li>只有第三个函数而没有其他函数，第三条语句是违法的。</li>
+</ul>
+<p>在四个函数都存在的情况下，输出的结果将变成：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> &amp;&amp; <span class="number">2</span></span><br><span class="line"><span class="keyword">int</span> &amp; <span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C/" rel="tag"># C++</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/11/21/C-Concurrency-In-Action/" rel="prev" title="C++ Concurrency in Action">
+      <i class="fa fa-chevron-left"></i> C++ Concurrency in Action
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/03/13/Leetcode/" rel="next" title="Leetcode">
+      Leetcode <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#右值引用"><span class="nav-number">1.</span> <span class="nav-text">右值引用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#move-函数"><span class="nav-number">2.</span> <span class="nav-text">move 函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Example"><span class="nav-number">3.</span> <span class="nav-text">Example</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Example-1"><span class="nav-number">3.1.</span> <span class="nav-text">Example 1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Example-2"><span class="nav-number">3.2.</span> <span class="nav-text">Example 2</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#const-左值引用"><span class="nav-number">4.</span> <span class="nav-text">const 左值引用</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">117</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
