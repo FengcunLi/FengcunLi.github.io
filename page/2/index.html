@@ -1981,71 +1981,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/14/RAII-smart-pointer/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Fengcun Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="The next stop - Antarctica">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/03/14/RAII-smart-pointer/" class="post-title-link" itemprop="url">RAII & Smart Pointer</a>
-        </h2>
-
-        <div class="post-meta">
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-02-26 23:51:31" itemprop="dateModified" datetime="2021-02-26T23:51:31+08:00">2021-02-26</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="RAII"><a href="#RAII" class="headerlink" title="RAII"></a>RAII</h2><p>1984-1989 年期间，比雅尼·斯特劳斯特鲁普和安德鲁·柯尼希在设计 C++ 异常时提出了 RAII， 全称为 <strong>Resource Acquisition Is Initialization</strong>，用于解决<strong>资源管理</strong>的<strong>异常安全性</strong>。</p>
-<p>RAII 要求，<strong>资源的有效期</strong>与<strong>持有资源的对象的生命期</strong>严格绑定，即由对象的构造函数完成资源的获取，由析构函数完成资源的释放，在这种要求下，只要对象能够被正确地析构，就不会出现资源泄露问题。C++ 保证了所有<strong>栈对象</strong>在生命期结束时都会被析构，无论是否发生了异常。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/03/14/RAII-smart-pointer/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/13/Leetcode/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2087,6 +2022,81 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2019/03/13/Leetcode/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/13/右值引用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/03/13/右值引用/" class="post-title-link" itemprop="url">右值引用</a>
+        </h2>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-02-23 21:59:49" itemprop="dateModified" datetime="2021-02-23T21:59:49+08:00">2021-02-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>表达式是有值的，必然是左值，纯右值，将亡值中的一种，且只能是一种。</p>
+<h2 id="右值引用"><a href="#右值引用" class="headerlink" title="右值引用"></a>右值引用</h2><ul>
+<li>调用返回左值引用的函数，赋值、下标、解引用、前置递增、前置递减，这些都是左值表达式</li>
+<li>调用返回非引用的函数，算术、关系、位、后置递增、后置递减，这些都是右值表达式</li>
+</ul>
+<p>引用和左/右值之间是一种绑定关系，我们</p>
+<ul>
+<li>只能将左值引用绑定到左值上</li>
+<li>只能将右值引用绑定到右值上</li>
+<li>const 左值引用可以绑定到右值上</li>
+</ul>
+<p>一个右值引用类似于左值引用，也不过是某个对象的别名而已，通过 <code>&amp;&amp;</code> 来标识一个右值引用。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/03/13/右值引用/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
