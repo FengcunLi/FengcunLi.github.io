@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="以太网">
+<meta name="keywords" content="TCP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TCP&#x2F;IP详解 卷1:协议 学习笔记">
+<meta property="og:url" content="http://yoursite.com/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="以太网">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/Eth.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/protocols.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/IP-Header.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/IP-fenpian.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/ARP-Request.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/ARP-Reply.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/ICMP-1.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/ICMP-2.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/ICMP-TTL.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/UDP-1.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/UDP-2.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/TCP-1.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/IP-stream.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/TCP-2.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/MSS.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/Fast-slow.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/States.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/RST.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/slow-cc.png">
+<meta property="og:updated_time" content="2021-03-01T10:20:37.569Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TCP&#x2F;IP详解 卷1:协议 学习笔记">
+<meta name="twitter:description" content="以太网">
+<meta name="twitter:image" content="http://yoursite.com/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/Eth.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>TCP/IP详解 卷1:协议 学习笔记 | The next stop - Antarctica</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          TCP/IP详解 卷1:协议 学习笔记
+        </h1>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-03-01 18:20:37" itemprop="dateModified" datetime="2021-03-01T18:20:37+08:00">2021-03-01</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="以太网"><a href="#以太网" class="headerlink" title="以太网"></a>以太网</h2><p><img src="/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/Eth.png" alt="Eth"></p>
+<a id="more"></a>
+<p>以太网规定以太网帧的 payload 46-1500 字节，不足 46 字节就会垫零，比如 ARP 就会发生垫零。</p>
+<p>以太网帧特别简单，<strong>以太网头部</strong>就只有：</p>
+<ol>
+<li>目的 MAC 地址</li>
+<li>源 MAC 地址</li>
+<li>协议号： <code>0x0800</code> 是 IP，<code>0x0806</code> 是 ARP。</li>
+</ol>
+<p>相较于以太网帧，802.3 帧就相对复杂一点。</p>
+<p>MTU 最大传输单元，是网络接口一个配置选项，每个路由器的每个网络接口可以配置不同的 MTU，MTU 小于等于以太网规定的以太网帧 payload 最大值 1500，但一般配置为 1500。</p>
+<p><strong>整个 IP 包</strong>大于出接口 MTU，IP 层就要进行分片，可在途中路由器上多次分片，但只有在目的地才会进行重组。<br>以太网的规定 1500 给出 MTU 的上限，MTU 给出了<strong>整个 IP 包</strong>的大小上限。</p>
+<p><img src="/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/protocols.png" alt="protocols"></p>
+<ul>
+<li>以太网头部中有协议号，用于指示后面跟的是 IP 头部还是 ARP 头部；</li>
+<li>IP 头部中有协议号，用于指示后面跟的是 ICMP 头部（1），TCP 头部（6）还是 UDP 头部（17）；</li>
+<li>TCP 头部和 UDP 头部中有端口号，用于指示进程。</li>
+</ul>
+<h2 id="IP"><a href="#IP" class="headerlink" title="IP"></a>IP</h2><p><img src="/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/IP-Header.png" alt="IP-Header"></p>
+<ul>
+<li>不可靠：不保证收得到</li>
+<li>无连接：无状态的，不保存状态信息</li>
+<li>不保证按序：每个数据包独立地选择路由路径<br>发送顺序 12345<br>接受顺序 54321</li>
+</ul>
+<p>IP 发的包完全可能被丢掉，不能保证发出去的 IP 包一定被收到，丢了是很正常的，IP 直接把包甩出去，收到了是你运气好，收不到就拉倒。</p>
+<blockquote>
+<p>你要考虑这一点，要确保数据一定能够被收到，你就搞 TCP 啊，TCP 可以确认，可以重传，确保数据一定能够被收到。</p>
+</blockquote>
+<p>IP 包就是想丢就丢，尽量提供最好的服务，一但出问题，就把包丢掉，通过 ICMP 向源发信息报告：这个包丢了，但是这个源看不看 ICMP IP 也不确定，一般都不看，但是 TCP 会看，TCP 会重传。</p>
+<p>TTL 主要用来防环了。<br>整个网络穿越过程中：</p>
+<ul>
+<li>源目 IP 地址是没有变的</li>
+<li>源目 MAC 地址在不停地改变</li>
+</ul>
+<p>IP 校验和只校验 IP 头部，因此也叫做 IP 头部校验和</p>
+<p>UDP，ICMP，TCP 的校验和覆盖相应的头部和数据。</p>
+<p>IP 分片<br><img src="/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/IP-fenpian.png" alt="IP-fenpian"><br>一个包分片丢了，整个包都要重传。</p>
+<p>TCP UDP 不理解分片，也不知道分片发生了。</p>
+<p>尽量减少分片，如果一个分片丢掉的概率为 P，那么一个不分片的包失败的概率为 P，分了 2 片的包失败的概率为 <code>1 - (1-p)(1-p) = 2p - p**2</code>。</p>
+<p>IP 头部是“拷贝”的，分片的第一片是可以看到 4 层协议是 什么， ICMP，TCP，UDP，后面的分片就只是分片。</p>
+<h2 id="ARP"><a href="#ARP" class="headerlink" title="ARP"></a>ARP</h2><p>完成 32 位 IP 地址到 48 位 MAC 地址的映射。</p>
+<p>ARP 缓存中每一项的生命期 20min，但是根据交换机，路由器，操作系统不一而不同。</p>
+<p>ARP 是二层广播，”who has this IP?”，以太网头部中的目的 MAC 地址全 1，协议号为 <code>0x0806</code><br><img src="/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/ARP-Request.png" alt="ARP-Request"><br>回复是单播，以太网头部中的协议号为 <code>0x0806</code><br><img src="/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/ARP-Reply.png" alt="ARP-Reply"></p>
+<h2 id="ICMP"><a href="#ICMP" class="headerlink" title="ICMP"></a>ICMP</h2><p><img src="/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/ICMP-1.png" alt="ICMP-1"><br><img src="/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/ICMP-2.png" alt="ICMP-2"></p>
+<p>IP 头部中协议号为 1，指示后面跟的是 ICMP 头部，ICMP 由 ICMP TYPE 和 ICMP CODE 决定 ICMP 类型。<br><code>ping</code> 发出接收的为 ICMP Echo Request 和 Echo Reply</p>
+<ul>
+<li>Echo Request：CODE/TYPE 8/0</li>
+<li>Echo Reply：CODE/TYPE 8/1</li>
+</ul>
+<p><code>ping -R</code> 会开启 IP 头部中的路由记录选项，经过的路由器会往 40 字节的 IP 选项中填入自己的 IP 地址，最多纪录 9 个 IP 地址。</p>
+<p>traceroute<br>往外发的是 UDP，路由器往回发的 TTL 不可达（TYPE/CODE: 11/0）ICMP 差错报文。<br><img src="/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/ICMP-TTL.png" alt="ICMP-TTL"><br>目标端口不断加一，目标端口很高，当收到端口不可达 (TYPE/CODE: 3/3） ICMP 差错报文，就知道到达了目的地。</p>
+<h2 id="UDP"><a href="#UDP" class="headerlink" title="UDP"></a>UDP</h2><p><img src="/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/UDP-1.png" alt="UDP-1"><br><img src="/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/UDP-2.png" alt="UDP-2"><br>UDP 面向数据报的，无连接的传输层协议。</p>
+<p>不管应用程序给 UDP 多大多小的数据，UDP 不嫌大也不嫌小，就直接封装上 UDP 头部，直接交给 IP，IP 封装上 IP 头部，产生了一个 IP 数据包。因此应用程序的一个网络输出操作就对应着网络上的一个 IP 数据包，一一对应。</p>
+<p>UDP 由于不管数据大小，所以产生的<strong>整个 IP 包</strong>很可能超过 MTU，所以 UDP 很容易造成 IP 分片。</p>
+<p>校验和是一个总数，源目地址换一下，校验和是看不出来，其检测变化的能力是有限的，这一点和 MD5 哈希函数是不一样的</p>
+<p>UDP 不提供可靠性，发出去能不能到，不管。和 IP 一个套路。</p>
+<p>根据 IP 头部中的<strong>16 位总长度(字节数)</strong>，可以算出一个 IP 包最大为 65535 字节，因此理论上 UDP 数据报中数据最多为 <code>65535 - 20 - 8</code>字节，但是用户程序 API 并不能将那么大的数据给 UDP，这也就造成了 UDP 最大数据报的长度小于<code>65535 - 20</code>。</p>
+<h3 id="三大应用"><a href="#三大应用" class="headerlink" title="三大应用"></a>三大应用</h3><ol>
+<li>DNS 可以设三个，同时向这三个发，任何一个回复，结果就有了，就是快。没有 TCP 握手啊，你不理我还要重传等步骤</li>
+<li>实时流量，丢了就丢了，语音和视频个别数据报的丢失，不影响理解</li>
+<li>TFTP 基于 UDP，停止等待，无确认就不发了；基于 TCP 的 FTP 滑动窗口，你可以一口气给我发很多包，不需要等我确认。</li>
+</ol>
+<h2 id="广播"><a href="#广播" class="headerlink" title="广播"></a>广播</h2><p>二层广播 ARP 目的 MAC 地址全 1<br>三层广播 目的主机号全 1<br>只有 UDP 广播和多播，TCP 一定是点对点，肯定是单播。</p>
+<h2 id="TCP"><a href="#TCP" class="headerlink" title="TCP"></a>TCP</h2><p><img src="/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/TCP-1.png" alt="TCP-1"><br>提供面向连接的、可靠的字节流服务</p>
+<ul>
+<li>面向连接的，是说两个进程（对应着两个端口）在彼此交换数据之前必须先建立一个连接，并维护这个连接的状态</li>
+<li>可靠的，是说 TCP 确保<strong>数据的每一个字节</strong>都能够被对方接收到。IP，UDP 丢了就拉倒，TCP 丢了是要管的，要做处理的，就说明它是可依赖的，可靠的，使命必达。</li>
+</ul>
+<p><img src="/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/IP-stream.png" alt="IP-stream"><br>应用程序给 TCP 一个很大的数据，TCP 会将这个很大的数据拆分成它认为适合的大小，然后发到网络上去。<br>应用程序给 TCP 一些很小的数据，TCP 会将这些很小的数据攒在一起，做成一个 TCP 段，交给 IP，IP 封装上 IP 头部，产生了一个 IP 数据包，然后发到网络上去。这个 IP 数据包可能被分片，如果一个分片丢失了，导致目的地处的 IP 包重组失败，相当于整个 IP 包丢了，整个 TCP 段丢了，TCP 不理解分片，也不知道分片发生过，TCP 只知道那个 TCP 段没有被确认，就会重传该 TCP 段并重复上面的过程。<br>TCP：应用程序的网络输出操作和网络上 IP 数据包的个数没有一点关系。</p>
+<p>TCP 通过以下方式提供可靠性：</p>
+<ol>
+<li>应用数据会被 TCP 切割/攒成 TCP 认为最适合的大小进行发送</li>
+<li>TCP 发出一个段后，它会启动一个<strong>重传定时器</strong>，等待目的端确认，如果不能及时收到确认，将会重传这个段。这个段会被 IP 封装成 IP 包，IP 包可能会被分片，但是目的端收到分片，重组成 IP 大包，TCP 取出其中的 TCP 段，然后向源端发出针对该 TCP 段的确认</li>
+<li>当 TCP 收到 TCP 段，会延迟几分之一秒后发送确认，因为用于确认的 TCP 段（虽然没有数据，但是 TCP 头部的 20 字节是必不可少的）的发送也是有资源消耗的，通过延迟期望可以搭载数据 TCP 段的便车进行确认，即数据捎带 ACK。另外，通常采用“隔一个 TCP 段的确认方式“，收到一个包，不确认这个包，而确认这个包之前的那些包。包 1、2、3，收到 3 之后确认之前的 2（可能一并确认了 1）</li>
+<li>校验和：校验伪头部，TCP 头部，数据</li>
+<li>IP 包的到达可能失序，也就是 TCP 段的到达可能失序，TCP 会将失序的 TCP 段重新排序，最终将数据以正确的字节流顺序交给应用程序</li>
+<li>TCP 的接收端还可以丢弃重复的 TCP 段</li>
+<li>流量控制<ul>
+<li>拥塞避免是发送方使用的流量控制，发送方对网络拥塞的状态做出估计（通过超时和接收到重复的 ACK，意识到拥塞；通过重新慢启动+拥塞避免算法、快速重传+快速恢复来控制发送速率），觉得我不能发太快，不然可能会造成更严重的拥塞。</li>
+<li>通告窗口是接收方使用的流量控制，接收方根据本地可用缓存的大小，告诉发送方你不能发太快。</li>
+</ul>
+</li>
+</ol>
+<p><img src="/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/TCP-2.png" alt="TCP-2"></p>
+<h3 id="序列号和确认序列号"><a href="#序列号和确认序列号" class="headerlink" title="序列号和确认序列号"></a>序列号和确认序列号</h3><p><strong>TCP 通过序列号和确认序列号实现对 TCP 数据中每一个字节的确认。</strong><br>序列号 seq 表示该 TCP 段的 TCP 数据的第一个字节是字节流中的第 seq 个字节，确认序列号 ack 表示字节流中 ack 之前的数据都收到了。</p>
+<ul>
+<li><strong>TCP 数据</strong>有多少个字节，确认序列号就相较序列号加多少；</li>
+<li>如果只有 IP 头部和 TCP 头部，而没有 TCP 数据，确认序列号也可能增加，比如 SYN 或 FIN 被置 1，确认序列号会加 1，会认为在这一个方向上传输了一个字节的数据</li>
+<li>仅 ACK 置 1，不会认为传输了一个字节</li>
+<li>只有 ACK 位被置 1，确认序列号才有意义</li>
+<li>除了三次握手的第一个包 ACK 为 0，其他的全部包 ACK 都为 1，即确认序列号都是有意义的</li>
+</ul>
+<h4 id="不支持选择性确认和选择性否认"><a href="#不支持选择性确认和选择性否认" class="headerlink" title="不支持选择性确认和选择性否认"></a>不支持选择性确认和选择性否认</h4><p>序列号 1000， 该 TCP 段中的 TCP 数据有 100 个字节，那么接收端回复的确认序列号应该为 1000 + 100，表示第 1100 个字节之前的字节都已经被收到了。</p>
+<ol>
+<li><p>假设序列号为 1100 的包丢掉了，但是接收端收到了后续的包，但接收端会不断发回重复 ack，不停反复地说“我想要的是 1100”，它还没有来。发送端每发一个包，接收端还是会给出确认，但是这个确认说的却是“我想要的是 1100”。发送端收到了这么多（一般是 3 个）的重复确认说“我想要的是 1100”，发送端就知道了我发送了那么多包给你，你始终说你要 1100，我丢包了，发送方就有可能只重传 1100 数据包或者发送一个包含 1100-1400 的大包。</p>
+</li>
+<li><p>包事实上已经收到了，但是校验和失败了，但是接收方又没有方法告诉发送方，你的包我收到了，但是校验和失败了，因此接收方还是只能说“我想要的是 1100”。</p>
+</li>
+</ol>
+<p>总结来说，TCP 实际上挺笨的，没收到一个包，但是收到了后续的包，它也不能告诉发送方我收到了后续的包，只是丢了那之前的一个包，而只能说“我想要的是 1100”；收到了一个包，校验和失败了，也不能告诉发送方你的包我收到了，但是校验和失败了，而只能说“我想要的是 1100”.</p>
+<h3 id="MSS"><a href="#MSS" class="headerlink" title="MSS"></a>MSS</h3><p>MSS： <strong>TCP 数据</strong>最大字节数，SYN 时会进行 MSS 的协商，MSS  放在 TCP 头部的<strong>TCP 选项</strong>中。<br><img src="/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/MSS.png" alt="MSS"><br>MSS 可以指定，一般由 <code>1500 - 20 -20 = 1460</code> 得来。</p>
+<h3 id="通告窗口"><a href="#通告窗口" class="headerlink" title="通告窗口"></a>通告窗口</h3><p><strong>通告窗口：无需接收方确认，发送方可以一口气发送的最大字节数，等于接收方的可用缓存大小。</strong></p>
+<p>ACK with 窗口 为 0，你发的数据我已经收到了，而且缓存已经满了。<br>过了一会儿，接收端会发送一个窗口更新通告，也就是再发一个 ack 告诉发送方更新后的窗口大小，发送方可以继续进行发送了。</p>
+<p>窗口大小 16 位，也就是理论最值大 65535 字节，具体大小由操作系统决定。<br>65535 对于现代高速网络，瞬间就爆了，一发窗口爆了，等会儿，一发窗口又爆了，又等会儿，效率就很低。可以借助<strong>TCP 选项</strong>中的窗口扩大因子，将窗口进一步扩大。</p>
+<p>快的发送方和慢的接收方<br><img src="/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/Fast-slow.png" alt="Fast-slow"></p>
+<p>窗口越大，在高速网络的时候效果就会越好；<br>低速链路，窗口越大，中间会出现拥塞，会出现丢包，会出现慢启动问题；<br>因此需要根据实际情况进行调整。</p>
+<p>应用层读数据是一点一点读的，比如 10 个字节，10 个字节，10 个字节，如果读了 10 个字节，就给发送方发送窗口更新通告说我现在的窗口是 10 个字节，发送方就发送 10 个字节的数据过来，这是很不优化的，这样会造成网络上有什么小数据包，效率很低。一般 TCP 的实现是有 2 个 MSS 的可用接收缓存时才会发出窗口更新通告。</p>
+<h3 id="TCP-三次握手与四次挥手"><a href="#TCP-三次握手与四次挥手" class="headerlink" title="TCP 三次握手与四次挥手"></a>TCP 三次握手与四次挥手</h3><p><img src="/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/States.png" alt="States"><br>TCP 是全双工的，每个方向单独地进行关闭，一对 FIN/ACK 结束一个方向上的数据传输。<br>客户向服务器发送 FIN，表示客户端不想向服务器发送数据了。<br>服务器确认了客户端发来的 FIN 之后，可以继续向客户端发送数据而迟迟不发送 FIN，此时就是半关闭，只关闭了一个方向上的数据传输，另一个方向上的数据传输仍在继续。</p>
+<h4 id="为什么等这么久-2MSL"><a href="#为什么等这么久-2MSL" class="headerlink" title="为什么等这么久 2MSL"></a>为什么等这么久 2MSL</h4><p>首先是一去 ack，一回重传 FIN，等这么久就是为了等可能会被重传的 FIN。</p>
+<p>在这 2MSL 期间，源目 IP，源目端口，协议这个五元组是不能被复用的。</p>
+<p>客户端随机端口，服务器知名端口。</p>
+<p>在实际应用中，一般都是客户端<strong>主动关闭</strong>，客户端进入 TIME_WAIT 状态，服务端会进入 CLOSED 状态，而不是 TIME_WAIT 状态。这时立马重启客户端，不会造成什么问题，因为客户端使用的是随机端口，不会和处于 TIME_WAIT 的端口形成冲突。</p>
+<p>但是如果是服务端<strong>主动关闭</strong>进入 TIME_WAIT 状态，这时立马重启服务器，由于服务器使用的是知名端口，就会和之前处于 TIME_WAIT 状态的端口形成冲突。</p>
+<ul>
+<li>当你向一个端口发送 UDP 数据包，该端口未提供服务时，会收到一个 ICMP 端口不可达；</li>
+<li>当向一个端口发起 TCP 连接，该端口未提供服务时，TCP 会回一个 RST。</li>
+</ul>
+<p><img src="/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/RST.png" alt="RST"></p>
+<p>TCP 如果连接出现什么问题，就直接一个 RST 把资源释放掉。</p>
+<ul>
+<li>有序释放 orderly release： FIN ACK FIN ACK</li>
+<li>异常释放 abortive release：发送一个 RST 而不是 FIN 来中途释放一个连接，三次握手完成后，数据传输正常进行，然后双方都没有数据需要传输，连接是正常的、闲置状态。如果此时服务器重启并完成了重启，客户端不会发现服务器重启了，会认为连接依旧正常，并向服务端发送数据，这时候服务端就不知其所云，莫名其妙，怎么三次握手都没有，就直接发送数据了。服务器就会回复一个 RST， 当客户端收到这个 RST，它就知道了这个连接有问题了，就会将这个连接的状态、信息给清掉，资源释放掉。</li>
+</ul>
+<h3 id="重传定时器"><a href="#重传定时器" class="headerlink" title="重传定时器"></a>重传定时器</h3><p>重传定时器的超时时间由往返时间 RTT 决定。<br>对一个给定连接的往返时间进行测量，由于路由器和网络流量均会变化，这个时间可能经常会发生变化，TCP 应该跟踪这些变化，并相应地改变其超时时间。</p>
+<p>往返时间计算公式：</p>
+<ul>
+<li>RFC 793:<br>M 新的测量值<br><code>R = 0.9 * R + (1 - 0.9) * M</code><br><code>超时重传时间 = 2 * R</code></li>
+<li>Jacobson 1988</li>
+</ul>
+<p>采用指数退避的方式不断进行重传尝试，整个重传的持续时间由操作系统决定，是很长的，八九分钟左右。</p>
+<h3 id="坚持定时器"><a href="#坚持定时器" class="headerlink" title="坚持定时器"></a>坚持定时器</h3><p>坚持定时器解决<strong>窗口更新包丢失</strong>带来的问题。</p>
+<p>发送方一口气发送了 4 个包，把接收方的接收缓存占满了，接收方回复了一个窗口为零 0 的 ack，过了一会儿，接收方又发送了一个窗口更新的 ack，这个 ack 是可能丢包的，这个丢包就麻烦了，发送方一直在等着丢了的窗口更新，接收方在一直等着发送方传数据来，接收方想我的窗口更新已经发出去了，为什么不来数据，双方都在等着。<br>一边在等窗口更新，一边在等数据，就有可能耗下去。</p>
+<p>发送方会使用一个坚持定时器，在收到窗口为 0 的确认时启用，采用指数退避的方式去发窗口探测，看看窗口有没有被展开，接收方收到窗口探测，回复一个窗口更新，发送方就可以发数据了。</p>
+<h3 id="保活定时器"><a href="#保活定时器" class="headerlink" title="保活定时器"></a>保活定时器</h3><p>一个连接长时间闲置，去检测两端是否处于活动状态。RFC 不推荐在 TCP 中使用保活定时器，取而代之应该由应用层去解决保活的问题。</p>
+<h3 id="2MSL-定时器"><a href="#2MSL-定时器" class="headerlink" title="2MSL 定时器"></a>2MSL 定时器</h3><h3 id="慢启动"><a href="#慢启动" class="headerlink" title="慢启动"></a>慢启动</h3><p>如果可用缓存特别大，这个池子特别大，一启动时，窗口就会很大，如果发送方一瞬间发出去特别多的数据包（因为按照窗口协议，发送方可以一口气发送窗口大小的数据，而无需接收方确认，即使接收方是隔 TCP 段确认，发送方依然可以在任何包到达接收方前–也就没有任何确认在路上–一瞬间发出去特别多的数据包）<br>如果链路质量不好，会造成大量的重传，特别是一个较早出现的丢包，会导致这个丢包及其之后的包全部重传（可能只重传这一个丢包），因为 TCP 选择性确认和选择性否认的能力，可以试想这么多的重传，网络上有多少无效的数据包，使得本来就不好的链路质量更加差劲。</p>
+<p><strong>慢启动期望实现的效果是收到确认的速率和发出数据包的速率相近。</strong></p>
+<p>慢启动为发送方增加了一个拥塞窗口，当 TCP 连接建立时，拥塞窗口被初始化为一个 MSS（MTU - 20 - 20） ，每收到一个 ACK，就增加一个 MSS，发送方以<strong>通告窗口和拥塞窗口的最小值作为发送上限</strong>。</p>
+<p>连接刚刚建立，初始状态：</p>
+<ul>
+<li>拥塞窗口 cwnd = 1 MSS = 1024</li>
+<li>接收方窗口大小 window 8192</li>
+</ul>
+<p>进行慢启动：</p>
+<ul>
+<li>发了一个包，收了一个 ack，cwnd 加 1 等于 2，</li>
+<li>这时我可以发 2 个包，假设收到了 2 个 ack，cwnd 加 2 等于 4，</li>
+<li>这时我可以发 4 个包，假设连续收到 4 个 ack，cwnd 加 4 等于 8，</li>
+<li>假设 8192 大于当前通告窗口了，就会使用通告窗口来约束发送方可以发送的数据数量。</li>
+</ul>
+<h3 id="拥塞避免"><a href="#拥塞避免" class="headerlink" title="拥塞避免"></a>拥塞避免</h3><p>有两种分组丢失的指示，</p>
+<ul>
+<li>发生超时</li>
+<li>接收到重复的 ACK</li>
+</ul>
+<p>这两种都意味着分组丢失，网络拥塞，意味着网络状况不佳，<strong>需要降低传输速率，避免拥塞</strong>，但是两者所暗示的网络状况不佳的程度不同，采用不同的处理算法。</p>
+<h4 id="发生超时"><a href="#发生超时" class="headerlink" title="发生超时"></a>发生超时</h4><p>处置方案：</p>
+<ol>
+<li>第一步重新慢启动</li>
+<li>第二步拥塞避免算法</li>
+</ol>
+<p><img src="/2020/12/02/TCP-IP详解-卷1-协议-学习笔记/slow-cc.png" alt="slow-cc"><br>门限以下，走慢启动算法；<br>门限以上，走拥塞避免算法。</p>
+<p>连接刚刚建立，初始状态：</p>
+<ul>
+<li>拥塞窗口 cwnd = 1 MSS = 1024</li>
+<li>慢启动门限 ssthresh 65535</li>
+<li>接收方窗口大小 window 8192</li>
+</ul>
+<p>进行慢启动：</p>
+<ul>
+<li>发了一个包，收了一个 ack，cwnd 加 1 等于 2，</li>
+<li>这时我可以发 2 个包，假设收到了 2 个 ack，cwnd 加 2 等于 4，</li>
+<li>这时我可以发 4 个包，假设连续收到 4 个 ack，cwnd 加 4 等于 8，</li>
+<li>假设 8192 大于当前通告窗口了，就会使用通告窗口来约束发送方可以发送的数据数量。</li>
+</ul>
+<p>出现了超时，说明分组丢失，网络拥塞，需要降低传输速率，进行拥塞避免：<br>将慢启动门限设置为拥塞窗口和通告窗口中的小者减半，将拥塞窗口重置为 1 MSS，重复上面的慢启动过程（也就是再重新进行一次慢启动），直到拥塞窗口大于等于慢启动门限，后续进行拥塞避免算法，拥塞避免算法要求每收到一个 ack，拥塞窗口增加 1 / cwnd，拥塞避免算法的拥塞窗口增长是个加性增长。</p>
+<h4 id="接收到重复的-ACK"><a href="#接收到重复的-ACK" class="headerlink" title="接收到重复的 ACK"></a>接收到重复的 ACK</h4><p>处置方案：</p>
+<ol>
+<li>第一步快速重传算法</li>
+<li>第二步快速恢复算法</li>
+</ol>
+<p>连续地收到了三次及三次以上重复 ack 时，说明非常有可能丢失了某一个报文段，于是就立马重传丢失的报文段，而无需等待重传定时器溢出，这就是<strong>快速重传算法</strong>。</p>
+<p><strong>快速重传算法</strong>完成后，直接进行拥塞避免算法，跳过（skip）慢启动算法，这就是<strong>快速恢复算法</strong>。</p>
+<p>能收到重复的 ack，说明确实是丢了一个包，但是后续的包应该抵达了目标，这样接收方才会不断给出重复的 ack，既然收到了后续的包及重复的 ack，说明网络整体的状况不是很糟糕，只是偶尔的丢包，网络状况还是不错的，这时如果贸然地将 cwnd 置为 1，从头再重新进行一遍慢启动，效率就会降低。</p>
+<h5 id="具体过程"><a href="#具体过程" class="headerlink" title="具体过程"></a>具体过程</h5><p>当收到第三个重复 ack 时，将慢启动门限设置为当前拥塞窗口的一半，重传丢失的报文段，设置拥塞窗口为慢启动门限加上三倍 MSS 的大小，拥塞窗口必然大于慢启动门限，必然进行的是拥塞避免算法，拥塞避免算法的拥塞窗口增长是个加性增长。</p>
+<ul>
+<li>发送方通过将拥塞窗口减小，降低了包的发送速率（因为窗口就是无需接收方确认，发送方可以一口气发送的最大字节数，窗口小了，速率就下来了）；</li>
+<li>通过接收 ack 使得拥塞窗口再慢慢增大，再把发送速率提上去，也就完成了从拥塞中的恢复。</li>
+</ul>
+<p>所谓的快速恢复指的是与其直接将拥塞窗口打到 1 然后再重新慢启动，而是将拥塞窗口缩小到慢启动门限之上，降低传输速率，通过加性逐渐增大拥塞窗口，增加传输速率，这个速率的恢复过程比较快。</p>
+<h3 id="TCP-对与-ICMP-差错报文的处理"><a href="#TCP-对与-ICMP-差错报文的处理" class="headerlink" title="TCP 对与 ICMP 差错报文的处理"></a>TCP 对与 ICMP 差错报文的处理</h3><h4 id="握手过程中"><a href="#握手过程中" class="headerlink" title="握手过程中"></a>握手过程中</h4><p>Telnet 一个不存在的非直连 IP 地址，会以目的 MAC 地址为 R2 的 2 接口，目的 IP 地址为该不可达 IP 地址，发出去 SYN IP 数据包，默认网关 R2 会回复 ICMP 差错报文，说目标不可达，说该 IP 包不可达了，IP 不会替我们做什么额外的事儿，Telnet 的 TCP 也做不了什么，就只能超时重传，通过指数退避地方式继续发送 SYN IP 包，并在 30 秒时失败放弃，指数退避及放弃是 TCP 的行为，而不是 telnet 的行为，telnet 最终退出。</p>
+<p>出现了 ICMP 差错报文，说明该 IP 包不可达了，IP 不会替我们做什么额外的事儿，IP 之上的 TCP 也做不了什么，就只能超时重传，如果是 UDP 则直接放过。</p>
+<div class="note danger">
+            <p>Telnet 一个直连（也就是一个子网）的不存在的 IP 地址，网络上（除了 ARP who has this IP 之外）是一个包也抓不到的。因为 ARP 二层广播找不到 MAC 地址，（也就是无人回复），也就不会有后续的 TCP SYN 发出了。</p>
+          </div>
+<h4 id="数据传输过程中"><a href="#数据传输过程中" class="headerlink" title="数据传输过程中"></a>数据传输过程中</h4><p><code>R1 — R2 — R3</code><br>R1 和 R3 间三次握手建立了 TCP 连接，并且传输了一段时间数据，这时在 R2 中配置 access list 将 R1 到 R3 的 IP 数据包全部干掉，这时 R1 发送的 IP 数据包，R2 会给其回复 ICMP 差错报文（主机不可达，或者网络不可达），R1 上的 TCP 会不予理睬，继续发送数据，并在超时后超时重传，重传定时器采用指数退避的方式不断进行重传尝试，整个重传的持续时间由操作系统决定，是很长的，八九分钟左右。</p>
+<h3 id="TCP-的重传分组"><a href="#TCP-的重传分组" class="headerlink" title="TCP 的重传分组"></a>TCP 的重传分组</h3><p>发了四个分组 A B C D，A 分组丢了，B C D 成功地收到了。</p>
+<p>TCP 有可能会只重传 A，也有可能将 ABC 打一个大包（当然其中 TCP 数据不能超过 MSS）传过去，D 再自己传过去，这是协议允许的，这时在接收端会出现重复的数据，但是 TCP 的序列号是字节序号，<strong>在拼接数据字节流的时候是有覆盖去重能力的</strong>。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/TCP/" rel="tag"># TCP</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/12/01/MyISAM-VS-InnoDB/" rel="prev" title="MyISAM vs InnoDB">
+      <i class="fa fa-chevron-left"></i> MyISAM vs InnoDB
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/12/14/epoll-源码分析/" rel="next" title="Epoll 源码分析">
+      Epoll 源码分析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#以太网"><span class="nav-number">1.</span> <span class="nav-text">以太网</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IP"><span class="nav-number">2.</span> <span class="nav-text">IP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ARP"><span class="nav-number">3.</span> <span class="nav-text">ARP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ICMP"><span class="nav-number">4.</span> <span class="nav-text">ICMP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#UDP"><span class="nav-number">5.</span> <span class="nav-text">UDP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#三大应用"><span class="nav-number">5.1.</span> <span class="nav-text">三大应用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#广播"><span class="nav-number">6.</span> <span class="nav-text">广播</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP"><span class="nav-number">7.</span> <span class="nav-text">TCP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#序列号和确认序列号"><span class="nav-number">7.1.</span> <span class="nav-text">序列号和确认序列号</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#不支持选择性确认和选择性否认"><span class="nav-number">7.1.1.</span> <span class="nav-text">不支持选择性确认和选择性否认</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MSS"><span class="nav-number">7.2.</span> <span class="nav-text">MSS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通告窗口"><span class="nav-number">7.3.</span> <span class="nav-text">通告窗口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-三次握手与四次挥手"><span class="nav-number">7.4.</span> <span class="nav-text">TCP 三次握手与四次挥手</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#为什么等这么久-2MSL"><span class="nav-number">7.4.1.</span> <span class="nav-text">为什么等这么久 2MSL</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重传定时器"><span class="nav-number">7.5.</span> <span class="nav-text">重传定时器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#坚持定时器"><span class="nav-number">7.6.</span> <span class="nav-text">坚持定时器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#保活定时器"><span class="nav-number">7.7.</span> <span class="nav-text">保活定时器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2MSL-定时器"><span class="nav-number">7.8.</span> <span class="nav-text">2MSL 定时器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#慢启动"><span class="nav-number">7.9.</span> <span class="nav-text">慢启动</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#拥塞避免"><span class="nav-number">7.10.</span> <span class="nav-text">拥塞避免</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#发生超时"><span class="nav-number">7.10.1.</span> <span class="nav-text">发生超时</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#接收到重复的-ACK"><span class="nav-number">7.10.2.</span> <span class="nav-text">接收到重复的 ACK</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#具体过程"><span class="nav-number">7.10.2.1.</span> <span class="nav-text">具体过程</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-对与-ICMP-差错报文的处理"><span class="nav-number">7.11.</span> <span class="nav-text">TCP 对与 ICMP 差错报文的处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#握手过程中"><span class="nav-number">7.11.1.</span> <span class="nav-text">握手过程中</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据传输过程中"><span class="nav-number">7.11.2.</span> <span class="nav-text">数据传输过程中</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-的重传分组"><span class="nav-number">7.12.</span> <span class="nav-text">TCP 的重传分组</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">117</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
