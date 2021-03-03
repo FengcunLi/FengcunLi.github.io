@@ -28,13 +28,14 @@
 <meta property="og:site_name" content="The next stop - Antarctica">
 <meta property="og:description" content="malloc 维护 heap，一个 break 指针指向堆空间的某个地址，从堆起始地址到 break 之间的地址空间为映射好的，可以供进程访问；而从 break 往上，是未映射的地址空间，如果访问这段空间则会报错。">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2018/03/30/内存全景图/内存管理.png">
 <meta property="og:image" content="http://yoursite.com/2018/03/30/内存全景图/memory.png">
 <meta property="og:image" content="http://yoursite.com/2018/03/30/内存全景图/STL-mp.png">
-<meta property="og:updated_time" content="2021-03-01T10:25:36.728Z">
+<meta property="og:updated_time" content="2021-03-02T14:01:45.672Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="内存全景图">
 <meta name="twitter:description" content="malloc 维护 heap，一个 break 指针指向堆空间的某个地址，从堆起始地址到 break 之间的地址空间为映射好的，可以供进程访问；而从 break 往上，是未映射的地址空间，如果访问这段空间则会报错。">
-<meta name="twitter:image" content="http://yoursite.com/2018/03/30/内存全景图/memory.png">
+<meta name="twitter:image" content="http://yoursite.com/2018/03/30/内存全景图/内存管理.png">
 
 <link rel="canonical" href="http://yoursite.com/2018/03/30/内存全景图/">
 
@@ -187,7 +188,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-03-01 18:25:36" itemprop="dateModified" datetime="2021-03-01T18:25:36+08:00">2021-03-01</time>
+                <time title="修改时间：2021-03-02 22:01:45" itemprop="dateModified" datetime="2021-03-02T22:01:45+08:00">2021-03-02</time>
               </span>
 
           
@@ -201,14 +202,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p><img src="/2018/03/30/内存全景图/memory.png" alt="memory"></p>
+        <p><img src="/2018/03/30/内存全景图/内存管理.png" alt="内存管理"><br><img src="/2018/03/30/内存全景图/memory.png" alt="memory"></p>
 <p>malloc 维护 heap，一个 <code>break</code> 指针指向堆空间的某个地址，从堆起始地址到 break 之间的地址空间为映射好的，可以供进程访问；而从 <code>break</code> 往上，是未映射的地址空间，如果访问这段空间则会报错。</p>
 <a id="more"></a>
-<p>要增加一个进程实际的可用堆大小，需要将 <code>break</code> 指针向高地址移动。Linux 通过<code>brk</code>和<code>sbrk</code>系统调用操作<code>break</code>指针。</p>
+<h2 id="brk和sbrk"><a href="#brk和sbrk" class="headerlink" title="brk和sbrk"></a><code>brk</code>和<code>sbrk</code></h2><p>要增加一个进程实际的可用堆大小，需要将 <code>break</code> 指针向高地址移动。Linux 通过<code>brk</code>和<code>sbrk</code>系统调用操作<code>break</code>指针。</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">brk</span><span class="params">(<span class="keyword">void</span> *addr)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> *<span class="title">sbrk</span><span class="params">(<span class="keyword">intptr_t</span> increment)</span></span>;</span><br></pre></td></tr></table></figure>
 <ul>
 <li><code>brk</code>将<code>break</code>指针直接设置为某个地址，执行成功返回 0，否则返回-1 并设置<code>errno</code>为<code>ENOMEM</code></li>
-<li><code>sbrk</code>将<code>break</code>从当前位置移动<code>increment</code>所指定的增量，执行成功返回<code>break</code>移动前所指向的地址，否则返回<code>(void *)-1</code>。如果将<code>increment</code>设置为 0，则可以获得当前<code>break</code>的地址</li>
+<li><code>sbrk</code>将<code>break</code>从当前位置移动<code>increment</code>所指定的增量，执行成功返回<code>break</code>移动前所指向的地址，否则返回<code>(void *)-1</code>，并设置<code>errno</code>为<code>ENOMEM</code>。如果将<code>increment</code>设置为 0，则可以获得当前<code>break</code>的地址</li>
 </ul>
 <p>由于 Linux 是按页进行内存映射，如果<code>break</code>被设置为没有按页大小对齐，则实际上会在最后映射一个完整的页，从而实际已映射的内存空间比<code>break</code>指向的地方要大一些，但是使用<code>break</code>之后的内存依旧是很危险的，尽管也许<code>break</code>之后确实有一小块可用内存。</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Toy implement</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> *<span class="title">malloc</span><span class="params">(<span class="keyword">size_t</span> size)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">void</span> *p;</span><br><span class="line">    p = sbrk(<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span> (sbrk(size) == (<span class="keyword">void</span> *)<span class="number">-1</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">return</span> p;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -303,6 +304,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#brk和sbrk"><span class="nav-number">1.</span> <span class="nav-text">brk和sbrk</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
