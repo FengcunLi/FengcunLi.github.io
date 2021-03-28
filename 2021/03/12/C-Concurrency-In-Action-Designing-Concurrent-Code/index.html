@@ -20,27 +20,20 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="STL 标准库是用泛型编程的思想做出来的，而不是面向对象的思想，所以相对而言，继承的关系比较轻。">
+  <meta name="description" content="在线程间分配任务有三种方式：  横向地将任务一捆一捆地分给不同的线程 纵向地将任务分成不同的阶段，流水线 pipeline 将任务按类别分给不同的线程，GUI 线程，网络 IO 线程">
 <meta name="keywords" content="C++">
 <meta property="og:type" content="article">
-<meta property="og:title" content="C++ Object Model">
-<meta property="og:url" content="http://yoursite.com/2020/11/11/C-object-model/index.html">
+<meta property="og:title" content="C++ Concurrency in Action: Designing Concurrent Code">
+<meta property="og:url" content="http://yoursite.com/2021/03/12/C-Concurrency-In-Action-Designing-Concurrent-Code/index.html">
 <meta property="og:site_name" content="The next stop - Antarctica">
-<meta property="og:description" content="STL 标准库是用泛型编程的思想做出来的，而不是面向对象的思想，所以相对而言，继承的关系比较轻。">
+<meta property="og:description" content="在线程间分配任务有三种方式：  横向地将任务一捆一捆地分给不同的线程 纵向地将任务分成不同的阶段，流水线 pipeline 将任务按类别分给不同的线程，GUI 线程，网络 IO 线程">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://yoursite.com/2020/11/11/C-object-model/reference.png">
-<meta property="og:image" content="http://yoursite.com/2020/11/11/C-object-model/reference-usage.png">
-<meta property="og:image" content="http://yoursite.com/2020/11/11/C-object-model/inheritance.png">
-<meta property="og:image" content="http://yoursite.com/2020/11/11/C-object-model/composition.png">
-<meta property="og:image" content="http://yoursite.com/2020/11/11/C-object-model/vptr-vtbl.png">
-<meta property="og:image" content="http://yoursite.com/2020/11/11/C-object-model/template-method.png">
-<meta property="og:updated_time" content="2020-11-25T10:51:39.865Z">
+<meta property="og:updated_time" content="2021-03-17T04:17:34.975Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="C++ Object Model">
-<meta name="twitter:description" content="STL 标准库是用泛型编程的思想做出来的，而不是面向对象的思想，所以相对而言，继承的关系比较轻。">
-<meta name="twitter:image" content="http://yoursite.com/2020/11/11/C-object-model/reference.png">
+<meta name="twitter:title" content="C++ Concurrency in Action: Designing Concurrent Code">
+<meta name="twitter:description" content="在线程间分配任务有三种方式：  横向地将任务一捆一捆地分给不同的线程 纵向地将任务分成不同的阶段，流水线 pipeline 将任务按类别分给不同的线程，GUI 线程，网络 IO 线程">
 
-<link rel="canonical" href="http://yoursite.com/2020/11/11/C-object-model/">
+<link rel="canonical" href="http://yoursite.com/2021/03/12/C-Concurrency-In-Action-Designing-Concurrent-Code/">
 
 
 <script id="page-configurations">
@@ -53,7 +46,7 @@
   };
 </script>
 
-  <title>C++ Object Model | The next stop - Antarctica</title>
+  <title>C++ Concurrency in Action: Designing Concurrent Code | The next stop - Antarctica</title>
   
 
 
@@ -169,7 +162,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/11/C-object-model/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/03/12/C-Concurrency-In-Action-Designing-Concurrent-Code/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -182,7 +175,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          C++ Object Model
+          C++ Concurrency in Action: Designing Concurrent Code
         </h1>
 
         <div class="post-meta">
@@ -191,7 +184,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-25 18:51:39" itemprop="dateModified" datetime="2020-11-25T18:51:39+08:00">2020-11-25</time>
+                <time title="修改时间：2021-03-17 12:17:34" itemprop="dateModified" datetime="2021-03-17T12:17:34+08:00">2021-03-17</time>
               </span>
 
           
@@ -205,39 +198,29 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>STL 标准库是用泛型编程的思想做出来的，而不是面向对象的思想，所以相对而言，继承的关系比较轻。</p>
+        <h2 id="在线程间分配任务"><a href="#在线程间分配任务" class="headerlink" title="在线程间分配任务"></a>在线程间分配任务</h2><p>有三种方式：</p>
+<ol>
+<li>横向地将任务一捆一捆地分给不同的线程</li>
+<li>纵向地将任务分成不同的阶段，流水线 pipeline</li>
+<li>将任务按类别分给不同的线程，GUI 线程，网络 IO 线程</li>
+</ol>
 <a id="more"></a>
-<p>模版有三种：</p>
-<ul>
-<li>类模版</li>
-<li>函数模版</li>
-<li>成员模版</li>
-</ul>
-<p>偏特化:</p>
-<ul>
-<li>个数上的偏</li>
-<li><p>范围上的偏</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base</span> &#123;</span></span><br><span class="line"></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base</span>&lt;T*&gt; &#123;</span></span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>模版的参数：</p>
-<ul>
-<li>类型模版参数</li>
-<li>非类型模版参数</li>
-<li>模版模版参数</li>
-</ul>
-<p>Variadic template</p>
-<p>Inside variadic templates, <code>sizeof...(args)</code> yields the number of arguments.</p>
-<p><img src="/2020/11/11/C-object-model/reference.png" alt="reference"><br><img src="/2020/11/11/C-object-model/reference-usage.png" alt="reference-usage"></p>
-<h1 id="继承关系下的构造与析构"><a href="#继承关系下的构造与析构" class="headerlink" title="继承关系下的构造与析构"></a>继承关系下的构造与析构</h1><p>一个说法是：子类对象中有一个父类对象的 part。<br><img src="/2020/11/11/C-object-model/inheritance.png" alt="inheritance"><br>上图中构造函数中的红色代码，如果程序员不自己加的话，编译器会替你加上。</p>
-<h1 id="复合关系下的构造与析构"><a href="#复合关系下的构造与析构" class="headerlink" title="复合关系下的构造与析构"></a>复合关系下的构造与析构</h1><p><img src="/2020/11/11/C-object-model/composition.png" alt="composition"></p>
-<h1 id="虚指针和虚表"><a href="#虚指针和虚表" class="headerlink" title="虚指针和虚表"></a>虚指针和虚表</h1><p><img src="/2020/11/11/C-object-model/vptr-vtbl.png" alt="vptr-vtbl"></p>
-<p>编译器静态绑定：编译为 <code>call xxxxx;</code> <code>call</code> 是一个汇编指令。</p>
-<p>基类指针指向派生类对象调用虚函数，就会发生动态绑定：编译为</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(* p-&gt;vptr[n])(p);</span><br></pre></td></tr></table></figure>
-<p>单看上面的代码，不知道会调用到哪一个函数，只有知道了 <code>p</code> 的指向，才能确定调用到哪一个函数。</p>
-<p>多态/虚机制/动态绑定是一回事儿。</p>
-<p><img src="/2020/11/11/C-object-model/template-method.png" alt="template-method"></p>
+<h3 id="影响并发代码性能的因素"><a href="#影响并发代码性能的因素" class="headerlink" title="影响并发代码性能的因素"></a>影响并发代码性能的因素</h3><h4 id="How-many-processors"><a href="#How-many-processors" class="headerlink" title="How many processors?"></a>How many processors?</h4><p>oversubscription 问题</p>
+<ol>
+<li><code>std::async()</code> avoids this problem because the library is aware of all calls and can schedule appropriately.</li>
+<li>Careful use of thread pools can also avoid this problem.</li>
+</ol>
+<p>In multithreaded systems, it’s typical to have more threads than processors. However, threads often spend time waiting for external I/O to complete or blocked on mutexes or waiting for condition variables and so forth, so this isn’t a problem. 大量的线程挂起在等待外部 IO，互斥锁，条件变量上时是没有问题的，但是如果都是 CPU bound 而不是 I/O bound 时就需要注意了。</p>
+<h4 id="数据竞争-缓存乒乓"><a href="#数据竞争-缓存乒乓" class="headerlink" title="数据竞争 缓存乒乓"></a>数据竞争 缓存乒乓</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">std</span>::atomic&lt;<span class="keyword">unsigned</span> <span class="keyword">long</span>&gt; <span class="title">counter</span><span class="params">(<span class="number">0</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">processing_loop</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">while</span>(counter.fetch_add(<span class="number">1</span>,<span class="built_in">std</span>::memory_order_relaxed)&lt;<span class="number">100000000</span>) &#123;</span><br><span class="line">        do_something();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>The counter is global, so any threads that call <code>processing_loop()</code> are modifying the same variable. Therefore, for each increment the processor must ensure it has an up-to-date copy of counter in its cache, modify the value, and publish it to other processors.<br>不同线程在不同的处理器上，counter 的数据在不同处理器的缓存间来回传递。<br>If <code>do_something()</code> is short enough, or if there are too many processors running this code, the processors might actually find themselves waiting for each other; one processor is ready to update the value, but another processor is currently doing that, so it has to wait <strong>until the second processor has completed its update and the change has propagated</strong>.</p>
+<p>In a loop like this one, the data for counter will be passed back and forth between the caches many times. This is called <strong>cache ping-pong</strong>, and it can seriously impact the performance of the application.<br>If a processor stalls because it has to wait for a cache transfer, <strong>it can’t do any work in the meantime, even if there are other threads waiting that could do useful work</strong>, so this is bad news for the whole application.<br>在等待缓存传递的过程中，处理器是什么都做不了的，直接停滞了。</p>
+<h4 id="错误共享"><a href="#错误共享" class="headerlink" title="错误共享"></a>错误共享</h4><p>缓存硬件是以 cache line 为单位进行缓存的，cache line 的大小一般为 64B 或者 32B，也就是说相邻的内存位置会被一起加载进同一 cache line，这在有时候是有益的，缓存的局部性原理。但如果相邻的内存位置的数据不相关，被不同的线程访问，被加载进不同处理器的不同 cache line 中，也就是不同处理器上的 cache line 间出现了 overlap，就会造成缓存乒乓。</p>
+<p>Suppose you have an array of <code>int</code> values and a set of threads that each access their own entry in the array but do so repeatedly, including updates. Since an <code>int</code> is typically much smaller than a cache line, quite a few of those array entries will be in the same cache line. Consequently, even though each thread only accesses its own array entry, the cache hardware still has to play cache ping-pong.</p>
+<h4 id="How-close-is-your-data"><a href="#How-close-is-your-data" class="headerlink" title="How close is your data?"></a>How close is your data?</h4><p>The key things to bear in mind when designing your data structures for multithreaded performance：</p>
+<p>缓存乒乓，错误共享和数据聚集</p>
+<p>Suppose you have a simple class that contains a few data items and a mutex used to protect accesses from multiple threads. If the mutex and the data items are close together in memory, this is ideal for a thread that acquires the mutex; the data it needs may well already be in the processor cache, because it was just loaded in order to modify the mutex. But there’s also a downside: if other threads try to lock the mutex while it’s held by the first thread, they’ll need access to that memory.</p>
+<p>Mutex locks are typically implemented as a read-modify-write atomic operation on a memory location within the mutex to try to acquire the mutex, followed by a call to the operating system kernel if the mutex is already locked. This read-modify-write operation may well cause the data held in the cache by the thread that owns the mutex to be invalidated. As far as the mutex goes, this isn’t a problem; that thread isn’t going to touch the mutex until it unlocks it. However, if the mutex shares a cache line with the data being used by the thread, the thread that owns the mutex can take a performance hit because another thread tried to lock the mutex!</p>
+<p>互斥锁一般实现为：<br>尝试获取锁 -&gt; 互斥锁内部的一个内存位置上的 read-modify-write 原子操作，如果发现已经被上锁了，会触发一个对操作系统内核的调用。<br>如果互斥锁依然在持有互斥锁的线程的处理器缓存中，那么其他线程的 read-modify-write 原子操作会使得这个缓存失效，如果互斥锁不在缓存中，则不会有这个问题，因为持有互斥锁的线程在处理完它手上的事儿并解锁之前不会再碰触互斥锁（即不会再将互斥锁加载到缓存中）。<br>然而如果互斥锁和处理的数据在同一个 cache line 中，也就是互斥锁不会被换出缓存，那么每当有别的线程想要加锁，就会使得这个 cache line 失效，持锁线程不得不重新加载缓存，称该线程被其他线程 performance hit 了。</p>
 
     </div>
 
@@ -256,12 +239,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/11/11/C-程序的生前和死后/" rel="prev" title="C++ 程序的生前和死后">
-      <i class="fa fa-chevron-left"></i> C++ 程序的生前和死后
+    <a href="/2021/03/10/MIT-6-006-Note/" rel="prev" title="MIT 6.006 Note">
+      <i class="fa fa-chevron-left"></i> MIT 6.006 Note
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/11/12/Linux-内核设计与实现-学习笔记/" rel="next" title="Linux 内核设计与实现 学习笔记">
-      Linux 内核设计与实现 学习笔记 <i class="fa fa-chevron-right"></i>
+    <a href="/2021/03/16/C-内存模型/" rel="next" title="C++ Concurrency in Action: C++ 内存模型">
+      C++ Concurrency in Action: C++ 内存模型 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -321,7 +304,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#继承关系下的构造与析构"><span class="nav-number">1.</span> <span class="nav-text">继承关系下的构造与析构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#复合关系下的构造与析构"><span class="nav-number">2.</span> <span class="nav-text">复合关系下的构造与析构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#虚指针和虚表"><span class="nav-number">3.</span> <span class="nav-text">虚指针和虚表</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#在线程间分配任务"><span class="nav-number">1.</span> <span class="nav-text">在线程间分配任务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#影响并发代码性能的因素"><span class="nav-number">1.1.</span> <span class="nav-text">影响并发代码性能的因素</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#How-many-processors"><span class="nav-number">1.1.1.</span> <span class="nav-text">How many processors?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据竞争-缓存乒乓"><span class="nav-number">1.1.2.</span> <span class="nav-text">数据竞争 缓存乒乓</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#错误共享"><span class="nav-number">1.1.3.</span> <span class="nav-text">错误共享</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#How-close-is-your-data"><span class="nav-number">1.1.4.</span> <span class="nav-text">How close is your data?</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -337,7 +320,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">117</span>
+          <span class="site-state-item-count">123</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

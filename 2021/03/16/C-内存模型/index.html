@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="One of the most important features of the C++11 Standard is something most programmers won’t even notice. It’s not the new syntax features, nor is it the new library facilities, but the new multithre">
+<meta name="keywords" content="C++">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++ Concurrency in Action: C++ 内存模型">
+<meta property="og:url" content="http://yoursite.com/2021/03/16/C-内存模型/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="One of the most important features of the C++11 Standard is something most programmers won’t even notice. It’s not the new syntax features, nor is it the new library facilities, but the new multithre">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2021/03/16/C-内存模型/cache.png">
+<meta property="og:image" content="http://yoursite.com/2021/03/16/C-内存模型/memory_order.png">
+<meta property="og:image" content="http://yoursite.com/2021/03/16/C-内存模型/atomic-structure.png">
+<meta property="og:image" content="http://yoursite.com/2021/03/16/C-内存模型/peaceful-mind.png">
+<meta property="og:image" content="http://yoursite.com/2021/03/16/C-内存模型/reorder.png">
+<meta property="og:image" content="http://yoursite.com/2021/03/16/C-内存模型/reorder-in-multiplethread.png">
+<meta property="og:image" content="http://yoursite.com/2021/03/16/C-内存模型/code-write-execute.png">
+<meta property="og:updated_time" content="2021-03-28T08:33:55.223Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="C++ Concurrency in Action: C++ 内存模型">
+<meta name="twitter:description" content="One of the most important features of the C++11 Standard is something most programmers won’t even notice. It’s not the new syntax features, nor is it the new library facilities, but the new multithre">
+<meta name="twitter:image" content="http://yoursite.com/2021/03/16/C-内存模型/cache.png">
+
+<link rel="canonical" href="http://yoursite.com/2021/03/16/C-内存模型/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>C++ Concurrency in Action: C++ 内存模型 | The next stop - Antarctica</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/03/16/C-内存模型/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          C++ Concurrency in Action: C++ 内存模型
+        </h1>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-03-28 16:33:55" itemprop="dateModified" datetime="2021-03-28T16:33:55+08:00">2021-03-28</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>One of the most important features of the <strong>C++11</strong> Standard is something most programmers won’t even notice. It’s not the new syntax features, nor is it the new library facilities, but <strong>the new multithreading-aware memory model</strong>.</p>
+</blockquote>
+<a id="more"></a>
+<ul>
+<li><code>memory_order_seq_cst</code> 强制要求各个线程看到的 change order 之间零差异，也就是同一个 total order</li>
+<li><code>memory_order_release/memory_order_acquire</code> 允许各个线程看到的 change order 之间存在一定差异，但不能太大</li>
+<li>对于某一个原子变量存在全局一致的 change order，也就是各个线程看到的这一变量的 change order 是一致的，除此以外不再约束各个线程看到的 change order 之间的差异。</li>
+</ul>
+<h2 id="Memory-Order"><a href="#Memory-Order" class="headerlink" title="Memory Order"></a>Memory Order</h2><p>编译器 reorder 优化，cache 传播延迟使得各个线程看到的 change order 之间会存在差异。</p>
+<p><img src="/2021/03/16/C-内存模型/cache.png" alt="cache"></p>
+<h3 id="memory-order-seq-cst"><a href="#memory-order-seq-cst" class="headerlink" title="memory_order_seq_cst"></a>memory_order_seq_cst</h3><p>强制要求各个线程看到的 change order 之间零差异，也就是同一个 total order。<br>虽然每次运行得到的 total order 可能不一样，但是每次运行中各个线程看到的 change order 之间零差异。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;assert.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;atomic&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;thread&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="built_in">std</span>::atomic&lt;<span class="keyword">bool</span>&gt; x, y;</span><br><span class="line"><span class="built_in">std</span>::atomic&lt;<span class="keyword">int</span>&gt; z;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">write_x</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    x.store(<span class="literal">true</span>, <span class="built_in">std</span>::memory_order_seq_cst);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">write_y</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    y.store(<span class="literal">true</span>, <span class="built_in">std</span>::memory_order_seq_cst);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">read_x_then_y</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">while</span> (!x.load(<span class="built_in">std</span>::memory_order_seq_cst))</span><br><span class="line">        ;</span><br><span class="line">    <span class="keyword">if</span> (y.load(<span class="built_in">std</span>::memory_order_seq_cst))</span><br><span class="line">        ++z;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">read_y_then_x</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">while</span> (!y.load(<span class="built_in">std</span>::memory_order_seq_cst))</span><br><span class="line">        ;</span><br><span class="line">    <span class="keyword">if</span> (x.load(<span class="built_in">std</span>::memory_order_seq_cst))</span><br><span class="line">        ++z;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    x = <span class="literal">false</span>;</span><br><span class="line">    y = <span class="literal">false</span>;</span><br><span class="line">    z = <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="built_in">std</span>::thread <span class="title">a</span><span class="params">(write_x)</span></span>;</span><br><span class="line">    <span class="function"><span class="built_in">std</span>::thread <span class="title">b</span><span class="params">(write_y)</span></span>;</span><br><span class="line">    <span class="function"><span class="built_in">std</span>::thread <span class="title">c</span><span class="params">(read_x_then_y)</span></span>;</span><br><span class="line">    <span class="function"><span class="built_in">std</span>::thread <span class="title">d</span><span class="params">(read_y_then_x)</span></span>;</span><br><span class="line">    a.join();</span><br><span class="line">    b.join();</span><br><span class="line">    c.join();</span><br><span class="line">    d.join();</span><br><span class="line">    assert(z.load() != <span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>x: false-&gt;true</code> 和 <code>y: false-&gt;true</code> 变量 change order 有两种可能：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x: false-&gt;true</span><br><span class="line">y: false-&gt;true</span><br></pre></td></tr></table></figure>
+<p>和</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">y: false-&gt;true</span><br><span class="line">x: false-&gt;true</span><br></pre></td></tr></table></figure>
+<p>实际上 <code>x: false-&gt;true</code> 和 <code>y: false-&gt;true</code> 哪个先发生并不重要，也就是实际的 change order 是哪个并不重要。<br>重要的是 <code>memory_order_seq_cst</code> 强制要求各个线程看到的 change order 之间零差异，也就是同一个 total order，我们假设<code>read_x_then_y</code> 线程看到的 change order 是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x: false-&gt;true</span><br><span class="line">y: false-&gt;true</span><br></pre></td></tr></table></figure>
+<p>那么这个 order 就是 total order，<code>read_y_then_x</code> 看到的也会是这个 order，因此即使 <code>read_x_then_y</code> 等到了 <code>x: false-&gt;true</code>，没有等到 <code>y: false-&gt;true</code> 而无法<code>++z;</code>，read_y_then_x 等到了 <code>y: false-&gt;true</code> 时 <code>x: false-&gt;true</code> 一定发生了，因此一定会 <code>++z;</code>。</p>
+<p>同理，<code>read_x_then_y</code> 线程看到的 change order 是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">y: false-&gt;true</span><br><span class="line">x: false-&gt;true</span><br></pre></td></tr></table></figure>
+<p>那么这个 order 就是 total order，<code>read_x_then_y</code> 等到了 <code>x: false-&gt;true</code> 时 <code>y: false-&gt;true</code> 一定发生了，因此一定会 <code>++z;</code>。</p>
+<h3 id="memory-order-release-memory-order-acquire"><a href="#memory-order-release-memory-order-acquire" class="headerlink" title="memory_order_release/memory_order_acquire"></a>memory_order_release/memory_order_acquire</h3><p>memory_order_release/memory_order_acquire 像一对锚点，锚点本身也是一条 change，插在各自线程看到的 change order 中，确保这两个 change order 之间乱序的程度不能太大，一个线程的 change order 中一些发生在锚点 memory_order_release 之前的 changes，就另外一个线程看到的 change order 而言，这些 changes 之间也许会乱序，但是它们一定出现都在锚点代表的 change 之前。</p>
+<p><code>memory_order_seq_cst</code> 强制要求各个线程看到的 change order 之间零差异，也就是同一个 total order，<code>memory_order_release/memory_order_acquire</code>允许各个线程看到的 change order 之间存在一定差异，但不能太大。</p>
+<p><img src="/2021/03/16/C-内存模型/memory_order.png" alt="memory_order"></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::atomic&lt;<span class="keyword">bool</span>&gt; x, y;</span><br><span class="line"><span class="built_in">std</span>::atomic&lt;<span class="keyword">int</span>&gt; z;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">write_x_then_y</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    x.store(<span class="literal">true</span>, <span class="built_in">std</span>::memory_order_relaxed);  <span class="comment">// ①</span></span><br><span class="line">    y.store(<span class="literal">true</span>, <span class="built_in">std</span>::memory_order_release);  <span class="comment">// ②</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">read_y_then_x</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">while</span> (!y.load(<span class="built_in">std</span>::memory_order_acquire))</span><br><span class="line">        ;  <span class="comment">// ③</span></span><br><span class="line">    <span class="keyword">if</span> (x.load(<span class="built_in">std</span>::memory_order_relaxed))</span><br><span class="line">        ++z;  <span class="comment">// ④</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    x = <span class="literal">false</span>;</span><br><span class="line">    y = <span class="literal">false</span>;</span><br><span class="line">    z = <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="built_in">std</span>::thread <span class="title">a</span><span class="params">(write_x_then_y)</span></span>;</span><br><span class="line">    <span class="function"><span class="built_in">std</span>::thread <span class="title">b</span><span class="params">(read_y_then_x)</span></span>;</span><br><span class="line">    a.join();</span><br><span class="line">    b.join();</span><br><span class="line">    assert(z.load() != <span class="number">0</span>);  <span class="comment">// ⑤</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>memory_order_release 保证 <code>write_x_then_y</code> 线程看到的顺序一定是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x: false-&gt;true</span><br><span class="line">y: false-&gt;true &lt;-&gt; memory_order_release 锚点</span><br></pre></td></tr></table></figure>
+<p><code>read_y_then_x</code> 看到的顺序本来可能是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x: false-&gt;true</span><br><span class="line">y: false-&gt;true</span><br></pre></td></tr></table></figure>
+<p>也可能是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">y: false-&gt;true</span><br><span class="line">x: false-&gt;true</span><br></pre></td></tr></table></figure>
+<p>但是由于 ② 与 ③ 建立了 synchronized-with 关系，<code>read_y_then_x</code> 看到顺序一定是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x: false-&gt;true</span><br><span class="line">y: false-&gt;true &lt;-&gt; memory_order_release 锚点</span><br></pre></td></tr></table></figure>
+<p>也就是 <code>x: false-&gt;true</code> 不可能跑到锚点 <code>y: false-&gt;true</code> 后面，因此最终 <code>assert</code> 一定会成功。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;assert.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;atomic&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;thread&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="built_in">std</span>::atomic&lt;<span class="keyword">bool</span>&gt; x, y;</span><br><span class="line"><span class="built_in">std</span>::atomic&lt;<span class="keyword">int</span>&gt; z;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">write_x</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    x.store(<span class="literal">true</span>, <span class="built_in">std</span>::memory_order_release);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">write_y</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    y.store(<span class="literal">true</span>, <span class="built_in">std</span>::memory_order_release);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">read_x_then_y</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">while</span> (!x.load(<span class="built_in">std</span>::memory_order_acquire))</span><br><span class="line">        ;</span><br><span class="line">    <span class="keyword">if</span> (y.load(<span class="built_in">std</span>::memory_order_acquire))</span><br><span class="line">        ++z;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">read_y_then_x</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">while</span> (!y.load(<span class="built_in">std</span>::memory_order_acquire))</span><br><span class="line">        ;</span><br><span class="line">    <span class="keyword">if</span> (x.load(<span class="built_in">std</span>::memory_order_acquire))</span><br><span class="line">        ++z;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    x = <span class="literal">false</span>;</span><br><span class="line">    y = <span class="literal">false</span>;</span><br><span class="line">    z = <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="built_in">std</span>::thread <span class="title">a</span><span class="params">(write_x)</span></span>;</span><br><span class="line">    <span class="function"><span class="built_in">std</span>::thread <span class="title">b</span><span class="params">(write_y)</span></span>;</span><br><span class="line">    <span class="function"><span class="built_in">std</span>::thread <span class="title">c</span><span class="params">(read_x_then_y)</span></span>;</span><br><span class="line">    <span class="function"><span class="built_in">std</span>::thread <span class="title">d</span><span class="params">(read_y_then_x)</span></span>;</span><br><span class="line">    a.join();</span><br><span class="line">    b.join();</span><br><span class="line">    c.join();</span><br><span class="line">    d.join();</span><br><span class="line">    assert(z.load() != <span class="number">0</span>); <span class="comment">// 断言z.load()不为零可能失败</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>x: false-&gt;true</code> 和 <code>y: false-&gt;true</code> 变量 change order 有两种可能：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x: false-&gt;true</span><br><span class="line">y: false-&gt;true</span><br></pre></td></tr></table></figure>
+<p>和</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">y: false-&gt;true</span><br><span class="line">x: false-&gt;true</span><br></pre></td></tr></table></figure>
+<p>实际上 <code>x: false-&gt;true</code> 和 <code>y: false-&gt;true</code> 哪个先发生并不重要，也就是实际的 change order 是哪个并不重要。<br>重要的是由于 <code>memory_order_release/memory_order_acquire</code> 允许各个线程看到的 change order 之间存在一定差异，<code>x.store(true, std::memory_order_release);</code>和<code>y.store(true, std::memory_order_release);</code>锚点也没起作用，因此可能存在<code>read_x_then_y</code> 看到一个顺序，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x: false-&gt;true</span><br><span class="line">y: false-&gt;true</span><br></pre></td></tr></table></figure>
+<p><code>read_x_then_y</code> 等到了 <code>x: false-&gt;true</code>，而没有等到 <code>y: false-&gt;true</code> 而无法 <code>++z;</code></p>
+<p><code>read_y_then_x</code> 看到另外一个顺序，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">y: false-&gt;true</span><br><span class="line">x: false-&gt;true</span><br></pre></td></tr></table></figure>
+<p><code>read_y_then_x</code> 等到了 <code>y: false-&gt;true</code>，而没有等到<code>x: false-&gt;true</code>而无法<code>++z;</code></p>
+<h3 id="memory-order-relaxed"><a href="#memory-order-relaxed" class="headerlink" title="memory_order_relaxed"></a>memory_order_relaxed</h3><p>对于某一个原子变量存在全局一致的 change order，也就是各个线程看到的这一变量的 change order 是一致的，除此以外不再约束各个线程看到的 change order 之间的差异。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::atomic&lt;<span class="keyword">bool</span>&gt; x, y;</span><br><span class="line"><span class="built_in">std</span>::atomic&lt;<span class="keyword">int</span>&gt; z;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">write_x_then_y</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    x.store(<span class="literal">true</span>, <span class="built_in">std</span>::memory_order_relaxed);  <span class="comment">// ①</span></span><br><span class="line">    y.store(<span class="literal">true</span>, <span class="built_in">std</span>::memory_order_relaxed);  <span class="comment">// ②</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">read_y_then_x</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">while</span> (!y.load(<span class="built_in">std</span>::memory_order_relaxed))</span><br><span class="line">        ;                                   <span class="comment">// ③</span></span><br><span class="line">    <span class="keyword">if</span> (x.load(<span class="built_in">std</span>::memory_order_relaxed))  <span class="comment">// ④</span></span><br><span class="line">        ++z;                                <span class="comment">// ⑤</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    x = <span class="literal">false</span>;</span><br><span class="line">    y = <span class="literal">false</span>;</span><br><span class="line">    z = <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="built_in">std</span>::thread <span class="title">a</span><span class="params">(write_x_then_y)</span></span>;</span><br><span class="line">    <span class="function"><span class="built_in">std</span>::thread <span class="title">b</span><span class="params">(read_y_then_x)</span></span>;</span><br><span class="line">    a.join();</span><br><span class="line">    b.join();</span><br><span class="line">    assert(z.load() != <span class="number">0</span>);  <span class="comment">// ⑥</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>write_x_then_y</code> 和 <code>read_y_then_x</code> 看到的变量 change order 可能不一致，write_x_then_y 看到的顺序是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x: false-&gt;true</span><br><span class="line">y: false-&gt;true</span><br></pre></td></tr></table></figure>
+<p><code>read_y_then_x</code> 看到的顺序可能是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x: false-&gt;true</span><br><span class="line">y: false-&gt;true</span><br></pre></td></tr></table></figure>
+<p>也可能是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">y: false-&gt;true</span><br><span class="line">x: false-&gt;true</span><br></pre></td></tr></table></figure>
+<p>因此如果是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">y: false-&gt;true</span><br><span class="line">x: false-&gt;true</span><br></pre></td></tr></table></figure>
+<p>有可能会导致断言失败。</p>
+<h2 id="std-atomic"><a href="#std-atomic" class="headerlink" title="std::atomic"></a>std::atomic</h2><p><img src="/2021/03/16/C-内存模型/atomic-structure.png" alt="atomic-structure"><br><img src="/2021/03/16/C-内存模型/peaceful-mind.png" alt="peaceful-mind"></p>
+<p><code>std::atomic</code> 不仅仅用于获得原子操作，而且会用于指导编译器的优化。</p>
+<p>用户自定义的原子</p>
+<ul>
+<li>连续内存块，可以使用 bitwise 的 <code>memcpy()</code> 进行复制</li>
+<li>不能有用户自定义的拷贝构造函数</li>
+<li>不能有用户自定义的移动构造函数</li>
+<li>不能有用户自定义的拷贝赋值运算符和移动赋值运算符</li>
+<li>不能有虚函数和虚基类</li>
+</ul>
+<p>也就是必须 TriviallyCopyable，<br><code>auto is_trivially_copyable = std::is_trivially_copyable&lt;A&gt;::value;</code></p>
+<p>两个 atomic 之间是不能直接赋值的，因为这涉及到读一个 atomic，写一个 atomic 两个操作，必然不能做到 atomic。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">std::atomic&lt;int&gt; a(1), b(2);</span><br><span class="line"><span class="comment">// 这是可以的，原子地读到临时变量中，原子地存好</span></span><br><span class="line">a.store(b.load());</span><br><span class="line"></span><br><span class="line"><span class="comment">// a = b; // Won't compile</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// OK</span></span><br><span class="line">a = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// OK</span></span><br><span class="line"><span class="keyword">int</span> c = <span class="number">3</span>;</span><br><span class="line">a = c;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AC</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> myInt1;</span><br><span class="line">    <span class="keyword">int</span> myInt2;</span><br><span class="line">    <span class="keyword">long</span> myLong1;</span><br><span class="line">    <span class="keyword">long</span> myLong2;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">std</span>::atomic&lt;AC&gt; ac;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 实例化一个 AC 型对象</span></span><br><span class="line">AC ac_;</span><br><span class="line">ac = ac_;</span><br></pre></td></tr></table></figure>
+<h3 id="exchange-原子地同时读和写"><a href="#exchange-原子地同时读和写" class="headerlink" title="exchange 原子地同时读和写"></a><code>exchange</code> 原子地同时读和写</h3><p><code>old_value = atomic_x.exchange(new_value);</code></p>
+<p>等于原子地运行以下两行</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">old_value = atomic_x;</span><br><span class="line">atomic_x = new_value;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="built_in">std</span>::atomic&lt;<span class="keyword">int</span>&gt; <span class="title">atomic_x</span><span class="params">(<span class="number">1</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="built_in">std</span>::atomic&lt;<span class="keyword">int</span>&gt; <span class="title">atomic_y</span><span class="params">(<span class="number">2</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="built_in">std</span>::atomic&lt;<span class="keyword">int</span>&gt; <span class="title">atomic_z</span><span class="params">(<span class="number">3</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 涉及三个原子操作</span></span><br><span class="line">atomic_z = atomic_y.exchange(atomic_x);</span><br></pre></td></tr></table></figure>
+<h3 id="compare-exchange-就是-Check-and-Set，乐观锁"><a href="#compare-exchange-就是-Check-and-Set，乐观锁" class="headerlink" title="compare_exchange_ 就是 Check-and-Set，乐观锁"></a><code>compare_exchange_</code> 就是 Check-and-Set，乐观锁</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> success = atomic_x.compare_exchange_strong(expected, desired);</span><br></pre></td></tr></table></figure>
+<p>等于原子地运行</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(atomic_x == expected) &#123;</span><br><span class="line">    atomic_x = desired;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    expected = atomic_x;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="为什么需要-compare-exchange-？"><a href="#为什么需要-compare-exchange-？" class="headerlink" title="为什么需要 compare_exchange_？"></a>为什么需要 <code>compare_exchange_</code>？</h4><p>因为我们需要取出值，做运算然后回写，在回写时我们有可能发现当时取出的值已经失效了，因此运算的结果也就是无效的了，如果我们执迷不悟地回写运算结果，就会造成写丢失。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">func</span><span class="params">(<span class="keyword">int</span> a)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a * a + <span class="number">10</span> * a + <span class="number">2</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 取出值，做运算然后回写</span></span><br><span class="line">x = func(x);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 为了让 x = func(x); 原子</span></span><br><span class="line"><span class="comment">// 我们可以加锁</span></span><br><span class="line"><span class="built_in">std</span>::mutex mutex;</span><br><span class="line">mutex.lock();</span><br><span class="line">x = func(x);</span><br><span class="line">mutex.unlock();</span><br></pre></td></tr></table></figure>
+<p>另外一种做法就是乐观锁，</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> oldX = atomic_x.load();</span><br><span class="line"><span class="comment">// Check-and-Set</span></span><br><span class="line"><span class="keyword">while</span>(!atomic_x.compare_exchange_strong(oldX, func(oldX)));</span><br></pre></td></tr></table></figure>
+<p>如果不相等，说明有人改了 <code>atomic_x</code>，<code>oldX</code> 已经失效了，因此运算的结果 <code>f(oldX)</code> 也就是无效的了，就应该抛掉 <code>f(oldX)</code> ，不该将 <code>f(oldX)</code> 赋给 <code>atomic_x</code>，应该读最新的值重新计算，并且计算完之后再次 Check before Set。</p>
+<h4 id="compare-exchange-weak"><a href="#compare-exchange-weak" class="headerlink" title="compare_exchange_weak"></a>compare_exchange_weak</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> success = atomic_x.compare_exchange_weak(expected, desired);</span><br></pre></td></tr></table></figure>
+<p>如果两个值相等，按照道理，会将 desired 赋给 atomic_x 并返回 true，但是 weak 不可靠啊，weak 可能没有将 desired 赋给 atomic_x，并返回了 false。</p>
+<p>但是如果将其放到 loop 中，false 会触发重试，下一次靠谱一次就可以了。也就说 weak 的不可靠也没啥影响了。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(!atomic_x.compare_exchange_weak(expected, desired));</span><br></pre></td></tr></table></figure>
+<h3 id="lock-free"><a href="#lock-free" class="headerlink" title="lock-free"></a>lock-free</h3><p>我们平常说 atomic 是 lock-free，事实上 atomic 的内部实现不一定真正是 <strong>lock-free 的原子 CPU 指令</strong>，内部实现有可能是依赖于锁的，并且在有的架构上是加锁实现，有的架构上是不加锁实现。</p>
+<p><code>std::atomic_flag</code>一定是 lock-free 的。</p>
+<blockquote>
+<p><code>std::atomic_flag</code> is an atomic boolean type.<br>Unlike all specializations of <code>std::atomic</code>, it is guaranteed to be lock-free.<br>Unlike <code>std::atomic&lt;bool&gt;</code>, <code>std::atomic_flag</code> does not provide <code>load</code> or <code>store</code> operations.</p>
+</blockquote>
+<p>查看是否是 lock-free，</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;atomic&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> &#123;</span></span><br><span class="line">   <span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> arr[<span class="number">1000</span>];</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> &#123;</span></span><br><span class="line">   <span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> x, y;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> <span class="keyword">const</span> *argv[])</span> </span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::atomic&lt;A&gt; a;</span><br><span class="line">    <span class="built_in">std</span>::atomic&lt;B&gt; b;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::boolalpha &lt;&lt; <span class="string">"a.is_lock_free()"</span></span><br><span class="line">              &lt;&lt; a.is_lock_free() &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::boolalpha &lt;&lt; <span class="string">"b.is_lock_free()"</span></span><br><span class="line">              &lt;&lt; <span class="built_in">std</span>::atomic_is_lock_free(&amp;b) &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="编译器-reorder"><a href="#编译器-reorder" class="headerlink" title="编译器 reorder"></a>编译器 reorder</h2><p><img src="/2021/03/16/C-内存模型/reorder.png" alt="reorder"><br><img src="/2021/03/16/C-内存模型/reorder-in-multiplethread.png" alt="reorder-in-multiplethread"></p>
+<p>单线程的话，只要结果对，顺序真的不重要，编译器可以在保证结果对的前提下，随便 reorder，编译器具有隐私权。</p>
+<p>多线程的话，顺序就很重要了，因为这个顺序可能被其他线程观察到，这个 reorder 可能会对其他线程的执行有影响。</p>
+<p><img src="/2021/03/16/C-内存模型/code-write-execute.png" alt="code-write-execute"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C/" rel="tag"># C++</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03/12/C-Concurrency-In-Action-Designing-Concurrent-Code/" rel="prev" title="C++ Concurrency in Action: Designing Concurrent Code">
+      <i class="fa fa-chevron-left"></i> C++ Concurrency in Action: Designing Concurrent Code
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/03/28/C-Concurrency-In-Action-Thread-Pool/" rel="next" title="C++ Concurrency in Action: Thread Pool">
+      C++ Concurrency in Action: Thread Pool <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Memory-Order"><span class="nav-number">1.</span> <span class="nav-text">Memory Order</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#memory-order-seq-cst"><span class="nav-number">1.1.</span> <span class="nav-text">memory_order_seq_cst</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#memory-order-release-memory-order-acquire"><span class="nav-number">1.2.</span> <span class="nav-text">memory_order_release/memory_order_acquire</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#memory-order-relaxed"><span class="nav-number">1.3.</span> <span class="nav-text">memory_order_relaxed</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#std-atomic"><span class="nav-number">2.</span> <span class="nav-text">std::atomic</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#exchange-原子地同时读和写"><span class="nav-number">2.1.</span> <span class="nav-text">exchange 原子地同时读和写</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#compare-exchange-就是-Check-and-Set，乐观锁"><span class="nav-number">2.2.</span> <span class="nav-text">compare_exchange_ 就是 Check-and-Set，乐观锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#为什么需要-compare-exchange-？"><span class="nav-number">2.2.1.</span> <span class="nav-text">为什么需要 compare_exchange_？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#compare-exchange-weak"><span class="nav-number">2.2.2.</span> <span class="nav-text">compare_exchange_weak</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lock-free"><span class="nav-number">2.3.</span> <span class="nav-text">lock-free</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编译器-reorder"><span class="nav-number">3.</span> <span class="nav-text">编译器 reorder</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">123</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

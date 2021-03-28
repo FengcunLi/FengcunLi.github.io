@@ -28,7 +28,7 @@
 <meta property="og:site_name" content="The next stop - Antarctica">
 <meta property="og:description" content="问题1234567891011121314151617class Test &amp;#123;    int *arr&amp;#123;nullptr&amp;#125;;public:    Test():arr(new int[5000]&amp;#123;1,2,3,4&amp;#125;) &amp;#123;    	cout &amp;lt;&amp;lt; &quot;default constructor&quot; &amp;lt;&amp;lt; endl;    &amp;#1">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2021-03-01T07:17:53.439Z">
+<meta property="og:updated_time" content="2021-03-07T07:33:01.709Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Move Semantic &amp; Perfect Forward">
 <meta name="twitter:description" content="问题1234567891011121314151617class Test &amp;#123;    int *arr&amp;#123;nullptr&amp;#125;;public:    Test():arr(new int[5000]&amp;#123;1,2,3,4&amp;#125;) &amp;#123;    	cout &amp;lt;&amp;lt; &quot;default constructor&quot; &amp;lt;&amp;lt; endl;    &amp;#1">
@@ -184,7 +184,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-03-01 15:17:53" itemprop="dateModified" datetime="2021-03-01T15:17:53+08:00">2021-03-01</time>
+                <time title="修改时间：2021-03-07 15:33:01" itemprop="dateModified" datetime="2021-03-07T15:33:01+08:00">2021-03-07</time>
               </span>
 
           
@@ -206,6 +206,9 @@
 <p>拷贝构造函数被调用了 2 次，这两次调用相当于复制了 10000 个元素，是一个不小的开销。<br>在工厂函数中建立的 Test 实例在函数返回后就会被析构，而用于返回值的 Test 的临时实例也会在将值赋给 t 之后被析构。也就是说，这两个临时对象并没有什么意义，构造他们而产生的开销并没有必要（事实上，编译器一般会对这种情况进行 (N)RVO，但不见得每次都能很好的优化）。</p>
 <p>所以有没有可能将在工厂函数中构造的对象的成员变量的那块内存“偷”过来，而不是重新开辟一块内存后再将之前的内容复制过来？</p>
 <h2 id="移动语义"><a href="#移动语义" class="headerlink" title="移动语义"></a>移动语义</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> * arr&#123;<span class="literal">nullptr</span>&#125;;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Test():arr(<span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">5000</span>]&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>&#125;) &#123;</span><br><span class="line">    	<span class="built_in">cout</span> &lt;&lt; <span class="string">"default constructor"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    Test(<span class="keyword">const</span> Test &amp; t) &#123;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"copy constructor"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        <span class="keyword">if</span> (arr == <span class="literal">nullptr</span>) arr = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">5000</span>];</span><br><span class="line">        <span class="built_in">memcpy</span>(arr, t.arr, <span class="number">5000</span>*<span class="keyword">sizeof</span>(<span class="keyword">int</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    Test(Test &amp;&amp; t): arr(t.arr) &#123;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"move constructor"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        t.arr = <span class="literal">nullptr</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    ~Test()&#123;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"destructor"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        <span class="keyword">delete</span> [] arr;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>moved: The data held within one object is transferred over to another, leaving the original object “empty”. 内部数据被转移走了，留下了一个空壳。</p>
+</blockquote>
 <p>通过移动构造函数，事实上我们是做了一个浅拷贝（shallow copy）。将之前的指针置为空的原因在于，类会在析构的时候 delete 掉数组，造成浅拷贝出来的指针变成一个悬挂指针（dangling pointer）。</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Test <span class="title">createTest</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> Test();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="function">Test <span class="title">t</span><span class="params">(createTest())</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 避免进行 (N)RVO</span></span><br><span class="line"><span class="comment">// g++ -std=c++11 -fno-elide-constructors test.cpp</span></span><br><span class="line"><span class="comment">// default constructor</span></span><br><span class="line"><span class="comment">// move constructor</span></span><br><span class="line"><span class="comment">// destructor</span></span><br><span class="line"><span class="comment">// move constructor</span></span><br><span class="line"><span class="comment">// destructor</span></span><br><span class="line"><span class="comment">// destructor</span></span><br></pre></td></tr></table></figure>
 <p>另外，</p>
@@ -349,7 +352,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">117</span>
+          <span class="site-state-item-count">123</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

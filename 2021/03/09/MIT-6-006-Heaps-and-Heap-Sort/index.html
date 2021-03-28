@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="The cutest little data structure ever invented, the heap. - Prof Srini Devadas  Heap: 可视化为完全二叉树的数组。">
+<meta name="keywords" content="Algorithm">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MIT 6.006: Heaps and Heap Sort">
+<meta property="og:url" content="http://yoursite.com/2021/03/09/MIT-6-006-Heaps-and-Heap-Sort/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="The cutest little data structure ever invented, the heap. - Prof Srini Devadas  Heap: 可视化为完全二叉树的数组。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2021/03/09/MIT-6-006-Heaps-and-Heap-Sort/heap-array.png">
+<meta property="og:image" content="http://yoursite.com/2021/03/09/MIT-6-006-Heaps-and-Heap-Sort/max-heapify.png">
+<meta property="og:image" content="http://yoursite.com/2021/03/09/MIT-6-006-Heaps-and-Heap-Sort/full-heap.png">
+<meta property="og:updated_time" content="2021-03-09T11:58:11.049Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MIT 6.006: Heaps and Heap Sort">
+<meta name="twitter:description" content="The cutest little data structure ever invented, the heap. - Prof Srini Devadas  Heap: 可视化为完全二叉树的数组。">
+<meta name="twitter:image" content="http://yoursite.com/2021/03/09/MIT-6-006-Heaps-and-Heap-Sort/heap-array.png">
+
+<link rel="canonical" href="http://yoursite.com/2021/03/09/MIT-6-006-Heaps-and-Heap-Sort/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>MIT 6.006: Heaps and Heap Sort | The next stop - Antarctica</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/03/09/MIT-6-006-Heaps-and-Heap-Sort/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MIT 6.006: Heaps and Heap Sort
+        </h1>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-03-09 19:58:11" itemprop="dateModified" datetime="2021-03-09T19:58:11+08:00">2021-03-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>The cutest little data structure ever invented, the heap. - Prof Srini Devadas</p>
+</blockquote>
+<p>Heap: 可视化为完全二叉树的数组。</p>
+<p><img src="/2021/03/09/MIT-6-006-Heaps-and-Heap-Sort/heap-array.png" alt="heap-array"></p>
+<a id="more"></a>
+<p>最大堆性质(Max heap property)：一个节点的值大于等于它的子节点的值。最大堆性质具有传递性。<br>最小堆性质(Min heap property)：一个节点的值小于等于它的子节点的值。最小堆性质具有传递性。</p>
+<h2 id="Heap-as-a-Tree"><a href="#Heap-as-a-Tree" class="headerlink" title="Heap as a Tree"></a>Heap as a Tree</h2><p>$$parent(i) = i / 2$$<br>$$left(i) = i * 2$$<br>$$right(i) = i * 2 + 1$$</p>
+<h3 id="max-heapify-arr-i"><a href="#max-heapify-arr-i" class="headerlink" title="max_heapify(arr, i)"></a><code>max_heapify(arr, i)</code></h3><p><code>max_heapify(arr, i)</code> 的假设是： <code>i</code> 的左子树和右子树都是最大堆，但是 <code>i</code> 有可能违反最大堆性质，<code>max_heapify</code>用于修复这个 violation。</p>
+<blockquote>
+<p>It can’t take something arbitrary.<br>It take something that is not quite a max heap where there’s a single violation of the max heap property at <code>i</code>.<br>It’s used to fix that single violation.</p>
+</blockquote>
+<p><code>max_heapify</code> 的复杂度分析：<br>precondition：完全二叉树，the height of the tree is bounded by $log(n)$</p>
+<p>preassumption：<code>i</code> 的左子树和右子树都是最大堆<br><img src="/2021/03/09/MIT-6-006-Heaps-and-Heap-Sort/max-heapify.png" alt="max-heapify"></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">l = left(i)</span><br><span class="line">r = right(i)</span><br><span class="line"></span><br><span class="line">largest_index = i</span><br><span class="line"><span class="keyword">if</span> (l &lt;= heap_size(A) <span class="keyword">and</span> A[l] &gt; A[largest_index])&#123;</span><br><span class="line">    largest_index = l</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (r &lt;= heap_size(A) <span class="keyword">and</span> A[r] &gt; A[largest_index])&#123;</span><br><span class="line">    largest_index = r</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (largest_index != i)&#123;</span><br><span class="line">    exchange A[i] <span class="keyword">and</span> A[largest_index]</span><br><span class="line">    max_heapify(A, largest_index)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>max_heapify</code> 的复杂度：$O(log(n))$</p>
+<h3 id="build-max-heap-arr"><a href="#build-max-heap-arr" class="headerlink" title="build_max_heap(arr)"></a><code>build_max_heap(arr)</code></h3><p>build a max heap from an arbitrary array</p>
+<p>层层合并最大堆</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">build_max_heap(arr):</span><br><span class="line">    <span class="keyword">for</span> i=n/<span class="number">2</span> down to <span class="number">1</span> <span class="comment">// 叶子节点必然满足最大堆性质，因此可以略过</span></span><br><span class="line">        <span class="keyword">do</span> max_heapify(arr, i)</span><br></pre></td></tr></table></figure>
+<p>乍看之下像是$O(n log(n))$的复杂度，实则不然。</p>
+<p><code>build_max_heap</code> 的复杂度分析：</p>
+<p><img src="/2021/03/09/MIT-6-006-Heaps-and-Heap-Sort/full-heap.png" alt="full-heap"></p>
+<p><code>max_heapify</code> takes $O(1)$ for nodes that are one level above the leaves, in general, $O(l)$ for the nodes that are $l$ levels above the leaves.</p>
+<p>We have $\frac{n}{4}$ nodes with level 1, $\frac{n}{8}$ with level 2, and so on till we have <strong>only one root node</strong> that is $log(n)$ levels above the leaves.</p>
+<p>$$<br>\frac{n}{4}c * 1 + \frac{n}{8}c * 2 + \frac{n}{16}c *3  + … + 1*c* log(n)<br>$$</p>
+<p>$$<br>\frac{n}{4} c (1 + \frac{2}{2} + \frac{3}{4}+ … + \frac{4}{n} log(n))<br>$$</p>
+<p>Setting $\frac{n}{4} = 2^k$<br>$$c 2^k(\frac{1}{2^0} + \frac{2}{2^1} + \frac{3}{2^2} + .. + \frac{k+1}{2^k}) $$</p>
+<p>$\frac{1}{2^0} + \frac{2}{2^1} + \frac{3}{2^2} + .. + \frac{k+1}{2^k}$ is bounded by constant and this constant is less than 3.</p>
+<p>因此<code>build_max_heap</code> 的复杂度是 $O(n)$</p>
+<h2 id="Heap-Sort"><a href="#Heap-Sort" class="headerlink" title="Heap Sort"></a>Heap Sort</h2><p>Sorting Strategy:</p>
+<ol>
+<li>Build Max Heap from unordered array;</li>
+<li>Find maximum element <code>A[1]</code>;</li>
+<li>Swap elements <code>A[n]</code> and <code>A[1]</code>: now max element is at the end of the array!</li>
+<li>Discard node n from heap (by decrementing heap-size variable)</li>
+<li>New root may violate max heap property, but its children are max heaps. Run <code>max_heapify</code> to fix this.</li>
+<li>Go to Step 2 unless heap is empty.</li>
+</ol>
+<h2 id="Codes"><a href="#Codes" class="headerlink" title="Codes"></a>Codes</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iterator&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">max_heapify</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;arr, <span class="keyword">int</span> heap_size, <span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (i &gt;= heap_size) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> left = <span class="number">2</span> * i + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">int</span> right = <span class="number">2</span> * i + <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> largest_index = i;</span><br><span class="line">    <span class="keyword">if</span> (left &lt; heap_size &amp;&amp; arr[left] &gt; arr[largest_index]) largest_index = left;</span><br><span class="line">    <span class="keyword">if</span> (right &lt; heap_size &amp;&amp; arr[right] &gt; arr[largest_index]) largest_index = right;</span><br><span class="line">    <span class="keyword">if</span> (largest_index != i) &#123;</span><br><span class="line">        swap(arr[i], arr[largest_index]);</span><br><span class="line">        <span class="comment">// 修复最大堆性质 violation</span></span><br><span class="line">        max_heapify(arr, heap_size, largest_index);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">build_max_heap</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;arr)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> size = arr.size();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = size / <span class="number">2</span> - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">        <span class="comment">// 层层合并最大堆</span></span><br><span class="line">        max_heapify(arr, size, i);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sort_heap</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;heap)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> heap_size = heap.size();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (heap_size &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        swap(heap[<span class="number">0</span>], heap[heap_size - <span class="number">1</span>]);</span><br><span class="line">        heap_size--;</span><br><span class="line">        <span class="comment">// 修复最大堆性质 violation</span></span><br><span class="line">        max_heapify(heap, heap_size, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">push_heap</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;heap, <span class="keyword">int</span> value)</span> </span>&#123;</span><br><span class="line">    heap.push_back(value);</span><br><span class="line">    <span class="keyword">int</span> i = heap.size() - <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (i &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">int</span> parent = (i + <span class="number">1</span>) / <span class="number">2</span> - <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span> (heap[parent] &gt;= heap[i]) <span class="keyword">break</span>;</span><br><span class="line">        swap(heap[parent], heap[i]);</span><br><span class="line">        i = parent;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">printVector</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; arr)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::copy(arr.begin(), arr.end(), <span class="built_in">std</span>::ostream_iterator&lt;<span class="keyword">int</span>&gt;(<span class="built_in">std</span>::<span class="built_in">cout</span>, <span class="string">" "</span>));</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span> **argv)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; arr&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>, <span class="number">14</span>, <span class="number">16</span>&#125;;</span><br><span class="line">    build_max_heap(arr);</span><br><span class="line">    printVector(arr);</span><br><span class="line"></span><br><span class="line">    push_heap(arr, <span class="number">11</span>);</span><br><span class="line">    printVector(arr);</span><br><span class="line"></span><br><span class="line">    push_heap(arr, <span class="number">0</span>);</span><br><span class="line">    push_heap(arr, <span class="number">17</span>);</span><br><span class="line">    printVector(arr);</span><br><span class="line"></span><br><span class="line">    sort_heap(arr);</span><br><span class="line">    printVector(arr);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 16 14 9 10 7 8 3 1 4 2</span></span><br><span class="line"><span class="comment">// 16 14 9 10 11 8 3 1 4 2 7</span></span><br><span class="line"><span class="comment">// 17 14 16 10 11 9 3 1 4 2 7 0 8</span></span><br><span class="line"><span class="comment">// 0 1 2 3 4 7 8 9 10 11 14 16 17</span></span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Algorithm/" rel="tag"># Algorithm</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03/07/C-Concurrency-In-Action/" rel="prev" title="C++ Concurrency in Action">
+      <i class="fa fa-chevron-left"></i> C++ Concurrency in Action
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/03/09/MIT-6-006-Binary-Search-Trees-BST-Sort/" rel="next" title="MIT 6.006: Binary Search Trees, BST Sort">
+      MIT 6.006: Binary Search Trees, BST Sort <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Heap-as-a-Tree"><span class="nav-number">1.</span> <span class="nav-text">Heap as a Tree</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#max-heapify-arr-i"><span class="nav-number">1.1.</span> <span class="nav-text">max_heapify(arr, i)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#build-max-heap-arr"><span class="nav-number">1.2.</span> <span class="nav-text">build_max_heap(arr)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Heap-Sort"><span class="nav-number">2.</span> <span class="nav-text">Heap Sort</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Codes"><span class="nav-number">3.</span> <span class="nav-text">Codes</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">123</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
