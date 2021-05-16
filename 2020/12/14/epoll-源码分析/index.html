@@ -30,7 +30,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://yoursite.com/2020/12/14/epoll-源码分析/epoll.png">
 <meta property="og:image" content="http://yoursite.com/2020/12/14/epoll-源码分析/eventpoll.png">
-<meta property="og:updated_time" content="2020-12-31T09:33:02.482Z">
+<meta property="og:updated_time" content="2020-12-31T09:33:02.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Epoll 源码分析">
 <meta name="twitter:description" content="epoll_wait 负责把自己（本线程）放入 epfd 对应的文件的事件通知队列 （wait_queue_head_t wq）中，并自己安心地在 for loop 中休眠（堵塞），即负责等。epoll_ctl 负责往红黑树中插入 epitem 节点，并把 epitem 实例、ep_poll_callback 事件回调方法组成一个 eppoll_entry 实例放入被监听文件的事件通知队列 （wa">
@@ -392,7 +392,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">123</span>
+          <span class="site-state-item-count">126</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

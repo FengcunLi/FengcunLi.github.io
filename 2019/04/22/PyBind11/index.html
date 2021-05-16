@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Basicpybind11 is a header-only library, hence it is not necessary to link against any special libraries and there are no intermediate (magic) translation steps.">
+<meta name="keywords" content="C++,Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PyBind11">
+<meta property="og:url" content="http://yoursite.com/2019/04/22/PyBind11/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="Basicpybind11 is a header-only library, hence it is not necessary to link against any special libraries and there are no intermediate (magic) translation steps.">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2019/04/22/PyBind11/demo.png">
+<meta property="og:updated_time" content="2021-05-16T14:25:50.865Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PyBind11">
+<meta name="twitter:description" content="Basicpybind11 is a header-only library, hence it is not necessary to link against any special libraries and there are no intermediate (magic) translation steps.">
+<meta name="twitter:image" content="http://yoursite.com/2019/04/22/PyBind11/demo.png">
+
+<link rel="canonical" href="http://yoursite.com/2019/04/22/PyBind11/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>PyBind11 | The next stop - Antarctica</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/22/PyBind11/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          PyBind11
+        </h1>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-16 22:25:50" itemprop="dateModified" datetime="2021-05-16T22:25:50+08:00">2021-05-16</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Basic"><a href="#Basic" class="headerlink" title="Basic"></a>Basic</h2><p>pybind11 is a header-only library, hence it is not necessary to link against any special libraries and there are no intermediate (magic) translation steps.</p>
+<a id="more"></a>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pybind11/pybind11.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> j)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> i + j;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">PYBIND11_MODULE(demo, m)</span><br><span class="line">&#123;</span><br><span class="line">    m.doc() = <span class="string">"pybind11 example plugin"</span>; <span class="comment">// optional module docstring</span></span><br><span class="line"></span><br><span class="line">    m.def(<span class="string">"add"</span>, &amp;add, <span class="string">"A function which adds two numbers"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><a href="https://pybind11.readthedocs.io/en/stable/compiling.html#building-manually" target="_blank" rel="noopener">PyBind11 building-manually</a></p>
+<p>Linux:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++ -O3 -Wall -shared -std=c++11 -fPIC $(python3 -m pybind11 --includes) demo.cpp -o demo$(python3-config --extension-suffix)</span><br></pre></td></tr></table></figure>
+<p>MacOS: the build command is almost the same but it also requires passing the <code>-undefined dynamic_lookup</code> flag so as to ignore missing symbols when building the module</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++ -O3 -Wall -shared -std=c++11 -undefined dynamic_lookup $(python3 -m pybind11 --includes) demo.cpp -o demo$(python3-config --extension-suffix)</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># find /opt/anaconda3/ -name "libpython*"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># g++ -O3 -Wall -shared -std=c++11 -fPIC $(python3 -m pybind11 --includes) -L/opt/anaconda3//envs/PyBind11/lib/ -lpython3.6m demo.cpp -o demo$(python3-config --extension-suffix)</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>On Linux and macOS, it’s better to (intentionally) not link against <strong>libpython</strong>. The symbols will be resolved when <strong>the extension library</strong> is loaded into a <strong>Python binary(也就是 Python 解释器)</strong>. This is preferable because you might have several different installations of a given Python version (e.g. the system-provided Python, and one that ships with a piece of commercial software). In this way, the plugin will work with both versions, <strong>instead of possibly importing a second Python library(也就是 libpython) into a process(Python 解释器进程) that already contains one (which will lead to a segfault)</strong>.</p>
+</blockquote>
+<p><img src="/2019/04/22/PyBind11/demo.png" alt="demo"></p>
+<h3 id="Lambda"><a href="#Lambda" class="headerlink" title="Lambda"></a>Lambda</h3><p>Both stateless 1 and stateful lambda closures are supported by pybind11. Stateless closures are those with an empty pair of brackets [] as the capture object.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">py::class_&lt;Pet&gt;(m, <span class="string">"Pet"</span>)</span><br><span class="line">    .def(py::init&lt;<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> &amp;&gt;())</span><br><span class="line">    .def(<span class="string">"setName"</span>, &amp;Pet::setName)</span><br><span class="line">    .def(<span class="string">"getName"</span>, &amp;Pet::getName)</span><br><span class="line">    .def(<span class="string">"__repr__"</span>,</span><br><span class="line">        [](<span class="keyword">const</span> Pet &amp;a) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">"&lt;example.Pet named '"</span> + a.name + <span class="string">"'&gt;"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    );</span><br></pre></td></tr></table></figure>
+<p><code>init()</code> is a convenience function that</p>
+<ul>
+<li>takes <strong>the types of a constructor’s parameters</strong> as <strong>template arguments</strong></li>
+<li>wraps the corresponding constructor (see the Custom constructors section for details).</li>
+</ul>
+<h3 id="看起是-Python-的实例属性"><a href="#看起是-Python-的实例属性" class="headerlink" title="看起是 Python 的实例属性"></a>看起是 Python 的实例属性</h3><p>有且仅有 <code>def_readwrite</code> 和 <code>def_property</code> 暴露出来的属性是可读写的。</p>
+<blockquote>
+<p>The only writable attributes are the ones explicitly defined using <code>class_::def_readwrite()</code> or <code>class_::def_property()</code></p>
+</blockquote>
+<h3 id="看起是-Python-的动态实例属性"><a href="#看起是-Python-的动态实例属性" class="headerlink" title="看起是 Python 的动态实例属性"></a>看起是 Python 的动态实例属性</h3><p>Dynamic attributes</p>
+<p>Native Python classes can pick up new attributes dynamically:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Pet</span>:</span></span><br><span class="line">    name = <span class="string">'Molly'</span></span><br><span class="line"></span><br><span class="line">p = Pet()</span><br><span class="line">p.name = <span class="string">'Charly'</span>  <span class="comment"># overwrite existing</span></span><br><span class="line">p.age = <span class="number">2</span>  <span class="comment"># dynamically add a new attribute</span></span><br></pre></td></tr></table></figure>
+<p>By default, classes exported from C++ do not support this.</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">py::class_&lt;Pet&gt;(m, <span class="string">"Pet"</span>)</span><br><span class="line">    .def(py::init&lt;&gt;())</span><br><span class="line">    .def_readwrite(<span class="string">"name"</span>, &amp;Pet::name);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">python:</span><br><span class="line">p = example.Pet()</span><br><span class="line">p.name = 'Charly'  # OK, attribute defined in C++</span><br><span class="line">p.age = <span class="number">2</span>  # fail</span><br><span class="line">AttributeError: 'Pet' object has no attribute 'age'</span><br></pre></td></tr></table></figure>
+<p>To enable dynamic attributes for C++ classes, the <code>py::dynamic_attr</code> tag must be added to the <code>py::class_</code> constructor:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">py::class_&lt;Pet&gt;(m, <span class="string">"Pet"</span>, py::dynamic_attr())</span><br><span class="line">    .def(py::init&lt;&gt;())</span><br><span class="line">    .def_readwrite(<span class="string">"name"</span>, &amp;Pet::name);</span><br></pre></td></tr></table></figure>
+<p>Now everything works as expected:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">p = example.Pet()</span><br><span class="line">p.name = <span class="string">'Charly'</span>  <span class="comment"># OK, overwrite value in C++</span></span><br><span class="line">p.age = <span class="number">2</span>  <span class="comment"># OK, dynamically add a new attribute</span></span><br><span class="line">p.__dict__  <span class="comment"># just like a native Python class</span></span><br><span class="line">&#123;<span class="string">'age'</span>: <span class="number">2</span>&#125;</span><br></pre></td></tr></table></figure>
+<p>Note that there is a small runtime cost for a class with dynamic attributes. Not only because of the addition of a <code>__dict__</code>, but also because of more expensive garbage collection tracking which must be activated to resolve possible circular references. Native Python classes incur this same cost by default, so this is not anything to worry about. <strong>By default, pybind11 classes are more efficient than native Python classes.</strong> Enabling dynamic attributes just brings them on par.</p>
+<h3 id="Inheritance-and-automatic-downcasting"><a href="#Inheritance-and-automatic-downcasting" class="headerlink" title="Inheritance and automatic downcasting"></a>Inheritance and automatic downcasting</h3><p>Given a pointer to a polymorphic base, pybind11 performs automatic downcasting to the actual derived type. <strong>Note that this goes beyond the usual situation in C++: we don’t just get access to the virtual functions of the base, we get the concrete derived type including functions and attributes that the base type may not even be aware of.</strong></p>
+<h3 id="Overloaded-methods"><a href="#Overloaded-methods" class="headerlink" title="Overloaded methods"></a>Overloaded methods</h3><p>To define multiple overloaded constructors, simply declare one after the other using the <code>.def(py::init&lt;...&gt;())</code> syntax. The existing machinery for specifying <strong>keyword and default arguments</strong> also works.</p>
+<h3 id="Return-value-policies-amp-call-policies"><a href="#Return-value-policies-amp-call-policies" class="headerlink" title="Return value policies &amp; call policies"></a>Return value policies &amp; call policies</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pybind11/pybind11.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> py = pybind11;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Data</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Data(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> &amp;msg_) : msg(msg_)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"Data constructor. msg: "</span> &lt;&lt; msg &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    ~Data()</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"Data Destructor. msg: "</span> &lt;&lt; msg &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="keyword">operator</span> <span class="title">delete</span><span class="params">(<span class="keyword">void</span> *ptr, <span class="built_in">std</span>::<span class="keyword">size_t</span> sz)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"custom delete for size "</span> &lt;&lt; sz &lt;&lt; <span class="string">'\n'</span>;</span><br><span class="line">        ::<span class="function"><span class="keyword">operator</span> <span class="title">delete</span><span class="params">(ptr)</span></span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">string</span> msg;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> Data *data_ptr = <span class="keyword">new</span> Data(<span class="string">"new + exported"</span>);</span><br><span class="line"><span class="keyword">static</span> Data data&#123;<span class="string">"not new + exported"</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> Data *data_ptr_2 = <span class="keyword">new</span> Data(<span class="string">"new + not exported"</span>);</span><br><span class="line"><span class="keyword">static</span> Data data_2&#123;<span class="string">"not new + not exported"</span>&#125;;</span><br><span class="line"></span><br><span class="line">PYBIND11_MODULE(<span class="built_in">free</span>, m)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 必须导出 Data 类</span></span><br><span class="line">    py::class_&lt;Data&gt;(m, <span class="string">"Data"</span>)</span><br><span class="line">        .def(py::init&lt;<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> &amp;&gt;())</span><br><span class="line">        .def_readwrite(<span class="string">"msg"</span>, &amp;Data::msg);</span><br><span class="line"></span><br><span class="line">    m.attr(<span class="string">"data"</span>) = data;</span><br><span class="line">    m.attr(<span class="string">"data_ptr"</span>) = data_ptr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> free</span><br><span class="line">Data constructor. msg: new + exported</span><br><span class="line">Data constructor. msg: <span class="keyword">not</span> new + exported</span><br><span class="line">Data constructor. msg: new + <span class="keyword">not</span> exported</span><br><span class="line">Data constructor. msg: <span class="keyword">not</span> new + <span class="keyword">not</span> exported</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>free.data.msg</span><br><span class="line"><span class="string">'not new + exported'</span></span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>free.data_ptr.msg</span><br><span class="line"><span class="string">'new + exported'</span></span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>Control+D</span><br><span class="line">Data Destructor. msg: <span class="keyword">not</span> new + exported <span class="comment"># Python 认为自己取得了 free.data 的 ownership，因此会在 Python interactive shell 退出前调用析构函数；另外，free.data 不是堆对象，但是 Python 并不知道，会冒然地调用 operator delete。</span></span><br><span class="line">custom delete <span class="keyword">for</span> size <span class="number">24</span></span><br><span class="line"></span><br><span class="line">Data Destructor. msg: <span class="keyword">not</span> new + <span class="keyword">not</span> exported <span class="comment"># C++ 对于非堆对象的处理-&gt;析构(_finit)，C++ 知道它不是堆对象，不会“傻”地调用析构函数之后再调用 operator delete</span></span><br><span class="line">Data Destructor. msg: <span class="keyword">not</span> new + exported <span class="comment"># C++ 对于非堆对象的处理-&gt;析构(_finit)，C++ 知道它不是堆对象，不会“傻”地调用析构函数之后再调用 operator delete</span></span><br></pre></td></tr></table></figure>
+<p>静态对象/全局对象(不位于栈，而是位于 Initialized/Uninitialized 段)：</p>
+<ul>
+<li>给定初值的基本类型位于 Initialized，也就是编译器会将初值填好，然后装载时 read from program file by exec；</li>
+<li>没有给定初值的基本类型和需要构造的复杂类型位于 Uninitialized，一方面是出于减少 program file size 的考虑，另一方面则是编译器无力调用构造函数的事实而“不得不”放到 Uninitialized。装载时 Uninitialized 段会 initialized to zero by exec，然后对于需要构造的复杂类型则在 <code>_init</code> 中进行构造/用户代码中进行构造，在 <code>_finit</code> 中进行析构。</li>
+</ul>
+<p>另外，<code>m.attr(&quot;data_ptr&quot;) = data_ptr;</code> Python 不会认为自己取得了 <code>Data</code> 对象的 ownership，因此不会调用其析构函数，也不会调用 <code>operator delete</code>。<br>位于静态/全局区的两根指针 <code>data_ptr</code> 和 <code>data_ptr_2</code> 分别指向了两个堆对象，在没有 <code>delete</code> 显式存在的情况下，C++ 不会去调用析构函数和 <code>operator delete</code>，即在 <code>_finit</code> 中没有销毁两个 Data 堆对象及释放堆空间的代码。</p>
+<div class="note info">
+            <ul><li><code>del</code> 只会减少引用计数，不会直接触发<strong>Python 对象</strong>的销毁</li><li><code>gc.collect()</code> 会直接触发引用计数为零的<strong>Python 对象</strong>的销毁，<strong>Python 对象</strong>的销毁可能会有 side-effect，比如触发 C++ 指针的 <code>delete</code></li></ul>
+          </div>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pybind11/pybind11.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> py = pybind11;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Data</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Data(<span class="keyword">int</span> value_) : value(value_)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"Data constructor. value: "</span> &lt;&lt; value &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    ~Data()</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"Data Destructor. value: "</span> &lt;&lt; value &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="keyword">operator</span> <span class="title">delete</span><span class="params">(<span class="keyword">void</span> *ptr, <span class="built_in">std</span>::<span class="keyword">size_t</span> sz)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"custom delete for size "</span> &lt;&lt; sz &lt;&lt; <span class="string">'\n'</span>;</span><br><span class="line">        ::<span class="function"><span class="keyword">operator</span> <span class="title">delete</span><span class="params">(ptr)</span></span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> value;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> Data *_data = <span class="keyword">new</span> Data(<span class="number">10</span>); <span class="comment">// _data 位于 Uninitialized data section；new Data(10) 发生在 _init 中。</span></span><br><span class="line"></span><br><span class="line"><span class="function">Data *<span class="title">get_data</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> _data; <span class="comment">/* (pointer to a static data structure) */</span> &#125;</span><br><span class="line"></span><br><span class="line">PYBIND11_MODULE(crash, m)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 必须也导出 Data 类，否则</span></span><br><span class="line">    <span class="comment">// TypeError: Unable to convert function return value to a Python type! The signature was</span></span><br><span class="line">    <span class="comment">// () -&gt; Data</span></span><br><span class="line">    py::class_&lt;Data&gt;(m, <span class="string">"Data"</span>)</span><br><span class="line">        .def(py::init&lt;<span class="keyword">int</span>&gt;())</span><br><span class="line">        .def_readwrite(<span class="string">"value"</span>, &amp;Data::value);</span><br><span class="line"></span><br><span class="line">    m.def(<span class="string">"get_data"</span>, &amp;get_data);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> crash</span><br><span class="line">Data constructor. value: <span class="number">10</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>d = crash.get_data()</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>d.value</span><br><span class="line"><span class="number">10</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>d</span><br><span class="line">&lt;crash.Data object at <span class="number">0x7fe7a541eea0</span>&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>dd = crash.get_data()</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>dd.value</span><br><span class="line"><span class="number">10</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>dd</span><br><span class="line">&lt;crash.Data object at <span class="number">0x7fe7a541eea0</span>&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">del</span> d</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">del</span> dd</span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> gc</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>gc.collect()</span><br><span class="line">Data Destructor. value: <span class="number">10</span></span><br><span class="line">custom delete <span class="keyword">for</span> size <span class="number">4</span></span><br><span class="line"><span class="number">22</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>ddd = crash.get_data()</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>ddd.value</span><br><span class="line"><span class="number">0</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>ddd</span><br><span class="line">&lt;crash.Data object at <span class="number">0x7fe7a527d9d0</span>&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">del</span> ddd</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>gc.collect()</span><br><span class="line">Data Destructor. value: <span class="number">0</span></span><br><span class="line">custom delete <span class="keyword">for</span> size <span class="number">4</span></span><br><span class="line">python(<span class="number">38747</span>,<span class="number">0x113207dc0</span>) malloc: *** error <span class="keyword">for</span> object <span class="number">0x7fe7a5504200</span>: pointer being freed was <span class="keyword">not</span> allocated</span><br><span class="line">python(<span class="number">38747</span>,<span class="number">0x113207dc0</span>) malloc: *** set a breakpoint <span class="keyword">in</span> malloc_error_break to debug</span><br><span class="line">[<span class="number">1</span>]    <span class="number">38747</span> abort      python</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>crash.get_data()</code> 返回的是一个 Python 对象，这个对象是一个 Wrapper，里面包裹了一根指针</li>
+<li>两次调用 <code>crash.get_data()</code> 返回的是同一个 Wrapper 对象，<code>d</code> 和 <code>dd</code></li>
+<li><code>del d</code> 和 <code>del dd</code> 之后，Wrapper 对象引用计数为零，但是恰巧此次实验中垃圾回收尚未进行，Wrapper 对象没有立刻被销毁</li>
+<li>调用 <code>gc.collect()</code> 显式销毁回收 Wrapper 对象，该 Wrapper 对象的销毁会触发其内包指针的 delete，即触发了 <code>Data</code> 对象的析构及 <code>operator delete</code> 的调用</li>
+<li>再次调用 <code>crash.get_data()</code>，此时 C++ 依旧会返回 <code>_data</code> 指针给 Python，这个 <code>_data</code> 指针目前是个悬垂指针，指向的堆地址已经被释放（根据 C++ 编程规范，delete 指针之后应该将指针置为 nullptr，但是此处无法完成这一步规范动作），Python 拿到这个悬垂指针，包裹一下，并返回一个新的 Wrapper 对象</li>
+<li>通过这个 Wrapper 对象去取值，拿到的值是 undetermined，此处恰巧是 0</li>
+<li><code>del ddd</code>之后，Wrapper 对象引用计数为零，但是恰巧此次实验中垃圾回收尚未进行，Wrapper 对象没有立刻被销毁</li>
+<li>调用 <code>gc.collect()</code> 显式销毁回收 Wrapper 对象，该 Wrapper 对象的销毁会触发其内包指针的 delete，即触发了 <code>Data</code> 对象的析构及 <code>operator delete</code> 的调用，此时出现了重复释放，<code>free</code> 实现会发现记录链表中没有其正在 free 的地址(pointer being freed)，就会抛出 <code>pointer being freed was not allocated</code> error，并终止程序 <code>abort python</code>。</li>
+</ul>
+<h2 id="Build-systems-Building-with-Bazel"><a href="#Build-systems-Building-with-Bazel" class="headerlink" title="Build systems - Building with Bazel"></a>Build systems - Building with Bazel</h2><h2 id="PyBind11-Internal"><a href="#PyBind11-Internal" class="headerlink" title="PyBind11 Internal"></a>PyBind11 Internal</h2><p>The double-number-sign or token-pasting operator (##), which is sometimes called the merging or combining operator, is used in both object-like and function-like macros. It permits separate tokens to be joined into a single token, and therefore, can’t be the first or last token in the macro definition.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PYBIND11_CONCAT(first, second) first##second</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PYBIND11_MAYBE_UNUSED __attribute__ ((__unused__))</span></span><br></pre></td></tr></table></figure>
+<p><code>__attribute__ ((__unused__))</code> This attribute, attached to a function, means that the function is meant to be possibly unused. <strong>GCC will not produce a warning for this function.</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PYBIND11_PLUGIN_IMPL(name) \</span></span><br><span class="line">    <span class="keyword">extern</span> <span class="string">"C"</span> PYBIND11_MAYBE_UNUSED PYBIND11_EXPORT PyObject *PyInit_#<span class="meta">#name(); \</span></span><br><span class="line">    <span class="keyword">extern</span> <span class="string">"C"</span> PYBIND11_EXPORT PyObject *PyInit_#<span class="meta">#name()</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PYBIND11_MODULE(name, variable)                                        \</span></span><br><span class="line">    <span class="keyword">static</span> ::pybind11::module_::module_def                                     \</span><br><span class="line">        PYBIND11_CONCAT(pybind11_module_def_, name) PYBIND11_MAYBE_UNUSED;     \ <span class="comment">// 得到一个类型为 `::pybind11::module_::module_def` 的全局、静态对象。</span></span><br><span class="line">    PYBIND11_MAYBE_UNUSED                                                      \</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">PYBIND11_CONCAT</span><span class="params">(pybind11_init_, name)</span><span class="params">(::pybind11::module_ &amp;)</span></span>;  \ <span class="comment">// 声明一个静态函数（只在此编译单元中可见）pybind11_init_##name</span></span><br><span class="line">    PYBIND11_PLUGIN_IMPL(name) &#123;                                               \ <span class="comment">// 声明并定义 PyObject *PyInit_##name() 函数</span></span><br><span class="line">        PYBIND11_CHECK_PYTHON_VERSION                                          \</span><br><span class="line">        PYBIND11_ENSURE_INTERNALS_READY                                        \</span><br><span class="line">        <span class="keyword">auto</span> m = ::pybind11::module_::create_extension_module(                 \</span><br><span class="line">            PYBIND11_TOSTRING(name), <span class="literal">nullptr</span>,                                  \</span><br><span class="line">            &amp;PYBIND11_CONCAT(pybind11_module_def_, name));                     \</span><br><span class="line">        <span class="keyword">try</span> &#123;                                                                  \</span><br><span class="line">            PYBIND11_CONCAT(pybind11_init_, name)(m);                          \ <span class="comment">// 调用 pybind11_init_##name 对 extension_module 进行初始化</span></span><br><span class="line">            <span class="keyword">return</span> m.ptr();                                                    \ <span class="comment">// PyObject *PyInit_##name() 这个函数返回一个 extension_module 指针，extension_module 是 PyObject 的子类?</span></span><br><span class="line">        &#125; PYBIND11_CATCH_INIT_EXCEPTIONS                                       \</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">PYBIND11_CONCAT</span><span class="params">(pybind11_init_, name)</span><span class="params">(::pybind11::module_ &amp;variable)</span>    <span class="comment">// 拼接上我们写的代码，形成对 pybind11_init_##name 函数的实现。</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">PYBIND11_MODULE</span><span class="params">(demo, m)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    m.doc() = <span class="string">"pybind11 demo plugin"</span>; <span class="comment">// optional module docstring</span></span><br><span class="line"></span><br><span class="line">    m.def(<span class="string">"add"</span>, &amp;add, <span class="string">"A function which adds two numbers"</span>);</span><br><span class="line"></span><br><span class="line">    m.def(<span class="string">"sub"</span>, &amp;sub, <span class="string">"A function which subs two numbers"</span>, py::arg(<span class="string">"i"</span>), py::arg(<span class="string">"j"</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>预处理完就是：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">一大堆代码</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">pybind11_init_demo</span><span class="params">(::pybind11::module_ &amp;m)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    m.doc() = <span class="string">"pybind11 demo plugin"</span>; <span class="comment">// optional module docstring</span></span><br><span class="line"></span><br><span class="line">    m.def(<span class="string">"add"</span>, &amp;add, <span class="string">"A function which adds two numbers"</span>);</span><br><span class="line"></span><br><span class="line">    m.def(<span class="string">"sub"</span>, &amp;sub, <span class="string">"A function which subs two numbers"</span>, py::arg(<span class="string">"i"</span>), py::arg(<span class="string">"j"</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>整个流程就是声明、实现了 <code>pybind11_init_demo</code>，然后在 <code>PyObject *PyInit_demo()</code> 中 <code>create_extension_module</code>，得到 <code>m</code>，然后调用 <code>pybind11_init_demo(m)</code> 使用我们提供的代码进行了 <code>m</code> 的 “功能添加”。</p>
+<p><code>PyInit_demo</code> 的调用时机是？</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C/" rel="tag"># C++</a>
+              <a href="/tags/Python/" rel="tag"># Python</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/03/18/Emplace-back/" rel="prev" title="Emplace Back">
+      <i class="fa fa-chevron-left"></i> Emplace Back
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/04/23/Iterator-invalidation-rules/" rel="next" title="Iterator Invalidation Rules">
+      Iterator Invalidation Rules <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Basic"><span class="nav-number">1.</span> <span class="nav-text">Basic</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Lambda"><span class="nav-number">1.1.</span> <span class="nav-text">Lambda</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#看起是-Python-的实例属性"><span class="nav-number">1.2.</span> <span class="nav-text">看起是 Python 的实例属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#看起是-Python-的动态实例属性"><span class="nav-number">1.3.</span> <span class="nav-text">看起是 Python 的动态实例属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Inheritance-and-automatic-downcasting"><span class="nav-number">1.4.</span> <span class="nav-text">Inheritance and automatic downcasting</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Overloaded-methods"><span class="nav-number">1.5.</span> <span class="nav-text">Overloaded methods</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Return-value-policies-amp-call-policies"><span class="nav-number">1.6.</span> <span class="nav-text">Return value policies &amp; call policies</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Build-systems-Building-with-Bazel"><span class="nav-number">2.</span> <span class="nav-text">Build systems - Building with Bazel</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PyBind11-Internal"><span class="nav-number">3.</span> <span class="nav-text">PyBind11 Internal</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">126</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

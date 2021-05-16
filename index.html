@@ -156,6 +156,78 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/05/16/CUDA-Programming/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/05/16/CUDA-Programming/" class="post-title-link" itemprop="url">CUDA Programming</a>
+        </h2>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-16 22:24:13" itemprop="dateModified" datetime="2021-05-16T22:24:13+08:00">2021-05-16</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Programming-Interface"><a href="#Programming-Interface" class="headerlink" title="Programming Interface"></a>Programming Interface</h2><p>CUDA C++ Programming Interface 包含:</p>
+<ul>
+<li>a minimal set of extensions to the C++ language</li>
+<li>a runtime library<ul>
+<li>provides <strong>C and C++ functions that execute on the host</strong> to allocate and deallocate device memory,transfer data between host memory and device memory, manage systems with multiple devices, etc.</li>
+<li>The runtime is built on top of a lower-level C API, <strong>the CUDA driver API</strong>, which is also accessible by the application.</li>
+</ul>
+</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/05/16/CUDA-Programming/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/03/28/C-Concurrency-In-Action-Thread-Pool/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -582,7 +654,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-03-28 16:09:25" itemprop="dateModified" datetime="2021-03-28T16:09:25+08:00">2021-03-28</time>
+                <time title="修改时间：2021-05-07 21:36:30" itemprop="dateModified" datetime="2021-05-07T21:36:30+08:00">2021-05-07</time>
               </span>
 
           
@@ -916,7 +988,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-02-17 11:21:19" itemprop="dateModified" datetime="2021-02-17T11:21:19+08:00">2021-02-17</time>
+                <time title="修改时间：2021-04-07 10:58:41" itemprop="dateModified" datetime="2021-04-07T10:58:41+08:00">2021-04-07</time>
               </span>
 
           
@@ -2085,71 +2157,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/15/Correctly-implementing-a-spinlock-in-C/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Fengcun Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="The next stop - Antarctica">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/12/15/Correctly-implementing-a-spinlock-in-C/" class="post-title-link" itemprop="url">Correctly Implementing a Spinlock in C++</a>
-        </h2>
-
-        <div class="post-meta">
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-15 15:24:18" itemprop="dateModified" datetime="2020-12-15T15:24:18+08:00">2020-12-15</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><a href="https://rigtorp.se/spinlock/" target="_blank" rel="noopener">Correctly implementing a spinlock in C++</a></p>
-<p>I’ve seen a lot of poorly implemented spinlocks floating around the internet. They all make the same mistake: <strong>spinning on a read-modify-write (RMW) operation</strong>. I will explain why that’s bad and how to correctly implement a spinlock in C++. The explanation and implementation will easily carry over to other programming languages. At the end of the note I provide a complete spinlock implementation adhearing to the Mutex named requirements.</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/12/15/Correctly-implementing-a-spinlock-in-C/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2221,7 +2228,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">123</span>
+          <span class="site-state-item-count">126</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

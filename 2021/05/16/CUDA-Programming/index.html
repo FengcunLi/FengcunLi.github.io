@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Programming InterfaceCUDA C++ Programming Interface 包含:  a minimal set of extensions to the C++ language a runtime library provides C and C++ functions that execute on the host to allocate and dealloc">
+<meta name="keywords" content="C++">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CUDA Programming">
+<meta property="og:url" content="http://yoursite.com/2021/05/16/CUDA-Programming/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="Programming InterfaceCUDA C++ Programming Interface 包含:  a minimal set of extensions to the C++ language a runtime library provides C and C++ functions that execute on the host to allocate and dealloc">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2021/05/16/CUDA-Programming/CUDA_Memory.png">
+<meta property="og:image" content="http://yoursite.com/2021/05/16/CUDA-Programming/scope.png">
+<meta property="og:image" content="http://yoursite.com/2021/05/16/CUDA-Programming/device_query.png">
+<meta property="og:image" content="http://yoursite.com/2021/05/16/CUDA-Programming/address_space.png">
+<meta property="og:updated_time" content="2021-05-16T14:24:13.508Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CUDA Programming">
+<meta name="twitter:description" content="Programming InterfaceCUDA C++ Programming Interface 包含:  a minimal set of extensions to the C++ language a runtime library provides C and C++ functions that execute on the host to allocate and dealloc">
+<meta name="twitter:image" content="http://yoursite.com/2021/05/16/CUDA-Programming/CUDA_Memory.png">
+
+<link rel="canonical" href="http://yoursite.com/2021/05/16/CUDA-Programming/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>CUDA Programming | The next stop - Antarctica</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/05/16/CUDA-Programming/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CUDA Programming
+        </h1>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-16 22:24:13" itemprop="dateModified" datetime="2021-05-16T22:24:13+08:00">2021-05-16</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Programming-Interface"><a href="#Programming-Interface" class="headerlink" title="Programming Interface"></a>Programming Interface</h2><p>CUDA C++ Programming Interface 包含:</p>
+<ul>
+<li>a minimal set of extensions to the C++ language</li>
+<li>a runtime library<ul>
+<li>provides <strong>C and C++ functions that execute on the host</strong> to allocate and deallocate device memory,transfer data between host memory and device memory, manage systems with multiple devices, etc.</li>
+<li>The runtime is built on top of a lower-level C API, <strong>the CUDA driver API</strong>, which is also accessible by the application.</li>
+</ul>
+</li>
+</ul>
+<a id="more"></a>
+<p>The CUDA driver API provides an additional level of control by exposing lower-level concepts:</p>
+<ul>
+<li>CUDA contexts - the analogue of host processes for the device. 进程的对应物</li>
+<li>CUDA modules - the analogue of dynamically loaded libraries for the device. 动态链接库的对应物</li>
+</ul>
+<p>CUDA C++ Programming Interface allows programmers to define a kernel as a C++ function and use some new syntax to specify the grid and block dimension each time the function is called.</p>
+<p>Any source file that contains some of these extensions must be compiled with <code>nvcc</code>.</p>
+<h3 id="使用-NVCC-进行编译"><a href="#使用-NVCC-进行编译" class="headerlink" title="使用 NVCC 进行编译"></a>使用 NVCC 进行编译</h3><p>Kernels 可以由 the CUDA instruction set architecture <strong>PTX</strong> 进行书写，但是使用 high-level programming language such as C++ 进行书写更加高效。</p>
+<h4 id="编译流程"><a href="#编译流程" class="headerlink" title="编译流程"></a>编译流程</h4><h5 id="Offline-Compilation"><a href="#Offline-Compilation" class="headerlink" title="Offline Compilation"></a>Offline Compilation</h5><p>Source file: a mix of host code (i.e., code that executes on the host) and device code (i.e., code that executes on the device).<br>nvcc’s basic workflow:</p>
+<ol>
+<li>separating device code from host code</li>
+<li>compiling the device code into an assembly form (PTX code) and/or binary form (cubin object)</li>
+<li>modifying the host code by replacing the <code>&lt;&lt;&lt;...&gt;&gt;&gt;</code> syntax by the necessary CUDA runtime function calls to load and launch each compiled kernel from the PTX code and/or cubin object. 修改 host 代码，使用 CUDA 运行时函数加载并启动 PTX code and/or cubin object 中已经编译好的 kernel。</li>
+<li>The modified host code is output either as C++ code that is left to be compiled using another tool or as object code directly by letting nvcc invoke the host compiler during the last compilation stage.</li>
+</ol>
+<p>总结:</p>
+<ol>
+<li><strong>device code</strong> -&gt; PTX and/or binary code</li>
+<li><strong>host code</strong> 被修改</li>
+</ol>
+<h5 id="Just-in-Time-Compilation"><a href="#Just-in-Time-Compilation" class="headerlink" title="Just-in-Time Compilation"></a>Just-in-Time Compilation</h5><p>Any PTX code loaded by an application at runtime is compiled further to binary code<br><strong>by the device driver</strong>. This is called <strong>just-in-time compilation</strong>. Just-in-time compilation increases application load time, but allows the application to benefit from any new compiler improvements coming with each new <strong>device driver</strong>.</p>
+<p><strong>device driver</strong> 负责 just-in-time compilation，PTX -&gt; binary code.</p>
+<p>NVRTC 可在<strong>运行时</strong>完成 CUDA C++ <strong>device code</strong> -&gt; PTX.</p>
+<h4 id="二进制兼容性"><a href="#二进制兼容性" class="headerlink" title="二进制兼容性"></a>二进制兼容性</h4><p>二进制是架构 specific 的。</p>
+<p>compiling with <code>-code=sm_35</code> produces binary code for devices of compute capability <strong>3.5</strong>.<br>Binary compatibility is guaranteed from one minor revision to the next one, but not from one minor revision to the previous one or across major revisions.<br>In other words, a <em>cubin</em> object generated for compute capability <code>X.y</code> will only execute on devices of compute capability <code>X.z</code> where <code>z≥y</code>.</p>
+<h4 id="PTX-兼容性"><a href="#PTX-兼容性" class="headerlink" title="PTX 兼容性"></a>PTX 兼容性</h4><p>The <code>-arch</code> compiler option specifies the compute capability that is assumed when compiling C++ to PTX code.<br>比如，code that contains <strong>warp shuffle</strong>, for example, must be compiled with <code>-arch=compute_30</code> (or higher).</p>
+<p>PTX code produced for some specific compute capability can always be compiled to binary code of greater or equal compute capability. Note that a binary compiled from an earlier PTX version may not make use of some hardware features. For example, a binary targeting devices of compute capability 7.0 (Volta) compiled from PTX generated for compute capability 6.0 (Pascal) will not make use of Tensor Core instructions, since these were not available on Pascal. <strong>As a result, the final binary may perform worse than would be possible if the binary were generated using the latest version of PTX.</strong></p>
+<h4 id="应用兼容性"><a href="#应用兼容性" class="headerlink" title="应用兼容性"></a>应用兼容性</h4><p>To execute code on devices of specific compute capability, 一个应用可以:</p>
+<ul>
+<li>load binary that is compatible with this compute capability as described in Binary Compatibility</li>
+<li>或者 load PTX code that is compatible with this compute capability as described in PTX Compatibility</li>
+</ul>
+<p>但是如果应用在<strong>运行时</strong>想使用<strong>编译时</strong>尚未发布的全新版本的、with higher compute capability 的 device driver，应用就必须使用 PTX，<strong>device driver</strong> 会负责 just-in-time compilation，PTX -&gt; binary code.</p>
+<p>Which PTX and binary code gets embedded in a CUDA C++ application:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">nvcc x.cu</span><br><span class="line">-gencode arch=compute_50,code=sm_50</span><br><span class="line">-gencode arch=compute_60,code=sm_60</span><br><span class="line">-gencode arch=compute_70,code=\'compute_70,sm_70\'</span><br></pre></td></tr></table></figure>
+<p>会将</p>
+<ol>
+<li>兼容 compute capability 5.0 的二进制代码</li>
+<li>兼容 compute capability 6.0 的二进制代码</li>
+<li>兼容 compute capability 7.0 的 PTX 代码和二进制代码</li>
+</ol>
+<p><strong>都</strong>嵌入进应用中。</p>
+<p>然后 host code 会在运行时自动加载和执行最合适的代码。</p>
+<ul>
+<li>选择 5.0 binary code for devices with compute capability 5.0 and 5.2,</li>
+<li>选择 6.0 binary code for devices with compute capability 6.0 and 6.1,</li>
+<li>选择 7.0 binary code for devices with compute capability 7.0 and 7.5,</li>
+<li>选择 PTX code which is compiled to binary code at runtime for devices with compute capability 8.0 and 8.6.</li>
+</ul>
+<p>The <code>__CUDA_ARCH__</code> macro can be used to differentiate various code paths based on compute capability. <strong>It is only defined for device code.</strong> When compiling with <code>-arch=compute_35</code> for example, <code>__CUDA_ARCH__</code> is equal to 350.</p>
+<p>应用不使用 C++ extensions 、runtime library 进行书写，而直接使用 the lower-level C API - <strong>the CUDA driver API</strong>, 由于没有了 runtime 的加持，应用必须为不同的 compute capability 编译生成单独的文件，并在运行时显式地加载和执行合适的文件。</p>
+<h4 id="C-兼容性"><a href="#C-兼容性" class="headerlink" title="C++ 兼容性"></a>C++ 兼容性</h4><ul>
+<li>Full C++ is supported for the host code.</li>
+<li>However, only a subset of C++ is fully supported for the device code as described in C++ Language Support.</li>
+</ul>
+<h4 id="64-位兼容性"><a href="#64-位兼容性" class="headerlink" title="64 位兼容性"></a>64 位兼容性</h4><p>The 64-bit version of nvcc compiles <strong>device code</strong> in 64-bit mode <strong>(i.e., pointers are 64-bit)</strong>. Device code compiled in 64-bit mode is only supported with host code compiled in 64-bit mode.</p>
+<p>The 32-bit version of nvcc compiles <strong>device code</strong> in 32-bit mode and device code compiled in 32-bit mode is only supported with host code compiled in 32-bit mode.</p>
+<h3 id="CUDA-Runtime"><a href="#CUDA-Runtime" class="headerlink" title="CUDA Runtime"></a>CUDA Runtime</h3><ul>
+<li>linked statically libcudart.a</li>
+<li>linked dynamically libcudart.so</li>
+</ul>
+<p>Applications that require cudart.dll and/or cudart.so for dynamic linking typically include them as part of the application installation package. <strong>It is only safe to pass the address of CUDA runtime symbols between components that link to the same instance of the CUDA runtime.</strong></p>
+<p>As mentioned in <strong>Heterogeneous Programming</strong>, the CUDA programming model assumes a system composed of a host and a device, each with their own separate memory.</p>
+<ul>
+<li>Device Memory</li>
+<li>Shared Memory</li>
+<li>Thread Hierarchy</li>
+<li>Page-Locked Host Memory page-locked host memory that is required to overlap kernel execution with data transfers between host and device memory.</li>
+<li>Asynchronous Concurrent Execution</li>
+<li>Multi-Device System shows how the programming model extends to a system with multiple devices attached to the same host.</li>
+<li>Error Checking describes how to properly check the errors generated by the runtime.</li>
+<li>Call Stack mentions the runtime functions used to manage the CUDA C++ call stack.</li>
+<li>Texture and Surface Memory presents the texture and surface memory spaces that provide another way to access device memory; they also expose a subset of the GPU texturing hardware.</li>
+</ul>
+<h4 id="运行时初始化和设备主上下文初始化"><a href="#运行时初始化和设备主上下文初始化" class="headerlink" title="运行时初始化和设备主上下文初始化"></a>运行时初始化和设备主上下文初始化</h4><p>runtime function - 运行时函数</p>
+<p>There is no explicit initialization function for the runtime; it initializes the first time a runtime function is called (more specifically any function other than <em>functions from the error handling and version management sections of the reference manual</em>).<br><strong>这一点和 C 语言运行时不一样。</strong></p>
+<p>One needs to keep this in mind</p>
+<ul>
+<li><strong>when timing runtime function calls</strong></li>
+<li>and <strong>when interpreting the error code from the first call into the runtime</strong>.</li>
+</ul>
+<p>The runtime creates a <strong>CUDA context(the analogue of host processes for the device. 进程的对应物)</strong> for each device in the system. 在设备主上下文创建(而非初始化)过程中，会触发 Just-in-Time Compilation(如有必要)，并将 binary code 加载进 device memory(对比可执行文件的装载)。This context is the <strong>primary context</strong> for this device and is initialized at the first runtime function which requires an active context on this device. 应用的所有 host 线程共享设备主上下文。如有必要，CUDA driver API 能够访问到设备主上下文。</p>
+<p>区分 <strong>runtime</strong> 初始化时机、<strong>设备主上下文</strong>创建时机、<strong>设备主上下文</strong>初始化时机。</p>
+<ul>
+<li>When a host thread calls <code>cudaDeviceReset()</code>, this <strong>destroys</strong> the primary context of the device the host thread currently operates on (i.e., the current device as defined in Device Selection).</li>
+<li>The next runtime function call made by any host thread that has this device as current will <strong>create</strong> a new primary context for this device.</li>
+</ul>
+<p>The CUDA interfaces use global state that is initialized during host program initiation and destroyed during host program termination.(也就是走 C 语言运行时的 <code>_init</code> 和 <code>_fint</code>那一套) .The CUDA runtime and driver cannot detect if this state is invalid, so using any of these interfaces (implicitly or explicity) during program initiation or termination after main) will result in undefined behavior.</p>
+<h4 id="CUDA-的内存及缓存结构"><a href="#CUDA-的内存及缓存结构" class="headerlink" title="CUDA 的内存及缓存结构"></a>CUDA 的内存及缓存结构</h4><p><img src="/2021/05/16/CUDA-Programming/CUDA_Memory.png" alt="CUDA_Memory"><br>物理视图：</p>
+<ul>
+<li>每个线程有自己的寄存器</li>
+<li>每个 SM 有自己的 L1 cache、shared memory(indeed L1 cache controlled by us the programmer)、Texture cache、Constant cache</li>
+<li>L2 cache 在 SM 间共享</li>
+<li>Device memory 被切分用于 Global memory，Local memory，Texture memory，Constant memory。</li>
+<li>Host Memory 通过 PCI 总线和 Device memory 通信。</li>
+</ul>
+<p><img src="/2021/05/16/CUDA-Programming/scope.png" alt="scope"></p>
+<p>特点:</p>
+<ul>
+<li>Global memory: The functions <code>cudaMalloc</code>, <code>cudaFree</code>, <code>cudaMemcpy</code> and <code>cudaMemset</code> all deal with global memory. Every byte is addressable. It is persistent across kernel calls.</li>
+<li>Local memory is used automatically by NVCC when we run out of registers or when registers cannot be used. It happens if there are two many variables per thread to use registers or if the kernels use structures.</li>
+<li>Constant memory is read only to the GPU and the CPU set it up. In graphics programming, this memory holds the constants like the model, view and projection matrices.</li>
+<li>Texture memory is read only to the GPU and the CPU set it up. Texture memory has many extra addressing tricks because it is design for indexing called texture fetching and interpolating pixels in a 2D image.</li>
+<li>寄存器是 fastest memory on the GPU. The variables we declare in a kernel will use registers unless we run out of or they can not be stored in registers, the local memory will be used. Unlike the CPU, there’s thousands of registers in a GPU.</li>
+</ul>
+<p><img src="/2021/05/16/CUDA-Programming/device_query.png" alt="device_query"><br>每个 GPU 有多个 SM，每个 SM 有多个 CUDA Core，每个 CUDA Core 可以运行多个线程。<br>比如上图 1 GPU，2 SM，96 CUDA Cores，每个 SM 最大线程数目 1536，每个 block 最大线程数目 1024。</p>
+<h4 id="Device-Memory"><a href="#Device-Memory" class="headerlink" title="Device Memory"></a>Device Memory</h4><p><img src="/2021/05/16/CUDA-Programming/address_space.png" alt="address_space"></p>
+<p>Device Memory 类比进程地址空间。</p>
+<p><strong>Kernels operate out of device memory</strong>, so the runtime provides functions to allocate, deallocate, and copy device memory, as well as transfer data between host memory and device memory.</p>
+<p>Device memory can be allocated either as <strong>linear memory</strong> or as <strong>CUDA arrays</strong>.</p>
+<p>Linear memory is allocated in a single unified address space, <strong>which means that separately allocated entities can reference one another via pointers</strong>, for example, in a binary tree or linked list.<br>The size of the address space depends on the host system (CPU) and the compute capability of the used GPU. 地址空间的大小:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Device code</span></span><br><span class="line"><span class="function">__global__ <span class="keyword">void</span> <span class="title">VecAdd</span><span class="params">(<span class="keyword">float</span> *A, <span class="keyword">float</span> *B, <span class="keyword">float</span> *C, <span class="keyword">int</span> N)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = blockDim.x * blockIdx.x + threadIdx.x;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (i &lt; N)</span><br><span class="line">        C[i] = A[i] + B[i];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Host code</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> N = ...;</span><br><span class="line">    <span class="keyword">size_t</span> size = N * <span class="keyword">sizeof</span>(<span class="keyword">float</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Allocate input vectors h_A and h_B in host memory</span></span><br><span class="line">    <span class="keyword">float</span> *h_A = (<span class="keyword">float</span> *)<span class="built_in">malloc</span>(size);</span><br><span class="line">    <span class="keyword">float</span> *h_B = (<span class="keyword">float</span> *)<span class="built_in">malloc</span>(size);</span><br><span class="line">    <span class="comment">// Initialize input vectors</span></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Allocate vectors in device memory</span></span><br><span class="line">    <span class="keyword">float</span> *d_A;</span><br><span class="line">    cudaMalloc(&amp;d_A, size);</span><br><span class="line">    <span class="keyword">float</span> *d_B;</span><br><span class="line">    cudaMalloc(&amp;d_B, size);</span><br><span class="line">    <span class="keyword">float</span> *d_C;</span><br><span class="line">    cudaMalloc(&amp;d_C, size);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Copy vectors from host memory to device memory</span></span><br><span class="line">    cudaMemcpy(d_A, h_A, size, cudaMemcpyHostToDevice);</span><br><span class="line">    cudaMemcpy(d_B, h_B, size, cudaMemcpyHostToDevice);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Invoke kernel</span></span><br><span class="line">    <span class="keyword">int</span> threadsPerBlock = <span class="number">256</span>;</span><br><span class="line">    <span class="keyword">int</span> blocksPerGrid =</span><br><span class="line">        (N + threadsPerBlock - <span class="number">1</span>) / threadsPerBlock;</span><br><span class="line">    VecAdd&lt;&lt;&lt;blocksPerGrid, threadsPerBlock&gt;&gt;&gt;(d_A, d_B, d_C, N);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Copy result from device memory to host memory</span></span><br><span class="line">    <span class="comment">// h_C contains the result in host memory cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost);</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Free device memory</span></span><br><span class="line">    cudaFree(d_A);</span><br><span class="line">    cudaFree(d_B);</span><br><span class="line">    cudaFree(d_C);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Free host memory</span></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>To avoid allocating too much memory and thus impacting system-wide performance, request the allocation parameters from the user based on the problem size. If the allocation fails, you can fallback to other slower memory types (<code>cudaMallocHost()</code>, <code>cudaHostRegister()</code>, etc.), or return an error telling the user how much memory was needed that was denied. If your application cannot request the allocation parameters for some reason, we recommend using <code>cudaMallocManaged()</code> for platforms that support it.</p>
+<p>CUDA Runtime 提供了 functions used to copy memory between</p>
+<ul>
+<li>linear memory allocated with cudaMalloc(),</li>
+<li>linear memory allocated with cudaMallocPitch() or cudaMalloc3D(),</li>
+<li>CUDA arrays,</li>
+<li>and memory allocated for variables declared in <strong>global or constant memory space</strong>.</li>
+</ul>
+<p>Various ways of accessing global variables via the runtime API</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">__constant__ <span class="keyword">float</span> constData[<span class="number">256</span>];</span><br><span class="line"><span class="keyword">float</span> data[<span class="number">256</span>];</span><br><span class="line">cudaMemcpyToSymbol(constData, data, <span class="keyword">sizeof</span>(data));</span><br><span class="line">cudaMemcpyFromSymbol(data, constData, <span class="keyword">sizeof</span>(data));</span><br><span class="line"></span><br><span class="line">__device__ <span class="keyword">float</span> devData;</span><br><span class="line"><span class="keyword">float</span> value = <span class="number">3.14f</span>;</span><br><span class="line">cudaMemcpyToSymbol(devData, &amp;value, <span class="keyword">sizeof</span>(<span class="keyword">float</span>));</span><br><span class="line"></span><br><span class="line">_device__ <span class="keyword">float</span> *devPointer;</span><br><span class="line"><span class="keyword">float</span> *ptr;</span><br><span class="line">cudaMalloc(&amp;ptr, <span class="number">256</span> * <span class="keyword">sizeof</span>(<span class="keyword">float</span>));</span><br><span class="line">cudaMemcpyToSymbol(devPointer, &amp;ptr, <span class="keyword">sizeof</span>(ptr));</span><br></pre></td></tr></table></figure>
+<h4 id="Device-Memory-L2-Access-Management"><a href="#Device-Memory-L2-Access-Management" class="headerlink" title="Device Memory L2 Access Management"></a>Device Memory L2 Access Management</h4><p>When a CUDA kernel accesses a data region in the global memory repeatedly, such data accesses can be considered to be persisting. On the other hand, if the data is only accessed once, such data accesses can be considered to be streaming.</p>
+<p><strong>Starting with CUDA 11.0, devices of compute capability 8.0 and above have the capability to influence persistence of data in the L2 cache, potentially providing higher bandwidth and lower latency accesses to global memory.</strong></p>
+<ul>
+<li>L2 cache Set-Aside for Persisting Accesses</li>
+<li>L2 Policy for Persisting Accesses</li>
+</ul>
+<p>For example, if the L2 set-aside cache size is 16KB and the <code>num_bytes</code> in the <code>accessPolicyWindow</code> is 32KB:</p>
+<ul>
+<li>With a hitRatio of 0.5, the hardware will select, at random, 16KB of the 32KB window to be designated as persisting and cached in the set-aside L2 cache area.</li>
+<li>With a hitRatio of 1.0, the hardware will attempt to cache the whole 32KB window in the set-aside L2 cache area. Since the set-aside area is smaller than the window, cache lines will be evicted to keep the most recently used 16KB of the 32KB data in the set-aside portion of the L2 cache.</li>
+</ul>
+<p>The hitRatio can therefore be used to avoid thrashing of cache lines and <strong>overall reduce the amount of data moved into and out of the L2 cache</strong>.</p>
+<h4 id="Shared-Memory"><a href="#Shared-Memory" class="headerlink" title="Shared Memory"></a>Shared Memory</h4><p><strong>Shared memory is expected to be much faster than global memory.</strong> It can be used as scratchpad memory(高速暂存存储器内存) (or software managed cache) to minimize global memory accesses from a CUDA block.</p>
+<h4 id="Page-Locked-Host-Memory"><a href="#Page-Locked-Host-Memory" class="headerlink" title="Page-Locked Host Memory"></a>Page-Locked Host Memory</h4><p>参考: <a href="https://forums.developer.nvidia.com/t/question-about-page-locked-memory/9032" target="_blank" rel="noopener">question about page locked memory</a></p>
+<p>Page-Locked: <strong>cannot be swapped to disk.</strong> 与之相对的是 regular pageable(non-pinned)，也就是直接通过 <code>malloc</code> 分配的内存。当我们 call <code>cudaMemcpy()</code> with non-pinned memory，the <strong>CUDA driver</strong> has to first memcpy the data from your non-pinned pointer to an internal pinned memory pointer, and then the host-&gt;GPU can be invoked. 想要保证 host-&gt;GPU 过程中，src 不被 swap 到磁盘，要求 src 是 page-locked。<br>If you allocate your host memory with <code>cudaHostAlloc</code> and initialize the data there directly, then the driver doesn’t have to memcpy from pageable to pinned memory.<br>That is why it is faster.</p>
+<p>什么时候用 Page-Locked Host Memory?<br>Pinned memory is great if you are going to be copying data back and forth between the CPU and GPU quite often but may not be that beneficial if you’re not doing many transfers.</p>
+<p>With the exception of Core i7, there is generally a factor of two speed improvement on most systems in GPU memory transfer to/from page-locked host memory. (<strong>Triple channel Core i7 systems have so much memory bandwidth that there is almost no speed difference, amazingly, between page-locked and pageable memory.</strong>)</p>
+<p>The only reason not to use page-locked memory is using too much of it reduces the amount of memory the OS has to devote to other tasks.</p>
+<p>零拷贝<strong>Zero-copy</strong> is an entirely new and different feature in CUDA 2.2. It lets you map a page-locked host buffer directly into the address space of the device, allowing you to perform CPU<->GPU transfers as needed while the kernel runs. <strong>The decision to use zero-copy memory depends a lot more on your algorithm specifics.</strong></-></p>
+<p>Page-locked memory is, by default, not portable between CUDA contexts. You can use it multiple host threads (with different contexts), but it will only be marked as page-locked in one that created it. In other contexts, it will be treated as pageable memory, triggering an unnecessary copy by the driver when used for GPU transfers. CUDA 2.2 also fixes this by allowing you to set a flag to allow all page-locked memory to be shared between OS threads.</p>
+<p>Using page-locked host memory has several benefits:</p>
+<ul>
+<li>Copies between page-locked host memory and device memory can be performed concurrently with kernel execution for some devices as mentioned in Asynchronous Concurrent Execution.</li>
+<li>On some devices, page-locked host memory can be mapped into <strong>the address space of the device</strong>, eliminating the need to copy it to or from device memory as detailed in Mapped Memory. Such a block has therefore in general two addresses: one in host memory that is returned by cudaHostAlloc() or malloc(), and one in device memory that can be retrieved using <code>cudaHostGetDevicePointer()</code> and then used to access the block from within a kernel.</li>
+<li>On systems with a front-side bus, bandwidth between host memory and device memory is higher if host memory is allocated as page-locked and even higher if in addition it is allocated as write-combining as described in Write-Combining Memory.</li>
+</ul>
+<p>Page-locked host memory is a scarce resource however, so allocations in page-locked memory will start failing long before allocations in pageable memory. In addition, by reducing the amount of physical memory available to the operating system for paging, consuming too much page-locked memory reduces overall system performance.</p>
+<h6 id="Mapped-Memory"><a href="#Mapped-Memory" class="headerlink" title="Mapped Memory"></a>Mapped Memory</h6><p>Accessing host memory directly from within a kernel does not provide the same bandwidth as device memory, but does have some advantages:</p>
+<ul>
+<li>There is no need to allocate a block in device memory and copy data between this block and the block in host memory; data transfers are implicitly performed as needed by the kernel; 按需传输</li>
+<li>There is no need to use streams (see Concurrent Data Transfers) to overlap data transfers with kernel execution; the kernel-originated data transfers automatically overlap with kernel execution.</li>
+</ul>
+<p>同步对共享映射内存的访问<br>Since mapped page-locked memory is shared between host and device however, the application must synchronize memory accesses using streams or events (see Asynchronous Concurrent Execution) to avoid any potential read-after-write, write-after-read, or write-after-write hazards.</p>
+<p><strong>Note that atomic functions (see Atomic Functions) operating on mapped page-locked memory are not atomic from the point of view of the host or other devices.</strong></p>
+<h4 id="Asynchronous-Concurrent-Execution"><a href="#Asynchronous-Concurrent-Execution" class="headerlink" title="Asynchronous Concurrent Execution"></a>Asynchronous Concurrent Execution</h4><p>CUDA exposes the following operations as independent tasks that can operate concurrently with one another:</p>
+<ol>
+<li>Computation on the host;</li>
+<li>Computation on the device;</li>
+<li>Memory transfers from the host to the device;</li>
+<li>Memory transfers from the device to the host;</li>
+<li>Memory transfers within the memory of a given device;</li>
+<li>Memory transfers among devices.</li>
+</ol>
+<p>在 <em>CUDA C++ Programming Guide</em> 中依次介绍了</p>
+<ul>
+<li>(1) 和其余各项操作的并发问题 3.2.6.1. Concurrent Execution between Host and Device</li>
+<li>(2) 的并发问题:3.2.6.2. Concurrent Kernel Execution</li>
+<li>(2) 和 (3),(4),(5) 的并发问题: 3.2.6.3. Overlap of Data Transfer and Kernel Execution</li>
+<li>(3) (4) 之间的并发问题: 3.2.6.4. Concurrent Data Transfers</li>
+</ul>
+<h5 id="Concurrent-Execution-between-Host-and-Device"><a href="#Concurrent-Execution-between-Host-and-Device" class="headerlink" title="Concurrent Execution between Host and Device"></a>Concurrent Execution between Host and Device</h5><p>Concurrent host execution is facilitated through asynchronous library functions that<br>return control to the host thread before the device completes the requested task. Using asynchronous calls, many device operations can be queued up together to be executed by the CUDA driver when appropriate device resources are available. This relieves the host thread of much of the responsibility to manage the device, leaving it free for other tasks.</p>
+<p>The following device operations are asynchronous with respect to the host:</p>
+<ul>
+<li>Kernel launches;</li>
+<li>Memory copies within a single device’s memory;</li>
+<li>Memory copies from host to device of a memory block of 64 KB or less;</li>
+<li>Memory copies performed by functions that are suffixed with Async;</li>
+<li>Memory set function calls.</li>
+</ul>
+<p>异步-&gt;同步:</p>
+<ul>
+<li>Programmers can globally disable asynchronicity of kernel launches for all CUDA applications running on a system by setting the CUDA_LAUNCH_BLOCKING environment variable to 1. This feature is provided for debugging purposes only and should not be used as a way to make production software run reliably.</li>
+<li>Kernel launches are synchronous if hardware counters are collected via a profiler (Nsight, Visual Profiler) unless concurrent kernel profiling is enabled.</li>
+<li>Async memory copies will also be synchronous if they involve <strong>host memory that is not page-locked</strong>.</li>
+</ul>
+<h5 id="Concurrent-Kernel-Execution"><a href="#Concurrent-Kernel-Execution" class="headerlink" title="Concurrent Kernel Execution"></a>Concurrent Kernel Execution</h5><p>The maximum number of kernel launches that a device can execute concurrently depends on its compute capability.</p>
+<p>A kernel from one CUDA context cannot execute concurrently with a kernel from another CUDA context. <strong>这句话怎么理解？</strong></p>
+<p>Kernels that use many textures or a large amount of local memory are less likely to execute concurrently with other kernels.</p>
+<p>Concurrent Kernel Execution 的抽象层次处于 CUDA Context(the analogue of host processes for the device) 和 threads 之间。</p>
+<h5 id="Streams"><a href="#Streams" class="headerlink" title="Streams"></a>Streams</h5><p>Applications manage the concurrent operations described above through streams. A stream is a sequence of commands (possibly issued by different host threads) that execute in order. Different streams, on the other hand, may execute their commands out of order with respect to one another or concurrently; this behavior is not guaranteed and should therefore not be relied upon for correctness <strong>(e.g., inter-kernel communication is undefined)</strong>. The commands issued on a stream may execute when all the dependencies of the command are met. The dependencies could be previously launched commands on same stream or dependencies from other streams. <strong>The successful completion of synchronize call guarantees that all the commands launched are completed.</strong></p>
+<p>A stream is defined by creating a stream object and specifying it as the stream parameter to a sequence of</p>
+<ul>
+<li>kernel launches</li>
+<li>and host <-> device memory copies.</-></li>
+</ul>
+<p>创建两个 stream</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">cudaStream_t stream[<span class="number">2</span>];</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">2</span>; ++i)</span><br><span class="line">    cudaStreamCreate(&amp;stream[i]);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Note that hostPtr must point to page-locked host memory for any overlap（并发） to occur.</span></span><br><span class="line"><span class="keyword">float</span> *hostPtr;</span><br><span class="line">cudaMallocHost(&amp;hostPtr, <span class="number">2</span> * size);</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">2</span>; ++i)</span><br><span class="line">&#123;</span><br><span class="line">    cudaMemcpyAsync(inputDevPtr + i * size, hostPtr + i * size,</span><br><span class="line">                    size, cudaMemcpyHostToDevice, stream[i]);</span><br><span class="line">    MyKernel&lt;&lt;&lt;<span class="number">100</span>, <span class="number">512</span>, <span class="number">0</span>, stream[i]&gt; &gt; &gt;(outputDevPtr + i * size, inputDevPtr + i * size, size);</span><br><span class="line">    cudaMemcpyAsync(hostPtr + i * size, outputDevPtr + i * size,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">2</span>; ++i)</span><br><span class="line">    cudaStreamDestroy(stream[i]);</span><br></pre></td></tr></table></figure>
+<h6 id="Default-Stream"><a href="#Default-Stream" class="headerlink" title="Default Stream"></a>Default Stream</h6><p>Kernel launches and host <-> device memory copies that do not specify any stream parameter, or equivalently that set the stream parameter to zero, are issued to the default stream. They are therefore executed in order.</-></p>
+<p>For code that is compiled using the <code>--default-stream per-thread</code> compilation flag (or that defines the <code>CUDA_API_PER_THREAD_DEFAULT_STREAM</code> macro before including CUDA headers (<code>cuda.h</code> and <code>cuda_runtime.h</code>)), the default stream is a regular stream and each host thread has its own default stream. 每个 host thread 有一个默认 stream。</p>
+<p>For code that is compiled using the <code>--default-stream legacy</code> compilation flag, the default stream is a special stream called the <code>NULL stream</code> and each device has a single <code>NULL stream</code> used for all host threads. The <code>NULL stream</code> is special as it causes implicit synchronization as described in Implicit Synchronization. For code that is compiled without specifying a <code>--default-stream</code> compilation flag, <code>--default-stream legacy</code> is assumed as the default.<br>每个设备有一个默认的 <code>NULL stream</code>，所有的 host threads 共用这个默认 stream。这是默认行为。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C/" rel="tag"># C++</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03/28/C-Concurrency-In-Action-Thread-Pool/" rel="prev" title="C++ Concurrency in Action: Thread Pool">
+      <i class="fa fa-chevron-left"></i> C++ Concurrency in Action: Thread Pool
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Programming-Interface"><span class="nav-number">1.</span> <span class="nav-text">Programming Interface</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-NVCC-进行编译"><span class="nav-number">1.1.</span> <span class="nav-text">使用 NVCC 进行编译</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#编译流程"><span class="nav-number">1.1.1.</span> <span class="nav-text">编译流程</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Offline-Compilation"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">Offline Compilation</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Just-in-Time-Compilation"><span class="nav-number">1.1.1.2.</span> <span class="nav-text">Just-in-Time Compilation</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二进制兼容性"><span class="nav-number">1.1.2.</span> <span class="nav-text">二进制兼容性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PTX-兼容性"><span class="nav-number">1.1.3.</span> <span class="nav-text">PTX 兼容性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#应用兼容性"><span class="nav-number">1.1.4.</span> <span class="nav-text">应用兼容性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-兼容性"><span class="nav-number">1.1.5.</span> <span class="nav-text">C++ 兼容性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#64-位兼容性"><span class="nav-number">1.1.6.</span> <span class="nav-text">64 位兼容性</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CUDA-Runtime"><span class="nav-number">1.2.</span> <span class="nav-text">CUDA Runtime</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#运行时初始化和设备主上下文初始化"><span class="nav-number">1.2.1.</span> <span class="nav-text">运行时初始化和设备主上下文初始化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CUDA-的内存及缓存结构"><span class="nav-number">1.2.2.</span> <span class="nav-text">CUDA 的内存及缓存结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Device-Memory"><span class="nav-number">1.2.3.</span> <span class="nav-text">Device Memory</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Device-Memory-L2-Access-Management"><span class="nav-number">1.2.4.</span> <span class="nav-text">Device Memory L2 Access Management</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Shared-Memory"><span class="nav-number">1.2.5.</span> <span class="nav-text">Shared Memory</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Page-Locked-Host-Memory"><span class="nav-number">1.2.6.</span> <span class="nav-text">Page-Locked Host Memory</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#Mapped-Memory"><span class="nav-number">1.2.6.0.1.</span> <span class="nav-text">Mapped Memory</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Asynchronous-Concurrent-Execution"><span class="nav-number">1.2.7.</span> <span class="nav-text">Asynchronous Concurrent Execution</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Concurrent-Execution-between-Host-and-Device"><span class="nav-number">1.2.7.1.</span> <span class="nav-text">Concurrent Execution between Host and Device</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Concurrent-Kernel-Execution"><span class="nav-number">1.2.7.2.</span> <span class="nav-text">Concurrent Kernel Execution</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Streams"><span class="nav-number">1.2.7.3.</span> <span class="nav-text">Streams</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#Default-Stream"><span class="nav-number">1.2.7.3.1.</span> <span class="nav-text">Default Stream</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">126</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
