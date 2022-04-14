@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="http://www.liuhaihua.cn/archives/698599.htmlhttps://www.infoq.com/articles/apache-arrow-java/https://arrow.apache.org/overview/https://arrow.apache.org/docs/format/Columnar.html https://github.com/apa">
+<meta name="keywords" content="C++">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Apache Arrow">
+<meta property="og:url" content="http://yoursite.com/2021/05/26/Apache-Arrow/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="http://www.liuhaihua.cn/archives/698599.htmlhttps://www.infoq.com/articles/apache-arrow-java/https://arrow.apache.org/overview/https://arrow.apache.org/docs/format/Columnar.html https://github.com/apa">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2021-05-28T08:02:25.755Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Apache Arrow">
+<meta name="twitter:description" content="http://www.liuhaihua.cn/archives/698599.htmlhttps://www.infoq.com/articles/apache-arrow-java/https://arrow.apache.org/overview/https://arrow.apache.org/docs/format/Columnar.html https://github.com/apa">
+
+<link rel="canonical" href="http://yoursite.com/2021/05/26/Apache-Arrow/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Apache Arrow | The next stop - Antarctica</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/05/26/Apache-Arrow/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Apache Arrow
+        </h1>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-28 16:02:25" itemprop="dateModified" datetime="2021-05-28T16:02:25+08:00">2021-05-28</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><a href="http://www.liuhaihua.cn/archives/698599.html" target="_blank" rel="noopener">http://www.liuhaihua.cn/archives/698599.html</a><br><a href="https://www.infoq.com/articles/apache-arrow-java/" target="_blank" rel="noopener">https://www.infoq.com/articles/apache-arrow-java/</a><br><a href="https://arrow.apache.org/overview/" target="_blank" rel="noopener">https://arrow.apache.org/overview/</a><br><a href="https://arrow.apache.org/docs/format/Columnar.html" target="_blank" rel="noopener">https://arrow.apache.org/docs/format/Columnar.html</a></p>
+<p><a href="https://github.com/apache/arrow" target="_blank" rel="noopener">https://github.com/apache/arrow</a><br><a href="https://arrow.apache.org/docs/developers/cpp/building.html" target="_blank" rel="noopener">https://arrow.apache.org/docs/developers/cpp/building.html</a></p>
+<a id="more"></a>
+<p>在面向列的数据库中，<strong>对象的集合</strong>分解为<strong>列的集合</strong>。一组对象分解为一组等长数组。对象中每个字段对应一个数组。为了重建某个对象，可在给定索引处选择每个列 / 数组的值来重组被分解的数组。例如，可以获取 id 数组的第 10 个值、商店城市数组的第 10 个值等来重组第 10 次销售。</p>
+<p>对象是行，而 Apache Arrow 要求我们必须一直以列而非对象的思维来编程。</p>
+<p>零复制序列化框架 （如 Apache Arrow 和 Flat Buffers）。你可以将其视为处理数据本身，而非处理对象，以避免序列化步骤。<br>零复制是指你的应用程序所处理的字节可以无需任何修改就通过网络传输。同样，在接收端，应用程序可以按原样处理收到的字节，而无需反序列化步骤。</p>
+<p>所有操作都在字节缓冲区上执行。没有整数，有字节序列。没有数组，有字节序列。没有对象，有字节序列的集合。当然，你仍然可以将通用格式的数据转换为整数、数组和对象。但这样以来你就要进行反序列化，零复制就失去了意义。一旦传输到 Java 对象，则只有 Java 才能处理了。</p>
+<p>FlatBuffers 最初是为了支持移动游戏而开发的。它的重点在于以最小的开销将数据从服务器快速传输到客户端。你可以发送单个对象或对象集合。数据存储在（堆上）ByteBuffer 中，格式为 FlatBuffers 通用数据布局。FlatBuffers 编译器将根据数据规范生成代码，从而简化你与 ByteBuffers 的交互。你可以像处理数组、对象或原语一样处理数据。在后台，每个访问器（accessor）方法都获取相应的字节并将字节转换为 JVM 和你的代码可理解的构造。如果出于某种原因需要访问字节，你也可以这样做。</p>
+<p>Arrow 与 FlatBuffers 的不同之处在于它们在内存中布局列表 / 数组 / 表的方式。FlatBuffers 对表使用一种 面向行 的格式，而 Arrow 使用一种列式格式存储表格化数据。这就在对大数据集的分析化（OLAP）查询方面带来了很大的不同。</p>
+<p>Arrow 针对的是大数据系统，在系统中你通常不传输单个对象，而是传输大量对象。另一方面，FlatBuffers 宣传自己是序列化框架（也是这么用的）。换句话说，你的应用程序代码处理的是 Java 对象和原语，并且只在发送数据时将数据转换为 FlatBuffers 的内存布局。如果接收侧是只读的，则不必将数据反序列化为 Java 对象，可以直接从 FlatBuffers 的 ByteBuffers 中读取数据。</p>
+<p>在大型数据集中，行数通常可以从数千行到数万亿行不等。这样的数据集可能有几列到数千列。</p>
+<p>对此类数据集的典型分析查询只会引用少量列。以电子商务交易的数据集为例，一位销售经理想要一个特定区域的销售概览，按项目类别分组。他不想看到具体的交易，平均销售价格就足够了。这样的查询可以通过三个步骤来完成：</p>
+<p>遍历区域列中的所有值，并跟踪请求区域中所有销售的行 / 对象 ID<br>根据项目类别列中的对应值分组过滤后的 ID<br>计算每个组的汇总<br>基本上，查询处理器在任何给定时间只需在内存中有一列即可。通过以列式格式存储集合，我们可以分别访问单个字段 / 列的所有值。精心设计的格式可以针对 CPU 的 SIMD 指令优化布局，进而完成这一操作。对于此类分析负载，Apache Arrow 列式布局比 FlatBuffers 面向行的布局更合适。</p>
+<p>Apache Arrow 的核心是 内存中数据布局格式。除了该格式外，Apache Arrow 还提供了一组库（包括 C、C++、C#、Go、Java、JavaScript、MATLAB、Python、R、Ruby 和 Rust），以使用 Apache Arrow 格式的数据。</p>
+<p>Apache Arrow 的工作机制类似于面向列的关系型数据库。Java 对象的集合被分解为列的集合，这些列在 Arrow 中称为向量。向量是 Arrow 列式格式的基本单位。</p>
+<p>所有向量的母亲都是 FieldVector。有用于原始类型的向量类型，如 Int4Vector 和 Float8Vector。字符串有一个向量类型：VarCharVector。任意二进制数据都有一个向量类型：VarBinaryVector。有几种类型的向量是用来建模时间的，如 TimeStampVector、TimeStampSecVector、TimeStampTZVector 和 TimeMicroVector。</p>
+<p>缓冲区分配器<br>我们添加到向量中的值存储在哪里？Arrow 向量是由 缓冲区 支持的。一般来说这是一个 java.nio.ByteBuffer。缓冲区在 缓冲区分配器 中池化。你可以要求缓冲区分配器创建一个特定大小的缓冲区，也可以让分配器负责缓冲区的创建和自动扩展以存储新值。分配器跟踪所有已分配的缓冲区。</p>
+<p>一个向量由一个分配器管理。我们说支持向量的缓冲区是分配器所有的。向量 所有权 可以从一个分配器转移到另一个上。</p>
+<p>例如，你正在实现一个数据流。这个流由一系列处理阶段组成。每个阶段都会对数据进行一些操作，然后将其传送到下一阶段。每个阶段都有自己的缓冲区分配器，用于管理当前正在处理的缓冲区。处理完成后，数据将进入下一个阶段。</p>
+<p>换句话说，支持向量的缓冲区的所有权被转移到下一级的缓冲区分配器。现在，这个缓冲区分配器负责管理内存并在不再需要内存时将其释放。</p>
+<p>分配器创建的缓冲区是 DirectByteBuffers（直接字节缓冲），因此它们是堆外存储的。这意味着数据使用完后必须释放内存。对 Java 程序员来说，这种感觉一开始会很奇怪。但这是使用 Apache Arrow 的一个要点。向量实现了 AutoCloseable（可自动关闭）接口，因此建议将向量创建包装在 try-with-resources 块中，该块将自动关闭向量，也就是释放内存。</p>
+<p>Parquet and ORC are file formats and are independent of different programs that read and process this data. Impala, for example, can read these columnar formats, but its processing is row-oriented.</p>
+<p>Since late 2014, Wes had been researching ways to improve Python’s interoperability with big data systems like Apache Impala and Spark. One of the biggest issues was efficient columnar data interchange between these systems.</p>
+<p>One of the key ideas of Arrow was that rather than each project re-inventing the wheel, one canonical representation for columnar in-memory data could serve the diverse needs of many projects. More importantly, a single standard could also dramatically improve the efficiency of data interchange between different processes, such as Java and Python. It was also clear there was an emerging interest in using GPUs for analytical workloads, and so we wanted to design Arrow for where we all felt hardware was headed.</p>
+<p>Arrow and Spark<br>Arrow aims to bridge different worlds of processing. One place the need for such a bridge is most clearly apparent is between JVM and non-JVM processing environments, such as Python. Traditionally, these two worlds don’t play very well together. And so one of the things that we have focused on is trying to make sure that exchanging data between something like pandas and the JVM is a lot easier and more efficient.</p>
+<p>In Dremio we make extensive use of Arrow. As Dremio reads data from different file formats (Parquet, JSON, CSV, Excel, etc) and different sources (RDBMS, Elasticsearch, MongoDB, HDFS, S3, etc), data is read into native Arrow buffers directly for all processing. Our vectorized Parquet reader makes reading into Arrow especially fast, and so we use Parquet to persist our Data Reflections for accelerating queries, then read them into memory as Arrow for processing.</p>
+<p>Recently we proposed Apache Arrow Flight, a new way for applications to interact with Arrow. Now that we have an established way for representing data between systems, Flight is an RPC protocol for exchanging that data between systems much more efficiently. You can think of this as a much faster alternative to ODBC/JDBC for in-memory analytics.</p>
+<p>If REST is the primary protocol for microservices, we hope Flight can be the primary protocol for data microservices. This is essentially the ability to stitch different dataset together in a non-monolithic way.</p>
+<p>As soon as Arrow Flight is generally available, applications that implement Arrow can consume the Arrow buffers directly, in a dramatically more efficient manner. In our internal tests we observe from 10x-100x efficiency improvements with this approach compared to ODBC/JDBC interfaces.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C/" rel="tag"># C++</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/05/16/CUDA-Programming/" rel="prev" title="CUDA Programming">
+      <i class="fa fa-chevron-left"></i> CUDA Programming
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/05/28/Apache-Arrow-Integration-with-Spark/" rel="next" title="Apache Arrow Integration With Spark">
+      Apache Arrow Integration With Spark <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">134</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

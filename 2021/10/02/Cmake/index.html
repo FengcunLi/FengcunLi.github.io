@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Basics Add library interface 是没有 build output 的库 一个 target 的属性包括： Include Directories Linked libraries Compile flags &amp;amp; definitions Link flags C++ standards and feature required">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cmake">
+<meta property="og:url" content="http://yoursite.com/2021/10/02/Cmake/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="Basics Add library interface 是没有 build output 的库 一个 target 的属性包括： Include Directories Linked libraries Compile flags &amp;amp; definitions Link flags C++ standards and feature required">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2021-10-02T14:33:46.288Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Cmake">
+<meta name="twitter:description" content="Basics Add library interface 是没有 build output 的库 一个 target 的属性包括： Include Directories Linked libraries Compile flags &amp;amp; definitions Link flags C++ standards and feature required">
+
+<link rel="canonical" href="http://yoursite.com/2021/10/02/Cmake/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Cmake | The next stop - Antarctica</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/10/02/Cmake/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Cmake
+        </h1>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-10-02 22:33:46" itemprop="dateModified" datetime="2021-10-02T22:33:46+08:00">2021-10-02</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Basics"><a href="#Basics" class="headerlink" title="Basics"></a>Basics</h2><ul>
+<li>Add library interface 是没有 build output 的库</li>
+<li>一个 target 的属性包括：<ol>
+<li>Include Directories</li>
+<li>Linked libraries</li>
+<li>Compile flags &amp; definitions</li>
+<li>Link flags</li>
+<li>C++ standards and feature required</li>
+</ol>
+</li>
+</ul>
+<a id="more"></a>
+<h2 id="Tips-for-packaging"><a href="#Tips-for-packaging" class="headerlink" title="Tips for packaging"></a>Tips for packaging</h2><ul>
+<li>Do: use targets.</li>
+<li>Don’t: use common names for targets if you want to be used in subdirectory mode.</li>
+<li>Don’t: write a FindPackage for your own package. Always provide a <code>PackageConfig</code> instead.</li>
+<li>Export your targets to create a <code>PackageTargets.cmake</code> file. You can write a<br><code>PackageConfig.cmake.in</code>; you can recreate / reimport package there (generally use a shared <code>X.cmake</code> file instead of doing it twice).</li>
+<li>Don’t: hardcode any system/compiler/config details into exported targets. Only from shared code in Config, or use Generator expressions.</li>
+<li><strong>Never allow your package to be distributed without the config files!</strong></li>
+</ul>
+<h2 id="Using-other-projects"><a href="#Using-other-projects" class="headerlink" title="Using other projects"></a>Using other projects</h2><ol>
+<li>See if the <strong>project</strong> provides a <code>&lt;name&gt;Config.cmake</code> file. If it does, you are good to go!</li>
+<li>See if <strong>CMake</strong> provides a Find package for it built-in. If it does, you are good to go!</li>
+<li>See if the authors provide a <strong>Find<name>.cmake</name></strong> file. If they do, complain loudly that they don’t follow CMake best practices.</li>
+<li>Write your own <code>Find&lt;name&gt;.cmake</code> and include in a helper directory. You’ll need to build IMPORTED targets and all that.</li>
+<li>You can also use FindPkgConfig to piggy back on classic pkg-config.</li>
+</ol>
+<h2 id="Best-Practice-Handling-remote-dependencies"><a href="#Best-Practice-Handling-remote-dependencies" class="headerlink" title="Best Practice: Handling remote dependencies"></a>Best Practice: Handling remote dependencies</h2><p>CMake can download your dependencies for you, and can integrate with files. It supports composable (sub-)projects: One project can include another</p>
+<ol>
+<li>Does not have namespaces, can cause target collisions!</li>
+<li><strong>Build time</strong> data and project downloads: ExternalProject (classic)</li>
+<li><strong>Configure time</strong> downloads FetchContent (new in 3.11+)</li>
+<li>You can also use submodules (one of my favorite methods, but use with care)</li>
+<li>You can also use Conan.io’s CMake integration</li>
+</ol>
+<h2 id="Best-Practice-Use-IMPORTED-targets-for-things-you-don’t-build"><a href="#Best-Practice-Use-IMPORTED-targets-for-things-you-don’t-build" class="headerlink" title="Best Practice: Use IMPORTED targets for things you don’t build"></a>Best Practice: Use <code>IMPORTED</code> <strong>targets</strong> for things you don’t build</h2><ul>
+<li>Now (3.11+) can be built with standard CMake commands!</li>
+<li>Can now be global with IMPORTED_GLOBAL</li>
+<li>You’ll need to set them back up in your Config file (place in one common location for both <strong>CMakeLists</strong> and <strong>Config</strong>).</li>
+</ul>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">add_library</span>(ExternLib IMPORTED INTERFACE)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Classic</span></span><br><span class="line"><span class="keyword">set_property</span>(</span><br><span class="line">    <span class="keyword">TARGET</span></span><br><span class="line">    ExternLib</span><br><span class="line">    APPEND</span><br><span class="line">    PROPERTY</span><br><span class="line">    INTERFACE_INCLUDE_DIRECTORIES</span><br><span class="line">    /my/inc</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Modern</span></span><br><span class="line"><span class="keyword">target_include_directories</span>(</span><br><span class="line">    ExternLib INTERFACE /my/inc</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h2 id="Best-Practice-Use-CUDA-as-a-language"><a href="#Best-Practice-Use-CUDA-as-a-language" class="headerlink" title="Best Practice: Use CUDA as a language"></a>Best Practice: Use CUDA as a language</h2><p>Cuda is now a first-class language in CMake! (3.9+) Replaces FindCuda.</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Super project might need matching? (3.14 at least)</span></span><br><span class="line"><span class="keyword">project</span>(MY_PROJECT LANGUAGES CUDA CXX)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Or for optional CUDA support</span></span><br><span class="line"><span class="keyword">project</span>(MY_PROJECT LANGUAGES CXX)</span><br><span class="line"><span class="keyword">include</span>(CheckLanguage)</span><br><span class="line">check_language(CUDA)</span><br><span class="line"><span class="keyword">if</span>(CMAKE_CUDA_COMPILER)</span><br><span class="line">    <span class="keyword">enable_language</span>(CUDA)</span><br><span class="line"><span class="keyword">endif</span>()</span><br></pre></td></tr></table></figure>
+<p>Much like you can set C++ standards, you can set CUDA standards too:<br><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(<span class="keyword">NOT</span> <span class="keyword">DEFINED</span> CMAKE_CUDA_STANDARD)</span><br><span class="line">    <span class="keyword">set</span>(CMAKE_CUDA_STANDARD <span class="number">11</span>) <span class="comment"># Probably should be cached!</span></span><br><span class="line">    <span class="keyword">set</span>(CMAKE_CUDA_STANDARD_REQUIRED <span class="keyword">ON</span>)</span><br><span class="line"><span class="keyword">endif</span>()</span><br></pre></td></tr></table></figure></p>
+<p>You can add files with <code>.cu</code> extensions and they compile with nvcc. (You can always set the LANGUAGE property on a file, too).<br>Separable compilation is a property:<br><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set_target_properties</span>(mylib PROPERTIES CUDA_SEPERABLE_COMPILATION <span class="keyword">ON</span>)</span><br></pre></td></tr></table></figure></p>
+<h3 id="New-for-CUDA-in-CMake-3-18-and-3-17"><a href="#New-for-CUDA-in-CMake-3-18-and-3-17" class="headerlink" title="New for CUDA in CMake 3.18 and 3.17!"></a>New for CUDA in CMake 3.18 and 3.17!</h3><ul>
+<li>A new <code>CUDA_ARCHITECTURES</code> property</li>
+<li>You can now use Clang as a CUDA compiler</li>
+<li><code>CUDA_RUNTIME_LIBRARY</code> can be set to shared</li>
+<li><code>FindCUDAToolkit</code> is finally available</li>
+</ul>
+<h2 id="Best-Practice-Check-for-Integrated-Tools-First"><a href="#Best-Practice-Check-for-Integrated-Tools-First" class="headerlink" title="Best Practice: Check for Integrated Tools First"></a>Best Practice: Check for Integrated Tools First</h2><p>CMake has a lot of great tools. When you need something, see if it is built-in first!</p>
+<p>Useful properties (with <code>CMAKE_*</code> variables, great from the <strong>command line</strong>):</p>
+<ul>
+<li>INTERPROCEDURAL_OPTIMIZATION : Add IPO</li>
+<li>POSITION_INDEPENDENT_CODE : Add -fPIC</li>
+<li><lang>_COMPILER_LAUNCHER : Add ccache</lang></li>
+<li><lang>_CLANG_TIDY</lang></li>
+<li><lang>_CPPCHECK</lang></li>
+<li><lang>_CPPLINT</lang></li>
+<li><lang>_INCLUDE_WHAT_YOU_USE</lang></li>
+</ul>
+<p>Useful modules:</p>
+<ul>
+<li>CheckIPOSupported : See if IPO is supported by your compiler</li>
+<li>CMakeDependentOption : Make one option depend on another</li>
+<li>CMakePrintHelpers : Handy debug printing</li>
+<li>FeatureSummary : Record or printout enabled features and found packages</li>
+</ul>
+<h2 id="Best-Practice-Use-CMake-Format"><a href="#Best-Practice-Use-CMake-Format" class="headerlink" title="Best Practice: Use CMake-Format"></a>Best Practice: Use CMake-Format</h2><p>There is a CMake formatting tool now too, called <strong>cmake-format</strong>! You should use it to keep your CMake code from becoming messy and keeping it easy to merge conflicts.<br>Since you should always use pre-commit for formatting and style checking, here’s the .pre-commit-config.yaml:</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># CMake formatting</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">repo:</span> <span class="string">https://github.com/cheshirekow/cmake-format-precommit</span></span><br><span class="line">    <span class="attr">rev:</span> <span class="string">v0.6.13</span></span><br><span class="line">    <span class="attr">hooks:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">cmake-format</span></span><br><span class="line">        <span class="attr">additional_dependencies:</span> <span class="string">[pyyaml]</span></span><br><span class="line">        <span class="attr">types:</span> <span class="string">[file]</span></span><br><span class="line">        <span class="attr">files:</span> <span class="string">(\.cmake|CMakeLists.txt)(.in)?$</span></span><br></pre></td></tr></table></figure>
+<p>And here’s the GitHub Actions job:<br><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">jobs:</span></span><br><span class="line">    <span class="attr">pre-commit:</span></span><br><span class="line">        <span class="attr">name:</span> <span class="string">Format</span></span><br><span class="line">        <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line">        <span class="attr">steps:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">uses:</span> <span class="string">actions/checkout@v2</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">uses:</span> <span class="string">actions/setup-python@v2</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">uses:</span> <span class="string">pre-commit/action@v2.0.0</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="CompilerDetection-and-Flag-checking"><a href="#CompilerDetection-and-Flag-checking" class="headerlink" title="CompilerDetection and Flag checking"></a>CompilerDetection and Flag checking</h3><p><code>try_compile</code> / <code>try_run</code> can tell you if a flag or file works.<br>However, first check:</p>
+<ul>
+<li>CheckCXXCompilerFlag</li>
+<li>CheckIncludeFileCXX</li>
+<li>CheckStructHasMember</li>
+<li>TestBigEndian</li>
+<li>CheckTypeSize</li>
+</ul>
+<h2 id="Best-Practice-Use-FindPython-and-the-newest-possible-CMake-3-18-2-best"><a href="#Best-Practice-Use-FindPython-and-the-newest-possible-CMake-3-18-2-best" class="headerlink" title="Best Practice: Use FindPython and the newest possible CMake (3.18.2+ best)"></a>Best Practice: Use FindPython and the newest possible CMake (3.18.2+ best)</h2><p>FindPython is an exciting new way to discover Python.</p>
+<ul>
+<li>venv/conda ready.</li>
+<li>Multiple runs (using unique caching system).</li>
+<li>Not very usable till 3.15, not very usable for PyPy until 3.18.2+ and PyPy 7.3.2 (about a week old)</li>
+</ul>
+<h2 id="Scikit-build-and-CMake-wheels"><a href="#Scikit-build-and-CMake-wheels" class="headerlink" title="Scikit-build and CMake wheels"></a>Scikit-build and CMake wheels</h2><p>Scikit-build is an adaptor for setuptools (not a true PEP 517 builder). Combined with <code>pyproject.toml</code> and Pip 10, it can be really useful, though!</p>
+<ul>
+<li>Still not quite as reliable as setuptools (distutils) in non-standard setups</li>
+<li>Doesn’t work well without CMake wheels (but you can bypass PEP 518 if CMake is already installed)</li>
+<li>A little rough around some corners</li>
+<li>Development a bit stuck.</li>
+</ul>
+<h2 id="Useful-links"><a href="#Useful-links" class="headerlink" title="Useful links:"></a>Useful links:</h2><ul>
+<li>hsf-training.github.io/hsf-training-cmake-webpage</li>
+<li>cliutils.gitlab.io/modern-cmake</li>
+<li>iscinumpy.gitlab.io.</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/06/26/Horovod/" rel="prev" title="Horovod">
+      <i class="fa fa-chevron-left"></i> Horovod
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Basics"><span class="nav-number">1.</span> <span class="nav-text">Basics</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Tips-for-packaging"><span class="nav-number">2.</span> <span class="nav-text">Tips for packaging</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Using-other-projects"><span class="nav-number">3.</span> <span class="nav-text">Using other projects</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Best-Practice-Handling-remote-dependencies"><span class="nav-number">4.</span> <span class="nav-text">Best Practice: Handling remote dependencies</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Best-Practice-Use-IMPORTED-targets-for-things-you-don’t-build"><span class="nav-number">5.</span> <span class="nav-text">Best Practice: Use IMPORTED targets for things you don’t build</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Best-Practice-Use-CUDA-as-a-language"><span class="nav-number">6.</span> <span class="nav-text">Best Practice: Use CUDA as a language</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#New-for-CUDA-in-CMake-3-18-and-3-17"><span class="nav-number">6.1.</span> <span class="nav-text">New for CUDA in CMake 3.18 and 3.17!</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Best-Practice-Check-for-Integrated-Tools-First"><span class="nav-number">7.</span> <span class="nav-text">Best Practice: Check for Integrated Tools First</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Best-Practice-Use-CMake-Format"><span class="nav-number">8.</span> <span class="nav-text">Best Practice: Use CMake-Format</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CompilerDetection-and-Flag-checking"><span class="nav-number">8.1.</span> <span class="nav-text">CompilerDetection and Flag checking</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Best-Practice-Use-FindPython-and-the-newest-possible-CMake-3-18-2-best"><span class="nav-number">9.</span> <span class="nav-text">Best Practice: Use FindPython and the newest possible CMake (3.18.2+ best)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Scikit-build-and-CMake-wheels"><span class="nav-number">10.</span> <span class="nav-text">Scikit-build and CMake wheels</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Useful-links"><span class="nav-number">11.</span> <span class="nav-text">Useful links:</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">134</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

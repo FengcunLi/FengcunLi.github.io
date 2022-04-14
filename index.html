@@ -156,6 +156,581 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/10/02/Cmake/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/10/02/Cmake/" class="post-title-link" itemprop="url">Cmake</a>
+        </h2>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-10-02 22:33:46" itemprop="dateModified" datetime="2021-10-02T22:33:46+08:00">2021-10-02</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Basics"><a href="#Basics" class="headerlink" title="Basics"></a>Basics</h2><ul>
+<li>Add library interface 是没有 build output 的库</li>
+<li>一个 target 的属性包括：<ol>
+<li>Include Directories</li>
+<li>Linked libraries</li>
+<li>Compile flags &amp; definitions</li>
+<li>Link flags</li>
+<li>C++ standards and feature required</li>
+</ol>
+</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/10/02/Cmake/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/06/26/Horovod/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/06/26/Horovod/" class="post-title-link" itemprop="url">Horovod</a>
+        </h2>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-06-26 17:08:36" itemprop="dateModified" datetime="2021-06-26T17:08:36+08:00">2021-06-26</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>半精度</p>
+<p><strong>大吞吐 -&gt; 大的有效 batch -&gt; 低噪声，并克服大 batch 带来的低噪声。</strong></p>
+<p>有效 batch 是指多卡的 batch 和，不是单模型的入口 batch size，一个有效 batch 一次参数更新。<br>有效 batch = 单模型的入口 batch size * 卡数<br>我们为了获得大吞吐，可以增加卡数，可以增加单模型的入口 batch size（即增加单卡的吞吐，单模型的入口 batch size 和单卡吞吐是一个先线性后收敛的关系）,不管采用哪种方式，都会导致大的有效 batch，导致低噪声。</p>
+<p>克服大的有效 batch 带来的低噪声就需要一些算法的 trick 了：</p>
+<ul>
+<li>Momentum 就是一种噪声，噪声就是一种 Momentum，噪声低了，可以通过 Momentum 来补偿噪声</li>
+<li>根据批量大小提高学习率，补偿噪声。理论表明，如果按 K 倍增加批量大小，则应按 K 的平方根倍提高学习率，以保持原有的变化。在大规模训练的实践中，线性调整学习速率（K 倍）也很常见。<ul>
+<li>学习率预热</li>
+</ul>
+</li>
+<li>NovoGrad 优化器</li>
+</ul>
+<p>Keras 指定的 batch size 是单模型的入口 batch size，并不是大 batch 的 size，通过乘以卡数，我们可以计算得出大 batch 的 size。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">2021-06-26 07:55:33.220472:</span><br><span class="line">    W tensorflow/core/framework/op_kernel.cc:1763] OP_REQUIRES failed at fused_batch_norm_op.cc:1301 :</span><br><span class="line">        Resource exhausted:</span><br><span class="line">            OOM when allocating tensor with shape[10000,160,28,28] and type float on /job:localhost/replica:0/task:0 device:GPU:0 by allocator GPU_0_bfc</span><br><span class="line"></span><br><span class="line">乘以 num gpu。</span><br></pre></td></tr></table></figure>
+<p>batch size 太大，噪声太低了，表现出来就是”发散了”，结果非常差！！batch size 大，然后 loss 又小，梯度就小，又没有足够的噪声冲出去，就被困在 sharp minimal(sharp minimal 处的 loss 相比 flat minimal 可能更小，但是 generation gap 却很大！)。</p>
+<p>正如您在实验 1 中可能已经看到的那样，较大的批量数据可能导致准确性下降，尤其是网络的泛化能力下降。较大批量消磨了训练过程中的噪声。<br>此外，如果大 batch 的 size 较大，则每个 epoch 所执行的更新次数会更少，如果假设达到一个效果需要的更新次数一定，那么多 GPU 可能会延长训练时间。</p>
+<p>epoch 是和 total 样本关联的。</p>
+<p>假设：</p>
+<ol>
+<li>单 GPU，batch size 25，耗时 t；</li>
+<li>total 样本 100</li>
+</ol>
+<p>分析：</p>
+<ul>
+<li>单 GPU，batch size 25，一个 epoch 4 次更新；16 次更新，需要 4 个 epoch，耗时一共 $16 \times t$</li>
+<li>4 GPU，单模型的入口 batch size 25，大 batch size 100， 一次一个大 batch 更新一次，一个 epoch 1 次更新，耗时理想情况为 t，16 次更新，需要 16 个 epoch，耗时理想情况一共 $16 \times t$。</li>
+</ul>
+<p><strong>如果不理想，就延长了训练时间。</strong></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/06/14/MLX-串讲/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/06/14/MLX-串讲/" class="post-title-link" itemprop="url">MLX 串讲</a>
+        </h2>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-06-14 20:14:41" itemprop="dateModified" datetime="2021-06-14T20:14:41+08:00">2021-06-14</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Fundament"><a href="#Fundament" class="headerlink" title="Fundament"></a>Fundament</h2><p>我们需要从一点数学知识谈起，任意两个矩阵都可以相乘吗？不是的，</p>
+<ol>
+<li>$M*N$ $N*L$ -&gt; $M * L$</li>
+<li>求导</li>
+</ol>
+<h2 id="pb-GraphDef"><a href="#pb-GraphDef" class="headerlink" title="pb::GraphDef"></a>pb::GraphDef</h2><p>大家应该都在算法平台上提交过训练任务，也知道用户是怎么定义网络结构的，但是作为 MLX 的人，我们直接用一种更硬核的方式来定义网络结构。</p>
+<p>我们从一个 <code>model_def.txt</code> 文件谈起，把这个文件加载成一个 <code>pb::GraphDef</code> 对象，这个对象就是如下图的计算图定义，它定义了图的输入、图的输出，以及每一个操作的输入、输出。<br><img src="/2021/06/14/MLX-串讲/mlx_graphdef_wide_and_deep.png" alt="mlx_graphdef_wide_and_deep"></p>
+<ul>
+<li>圆圈是操作，会对应一个 <code>Operation</code> 对象</li>
+<li>灰色方框是输入输出，会对应一个 <code>Variable</code> 对象</li>
+</ul>
+<p>我们可以数一下 model_def.txt 中 ops 的个数，然后数一下图中圆圈的数目，都是 31，这说明我们没有漏，总共有 31 个操作。<br>MLX 支持哪些操作呢？<br><code>mlx_graph/graph/op_factory.cc</code><br>总共 31 种。</p>
+<h2 id="pb-GraphDef-gt-graph-Graph"><a href="#pb-GraphDef-gt-graph-Graph" class="headerlink" title="pb::GraphDef -&gt; graph::Graph"></a>pb::GraphDef -&gt; graph::Graph</h2><p>一个 <code>pb::GraphDef</code> 对象仅仅是一个计算图定义，它定义了图的输入、图的输出，以及每一个操作的输入、输出，是一种逻辑上的图。但是在程序中，图的输入、图的输出，操作的输入(<code>class Variable</code>)、输出(<code>class Variable</code>)，以及操作(<code>class Operation</code>)本身都必须是一个个内存中的对象。<code>graph::Graph</code> 对象就是一个包罗上述各个对象的对象。。<code>Graph::init</code> 会将一个 <code>pb::GraphDef</code> 对象表征的计算图中的各个操作实例化成一个个 <code>Operation</code> 对象。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; graph_def.ops_size(); i++) &#123;</span><br><span class="line">    <span class="keyword">auto</span> op_def = graph_def.ops(i);</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">auto</span> op = OperationFactory::new_op(op_def.type(), op_def, var_manager);</span><br><span class="line">    ops_.push_back(op);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>一个操作可能有输入，可能有输出，可能输入输出都有，输入、输出都必须是 <code>Variable</code> 对象，在实例化一个操作时，在 <code>Operation::Operation</code>(构造函数) 中 <code>VariableManager</code> 负责拿到一个操作的输入对象（一个或一些 <code>Variable</code> 的实例）并 attach 到该操作对象，负责创建出该操作的输出对象（一个/一些 <code>Variable</code> 的实例）并 attach 到该操作对象。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; op_def_.inputs_size(); i ++) &#123;</span><br><span class="line">    inputs_.push_back(var_manager-&gt;get(op_def_.inputs(i)));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; op_def_.outputs_size(); i ++) &#123;</span><br><span class="line">    <span class="keyword">if</span> (op_def_.type() == <span class="string">"ext_var"</span>) &#123;</span><br><span class="line">        outputs_.push_back(</span><br><span class="line">            var_manager-&gt;get_or_create(op_def_.outputs(i), dtype));</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        outputs_.push_back(</span><br><span class="line">            var_manager-&gt;create(op_def_.outputs(i), dtype));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>现在我们有了一个个操作对象及输入输出对象，是时候把我们的“数”加载进 <code>ps_var</code> 和 <code>ext_var</code> 操作所对应的 <code>Variable</code> 对象中了。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">init_ps_vars(var_manager);</span><br><span class="line">init_ext_vars(var_manager);</span><br></pre></td></tr></table></figure>
+<p>那图中其他灰色方框标识的 <code>Variable</code> 对象呢？<br>它们是计算图的“中间结果”，也对应着一个个矩阵/向量/张量(no matter how you name it)，也应该被分配内存空间来存储那些数字。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Graph::prep_forward</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; ops_.size(); i++) &#123;</span><br><span class="line">        ops_[i]-&gt;prep_forward();</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>void Operation::prep_forward()</code> 会一路调用到输出对象 <code>Variable</code> 的 <code>data_.resize(rows, data_.cols());</code>，完成了内存空间的分配。</p>
+<h2 id="Go-Forward"><a href="#Go-Forward" class="headerlink" title="Go Forward"></a>Go Forward</h2><p>到这里，该创建的对象我们都创建了，该分配的内存也都分配了，Ready to go forward.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Graph::forward() &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; ops_.size(); i++) &#123;</span><br><span class="line">        ops_[i]-&gt;forward();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>让我们来看一个具体的操作，全连接操作的 forward：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">FullyConnectedOp::forward</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> X = inputs_[<span class="number">0</span>]-&gt;data&lt;<span class="keyword">float</span>&gt;();</span><br><span class="line">    <span class="keyword">auto</span> W = inputs_[<span class="number">1</span>]-&gt;data&lt;<span class="keyword">float</span>&gt;();</span><br><span class="line">    <span class="keyword">auto</span> b = inputs_[<span class="number">2</span>]-&gt;data&lt;<span class="keyword">float</span>&gt;();</span><br><span class="line">    <span class="keyword">auto</span> Y = outputs_[<span class="number">0</span>]-&gt;data&lt;<span class="keyword">float</span>&gt;();</span><br><span class="line"></span><br><span class="line">    CHECK_EQ(b.rows(), <span class="number">1</span>) &lt;&lt; name_;</span><br><span class="line">    CHECK_EQ(b.cols(), W.rows()) &lt;&lt; name_;</span><br><span class="line">    CHECK_EQ(X.cols(), W.cols()) &lt;&lt; name_;</span><br><span class="line">    Y.noalias() = (X * W.transpose()).rowwise() + b.row(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>就是拿到输入 <code>Variable</code> 对象，计算，最后填充输出 <code>Variable</code> 对象。</p>
+<h2 id="Go-Backward"><a href="#Go-Backward" class="headerlink" title="Go Backward"></a>Go Backward</h2><p><code>Graph::prep_backward</code> -&gt; <code>Operation::prep_backward</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; outputs_.size(); i++) &#123;</span><br><span class="line">    outputs_[i]-&gt;zero_init_grad();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">zero_init_grad</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="keyword">this</span>-&gt;is_slice()) &#123;</span><br><span class="line">        grad_.setZero(data_.rows(), data_.cols());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/06/11/深入分析-Java-Web-技术内幕/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/06/11/深入分析-Java-Web-技术内幕/" class="post-title-link" itemprop="url">深入分析 Java Web 技术内幕</a>
+        </h2>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-06-11 18:48:29" itemprop="dateModified" datetime="2021-06-11T18:48:29+08:00">2021-06-11</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>源代码<br>字节码 - JVM 能够识别的二进制码</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/05/31/MapReduce-V1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/05/31/MapReduce-V1/" class="post-title-link" itemprop="url">MapReduce V1</a>
+        </h2>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-31 21:08:08" itemprop="dateModified" datetime="2021-05-31T21:08:08+08:00">2021-05-31</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="ExpireLaunchingTasks-线程"><a href="#ExpireLaunchingTasks-线程" class="headerlink" title="ExpireLaunchingTasks 线程"></a>ExpireLaunchingTasks 线程</h2><p>A thread to timeout tasks that have been assigned to task trackers, but that haven’t <strong>reported back</strong> yet.</p>
+<p><em>Note that I included a <code>stop()</code> method, even though there is no place where JobTrackers are cleaned up.</em></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">ExpireLaunchingTasks</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * This is a map of the tasks that have been assigned to task trackers,</span></span><br><span class="line"><span class="comment">     * but that have not yet been seen in a status report.</span></span><br><span class="line"><span class="comment">     * map: task-id -&gt; time-assigned</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 这个数据结构是本线程和外部线程的交合点，因此对其访问需要加锁</span></span><br><span class="line">    <span class="comment">// synchronized (launchingTasks) &#123;...&#125;</span></span><br><span class="line">    <span class="keyword">private</span> Map&lt;TaskAttemptID, Long&gt; launchingTasks =</span><br><span class="line">      <span class="keyword">new</span> LinkedHashMap&lt;TaskAttemptID, Long&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 本线程（的线程函数）</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// Every 3 minutes check for any tasks that are overdue</span></span><br><span class="line">                Thread.sleep(tasktrackerExpiryInterval/<span class="number">3</span>);</span><br><span class="line">                <span class="keyword">long</span> now = clock.getTime();</span><br><span class="line">                <span class="keyword">if</span> (LOG.isDebugEnabled()) &#123;</span><br><span class="line">                    LOG.debug(<span class="string">"Starting launching task sweep"</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">synchronized</span> (JobTracker.<span class="keyword">this</span>) &#123;</span><br><span class="line">                    <span class="keyword">synchronized</span> (launchingTasks) &#123;</span><br><span class="line">                        ....</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException ie) &#123;</span><br><span class="line">                <span class="comment">// all done</span></span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                LOG.error(<span class="string">"Expire Launching Task Thread got exception: "</span> +</span><br><span class="line">                            StringUtils.stringifyException(e));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 外部线程中调用</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addNewTask</span><span class="params">(TaskAttemptID taskName)</span> </span>&#123;</span><br><span class="line">      <span class="keyword">synchronized</span> (launchingTasks) &#123;</span><br><span class="line">        launchingTasks.put(taskName,</span><br><span class="line">                           clock.getTime());</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 外部线程中调用</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">removeTask</span><span class="params">(TaskAttemptID taskName)</span> </span>&#123;</span><br><span class="line">      <span class="keyword">synchronized</span> (launchingTasks) &#123;</span><br><span class="line">        launchingTasks.remove(taskName);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 作为 JobTracker 的实例内部成员类，可以访问 JobTracker 的实例成员，JobTracker 实例是本线程和外部线程的交合点，因此对其访问需要加锁</span></span><br></pre></td></tr></table></figure>
+<h2 id="ExpireTrackers-线程"><a href="#ExpireTrackers-线程" class="headerlink" title="ExpireTrackers 线程"></a>ExpireTrackers 线程</h2><p>The run method lives for the life of the JobTracker, and removes TaskTrackers that have not <strong>checked in</strong> for some time.（很久没来打卡的那些 TaskTracker）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExpireTrackers</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 本线程（的线程函数）</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">          <span class="comment">//</span></span><br><span class="line">          <span class="comment">// Thread runs periodically to check whether trackers should be expired.</span></span><br><span class="line">          <span class="comment">// The sleep interval must be no more than half the maximum expiry time</span></span><br><span class="line">          <span class="comment">// for a task tracker.</span></span><br><span class="line">          <span class="comment">//</span></span><br><span class="line">          Thread.sleep(tasktrackerExpiryInterval / <span class="number">3</span>);</span><br><span class="line">          checkExpiredTrackers();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException iex) &#123;</span><br><span class="line">          <span class="keyword">break</span>;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception t) &#123;</span><br><span class="line">          LOG.error(<span class="string">"Tracker Expiry Thread got exception: "</span> +</span><br><span class="line">                    StringUtils.stringifyException(t));</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 作为 JobTracker 的实例内部成员类，可以访问 JobTracker 的实例成员函数，JobTracker 实例是本线程和外部线程的交合点，因此对其访问需要加锁</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">checkExpiredTrackers</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// Loop through all expired items in the queue</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// Need to lock the JobTracker here since we are</span></span><br><span class="line">    <span class="comment">// manipulating it's data-structures via</span></span><br><span class="line">    <span class="comment">// ExpireTrackers.run -&gt; JobTracker.lostTaskTracker -&gt;</span></span><br><span class="line">    <span class="comment">// JobInProgress.failedTask -&gt; JobTracker.markCompleteTaskAttempt</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Also need to lock JobTracker before locking 'taskTrackers' &amp;</span></span><br><span class="line">    <span class="comment">// 'trackerExpiryQueue' to prevent deadlock:</span></span><br><span class="line">    <span class="comment">// @see &#123;@link JobTracker.processHeartbeat(TaskTrackerStatus, boolean)&#125;</span></span><br><span class="line">    <span class="keyword">synchronized</span> (JobTracker.<span class="keyword">this</span>) &#123;</span><br><span class="line">      <span class="keyword">synchronized</span> (taskTrackers) &#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (trackerExpiryQueue) &#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="JobTracker-处理心跳"><a href="#JobTracker-处理心跳" class="headerlink" title="JobTracker 处理心跳"></a><code>JobTracker</code> 处理心跳</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Process incoming heartbeat messages from the task trackers.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">synchronized</span> <span class="keyword">boolean</span> <span class="title">processHeartbeat</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">                               TaskTrackerStatus trackerStatus,</span></span></span><br><span class="line"><span class="function"><span class="params">                               <span class="keyword">boolean</span> initialContact)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  getInstrumentation().heartbeat();</span><br><span class="line"></span><br><span class="line">  String trackerName = trackerStatus.getTrackerName();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">synchronized</span> (taskTrackers) &#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (trackerExpiryQueue) &#123;</span><br><span class="line">      <span class="keyword">boolean</span> seenBefore = updateTaskTrackerStatus(trackerName,</span><br><span class="line">                                                   trackerStatus);</span><br><span class="line">      TaskTracker taskTracker = getTaskTracker(trackerName);</span><br><span class="line">      <span class="keyword">if</span> (initialContact) &#123;</span><br><span class="line">        <span class="comment">// If it's first contact, then clear out</span></span><br><span class="line">        <span class="comment">// any state hanging around</span></span><br><span class="line">        <span class="keyword">if</span> (seenBefore) &#123;</span><br><span class="line">          lostTaskTracker(taskTracker);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// If not first contact, there should be some record of the tracker</span></span><br><span class="line">        <span class="keyword">if</span> (!seenBefore) &#123;</span><br><span class="line">          LOG.warn(<span class="string">"Status from unknown Tracker : "</span> + trackerName);</span><br><span class="line">          updateTaskTrackerStatus(trackerName, <span class="keyword">null</span>);</span><br><span class="line">          <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (initialContact) &#123;</span><br><span class="line">        <span class="comment">// if this is lost tracker that came back now, and if it blacklisted</span></span><br><span class="line">        <span class="comment">// increment the count of blacklisted trackers in the cluster</span></span><br><span class="line">        <span class="keyword">if</span> (isBlacklisted(trackerName)) &#123;</span><br><span class="line">          faultyTrackers.incrBlackListedTrackers(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        addNewTracker(taskTracker);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  updateTaskStatuses(trackerStatus);</span><br><span class="line">  updateNodeHealthStatus(trackerStatus);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="心跳机制"><a href="#心跳机制" class="headerlink" title="心跳机制"></a>心跳机制</h2><ul>
+<li>The periodic heartbeat mechanism between the {@link TaskTracker} and the {@link JobTracker}.</li>
+<li>The {@link JobTracker} processes the status information sent by the {@link TaskTracker} and responds with<ol>
+<li>instructions to start/stop tasks <strong>or</strong> jobs,</li>
+<li>and also ‘reset’ instructions during contingencies.</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> HeartbeatResponse <span class="title">heartbeat</span><span class="params">(TaskTrackerStatus status,</span></span></span><br><span class="line"><span class="function"><span class="params">                                                  <span class="keyword">boolean</span> restarted,</span></span></span><br><span class="line"><span class="function"><span class="params">                                                  <span class="keyword">boolean</span> initialContact,</span></span></span><br><span class="line"><span class="function"><span class="params">                                                  <span class="keyword">boolean</span> acceptNewTasks,</span></span></span><br><span class="line"><span class="function"><span class="params">                                                  <span class="keyword">short</span> responseId)</span></span></span><br><span class="line"><span class="function">    <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (LOG.isDebugEnabled()) &#123;</span><br><span class="line">      LOG.debug(<span class="string">"Got heartbeat from: "</span> + status.getTrackerName() +</span><br><span class="line">                <span class="string">" (restarted: "</span> + restarted +</span><br><span class="line">                <span class="string">" initialContact: "</span> + initialContact +</span><br><span class="line">                <span class="string">" acceptNewTasks: "</span> + acceptNewTasks + <span class="string">")"</span> +</span><br><span class="line">                <span class="string">" with responseId: "</span> + responseId);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Make sure heartbeat is from a tasktracker allowed by the jobtracker.</span></span><br><span class="line">    <span class="keyword">if</span> (!acceptTaskTracker(status)) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> DisallowedTaskTrackerException(status);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// First check if the last heartbeat response got through</span></span><br><span class="line">    String trackerName = status.getTrackerName();</span><br><span class="line">    <span class="keyword">long</span> now = clock.getTime();</span><br><span class="line">    <span class="keyword">boolean</span> isBlacklisted = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">if</span> (restarted) &#123;</span><br><span class="line">      faultyTrackers.markTrackerHealthy(status.getHost());</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      isBlacklisted =</span><br><span class="line">        faultyTrackers.shouldAssignTasksToTracker(status.getHost(), now);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    HeartbeatResponse prevHeartbeatResponse =</span><br><span class="line">      trackerToHeartbeatResponseMap.get(trackerName);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (initialContact != <span class="keyword">true</span>) &#123;</span><br><span class="line">      <span class="comment">// If this isn't the 'initial contact' from the tasktracker,</span></span><br><span class="line">      <span class="comment">// there is something seriously wrong if the JobTracker has</span></span><br><span class="line">      <span class="comment">// no record of the 'previous heartbeat'; if so, ask the</span></span><br><span class="line">      <span class="comment">// tasktracker to re-initialize itself.</span></span><br><span class="line">      <span class="keyword">if</span> (prevHeartbeatResponse == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">// TT 说不是初次联系，但是 JT 说没有记载，说明 JT 发生了重启！！</span></span><br><span class="line">        <span class="comment">// This is the first heartbeat from the old tracker to the newly</span></span><br><span class="line">        <span class="comment">// started JobTracker</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// Jobtracker might have restarted but no recovery is needed</span></span><br><span class="line">        <span class="comment">// otherwise this code should not be reached</span></span><br><span class="line">        LOG.warn(<span class="string">"Serious problem, cannot find record of 'previous' "</span> +</span><br><span class="line">                 <span class="string">"heartbeat for '"</span> + trackerName +</span><br><span class="line">                 <span class="string">"'; reinitializing the tasktracker"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> HeartbeatResponse(responseId,</span><br><span class="line">            <span class="keyword">new</span> TaskTrackerAction[] &#123;<span class="keyword">new</span> ReinitTrackerAction()&#125;);</span><br><span class="line"></span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// It is completely safe to not process a 'duplicate' heartbeat from a</span></span><br><span class="line">        <span class="comment">// &#123;@link TaskTracker&#125; since it resends the heartbeat when rpcs are</span></span><br><span class="line">        <span class="comment">// lost see &#123;@link TaskTracker.transmitHeartbeat()&#125;;</span></span><br><span class="line">        <span class="comment">// acknowledge it by re-sending the previous response to let the</span></span><br><span class="line">        <span class="comment">// &#123;@link TaskTracker&#125; go forward.</span></span><br><span class="line">        <span class="keyword">if</span> (prevHeartbeatResponse.getResponseId() != responseId) &#123;</span><br><span class="line">          LOG.info(<span class="string">"Ignoring 'duplicate' heartbeat from '"</span> +</span><br><span class="line">              trackerName + <span class="string">"'; resending the previous 'lost' response"</span>);</span><br><span class="line">          <span class="keyword">return</span> prevHeartbeatResponse;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Process this heartbeat</span></span><br><span class="line">    <span class="keyword">short</span> newResponseId = (<span class="keyword">short</span>)(responseId + <span class="number">1</span>);</span><br><span class="line">    status.setLastSeen(now);</span><br><span class="line">    <span class="keyword">if</span> (!processHeartbeat(status, initialContact)) &#123;</span><br><span class="line">      <span class="keyword">if</span> (prevHeartbeatResponse != <span class="keyword">null</span>) &#123;</span><br><span class="line">        trackerToHeartbeatResponseMap.remove(trackerName);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">new</span> HeartbeatResponse(newResponseId,</span><br><span class="line">                   <span class="keyword">new</span> TaskTrackerAction[] &#123;<span class="keyword">new</span> ReinitTrackerAction()&#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Initialize the response to be sent for the heartbeat</span></span><br><span class="line">    HeartbeatResponse response = <span class="keyword">new</span> HeartbeatResponse(newResponseId, <span class="keyword">null</span>);</span><br><span class="line">    List&lt;TaskTrackerAction&gt; actions = <span class="keyword">new</span> ArrayList&lt;TaskTrackerAction&gt;();</span><br><span class="line">    isBlacklisted = faultyTrackers.isBlacklisted(status.getHost());</span><br><span class="line">    <span class="comment">// Check for new tasks to be executed on the tasktracker</span></span><br><span class="line">    <span class="keyword">if</span> (acceptNewTasks &amp;&amp; !isBlacklisted) &#123;</span><br><span class="line">      TaskTrackerStatus taskTrackerStatus = getTaskTrackerStatus(trackerName) ;</span><br><span class="line">      <span class="keyword">if</span> (taskTrackerStatus == <span class="keyword">null</span>) &#123;</span><br><span class="line">        LOG.warn(<span class="string">"Unknown task tracker polling; ignoring: "</span> + trackerName);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        List&lt;Task&gt; tasks = getSetupAndCleanupTasks(taskTrackerStatus);</span><br><span class="line">        <span class="keyword">if</span> (tasks == <span class="keyword">null</span> ) &#123;</span><br><span class="line">          tasks = taskScheduler.assignTasks(taskTrackers.get(trackerName));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (tasks != <span class="keyword">null</span>) &#123;</span><br><span class="line">          <span class="keyword">for</span> (Task task : tasks) &#123;</span><br><span class="line">            expireLaunchingTasks.addNewTask(task.getTaskID());</span><br><span class="line">            <span class="keyword">if</span> (LOG.isDebugEnabled()) &#123;</span><br><span class="line">              LOG.debug(trackerName + <span class="string">" -&gt; LaunchTask: "</span> + task.getTaskID());</span><br><span class="line">            &#125;</span><br><span class="line">            actions.add(<span class="keyword">new</span> LaunchTaskAction(task));</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Check for tasks to be killed</span></span><br><span class="line">    List&lt;TaskTrackerAction&gt; killTasksList = getTasksToKill(trackerName);</span><br><span class="line">    <span class="keyword">if</span> (killTasksList != <span class="keyword">null</span>) &#123;</span><br><span class="line">      actions.addAll(killTasksList);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Check for jobs to be killed/cleanedup</span></span><br><span class="line">    List&lt;TaskTrackerAction&gt; killJobsList = getJobsForCleanup(trackerName);</span><br><span class="line">    <span class="keyword">if</span> (killJobsList != <span class="keyword">null</span>) &#123;</span><br><span class="line">      actions.addAll(killJobsList);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Check for tasks whose outputs can be saved</span></span><br><span class="line">    List&lt;TaskTrackerAction&gt; commitTasksList = getTasksToSave(status);</span><br><span class="line">    <span class="keyword">if</span> (commitTasksList != <span class="keyword">null</span>) &#123;</span><br><span class="line">      actions.addAll(commitTasksList);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// calculate next heartbeat interval and put in heartbeat response</span></span><br><span class="line">    <span class="keyword">int</span> nextInterval = getNextHeartbeatInterval();</span><br><span class="line">    response.setHeartbeatInterval(nextInterval);</span><br><span class="line">    response.setActions(</span><br><span class="line">                        actions.toArray(<span class="keyword">new</span> TaskTrackerAction[actions.size()]));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Update the trackerToHeartbeatResponseMap</span></span><br><span class="line">    trackerToHeartbeatResponseMap.put(trackerName, response);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Done processing the hearbeat, now remove 'marked' tasks</span></span><br><span class="line">    removeMarkedTasks(trackerName);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> response;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/05/29/Spark/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/05/29/Spark/" class="post-title-link" itemprop="url">Spark</a>
+        </h2>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-29 07:47:19" itemprop="dateModified" datetime="2021-05-29T07:47:19+08:00">2021-05-29</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Spark communication intensive, 如果 heap 特别大（比如 256GB），full GC stops the world for minutes，那么 很有可能会被判定为 timeout。因此 Spark 自己管理内存，也就是使用 off-heap（堆外，不由 JVM 管理的）内存，自己分配，自己释放，这样除了和 C++ 一样让 free memory 的时机变得 deterministic，缓解了上面所说的 stop the world full gc 带来的 timeout 隐患，也使得堆外内存和 JVM 的生命期 decouple。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/05/29/Spark/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/05/28/Apache-Arrow-Integration-with-Spark/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/05/28/Apache-Arrow-Integration-with-Spark/" class="post-title-link" itemprop="url">Apache Arrow Integration With Spark</a>
+        </h2>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-29 07:43:18" itemprop="dateModified" datetime="2021-05-29T07:43:18+08:00">2021-05-29</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <ul>
+<li><a href="https://www.dremio.com/webinars/apache-arrow-sf-meetup-may-2018-arrow-integration-with-spark/" target="_blank" rel="noopener">Apache Arrow Integration with Spark</a></li>
+<li><a href="https://www.youtube.com/watch?v=SFnkSReEjlk" target="_blank" rel="noopener">Apache Arrow: In Theory, In Practice // Apache Arrow Meetup SF</a></li>
+<li><a href="https://www.dremio.com/origin-history-of-apache-arrow/" target="_blank" rel="noopener">Origin and History of Apache Arrow</a></li>
+</ul>
+<h2 id="Integrating-Apache-Arrow-with-Spark"><a href="#Integrating-Apache-Arrow-with-Spark" class="headerlink" title="Integrating Apache Arrow with Spark"></a>Integrating Apache Arrow with Spark</h2><p>几个角色：</p>
+<ul>
+<li>Driver Python</li>
+<li>Driver JVM</li>
+<li>Executor Python</li>
+<li>Executor JVM</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/05/28/Apache-Arrow-Integration-with-Spark/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/05/26/Apache-Arrow/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/05/26/Apache-Arrow/" class="post-title-link" itemprop="url">Apache Arrow</a>
+        </h2>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-28 16:02:25" itemprop="dateModified" datetime="2021-05-28T16:02:25+08:00">2021-05-28</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><a href="http://www.liuhaihua.cn/archives/698599.html" target="_blank" rel="noopener">http://www.liuhaihua.cn/archives/698599.html</a><br><a href="https://www.infoq.com/articles/apache-arrow-java/" target="_blank" rel="noopener">https://www.infoq.com/articles/apache-arrow-java/</a><br><a href="https://arrow.apache.org/overview/" target="_blank" rel="noopener">https://arrow.apache.org/overview/</a><br><a href="https://arrow.apache.org/docs/format/Columnar.html" target="_blank" rel="noopener">https://arrow.apache.org/docs/format/Columnar.html</a></p>
+<p><a href="https://github.com/apache/arrow" target="_blank" rel="noopener">https://github.com/apache/arrow</a><br><a href="https://arrow.apache.org/docs/developers/cpp/building.html" target="_blank" rel="noopener">https://arrow.apache.org/docs/developers/cpp/building.html</a></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/05/26/Apache-Arrow/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/05/16/CUDA-Programming/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1623,540 +2198,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/28/MIT-6-824-Distributed-Systems-学习笔记/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Fengcun Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="The next stop - Antarctica">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/12/28/MIT-6-824-Distributed-Systems-学习笔记/" class="post-title-link" itemprop="url">MIT 6.824: Distributed Systems 学习笔记</a>
-        </h2>
-
-        <div class="post-meta">
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-30 16:53:50" itemprop="dateModified" datetime="2020-12-30T16:53:50+08:00">2020-12-30</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="Zookeeper"><a href="#Zookeeper" class="headerlink" title="Zookeeper"></a>Zookeeper</h2><p>Zookeeper：一个提供“强”一致性的“分布式文件系统”。</p>
-<h3 id="什么是强一致性-Strong-consistency-？"><a href="#什么是强一致性-Strong-consistency-？" class="headerlink" title="什么是强一致性 Strong consistency ？"></a>什么是强一致性 Strong consistency ？</h3><p><strong>Guarantee : Get the most recent my own and others’ write.</strong></p>
-<p><strong>确保 Get the most recent my own and others’ write</strong> &gt; <strong>确保 Get the most recent my own write</strong> &gt; <strong>不确保 Get the most recent my own write</strong></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/12/28/MIT-6-824-Distributed-Systems-学习笔记/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/25/Redis-Replication/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Fengcun Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="The next stop - Antarctica">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/12/25/Redis-Replication/" class="post-title-link" itemprop="url">Redis Replication</a>
-        </h2>
-
-        <div class="post-meta">
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-25 18:24:36" itemprop="dateModified" datetime="2020-12-25T18:24:36+08:00">2020-12-25</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>首先要明白的是时间差肯定是存在的，因为实现机制是网络传输，而不是量子纠缠；其次，网络传输有可能失败，确认/重传机制；在发出复制指令之前，master 可能 down 掉，write lost；复制存在两种模式：同步和异步。增量时，一般不会 stop the world；全量时，会不会出现 stop the world 呢？ <strong>这些问题是主从复制时一般要思考的问题，不仅仅是 Redis，MySQL 和 RabbitMQ 也是一样的。</strong></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/12/25/Redis-Replication/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/23/MySQL-灵魂十连/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Fengcun Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="The next stop - Antarctica">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/12/23/MySQL-灵魂十连/" class="post-title-link" itemprop="url">MySQL 灵魂十连</a>
-        </h2>
-
-        <div class="post-meta">
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-23 17:45:44" itemprop="dateModified" datetime="2020-12-23T17:45:44+08:00">2020-12-23</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="SQL-语句执行流程"><a href="#SQL-语句执行流程" class="headerlink" title="SQL 语句执行流程"></a>SQL 语句执行流程</h2><p>MySQL 大体上可分为 Server 层和存储引擎层两部分。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/12/23/MySQL-灵魂十连/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/21/SSL/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Fengcun Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="The next stop - Antarctica">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/12/21/SSL/" class="post-title-link" itemprop="url">SSL</a>
-        </h2>
-
-        <div class="post-meta">
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-06 18:38:36" itemprop="dateModified" datetime="2021-01-06T18:38:36+08:00">2021-01-06</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><a href="https://www.youtube.com/watch?v=Rp3iZUvXWlM" target="_blank" rel="noopener">Youtube SSL/TLS - Cristina Formaini</a></p>
-<h2 id="openssl-生成-SSL-证书的流程"><a href="#openssl-生成-SSL-证书的流程" class="headerlink" title="openssl 生成 SSL 证书的流程"></a>openssl 生成 SSL 证书的流程</h2><p><img src="/2020/12/21/SSL/SSL.png" alt="SSL"></p>
-<p>SSL（Secure socket layer）在客户端/浏览器和 Web 服务器之间建立一条安全通道。</p>
-<p>SSL 安全协议主要用来</p>
-<ul>
-<li>对传送的数据进行加密；</li>
-<li>确保数据在传送中不被改变，保证数据的完整性；</li>
-<li>提供对用户和服务器的认证；</li>
-</ul>
-<p><img src="/2020/12/21/SSL/CIA.png" alt="CIA"></p>
-<p>SSL 已建立到所有主要的浏览器和 WEB 服务器程序中。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/12/21/SSL/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/21/各种一致性级别/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Fengcun Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="The next stop - Antarctica">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/12/21/各种一致性级别/" class="post-title-link" itemprop="url">各种一致性级别</a>
-        </h2>
-
-        <div class="post-meta">
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-29 21:29:13" itemprop="dateModified" datetime="2020-12-29T21:29:13+08:00">2020-12-29</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>一致性问题的常见场景：分布式系统、多线程编程 （C++ 11 的原子操作与内存模型，并行执行的多个线程，从某种层面上讲，可以粗略地视为一种分布式系统。在分布式系统中，任何通信乃至本地操作都需要消耗一定时间，而且可能出现不可靠的通信）。</p>
-<p><img src="/2020/12/21/各种一致性级别/顺序-因果-最终一致性.png" alt="顺序-因果-最终一致性"></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/12/21/各种一致性级别/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/21/微服务架构中的事务处理/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Fengcun Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="The next stop - Antarctica">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/12/21/微服务架构中的事务处理/" class="post-title-link" itemprop="url">微服务架构中的事务处理</a>
-        </h2>
-
-        <div class="post-meta">
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-07 16:54:53" itemprop="dateModified" datetime="2021-01-07T16:54:53+08:00">2021-01-07</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>当从一个单体系统转向微服务架构（micro service architecture， MSA）时，一个使用本地事务完成的典型数据库事务，现在是一个复杂的分布式事务问题。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/12/21/微服务架构中的事务处理/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/17/Barrier-before-and-since-C-20/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Fengcun Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="The next stop - Antarctica">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/12/17/Barrier-before-and-since-C-20/" class="post-title-link" itemprop="url">Barrier Before and Since C++20</a>
-        </h2>
-
-        <div class="post-meta">
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-23 11:43:16" itemprop="dateModified" datetime="2020-12-23T11:43:16+08:00">2020-12-23</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="Implementing-boost-barrier-in-C-11"><a href="#Implementing-boost-barrier-in-C-11" class="headerlink" title="Implementing boost::barrier in C++11"></a>Implementing boost::barrier in C++11</h2>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/12/17/Barrier-before-and-since-C-20/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/17/分布式锁/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Fengcun Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="The next stop - Antarctica">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/12/17/分布式锁/" class="post-title-link" itemprop="url">分布式锁</a>
-        </h2>
-
-        <div class="post-meta">
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-17 16:57:11" itemprop="dateModified" datetime="2020-12-17T16:57:11+08:00">2020-12-17</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <ul>
-<li>锁 协调共享资源的访问</li>
-<li>分布式锁 协调分布式环境下的共享资源的访问</li>
-</ul>
-<p>锁的一些性质：</p>
-<ul>
-<li>最重要的性质是排他性</li>
-<li>堵塞性</li>
-<li>是否可重入，一个线程获得锁后，该线程后续是否可重复/再次获得该锁。</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/12/17/分布式锁/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2228,14 +2269,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">126</span>
+          <span class="site-state-item-count">134</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-count">16</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -2262,7 +2303,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2021</span>
+  <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

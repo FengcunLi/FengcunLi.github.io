@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Apache Arrow Integration with Spark Apache Arrow: In Theory, In Practice // Apache Arrow Meetup SF Origin and History of Apache Arrow  Integrating Apache Arrow with Spark几个角色：  Driver Python Driver J">
+<meta name="keywords" content="Big Data">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Apache Arrow Integration With Spark">
+<meta property="og:url" content="http://yoursite.com/2021/05/28/Apache-Arrow-Integration-with-Spark/index.html">
+<meta property="og:site_name" content="The next stop - Antarctica">
+<meta property="og:description" content="Apache Arrow Integration with Spark Apache Arrow: In Theory, In Practice // Apache Arrow Meetup SF Origin and History of Apache Arrow  Integrating Apache Arrow with Spark几个角色：  Driver Python Driver J">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2021/05/28/Apache-Arrow-Integration-with-Spark/to_pandas.png">
+<meta property="og:image" content="http://yoursite.com/2021/05/28/Apache-Arrow-Integration-with-Spark/create_data_frame.png">
+<meta property="og:image" content="http://yoursite.com/2021/05/28/Apache-Arrow-Integration-with-Spark/udf1.png">
+<meta property="og:image" content="http://yoursite.com/2021/05/28/Apache-Arrow-Integration-with-Spark/udf2.png">
+<meta property="og:updated_time" content="2021-05-28T23:43:18.606Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Apache Arrow Integration With Spark">
+<meta name="twitter:description" content="Apache Arrow Integration with Spark Apache Arrow: In Theory, In Practice // Apache Arrow Meetup SF Origin and History of Apache Arrow  Integrating Apache Arrow with Spark几个角色：  Driver Python Driver J">
+<meta name="twitter:image" content="http://yoursite.com/2021/05/28/Apache-Arrow-Integration-with-Spark/to_pandas.png">
+
+<link rel="canonical" href="http://yoursite.com/2021/05/28/Apache-Arrow-Integration-with-Spark/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Apache Arrow Integration With Spark | The next stop - Antarctica</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The next stop - Antarctica</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">To see behind walls. To draw closer.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/05/28/Apache-Arrow-Integration-with-Spark/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Fengcun Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The next stop - Antarctica">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Apache Arrow Integration With Spark
+        </h1>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-29 07:43:18" itemprop="dateModified" datetime="2021-05-29T07:43:18+08:00">2021-05-29</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <ul>
+<li><a href="https://www.dremio.com/webinars/apache-arrow-sf-meetup-may-2018-arrow-integration-with-spark/" target="_blank" rel="noopener">Apache Arrow Integration with Spark</a></li>
+<li><a href="https://www.youtube.com/watch?v=SFnkSReEjlk" target="_blank" rel="noopener">Apache Arrow: In Theory, In Practice // Apache Arrow Meetup SF</a></li>
+<li><a href="https://www.dremio.com/origin-history-of-apache-arrow/" target="_blank" rel="noopener">Origin and History of Apache Arrow</a></li>
+</ul>
+<h2 id="Integrating-Apache-Arrow-with-Spark"><a href="#Integrating-Apache-Arrow-with-Spark" class="headerlink" title="Integrating Apache Arrow with Spark"></a>Integrating Apache Arrow with Spark</h2><p>几个角色：</p>
+<ul>
+<li>Driver Python</li>
+<li>Driver JVM</li>
+<li>Executor Python</li>
+<li>Executor JVM</li>
+</ul>
+<a id="more"></a>
+<p>两种格式</p>
+<ul>
+<li>transport format</li>
+<li>processing format</li>
+</ul>
+<h3 id="Java-lt-gt-Python-“原始的”跨语言通信"><a href="#Java-lt-gt-Python-“原始的”跨语言通信" class="headerlink" title="Java &lt;-&gt; Python “原始的”跨语言通信"></a><code>Java &lt;-&gt; Python</code> “原始的”跨语言通信</h3><ul>
+<li>Java processing format: Java Object</li>
+<li>transport format: Pickle</li>
+<li>Python processing format: Python Object</li>
+</ul>
+<p><code>Java Object &lt;-&gt; Pickle</code> 和 <code>Python Object &lt;-&gt; Pickle</code> 需要序列化和反序列化。</p>
+<h3 id="如果使用-Arrow"><a href="#如果使用-Arrow" class="headerlink" title="如果使用 Arrow"></a>如果使用 Arrow</h3><ul>
+<li>Java processing format: Arrow format</li>
+<li>transport format: Arrow format</li>
+<li>Python processing format: Arrow format</li>
+</ul>
+<p>Arrow format 既是 transport format，充当了 Pickle format 的角色，也是 processing format，充当了 language-specific Object 的角色（这得益于各个语言比如 Java 和 Python 等都可以直接像操作对象一样操作 Arrow format）。</p>
+<p>In Spark, we started hearing a lot of people complain about their Python code running so slow. This is dealing largely with <strong>the Spark dataframe API</strong>, which is pretty much a wrapper around Java implementation of everything.<br>When the Spark dataframe API came out in Spark 2.0, the data processing was very fast, as long as that user would keep the data in the JVM. But as soon as they needed to go outside, to a Python process, it would just be a huge bottleneck, and things would slow down to a crawl.<br>A lot of people didn’t understand why performance of <strong>using Python</strong> was so different <strong>from</strong> running the same kind of UDF’s <strong>in Scala</strong>, but there’s a couple reasons for this big bottleneck.</p>
+<ul>
+<li>One, when trying to transfer data to Python, Spark would use the Pickle format. Which is not known to be terribly efficient and is kind of a bulky serialization format.</li>
+<li>Furthermore, it forced Spark to iterate over each scalar value to serialize each individual value. This kind of led to <strong>a lot of loop</strong>, when Spark needs to serialize, and de-serialize, and then process all this data.</li>
+</ul>
+<p>总结: 涉及序列化/反序列化这两个过程，及这两个过程低效的实现。</p>
+<p>Looking at Arrow:</p>
+<ul>
+<li><strong>It provided common format between Java and Python</strong>, which would allow us to convert our data into an Arrow format in the JVM. Then, be able to <strong>just</strong> send it over to Python process, where it could directly consume it, and process it right off the bat.</li>
+</ul>
+<p>序列化(<code>Java Object -&gt; Pickle format</code>)/反序列化(<code>Pickle format -&gt; Python Object</code>)这两个过程<br>-&gt;<br>一次 conversion (<code>Java Object -&gt; Arrow format</code>, Python 可以直接操作 Arrow format)</p>
+<p>Arrow 是提供了 common format between different language，只要大家都在操作 Arrow format，跨语言（跨设备？）就不会发生转换。只要有一个语言完成了从本语言到 Arrow format 的转换，其他的语言可以直接操作 Arrow format 的数据，不用再做转换了，是一个一劳永逸的感觉。如果想把 Arrow format 变成自己语言所特有的对象也是可以的，不过这会触发 Arrow format 到本语言对象的转换。</p>
+<p>Arrow also provided IPC mechanisms, to allow for reading and writing over sockets, which is how Spark transfers data already.</p>
+<h3 id="To-a-Pandas-dataframe"><a href="#To-a-Pandas-dataframe" class="headerlink" title="To a Pandas dataframe"></a>To a Pandas dataframe</h3><p><img src="/2021/05/28/Apache-Arrow-Integration-with-Spark/to_pandas.png" alt="to_pandas"></p>
+<p>You are given a Spark dataframe, you want to collect that to your driver’s side application, then to a Pandas dataframe</p>
+<p>This started off as being very inefficient, because:</p>
+<ul>
+<li>Driver JVM Side: collect, and 一条一条地序列化 produces individual records in Pickle format.</li>
+<li>Driver Python Side: 一条一条地反序列化，builds all these records up into a huge list in Python. Then, through a very inefficient way, the huge list -&gt; Pandas dataframe</li>
+</ul>
+<p>With Arrow:</p>
+<ul>
+<li>Executor JVM side: convert the data to Arrow batches in parallel</li>
+<li>Driver JVM Side: brought a whole bunch of Arrow batches into the driver application, combine them together</li>
+<li>Driver Python Side: Arrow format -&gt; Pandas dataframe</li>
+</ul>
+<ul>
+<li>Java 和 Python 都可以操作的 Arrow format，需要做 <code>language-specific Object &lt;-&gt; Arrow format</code> conversion。</li>
+<li>Java 和 Python 都可以操作 Pickle format，需要做 <code>language-specific Object &lt;-&gt; Pickle format</code> conversion。</li>
+</ul>
+<p><code>processing format &lt;-&gt; transport format</code> 转换并没有少，只不过实现更“高效”了。体现了一劳，但是没有体现永逸。</p>
+<h3 id="From-a-Pandas-dataframe"><a href="#From-a-Pandas-dataframe" class="headerlink" title="From a Pandas dataframe"></a>From a Pandas dataframe</h3><p><img src="/2021/05/28/Apache-Arrow-Integration-with-Spark/create_data_frame.png" alt="create_data_frame"></p>
+<p>You are given a Pandas dataframe, you want to create a Spark dataframe. Previously, this was a major slow down and wasn’t useful in Spark at all. Even just a small amount of data would run very slowly.</p>
+<p>Part of the reason this was so slow was because, trying to ingest Pandas data, Spark has no idea what kind of data types there are. It did not try to look at Pandas types, or NumPy types, so it treated everything as a Python Object. Even if you try to specify a schema, it still needed to loop through all the data, do verification checks, run through some cleansing, to produce clean data for Java, then clean data for Spark, to make sure everything was in a format that Spark could easily accept.</p>
+<p>With the addition of Arrow, basically, none of that was needed, and starting off with a Pandas dataframe, we could very quickly just produce Arrow record batches, send those to the JVM, and the JVM can then send them out, in a parallel manner, to the cluster.</p>
+<p><code>processing format &lt;-&gt; transport format</code> 转换并没有少，只不过实现更“高效”了。体现了一劳，但是没有体现永逸。</p>
+<h3 id="Working-with-UDFs"><a href="#Working-with-UDFs" class="headerlink" title="Working with UDFs"></a>Working with UDFs</h3><p>Using Pandas to express your user defined functions 得到的就是 Pandas UDFs，也被叫做 vectorized UDFs, inter-operate with Pandas data. Allows you to run these operatipns in a vectorized manner, and utilize all the nice Hardware features that go along with that.</p>
+<p>Part of the reason this area was a huge slow down before Arrow is because</p>
+<ul>
+<li>serialization issues</li>
+<li>data gets sent from the JVM, over to Python, does the processing, record by record, by the way. Then, builds a whole list of Python records and needs to serialize that back to the JVM.</li>
+</ul>
+<p><code>processing format &lt;-&gt; transport format</code> 转换并没有少，只不过实现更“高效”了。体现了一劳，但是没有体现永逸。</p>
+<h4 id="Scalar-UDF"><a href="#Scalar-UDF" class="headerlink" title="Scalar UDF"></a>Scalar UDF</h4><p><img src="/2021/05/28/Apache-Arrow-Integration-with-Spark/udf1.png" alt="udf1"></p>
+<h4 id="grouped-map-UDF"><a href="#grouped-map-UDF" class="headerlink" title="grouped map UDF"></a>grouped map UDF</h4><p><img src="/2021/05/28/Apache-Arrow-Integration-with-Spark/udf2.png" alt="udf2"></p>
+<p>This was introduced by Li Jin, at Two Sigma, and it’s a super useful addition. Here’s a little example of how it’s used.<br>Input: Pandas dataframe<br>Output:Pandas dataframe</p>
+<p>What’s useful about this is, you can take your Spark SQL data, and do an efficient groupby, on some kind of column, and all that will be done very quickly by the Spark internals on the JVM. Then, it will transfer these groups, in batches, over to Python, using Arrow. 只做了 groupby，没有做字段的聚合。<br>Each batch that Python process will be a complete group ID and you’ll be able to process your data as one complete Pandas frame.</p>
+<p>One caveat though is that you do need to be wary of how your groups are skewd. It will need to fit in memory.</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><strong>Right now, it’s just being used to hand off data from Java to Python, vice-versa.</strong> 仅仅体现了把 Arrow 当作 transport format，并没有体现把 Arrow 当作 processing format。</p>
+<p>But I think it would be a great way to interact Spark with other systems, to be able to externalize Arrow data explicitly. 这样才能体现永逸。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Big-Data/" rel="tag"># Big Data</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/05/26/Apache-Arrow/" rel="prev" title="Apache Arrow">
+      <i class="fa fa-chevron-left"></i> Apache Arrow
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/05/29/Spark/" rel="next" title="Spark">
+      Spark <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Integrating-Apache-Arrow-with-Spark"><span class="nav-number">1.</span> <span class="nav-text">Integrating Apache Arrow with Spark</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Java-lt-gt-Python-“原始的”跨语言通信"><span class="nav-number">1.1.</span> <span class="nav-text">Java &lt;-&gt; Python “原始的”跨语言通信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如果使用-Arrow"><span class="nav-number">1.2.</span> <span class="nav-text">如果使用 Arrow</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#To-a-Pandas-dataframe"><span class="nav-number">1.3.</span> <span class="nav-text">To a Pandas dataframe</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#From-a-Pandas-dataframe"><span class="nav-number">1.4.</span> <span class="nav-text">From a Pandas dataframe</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Working-with-UDFs"><span class="nav-number">1.5.</span> <span class="nav-text">Working with UDFs</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Scalar-UDF"><span class="nav-number">1.5.1.</span> <span class="nav-text">Scalar UDF</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#grouped-map-UDF"><span class="nav-number">1.5.2.</span> <span class="nav-text">grouped map UDF</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">1.6.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Fengcun Li"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Fengcun Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">134</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fengcun Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
